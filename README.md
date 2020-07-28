@@ -78,7 +78,7 @@ public int Value2 { get; set; }
 "value" 3 // Value1 is "value", Value2 is 3
 ```
 
-다음과 같이 기본값을 설정할 수 있습니다. 명령 구문에 값이 없을 경우 기본값으로 대체 됩니다.
+기본값을 설정할 수 있습니다. 명령 구문에 값이 없을 경우 기본값으로 대체 됩니다.
 
 ```csharp
 [CommandPropertyRequired]
@@ -158,11 +158,12 @@ public string Value { get; set; }
 --value text // value is "text"
 ```
 
-속성이 bool일때 기본값이 명시되어 있지 않다면 자동으로 기본값 true로 설정됩니다.
+> 속성이 bool 타입이고 기본값이 명시되어 없다면 자동으로 기본값 true로 설정됩니다.
 
 ### 가변 인자
 
 가변 인자는 명령 구문에서 파싱되지 않은 나머지 인자들의 값을 나타냅니다.
+
 가변 인자의 속성 타입은 반드시 배열이여야만 하고 오직 하나의 속성에만 정의되야 합니다.
 
 ```csharp
@@ -178,7 +179,7 @@ public string[] Values { get; set; }
 
 명령 구문을 통해 특성 메서드를 실행하기 위해서는 다음과 같이 해당 메서드에 CommandMethod를 정의해야 합니다.
 
-메서드의 각각의 파라미터는 자동으로 필수 인자로 정의됩니다.
+메서드의 파라미터는 자동으로 필수 인자로 정의됩니다.
 
 ```csharp
 [CommandMethod]
@@ -191,7 +192,7 @@ public void Save(string message)
 save "message"
 ```
 
-만약에 메서드에 추가적으로 선택인자를 정의하고 싶다면 CommandMethodProperty 를 사용하여 CommandProperty 로 정의된 속성의 이름을 추가하면 됩니다.
+만약에 메서드에 추가적으로 선택인자를 정의하고 싶다면 CommandMethodProperty 를 사용합니다.
 
 ```csharp
 [CommandMethod]
@@ -206,7 +207,7 @@ save "comment"
 save "comment" --value text
 ```
 
-아래처럼 params 를 사용하여 가변 인자로 사용할 수 있습니다.
+아래처럼 params 를 사용할 경우 가변 인자로 사용할 수 있습니다.
 
 ```csharp
 [CommandMethod]
@@ -220,9 +221,9 @@ save "comment"
 save "comment" -- "1" "text" "string"
 ```
 
-## 공용 속성 및 메소드
+## 공용 속성 및 메서드
 
-static 으로 정의된 속성 및 메소드를 해당 객체에 포함하여 사용할 수 있습니다.
+static 으로 정의된 속성 및 메서드를 해당 객체에 포함하여 사용할 수 있습니다.
 
 ```csharp
 static class GlobalSettings
@@ -261,7 +262,7 @@ class Commands
 
 ## 이름
 
-CommandProperty 및 CommandMethod 로 정의된 속성과 메소드 이름을 [kebab-case (spinal-case, Train-Case, Lisp-case)](https://en.wikipedia.org/wiki/Letter_case) 형태로 변경됩니다.
+CommandProperty 및 CommandMethod 로 정의된 속성과 메서드 이름은 [kebab-case (spinal-case, Train-Case, Lisp-case)](https://en.wikipedia.org/wiki/Letter_case) 형태로 변경됩니다.
 
 ### 속성 이름 예제
 
@@ -322,7 +323,7 @@ public void Save(string message)
 
 ## 명령어
 
-CommandContext 에 명령어를 정의할 수 있습니다.
+CommandContext에 사용될 명령어를 정의하는 방법입니다.
 
 ```csharp
 class ExitCommand : CommandBase
@@ -347,7 +348,7 @@ exit 0
 
 ## 하위 명령어
 
-CommandContext 에 하위 명령어를 가지고 있는 명령어를 정의할 수 있습니다.
+CommandContext에 하위 명령어를 정의하는 방법입니다.
 
 ```csharp
 class UserCommand : CommandMethodBase
@@ -385,7 +386,7 @@ user list
 
 ## 하위 명령어 확장
 
-별도의 클래스를 구현하여 이미 구현되어 있는 명령어에 하위 명령어를 추가할 수 있습니다.
+PartialCommand 특성을 사용하여 하위 명령어를 확장할 수 있습니다.
 
 ```csharp
 [PartialCommand]
