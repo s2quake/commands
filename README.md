@@ -10,7 +10,7 @@
 
 ```plain
 Visual Studio Code
-.NET Core 3.0
+.NET Core 3.1
 ```
 
 ## 빌드 및 실행
@@ -18,11 +18,11 @@ Visual Studio Code
 ```plain
 git clone https://github.com/s2quake/commands.git --recursive
 cd commands
-dotnet build Ntreev.Library.Commands --framework netcoreapp3.0
+dotnet build Ntreev.Library.Commands --framework netcoreapp3.1
 ```
 
 ```plain
-dotnet run --project ./Ntreev.Library.Commands/Ntreev.Library.Commands.Repl --framework netcoreapp3.0
+dotnet run --project ./Ntreev.Library.Commands/Ntreev.Library.Commands.Repl --framework netcoreapp3.1
 ```
 
 ## Parse
