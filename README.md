@@ -8,20 +8,23 @@
 
 ## 개발 환경
 
-```plain
-Visual Studio Code
-.NET Core 3.1
-```
+### [Microsoft Visual Studio Community 2019](https://visualstudio.microsoft.com/ko/downloads/)
+
+### [Microsoft Visual Studio Code](https://code.visualstudio.com/)
+
+### [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
+
 
 ## 빌드 및 실행
 
-```plain
+```powershell
+# clone
 git clone https://github.com/s2quake/commands.git --recursive
+# change directory
 cd commands
+# build
 dotnet build Ntreev.Library.Commands --framework netcoreapp3.1
-```
-
-```plain
+# run
 dotnet run --project ./Ntreev.Library.Commands/Ntreev.Library.Commands.Repl --framework netcoreapp3.1
 ```
 
