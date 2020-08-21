@@ -19,6 +19,10 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.301
+    - name: Submodule Init
+      run: git submodule init --
+    - name: Submodule Update
+      run: git submodule update --
     - name: Submodule Checkout
       run: git submodule foreach git checkout master
     - name: Submodule Pull
