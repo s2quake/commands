@@ -23,7 +23,7 @@ git clone https://github.com/s2quake/commands.git --recursive
 # change directory
 cd commands
 # build
-dotnet build Ntreev.Library.Commands --framework netcoreapp3.1
+dotnet build --framework netcoreapp3.1
 # run
 dotnet run --project ./Ntreev.Library.Commands/Ntreev.Library.Commands.Repl --framework netcoreapp3.1
 ```

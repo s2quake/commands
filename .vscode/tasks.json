@@ -5,23 +5,21 @@
     "tasks": [
         {
             "label": "build",
-            "command": "dotnet",
+            "command": "dotnet build --framework netcoreapp3.1",
             "type": "shell",
-            "args": [
-                "build",
-                "Ntreev.Library.Commands",
-                // Ask dotnet build to generate full paths for file names.
-                "/property:GenerateFullPaths=true",
-                // Do not generate summary otherwise it leads to duplicate errors in Problems panel
-                "/consoleloggerparameters:NoSummary",
-                "--framework",
-                "netcoreapp3.0",
-                "--configuration",
-                "Debug"
-            ],
             "group": "build",
             "presentation": {
-                "reveal": "silent"
+                "reveal": "always"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "clean",
+            "command": "dotnet clean",
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "always"
             },
             "problemMatcher": "$msCompile"
         }

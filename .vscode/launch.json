@@ -5,13 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": ".NET Core Launch (server)",
+            "name": ".NET Core Launch",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/Ntreev.Library.Commands/Ntreev.Library.Commands.Repl/bin/Debug/netcoreapp3.0/repl.dll",
-            "args": [
-            ],
-            "cwd": "${workspaceFolder}/Ntreev.Library.Commands",
+            "program": "${workspaceFolder}/bin/Debug/netcoreapp3.1/Ntreev.Library.Commands.Repl/repl.dll",
+            "cwd": "${workspaceFolder}/bin/Debug/netcoreapp3.1/Ntreev.Library.Commands.Repl",
             "console": "externalTerminal",
             "stopAtEntry": false
         },
