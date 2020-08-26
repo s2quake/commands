@@ -28,8 +28,8 @@ jobs:
     - name: Submodule Pull
       run: git submodule foreach git pull
     - name: Install dependencies
-      run: dotnet restore ./Ntreev.Library.Commands/
+      run: dotnet restore
     - name: Build
-      run: dotnet build ./Ntreev.Library.Commands/ --configuration Release --no-restore --framework netcoreapp3.1
+      run: dotnet build --configuration Release --no-restore --framework netcoreapp3.1
     - name: Test
       run: dotnet test ./Ntreev.Library.Commands/ --no-restore --verbosity normal --framework netcoreapp3.1
