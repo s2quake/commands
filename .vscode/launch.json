@@ -5,8 +5,8 @@
             "name": ".NET Core Launch",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/Debug/netcoreapp3.1/Ntreev.Library.Commands.Repl/repl.dll",
-            "cwd": "${workspaceFolder}/bin/Debug/netcoreapp3.1/Ntreev.Library.Commands.Repl",
+            "program": "${workspaceFolder}/bin/Debug/netcoreapp3.1/JSSoft.Library.Commands.Repl/repl.dll",
+            "cwd": "${workspaceFolder}/bin/Debug/netcoreapp3.1/JSSoft.Library.Commands.Repl",
             "console": "externalTerminal",
             "stopAtEntry": false
         }

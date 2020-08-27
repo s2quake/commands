@@ -1,4 +1,4 @@
-# Ntreev.Library.Commands
+# JSSoft.Library.Commands
 
 ## 개요
 
@@ -25,7 +25,7 @@ cd commands
 # build
 dotnet build --framework netcoreapp3.1
 # run
-dotnet run --project ./Ntreev.Library.Commands/Ntreev.Library.Commands.Repl --framework netcoreapp3.1
+dotnet run --project ./JSSoft.Library.Commands/JSSoft.Library.Commands.Repl --framework netcoreapp3.1
 ```
 
 ## Parse

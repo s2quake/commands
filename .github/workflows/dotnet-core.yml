@@ -32,4 +32,4 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore --framework netcoreapp3.1
     - name: Test
-      run: dotnet test ./Ntreev.Library.Commands/ --no-restore --verbosity normal --framework netcoreapp3.1
+      run: dotnet test ./JSSoft.Library.Commands/ --no-restore --verbosity normal --framework netcoreapp3.1

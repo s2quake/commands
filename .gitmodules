@@ -1,6 +1,6 @@
-[submodule "Ntreev.Library"]
-	path = Ntreev.Library
-	url = https://github.com/s2quake/Ntreev.Library.git
-[submodule "Ntreev.Library.Commands"]
-	path = Ntreev.Library.Commands
-	url = https://github.com/s2quake/CommandLineParser.git
+[submodule "JSSoft.Library"]
+	path = JSSoft.Library
+	url = ../../s2quake/JSSoft.Library.git
+[submodule "JSSoft.Library.Commands"]
+	path = JSSoft.Library.Commands
+	url = ../../s2quake/JSSoft.Library.Commands.git
