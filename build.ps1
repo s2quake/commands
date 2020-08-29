@@ -24,8 +24,8 @@ try {
     Set-Location $PSScriptRoot
     $buildFile = "./.vscode/build.ps1"
     $propsPath = (
-        "../JSSoft.Library/Directory.Build.props",
-        "../JSSoft.Library.Commands/Directory.Build.props"
+        "./JSSoft.Library/Directory.Build.props",
+        "./JSSoft.Library.Commands/Directory.Build.props"
     ) | ForEach-Object { "`"$_`"" }
     $propsPath = $propsPath -join ","
     $solutionPath = "./commands.sln"
