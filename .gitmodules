@@ -1,6 +1,6 @@
 [submodule "JSSoft.Library"]
 	path = JSSoft.Library
-	url = ../JSSoft.Library.git
+	url = https://github.com/s2quake/JSSoft.Library.git
 [submodule "JSSoft.Library.Commands"]
 	path = JSSoft.Library.Commands
-	url = ../JSSoft.Library.Commands.git
+	url = https://github.com/s2quake/JSSoft.Library.Commands.git
