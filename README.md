@@ -1,58 +1,60 @@
-# JSSoft.Library.Commands
+# Ntreev.Library.Commands
 
-## 개요
+## Clone
 
-명령 구문을 분석하여 속성의 값을 설정하거나 메서드를 호출할 수 있는 기능을 제공합니다.
+    git clone https://github.com/s2quake/commands.git --recursive
+    cd commands
 
-명령어 집합을 구축하여 응용프로그램을 제어할 수 있도록 콘솔 환경을 제공합니다.
+## Build - NET Core 3.1
 
-## 개발 환경
+    dotnet build --framework netcoreapp3.1 --configuration Release
 
-### [Microsoft Visual Studio Community 2019](https://visualstudio.microsoft.com/ko/downloads/)
+## Build - .NET Framework 4.5
 
-### [Microsoft Visual Studio Code](https://code.visualstudio.com/)
+In Windows, proceed after running the **Developer Command Prompt for VS 2019** window.
 
-### [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
+    msbuild -t:build -p:configuration=Release
 
+## Visual Studio 2019
 
-## 빌드 및 실행
+Run as administrator or set the value of SignAssembly in the contents of the file below to false.
 
-```powershell
-# clone
-git clone https://github.com/s2quake/commands.git --recursive
-# change directory
-cd commands
-# build
-dotnet build --framework netcoreapp3.1
-# run
-dotnet run --project ./JSSoft.Library.Commands/JSSoft.Library.Commands.Repl --framework netcoreapp3.1
-```
+    JSSoft.Library/Directory.Build.props
+    JSSoft.Library.Commands/Directory.Build.props
+
+## Summary
+
+Provides the function to fill in the value of the specified object property or call a function by parsing the command syntax.
+
+Provides a console environment to control applications by building instruction sets.
 
 ## Parse
 
-명령 구문을 분석하는 가장 기본적인 방법입니다. 지정된 속성에 값을 설정해주는 기능을 제공합니다.
+This is the most basic way to parse the command. Provides a function to set a value for a specified property.
 
 ```csharp
 var settings = new Settings();
 var parser = new CommandLineParser(settings);
 parser.Parse(Environment.CommandLine);
 ```
+> See the JSSoft.Library.Commands.Parse project
 
 ## Invoke
 
-Parse의 확장 기능으로써 명령 구문을 분석하여 지정된 메서드를 호출하는 기능을 제공합니다.
+As an extension of Parse, it provides the ability to call a specified method by parsing the command.
 
 ```csharp
 var commands = new Commands();
 var parser = new CommandLineParser(commands);
 parser.Invoke(Environment.CommandLine);
 ```
+> See the JSSoft.Library.Commands.Invoke project
 
 ## CommandContext
 
-보다 많은 명령어를 관리하며 처리할 수 있도록 다양한 기능을 제공합니다.
+It provides various functions to manage and process more commands.
 
-EditBox, TextBox, InputText 와 같은 사용자 입력과 조합하여 콘솔 또는 REPL 과 같은 환경을 구축할 수 있습니다.
+It can be combined with user input such as EditBox, TextBox, InputText to build a console or REPL-like environment.
 
 ```csharp
 var commands = new ICommand[]
@@ -64,12 +66,13 @@ var commands = new ICommand[]
 var commandContext = new CommandContext(commands);
 commandContext.Execute(Environment.CommandLine);
 ```
+> See the JSSoft.Library.Commands.Repl project
 
-## 속성 정의
+## Property definition
 
-### 필수 인자
+### Required argument
 
-명령 구문시 필수로 요구되는 값을 정의하기 위해서는 속성에 CommandPropertyRequired 를 정의합니다.
+To define the value required for command syntax, define **CommandPropertyRequired** in the property.
 
 ```csharp
 [CommandPropertyRequired]
@@ -85,7 +88,7 @@ public int Value2 { get; set; }
 "value" 3 // Value1 is "value", Value2 is 3
 ```
 
-기본값을 설정할 수 있습니다. 명령 구문에 값이 없을 경우 기본값으로 대체 됩니다.
+You can set default values ​​like this: If there is no value in the command syntax, it is replaced with the default value.
 
 ```csharp
 [CommandPropertyRequired]
@@ -100,9 +103,9 @@ public int Value2 { get; set; }
 "value"   // Value1 is "value", Value2 is 1
 ```
 
-### 명시적 필수 인자
+### Explicit required argument
 
-명시적인 필수 인자는 명령 구문에 반드시 값이 있어야 하지만 --value "2" 처럼 스위치가 포함되야 합니다.
+An explicit required argument indicates that the command syntax must have a value, but must include a switch statement, such as --value "2".
 
 ```csharp
 [CommandPropertyRequired]
@@ -120,7 +123,7 @@ public int Value2 { get; set; }
 --value2 3 "value" // Value1 is "value", Value2 is 3
 ```
 
-명시적 필수 인자의 기본값을 사용하기 위해서는 명령 구문에 --value 와 같이 스위치문이  포함되야 합니다.
+In order to use the default values ​​of explicit required arguments, the command syntax must include a switch statement such as --value.
 
 ```csharp
 [CommandPropertyRequired]
@@ -139,9 +142,9 @@ public int Value2 { get; set; }
 --value2 "value"   // error! "value" is not int
 ```
 
-### 선택 인자
+### Optional argument
 
-선택 인자는 스위치문을 사용하여 값의 사용 유무를 정할 수 있습니다.
+The optional argument can be set whether or not to use a value using a switch statement.
 
 ```csharp
 [CommandProperty]
@@ -153,7 +156,7 @@ public string Value { get; set; }
 --value text // value is "text"
 ```
 
-기본값을 사용하기 위해서는 명령 구문에 --value 와 같이 스위치문이 포함되야 합니다.
+To use the default, the command syntax must include a switch statement such as --value.
 
 ```csharp
 [CommandProperty(DefaultValue = "1")]
@@ -165,13 +168,18 @@ public string Value { get; set; }
 --value text // value is "text"
 ```
 
-> 속성이 bool 타입이고 기본값이 명시되어 없다면 자동으로 기본값 true로 설정됩니다.
+A bool type switch statement that does not use a value should be defined as follows.
 
-### 가변 인자
+```csharp
+[CommandPropertySwitch]
+public bool Switch { get; set; }
+```
 
-가변 인자는 명령 구문에서 파싱되지 않은 나머지 인자들의 값을 나타냅니다.
+### Variable arguments
 
-가변 인자의 속성 타입은 반드시 배열이여야만 하고 오직 하나의 속성에만 정의되야 합니다.
+Variable arguments represent the values ​​of the remaining arguments that were not parsed in the command syntax.
+
+The property type of a variable arguments must be an array and must be defined for only one property.
 
 ```csharp
 [CommandPropertyArray]
@@ -182,11 +190,11 @@ public string[] Values { get; set; }
 -- value1 value2 value3 "value4"
 ```
 
-## 메서드 정의
+## Method definition
 
-명령 구문을 통해 특성 메서드를 실행하기 위해서는 다음과 같이 해당 메서드에 CommandMethod를 정의해야 합니다.
+To execute an attribute method through command syntax, you must define a **CommandMethod** in the method as follows.
 
-메서드의 파라미터는 자동으로 필수 인자로 정의됩니다.
+Each parameter of the method is automatically defined as a required argument.
 
 ```csharp
 [CommandMethod]
@@ -199,7 +207,7 @@ public void Save(string message)
 save "message"
 ```
 
-만약에 메서드에 추가적으로 선택인자를 정의하고 싶다면 CommandMethodProperty 를 사용합니다.
+If you want to additionally define optional arguments in the method, you can use **CommandMethodProperty** and add the name of the property defined as CommandProperty.
 
 ```csharp
 [CommandMethod]
@@ -214,7 +222,7 @@ save "comment"
 save "comment" --value text
 ```
 
-아래처럼 params 를 사용할 경우 가변 인자로 사용할 수 있습니다.
+You can use params as below as a variable arguments.
 
 ```csharp
 [CommandMethod]
@@ -228,9 +236,9 @@ save "comment"
 save "comment" -- "1" "text" "string"
 ```
 
-## 공용 속성 및 메서드
+## Static properties and methods
 
-static 으로 정의된 속성 및 메서드를 해당 객체에 포함하여 사용할 수 있습니다.
+Properties and methods defined as static can be included in the object and used.
 
 ```csharp
 static class GlobalSettings
@@ -267,19 +275,19 @@ class Commands
 }
 ```
 
-## 이름
+## Naming
 
-CommandProperty 및 CommandMethod 로 정의된 속성과 메서드 이름은 [kebab-case (spinal-case, Train-Case, Lisp-case)](https://en.wikipedia.org/wiki/Letter_case) 형태로 변경됩니다.
+The property and method names defined as CommandProperty and CommandMethod are changed to [kebab-case (spinal-case, Train-Case, Lisp-case)](https://en.wikipedia.org/wiki/Letter_case).
 
-### 속성 이름 예제
+### Property name example
 
-| 속성 이름 | 변경된 속성 이름 |
+| Property name | Changed property name |
 | --------- | ---------------- |
 | Value     | --value          |
 | Message   | --message        |
 | IsLocked  | --is-locked      |
 
-> 이름과 짧은 이름을 사용할때
+> When using a name and a short name
 
 ```csharp
 [CommandProperty("custom-value", 'v')]
@@ -290,7 +298,7 @@ public string Value { get; set; }
 --custom-value or -v
 ```
 
-> 짧은 이름만 사용할때
+> When using only short names
 
 ```csharp
 [CommandProperty('v')]
@@ -301,7 +309,7 @@ public string Value { get; set; }
 -v
 ```
 
-> 짧은 이름을 사용하고 기본 이름도 사용할때
+> When using a short name and a default name
 
 ```csharp
 [CommandProperty('v', AllowName = true)]
@@ -312,14 +320,14 @@ public string Value { get; set; }
 -v or --value
 ```
 
-### 메서드 이름 예제
+### Method name example
 
-| 메서드 이름 | 변경된 메서드 이름 |
+| Method name | Changed method name  |
 | ----------- | ------------------ |
 | Save        | save               |
 | LockTable   | lock-table         |
 
-메서드 이름도 직접 설정할 수 있습니다.
+You can also set the method name yourself.
 
 ```csharp
 [CommandMethod("save")]
@@ -328,9 +336,9 @@ public void Save(string message)
 }
 ```
 
-## 명령어
+## Command
 
-CommandContext에 사용될 명령어를 정의하는 방법입니다.
+You can define commands in the CommandContext.
 
 ```csharp
 class ExitCommand : CommandBase
@@ -353,9 +361,9 @@ exit
 exit 0
 ```
 
-## 하위 명령어
+## SubCommand
 
-CommandContext에 하위 명령어를 정의하는 방법입니다.
+You can define commands that have subcommands in CommandContext.
 
 ```csharp
 class UserCommand : CommandMethodBase
@@ -391,9 +399,9 @@ user delete "user1"
 user list
 ```
 
-## 하위 명령어 확장
+## SubCommand expansion
 
-PartialCommand 특성을 사용하여 하위 명령어를 확장할 수 있습니다.
+By implementing a partial class, you can add subcommand to the already implemented command.
 
 ```csharp
 [PartialCommand]
@@ -413,24 +421,23 @@ class UserPartialCommand : CommandMethodBase
 
 ## License
 
-MIT License
+Released under the MIT License.
 
+Copyright (c) 2018 Ntreev Soft co., Ltd.
 Copyright (c) 2020 Jeesu Choi
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+persons to whom the Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Forked from <https://github.com/NtreevSoft/CommandLineParser>
+Namespaces and files starting with "Ntreev" have been renamed to "JSSoft".
