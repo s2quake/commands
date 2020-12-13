@@ -15,13 +15,6 @@ In Windows, proceed after running the **Developer Command Prompt for VS 2019** w
 
     msbuild -t:build -p:configuration=Release
 
-## Visual Studio 2019
-
-Run as administrator or set the value of SignAssembly in the contents of the file below to false.
-
-    JSSoft.Library/Directory.Build.props
-    JSSoft.Library.Commands/Directory.Build.props
-
 ## Summary
 
 Provides the function to fill in the value of the specified object property or call a function by parsing the command syntax.
