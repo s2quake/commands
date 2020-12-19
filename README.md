@@ -30,7 +30,8 @@ var settings = new Settings();
 var parser = new CommandLineParser(settings);
 parser.Parse(Environment.CommandLine);
 ```
-> See the JSSoft.Library.Commands.Parse project
+
+> See the JSSoft.Library.Commands/JSSoft.Library.Commands.Parse project
 
 ## Invoke
 
@@ -41,7 +42,8 @@ var commands = new Commands();
 var parser = new CommandLineParser(commands);
 parser.Invoke(Environment.CommandLine);
 ```
-> See the JSSoft.Library.Commands.Invoke project
+
+> See the JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke project
 
 ## CommandContext
 
@@ -59,11 +61,12 @@ var commands = new ICommand[]
 var commandContext = new CommandContext(commands);
 commandContext.Execute(Environment.CommandLine);
 ```
-> See the JSSoft.Library.Commands.Repl project
 
-## Property definition
+> See the JSSoft.Library.Commands/JSSoft.Library.Commands.Repl project
 
-### Required argument
+## Property
+
+### Required argument definition
 
 To define the value required for command syntax, define **CommandPropertyRequired** in the property.
 
@@ -96,7 +99,7 @@ public int Value2 { get; set; }
 "value"   // Value1 is "value", Value2 is 1
 ```
 
-### Explicit required argument
+### Explicit required argument definition
 
 An explicit required argument indicates that the command syntax must have a value, but must include a switch statement, such as --value "2".
 
@@ -135,7 +138,7 @@ public int Value2 { get; set; }
 --value2 "value"   // error! "value" is not int
 ```
 
-### Optional argument
+### Optional argument definition
 
 The optional argument can be set whether or not to use a value using a switch statement.
 
@@ -168,7 +171,7 @@ A bool type switch statement that does not use a value should be defined as foll
 public bool Switch { get; set; }
 ```
 
-### Variable arguments
+### Variable arguments definition
 
 Variable arguments represent the values ​​of the remaining arguments that were not parsed in the command syntax.
 
@@ -183,7 +186,9 @@ public string[] Values { get; set; }
 -- value1 value2 value3 "value4"
 ```
 
-## Method definition
+## Method
+
+### Method definition
 
 To execute an attribute method through command syntax, you must define a **CommandMethod** in the method as follows.
 
@@ -227,6 +232,20 @@ public void Save(string message, params string[] args)
 ```plain
 save "comment"
 save "comment" -- "1" "text" "string"
+```
+
+### Enable or Disable Method
+
+Define the properties by prefixing "Can" to the method name as shown below.
+
+```csharp
+public bool Can{MethodName} { get; }
+```
+
+example:
+
+```csharp
+public bool CanSave => true;
 ```
 
 ## Static properties and methods
@@ -392,7 +411,7 @@ user delete "user1"
 user list
 ```
 
-## SubCommand expansion
+## SubCommand extension
 
 By implementing a partial class, you can add subcommand to the already implemented command.
 
@@ -400,7 +419,7 @@ By implementing a partial class, you can add subcommand to the already implement
 [PartialCommand]
 class UserPartialCommand : CommandMethodBase
 {
-    public UserCommandExtension()
+    public UserPartialCommand()
         : base("user")
     {
     }

@@ -3,5 +3,8 @@
         "**/bin": true,
         "**/obj": true
     },
-    "editor.codeLens": false
+    "editor.codeLens": false,
+    "markdownlint.config": {
+        "MD046": false
+    }
 }
