@@ -2,12 +2,33 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": ".NET Core Launch",
+            "name": "launch-parse",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/Debug/netcoreapp3.1/JSSoft.Library.Commands.Repl/repl.dll",
-            "cwd": "${workspaceFolder}/bin/Debug/netcoreapp3.1/JSSoft.Library.Commands.Repl",
-            "console": "externalTerminal",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Parse/bin/Debug/netcoreapp3.1/parse.dll",
+            "args": "version",
+            "console": "integratedTerminal",
+            "stopAtEntry": false
+        },
+        {
+            "name": "launch-invoke",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke/bin/Debug/netcoreapp3.1/invoke.dll",
+            "args": "",
+            "console": "integratedTerminal",
+            "stopAtEntry": false
+        },
+        {
+            "name": "launch-repl",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Repl/bin/Debug/netcoreapp3.1/repl.dll",
+            "args": "",
+            "console": "integratedTerminal",
             "stopAtEntry": false
         }
     ]
