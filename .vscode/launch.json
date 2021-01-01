@@ -9,6 +9,7 @@
             "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Parse/bin/Debug/netcoreapp3.1/parse.dll",
             "args": "version",
             "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Parse/bin/Debug/netcoreapp3.1",
             "stopAtEntry": false
         },
         {
@@ -19,6 +20,7 @@
             "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke/bin/Debug/netcoreapp3.1/invoke.dll",
             "args": "",
             "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke/bin/Debug/netcoreapp3.1",
             "stopAtEntry": false
         },
         {
@@ -29,6 +31,7 @@
             "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Repl/bin/Debug/netcoreapp3.1/repl.dll",
             "args": "",
             "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Repl/bin/Debug/netcoreapp3.1",
             "stopAtEntry": false
         }
     ]
