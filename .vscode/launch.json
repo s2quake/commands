@@ -6,10 +6,10 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Parse/bin/Debug/netcoreapp3.1/parse.dll",
+            "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Parse/bin/Debug/net7.0/parse.dll",
             "args": "version",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Parse/bin/Debug/netcoreapp3.1",
+            "cwd": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Parse/bin/Debug/net7.0",
             "stopAtEntry": false
         },
         {
@@ -17,10 +17,10 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke/bin/Debug/netcoreapp3.1/invoke.dll",
+            "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke/bin/Debug/net7.0/invoke.dll",
             "args": "",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke/bin/Debug/netcoreapp3.1",
+            "cwd": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke/bin/Debug/net7.0",
             "stopAtEntry": false
         },
         {
@@ -28,10 +28,10 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Repl/bin/Debug/netcoreapp3.1/repl.dll",
+            "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Repl/bin/Debug/net7.0/repl.dll",
             "args": "",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Repl/bin/Debug/netcoreapp3.1",
+            "cwd": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Repl/bin/Debug/net7.0",
             "stopAtEntry": false
         }
     ]

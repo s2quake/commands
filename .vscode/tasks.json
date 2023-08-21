@@ -5,7 +5,7 @@
     "tasks": [
         {
             "label": "build",
-            "command": "dotnet build --framework netcoreapp3.1",
+            "command": "dotnet build --framework net7.0",
             "type": "shell",
             "group": "build",
             "presentation": {

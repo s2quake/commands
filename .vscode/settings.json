@@ -6,5 +6,6 @@
     "editor.codeLens": false,
     "markdownlint.config": {
         "MD046": false
-    }
+    },
+    "dotnet.defaultSolution": "commands.sln"
 }
