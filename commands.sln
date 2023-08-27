@@ -22,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "etc", "etc", "{DF2FD188-91B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Library", "JSSoft.Library\JSSoft.Library\JSSoft.Library.csproj", "{ACDCCD08-4DEE-4EEB-B5FD-266F88E6B631}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSSoft.Library.Test", "JSSoft.Library\JSSoft.Library.Test\JSSoft.Library.Test.csproj", "{D9A88033-6BEA-4B73-82BA-4BA8387729D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,6 +106,18 @@ Global
 		{ACDCCD08-4DEE-4EEB-B5FD-266F88E6B631}.Release|x64.Build.0 = Release|Any CPU
 		{ACDCCD08-4DEE-4EEB-B5FD-266F88E6B631}.Release|x86.ActiveCfg = Release|Any CPU
 		{ACDCCD08-4DEE-4EEB-B5FD-266F88E6B631}.Release|x86.Build.0 = Release|Any CPU
+		{D9A88033-6BEA-4B73-82BA-4BA8387729D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9A88033-6BEA-4B73-82BA-4BA8387729D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9A88033-6BEA-4B73-82BA-4BA8387729D7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D9A88033-6BEA-4B73-82BA-4BA8387729D7}.Debug|x64.Build.0 = Debug|Any CPU
+		{D9A88033-6BEA-4B73-82BA-4BA8387729D7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D9A88033-6BEA-4B73-82BA-4BA8387729D7}.Debug|x86.Build.0 = Debug|Any CPU
+		{D9A88033-6BEA-4B73-82BA-4BA8387729D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9A88033-6BEA-4B73-82BA-4BA8387729D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9A88033-6BEA-4B73-82BA-4BA8387729D7}.Release|x64.ActiveCfg = Release|Any CPU
+		{D9A88033-6BEA-4B73-82BA-4BA8387729D7}.Release|x64.Build.0 = Release|Any CPU
+		{D9A88033-6BEA-4B73-82BA-4BA8387729D7}.Release|x86.ActiveCfg = Release|Any CPU
+		{D9A88033-6BEA-4B73-82BA-4BA8387729D7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
