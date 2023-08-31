@@ -15,14 +15,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Library.Commands.Tes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "etc", "etc", "{DF2FD188-91BD-43CC-9EDB-A95447DCDBD8}"
 	ProjectSection(SolutionItems) = preProject
-		JSSoft.Library.Commands\.editorconfig = .editorconfig
-		JSSoft.Library.Commands\Directory.Build.props = Directory.Build.props
-		JSSoft.Library.Commands\netfx.props = netfx.props
+		JSSoft.Library.Commands\.editorconfig = JSSoft.Library.Commands\.editorconfig
+		JSSoft.Library.Commands\Directory.Build.props = JSSoft.Library.Commands\Directory.Build.props
+		JSSoft.Library.Commands\netfx.props = JSSoft.Library.Commands\netfx.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Library", "JSSoft.Library\JSSoft.Library\JSSoft.Library.csproj", "{ACDCCD08-4DEE-4EEB-B5FD-266F88E6B631}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSSoft.Library.Test", "JSSoft.Library\JSSoft.Library.Test\JSSoft.Library.Test.csproj", "{D9A88033-6BEA-4B73-82BA-4BA8387729D7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSSoft.Library.Random", "JSSoft.Library\JSSoft.Library.Random\JSSoft.Library.Random.csproj", "{51EE9A4E-50FE-47D8-B788-653589404091}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -118,6 +120,18 @@ Global
 		{D9A88033-6BEA-4B73-82BA-4BA8387729D7}.Release|x64.Build.0 = Release|Any CPU
 		{D9A88033-6BEA-4B73-82BA-4BA8387729D7}.Release|x86.ActiveCfg = Release|Any CPU
 		{D9A88033-6BEA-4B73-82BA-4BA8387729D7}.Release|x86.Build.0 = Release|Any CPU
+		{51EE9A4E-50FE-47D8-B788-653589404091}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51EE9A4E-50FE-47D8-B788-653589404091}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51EE9A4E-50FE-47D8-B788-653589404091}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{51EE9A4E-50FE-47D8-B788-653589404091}.Debug|x64.Build.0 = Debug|Any CPU
+		{51EE9A4E-50FE-47D8-B788-653589404091}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{51EE9A4E-50FE-47D8-B788-653589404091}.Debug|x86.Build.0 = Debug|Any CPU
+		{51EE9A4E-50FE-47D8-B788-653589404091}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51EE9A4E-50FE-47D8-B788-653589404091}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51EE9A4E-50FE-47D8-B788-653589404091}.Release|x64.ActiveCfg = Release|Any CPU
+		{51EE9A4E-50FE-47D8-B788-653589404091}.Release|x64.Build.0 = Release|Any CPU
+		{51EE9A4E-50FE-47D8-B788-653589404091}.Release|x86.ActiveCfg = Release|Any CPU
+		{51EE9A4E-50FE-47D8-B788-653589404091}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
