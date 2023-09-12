@@ -363,7 +363,7 @@ class ExitCommand : CommandBase
 
     protected override void OnExecute()
     {
-        Environment.Exit(this.ExitCode);
+        Environment.Exit(ExitCode);
     }
 }
 ```
