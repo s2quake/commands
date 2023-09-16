@@ -27,7 +27,7 @@ This is the most basic way to parse the command. Provides a function to set a va
 
 ```csharp
 var settings = new Settings();
-var parser = new CommandLineParser(settings);
+var parser = new CommandParser(settings);
 parser.Parse(Environment.CommandLine);
 ```
 
@@ -39,8 +39,8 @@ As an extension of Parse, it provides the ability to call a specified method by 
 
 ```csharp
 var commands = new Commands();
-var parser = new CommandLineParser(commands);
-parser.Invoke(Environment.CommandLine);
+var invoker = new CommandInvoker(commands);
+invoker.Invoke(Environment.CommandLine);
 ```
 
 > See the JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke project

@@ -5,23 +5,23 @@
             "name": "launch-parse",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build",
             "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Parse/bin/Debug/net7.0/parse.dll",
-            "args": "version",
+            "args": "help",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Parse/bin/Debug/net7.0",
-            "stopAtEntry": false
+            "stopAtEntry": false,
+            "internalConsoleOptions": "neverOpen"
         },
         {
             "name": "launch-invoke",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build",
             "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke/bin/Debug/net7.0/invoke.dll",
-            "args": "",
+            "args": "help init",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke/bin/Debug/net7.0",
-            "stopAtEntry": false
+            "stopAtEntry": false,
+            "internalConsoleOptions": "neverOpen"
         },
         {
             "name": "launch-repl",
