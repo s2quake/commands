@@ -17,7 +17,7 @@
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke/bin/Debug/net7.0/invoke.dll",
-            "args": "help init",
+            "args": "help",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke/bin/Debug/net7.0",
             "stopAtEntry": false,
@@ -32,7 +32,8 @@
             "args": "",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Repl/bin/Debug/net7.0",
-            "stopAtEntry": false
+            "stopAtEntry": false,
+            "internalConsoleOptions": "neverOpen"
         }
     ]
 }
