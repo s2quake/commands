@@ -2,18 +2,12 @@
 
 ## Clone
 
-    git clone https://github.com/s2quake/commands.git --recursive
+    git clone https://github.com/s2quake/commands.git --branch develop --recursive
     cd commands
 
-## Build - NET Core 3.1
+## Build - NET 7.0
 
-    dotnet build --framework netcoreapp3.1 --configuration Release
-
-## Build - .NET Framework 4.5
-
-In Windows, proceed after running the **Developer Command Prompt for VS 2019** window.
-
-    msbuild -t:build -p:configuration=Release
+    dotnet build --framework net7.0 --configuration Release
 
 ## Summary
 
@@ -28,7 +22,7 @@ This is the most basic way to parse the command. Provides a function to set a va
 ```csharp
 var settings = new Settings();
 var parser = new CommandParser(settings);
-parser.Parse(Environment.CommandLine);
+parser.ParseCommandLine(Environment.CommandLine);
 ```
 
 > See the JSSoft.Library.Commands/JSSoft.Library.Commands.Parse project
@@ -40,7 +34,7 @@ As an extension of Parse, it provides the ability to call a specified method by 
 ```csharp
 var commands = new Commands();
 var invoker = new CommandInvoker(commands);
-invoker.Invoke(Environment.CommandLine);
+invoker.InvokeCommandLine(Environment.CommandLine);
 ```
 
 > See the JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke project
