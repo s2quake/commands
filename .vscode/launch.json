@@ -6,7 +6,7 @@
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Parse/bin/Debug/net7.0/parse.dll",
-            "args": "",
+            "args": "--version -q",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Parse/bin/Debug/net7.0",
             "stopAtEntry": false,
