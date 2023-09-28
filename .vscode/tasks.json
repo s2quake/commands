@@ -4,25 +4,27 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "type": "dotnet",
-            "task": "build",
-            "problemMatcher": [
-                "$msCompile"
-            ],
+            "label": "build",
+            "command": "dotnet build --framework net7.0",
+            "type": "shell",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "label": "dotnet: build"
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": "$msCompile"
         },
         {
-            "type": "dotnet",
-            "task": "clean",
-            "problemMatcher": [
-                "$msCompile"
-            ],
-            "group": "none",
-            "label": "dotnet: clean"
+            "label": "clean",
+            "command": "dotnet clean",
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": "$msCompile"
         }
     ]
 }
