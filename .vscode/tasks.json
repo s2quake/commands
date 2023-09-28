@@ -4,8 +4,26 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build",
-            "command": "dotnet build --framework net7.0",
+            "type": "dotnet",
+            "task": "build",
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build",
+            "label": "dotnet: build"
+        },
+        {
+            "type": "dotnet",
+            "task": "clean",
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "none",
+            "label": "dotnet: clean"
+        },
+        {
+            "label": "publish: parse",
+            "command": "dotnet publish ./JSSoft.Library.Commands/JSSoft.Library.Commands.Parse/JSSoft.Library.Commands.Parse.csproj --framework net7.0 --self-contained false -p:PublishSingleFile=true",
             "type": "shell",
             "group": "build",
             "presentation": {
@@ -14,8 +32,18 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "clean",
-            "command": "dotnet clean",
+            "label": "publish: invoke",
+            "command": "dotnet publish ./JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke/JSSoft.Library.Commands.Invoke.csproj --framework net7.0 --self-contained false -p:PublishSingleFile=true",
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish: repl",
+            "command": "dotnet publish ./JSSoft.Library.Commands/JSSoft.Library.Commands.Repl/JSSoft.Library.Commands.Repl.csproj --framework net7.0 --self-contained false -p:PublishSingleFile=true",
             "type": "shell",
             "group": "build",
             "presentation": {
