@@ -1,6 +1,7 @@
 {
     "version": "0.2.0",
     "configurations": [
+        
         {
             "name": "launch-parse",
             "type": "coreclr",
@@ -27,7 +28,6 @@
             "name": "launch-repl",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build",
             "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Repl/bin/Debug/net7.0/repl.dll",
             "args": "",
             "console": "integratedTerminal",

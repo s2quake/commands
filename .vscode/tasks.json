@@ -9,7 +9,10 @@
             "problemMatcher": [
                 "$msCompile"
             ],
-            "group": "build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
             "label": "dotnet: build"
         },
         {
@@ -20,36 +23,6 @@
             ],
             "group": "none",
             "label": "dotnet: clean"
-        },
-        {
-            "label": "publish: parse",
-            "command": "dotnet publish ./JSSoft.Library.Commands/JSSoft.Library.Commands.Parse/JSSoft.Library.Commands.Parse.csproj --framework net7.0 --self-contained false -p:PublishSingleFile=true",
-            "type": "shell",
-            "group": "build",
-            "presentation": {
-                "reveal": "always"
-            },
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "publish: invoke",
-            "command": "dotnet publish ./JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke/JSSoft.Library.Commands.Invoke.csproj --framework net7.0 --self-contained false -p:PublishSingleFile=true",
-            "type": "shell",
-            "group": "build",
-            "presentation": {
-                "reveal": "always"
-            },
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "publish: repl",
-            "command": "dotnet publish ./JSSoft.Library.Commands/JSSoft.Library.Commands.Repl/JSSoft.Library.Commands.Repl.csproj --framework net7.0 --self-contained false -p:PublishSingleFile=true",
-            "type": "shell",
-            "group": "build",
-            "presentation": {
-                "reveal": "always"
-            },
-            "problemMatcher": "$msCompile"
         }
     ]
 }
