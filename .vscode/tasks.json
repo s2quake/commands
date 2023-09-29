@@ -45,6 +45,16 @@
                 "reveal": "always"
             },
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish: repl",
+            "command": "dotnet publish ./JSSoft.Library.Commands/JSSoft.Library.Commands.Repl/JSSoft.Library.Commands.Repl.csproj --self-contained false --framework net7.0 -p:PublishSingleFile=true",
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": "$msCompile"
         }
     ]
 }
