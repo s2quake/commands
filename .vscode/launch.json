@@ -1,13 +1,12 @@
 {
     "version": "0.2.0",
     "configurations": [
-        
         {
             "name": "launch-parse",
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Parse/bin/Debug/net7.0/parse.dll",
-            "args": "--help",
+            "args": "--version",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Parse/bin/Debug/net7.0",
             "stopAtEntry": false,
@@ -18,7 +17,7 @@
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke/bin/Debug/net7.0/invoke.dll",
-            "args": "--help list --detail",
+            "args": "list --help",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke/bin/Debug/net7.0",
             "stopAtEntry": false,

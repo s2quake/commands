@@ -1,5 +1,10 @@
 # Ntreev.Library.Commands
 
+## Requirements
+
+    dotnet sdk 7.0.400
+    c# 12 preview
+
 ## Clone
 
     git clone https://github.com/s2quake/commands.git --branch develop --recursive
