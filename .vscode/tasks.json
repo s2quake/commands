@@ -25,6 +25,26 @@
                 "reveal": "always"
             },
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish: invoke",
+            "command": "dotnet publish ./JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke/JSSoft.Library.Commands.Invoke.csproj --self-contained false --framework net7.0 -p:PublishSingleFile=true",
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish: parse",
+            "command": "dotnet publish ./JSSoft.Library.Commands/JSSoft.Library.Commands.Parse/JSSoft.Library.Commands.Parse.csproj --self-contained false --framework net7.0 -p:PublishSingleFile=true",
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": "$msCompile"
         }
     ]
 }
