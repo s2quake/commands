@@ -18,7 +18,7 @@
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke/bin/Debug/net7.0/invoke.dll",
-            "args": "--help",
+            "args": "--help list --detail",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke/bin/Debug/net7.0",
             "stopAtEntry": false,
