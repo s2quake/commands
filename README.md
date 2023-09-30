@@ -3,8 +3,8 @@
 ## Requirements
 
 ```plain
-dotnet sdk 7.0.400
-c# 12 preview
+dotnet sdk 6.0.300
+c# 12
 ```
 
 ## Clone
@@ -28,16 +28,16 @@ dotnet build
 
 ```shell
 # Run the property settings example project
-dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Parse --framework net7.0 -- --help
+dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Parse --framework net6.0 -- --help
 
 # Run the method call example project
-dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke --framework net7.0 -- --help
+dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke --framework net6.0 -- --help
 
 # Run the CommandContext Execution example Project
-dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Sets --framework net7.0 -- --help
+dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Sets --framework net6.0 -- --help
 
 # Run the CommandContext Execution Example Project in the REPL environment
-dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Repl --framework net7.0
+dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Repl --framework net6.0
 ```
 
 ## Summary

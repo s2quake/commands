@@ -28,7 +28,7 @@
         },
         {
             "label": "publish: invoke",
-            "command": "dotnet publish ./JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke/JSSoft.Library.Commands.Invoke.csproj --self-contained false --framework net7.0 -p:PublishSingleFile=true",
+            "command": "dotnet publish ./JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke/JSSoft.Library.Commands.Invoke.csproj --self-contained false --framework net6.0 -p:PublishSingleFile=true",
             "type": "shell",
             "group": "build",
             "presentation": {
@@ -38,7 +38,7 @@
         },
         {
             "label": "publish: parse",
-            "command": "dotnet publish ./JSSoft.Library.Commands/JSSoft.Library.Commands.Parse/JSSoft.Library.Commands.Parse.csproj --self-contained false --framework net7.0 -p:PublishSingleFile=true",
+            "command": "dotnet publish ./JSSoft.Library.Commands/JSSoft.Library.Commands.Parse/JSSoft.Library.Commands.Parse.csproj --self-contained false --framework net6.0 -p:PublishSingleFile=true",
             "type": "shell",
             "group": "build",
             "presentation": {
@@ -48,7 +48,7 @@
         },
         {
             "label": "publish: repl",
-            "command": "dotnet publish ./JSSoft.Library.Commands/JSSoft.Library.Commands.Repl/JSSoft.Library.Commands.Repl.csproj --self-contained false --framework net7.0 -p:PublishSingleFile=true",
+            "command": "dotnet publish ./JSSoft.Library.Commands/JSSoft.Library.Commands.Repl/JSSoft.Library.Commands.Repl.csproj --self-contained false --framework net6.0 -p:PublishSingleFile=true",
             "type": "shell",
             "group": "build",
             "presentation": {
@@ -58,7 +58,7 @@
         },
         {
             "label": "publish: sets",
-            "command": "dotnet publish ./JSSoft.Library.Commands/JSSoft.Library.Commands.Sets/JSSoft.Library.Commands.Sets.csproj --self-contained false --framework net7.0 -p:PublishSingleFile=true",
+            "command": "dotnet publish ./JSSoft.Library.Commands/JSSoft.Library.Commands.Sets/JSSoft.Library.Commands.Sets.csproj --self-contained false --framework net6.0 -p:PublishSingleFile=true",
             "type": "shell",
             "group": "build",
             "presentation": {
