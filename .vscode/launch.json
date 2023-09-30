@@ -39,7 +39,7 @@
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Sets/bin/Debug/net7.0/sets.dll",
-            "args": "",
+            "args": "--help",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Sets/bin/Debug/net7.0",
             "stopAtEntry": false,

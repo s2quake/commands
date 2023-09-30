@@ -2,17 +2,43 @@
 
 ## Requirements
 
-    dotnet sdk 7.0.400
-    c# 12 preview
+```plain
+dotnet sdk 7.0.400
+c# 12 preview
+```
 
 ## Clone
 
-    git clone https://github.com/s2quake/commands.git --branch develop --recursive
-    cd commands
+```plain
+git clone https://github.com/s2quake/commands.git --branch develop --recursive
+cd commands
+```
+
+> This repository contains two submodules, so the ``--recursive`` option must be included when cloning.
+>
+> Or run ``git submodule udpate --init --`` on the repository path.
 
 ## Build - NET 7.0
 
-    dotnet build --framework net7.0 --configuration Release
+```plain
+dotnet build
+```
+
+## Run Examples
+
+```shell
+# Run the property settings example project
+dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Parse --framework net7.0 -- --help
+
+# Run the method call example project
+dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke --framework net7.0 -- --help
+
+# Run the CommandContext Execution example Project
+dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Sets --framework net7.0 -- --help
+
+# Run the CommandContext Execution Example Project in the REPL environment
+dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Repl --framework net7.0
+```
 
 ## Summary
 
@@ -27,7 +53,7 @@ This is the most basic way to parse the command. Provides a function to set a va
 ```csharp
 var settings = new Settings();
 var parser = new CommandParser(settings);
-parser.ParseCommandLine(Environment.CommandLine);
+parser.Parse(args);
 ```
 
 > See the JSSoft.Library.Commands/JSSoft.Library.Commands.Parse project
@@ -39,7 +65,7 @@ As an extension of Parse, it provides the ability to call a specified method by 
 ```csharp
 var commands = new Commands();
 var invoker = new CommandInvoker(commands);
-invoker.InvokeCommandLine(Environment.CommandLine);
+invoker.Invoke(args);
 ```
 
 > See the JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke project
@@ -47,6 +73,23 @@ invoker.InvokeCommandLine(Environment.CommandLine);
 ## CommandContext
 
 It provides various functions to manage and process more commands.
+
+```csharp
+var commands = new ICommand[]
+{
+    new LoginCommand(),
+    new LogoutCommand(),
+    new ExitCommand()
+};
+var commandContext = new CommandContext(commands);
+commandContext.Execute(args);
+
+or 
+
+await commandContext.ExecuteAsync(args);
+```
+
+> See the JSSoft.Library.Commands/JSSoft.Library.Commands.Sets project
 
 It can be combined with user input such as EditBox, TextBox, InputText to build a console or REPL-like environment.
 
@@ -58,7 +101,8 @@ var commands = new ICommand[]
     new ExitCommand()
 };
 var commandContext = new CommandContext(commands);
-commandContext.Execute(Environment.CommandLine);
+var terminal = new Terminal(commandContext);
+await terminal.StartAsync(CancellationToken.None);
 ```
 
 > See the JSSoft.Library.Commands/JSSoft.Library.Commands.Repl project
@@ -106,7 +150,7 @@ An explicit required argument indicates that the command syntax must have a valu
 [CommandPropertyRequired]
 public string Value1 { get; set; }
 
-[CommandPropertyRequired(IsExplicit = true)]
+[CommandPropertyExplicitRequired]
 public int Value2 { get; set; }
 ```
 
@@ -124,7 +168,7 @@ In order to use the default values ​​of explicit required arguments, the com
 [CommandPropertyRequired]
 public string Value1 { get; set; }
 
-[CommandPropertyRequired(IsExplicit = true, DefaultValue = 1)]
+[CommandPropertyExplicitRequired(DefaultValue = 1)]
 public int Value2 { get; set; }
 ```
 
@@ -355,10 +399,7 @@ You can define commands in the CommandContext.
 class ExitCommand : CommandBase
 {
     [CommandPropertyRequired(DefaultValue = 0)]
-    public int ExitCode
-    {
-        get; set;
-    }
+    public int ExitCode { get; set; }
 
     protected override void OnExecute()
     {
@@ -396,10 +437,7 @@ class UserCommand : CommandMethodBase
     }
 
     [CommandProperty]
-    public string Message
-    {
-        get; set;
-    }
+    public string Message { get; set; }
 }
 ```
 
