@@ -1,7 +1,6 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29025.244
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Library.Commands", "JSSoft.Library.Commands\JSSoft.Library.Commands\JSSoft.Library.Commands.csproj", "{0F1BE7C4-8996-406E-8172-1105F1E8E948}"
 EndProject
@@ -22,9 +21,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "etc", "etc", "{DF2FD188-91B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Library", "JSSoft.Library\JSSoft.Library\JSSoft.Library.csproj", "{ACDCCD08-4DEE-4EEB-B5FD-266F88E6B631}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSSoft.Library.Test", "JSSoft.Library\JSSoft.Library.Test\JSSoft.Library.Test.csproj", "{D9A88033-6BEA-4B73-82BA-4BA8387729D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Library.Test", "JSSoft.Library\JSSoft.Library.Test\JSSoft.Library.Test.csproj", "{D9A88033-6BEA-4B73-82BA-4BA8387729D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSSoft.Library.Random", "JSSoft.Library\JSSoft.Library.Random\JSSoft.Library.Random.csproj", "{51EE9A4E-50FE-47D8-B788-653589404091}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Library.Random", "JSSoft.Library\JSSoft.Library.Random\JSSoft.Library.Random.csproj", "{51EE9A4E-50FE-47D8-B788-653589404091}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "JSSoft.Library.Commands.Shared", "JSSoft.Library.Commands\JSSoft.Library.Commands.Shared\JSSoft.Library.Commands.Shared.shproj", "{F6427925-5255-4B00-BE11-543B0539CC07}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Library.Commands.Sets", "JSSoft.Library.Commands\JSSoft.Library.Commands.Sets\JSSoft.Library.Commands.Sets.csproj", "{E67B82A8-8EC2-43C1-A59E-39C916AB2EC3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -132,11 +135,28 @@ Global
 		{51EE9A4E-50FE-47D8-B788-653589404091}.Release|x64.Build.0 = Release|Any CPU
 		{51EE9A4E-50FE-47D8-B788-653589404091}.Release|x86.ActiveCfg = Release|Any CPU
 		{51EE9A4E-50FE-47D8-B788-653589404091}.Release|x86.Build.0 = Release|Any CPU
+		{E67B82A8-8EC2-43C1-A59E-39C916AB2EC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E67B82A8-8EC2-43C1-A59E-39C916AB2EC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E67B82A8-8EC2-43C1-A59E-39C916AB2EC3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E67B82A8-8EC2-43C1-A59E-39C916AB2EC3}.Debug|x64.Build.0 = Debug|Any CPU
+		{E67B82A8-8EC2-43C1-A59E-39C916AB2EC3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E67B82A8-8EC2-43C1-A59E-39C916AB2EC3}.Debug|x86.Build.0 = Debug|Any CPU
+		{E67B82A8-8EC2-43C1-A59E-39C916AB2EC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E67B82A8-8EC2-43C1-A59E-39C916AB2EC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E67B82A8-8EC2-43C1-A59E-39C916AB2EC3}.Release|x64.ActiveCfg = Release|Any CPU
+		{E67B82A8-8EC2-43C1-A59E-39C916AB2EC3}.Release|x64.Build.0 = Release|Any CPU
+		{E67B82A8-8EC2-43C1-A59E-39C916AB2EC3}.Release|x86.ActiveCfg = Release|Any CPU
+		{E67B82A8-8EC2-43C1-A59E-39C916AB2EC3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ED97A8D1-7DE5-4AE4-A2A6-303384BB1EFE}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		JSSoft.Library.Commands\JSSoft.Library.Commands.Shared\JSSoft.Library.Commands.Shared.projitems*{b55042d0-d2db-4804-a0ad-71fb03780b15}*SharedItemsImports = 5
+		JSSoft.Library.Commands\JSSoft.Library.Commands.Shared\JSSoft.Library.Commands.Shared.projitems*{e67b82a8-8ec2-43c1-a59e-39c916ab2ec3}*SharedItemsImports = 5
+		JSSoft.Library.Commands\JSSoft.Library.Commands.Shared\JSSoft.Library.Commands.Shared.projitems*{f6427925-5255-4b00-be11-543b0539cc07}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

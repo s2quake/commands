@@ -33,6 +33,17 @@
             "cwd": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Repl/bin/Debug/net7.0",
             "stopAtEntry": false,
             "internalConsoleOptions": "neverOpen"
+        },
+        {
+            "name": "launch-sets",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Sets/bin/Debug/net7.0/sets.dll",
+            "args": "",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Sets/bin/Debug/net7.0",
+            "stopAtEntry": false,
+            "internalConsoleOptions": "neverOpen"
         }
     ]
 }
