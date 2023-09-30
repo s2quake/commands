@@ -21,7 +21,7 @@
 
 param(
     [string]$OutputPath = "",
-    [string]$Framework = "netcoreapp3.1",
+    [string]$Framework = "net7.0",
     [string]$KeyPath = "",
     [string]$LogPath = "",
     [switch]$Force
