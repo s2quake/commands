@@ -34,13 +34,20 @@ $propPaths = (
 )
 
 try {
-    $buildFile = "./build-temp.ps1"
     $solutionPath = Join-Path $PSScriptRoot $solutionPath -Resolve
     $propPaths = $propPaths | ForEach-Object { Join-Path $PSScriptRoot $_ -Resolve }
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/s2quake/build/master/build.ps1" -OutFile $buildFile
+    if ($Env:COMMANDS_BUILD_PATH) {
+        $buildFile = $Env:COMMANDS_BUILD_PATH
+    }
+    else {
+        $buildFile = "./build-temp.ps1"
+        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/s2quake/build/master/build.ps1" -OutFile $buildFile
+    }
     $buildFile = Resolve-Path $buildFile
     & $buildFile $solutionPath $propPaths -Publish -KeyPath $KeyPath -Sign -OutputPath $OutputPath -Framework $Framework -LogPath $LogPath -Force:$Force
 }
 finally {
-    Remove-Item $buildFile
+    if (-not $Env:COMMANDS_BUILD_PATH) {
+        Remove-Item $buildFile
+    }
 }
