@@ -24,6 +24,25 @@ cd commands
 dotnet build
 ```
 
+## Other Framework Build
+
+```shell
+# net6.0
+dotnet build -p:TargetFrameworks=net6.0 --framework net6.0
+
+# net5.0
+dotnet build -p:TargetFrameworks=net5.0 --framework net5.0
+
+# netcoreapp3.1
+dotnet build -p:TargetFrameworks=netcoreapp3.1 --framework netcoreapp3.1
+
+# netstandard2.1
+dotnet build -p:TargetFrameworks=netstandard2.1 --framework netstandard2.1
+
+# net481
+dotnet build -p:TargetFrameworks=net481 --framework net481
+```
+
 ## Run Examples
 
 ```shell
