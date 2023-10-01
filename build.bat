@@ -1,4 +1,4 @@
-﻿@echo off
+@echo off
 
 REM Released under the MIT License.
 
