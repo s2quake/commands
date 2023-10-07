@@ -2,7 +2,6 @@
 
 # Released under the MIT License.
 
-# Copyright (c) 2018 Ntreev Soft co., Ltd.
 # Copyright (c) 2020 Jeesu Choi
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
@@ -17,8 +16,5 @@
 # WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 # COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-# Forked from https://github.com/NtreevSoft/CommandLineParser
-# Namespaces and files starting with "Ntreev" have been renamed to "JSSoft".
 
 pwsh -executionpolicy remotesigned -File $(dirname $0)/build.ps1 "$@"

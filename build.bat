@@ -2,7 +2,6 @@
 
 REM Released under the MIT License.
 
-REM Copyright (c) 2018 Ntreev Soft co., Ltd.
 REM Copyright (c) 2020 Jeesu Choi
 
 REM Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
@@ -17,8 +16,5 @@ REM THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 REM WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 REM COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 REM OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-REM Forked from https://github.com/NtreevSoft/CommandLineParser
-REM Namespaces and files starting with "Ntreev" have been renamed to "JSSoft".
 
 powershell -executionpolicy remotesigned -File %~dp0\build.ps1 %*
