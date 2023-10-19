@@ -39,24 +39,24 @@ dotnet build -p:TargetFrameworks=netcoreapp3.1 --framework netcoreapp3.1
 # netstandard2.1
 dotnet build -p:TargetFrameworks=netstandard2.1 --framework netstandard2.1
 
-# net481
-dotnet build -p:TargetFrameworks=net481 --framework net481
+# netstandard2.1
+dotnet build -p:TargetFrameworks=netstandard2.1 --framework netstandard2.1
 ```
 
 ## Run Examples
 
 ```shell
 # Run the property settings example project
-dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Parse --framework net7.0 -- --help
+dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Parse --framework netstandard2.1 -- --help
 
 # Run the method call example project
-dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke --framework net7.0 -- --help
+dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke --framework netstandard2.1 -- --help
 
 # Run the CommandContext Execution example Project
-dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Sets --framework net7.0 -- --help
+dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Sets --framework netstandard2.1 -- --help
 
 # Run the CommandContext Execution Example Project in the REPL environment
-dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Repl --framework net7.0
+dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Repl --framework netstandard2.1
 ```
 
 ## Summary

@@ -4,3 +4,6 @@
 [submodule "JSSoft.Library.Commands"]
 	path = JSSoft.Library.Commands
 	url = ../JSSoft.Library.Commands.git
+[submodule "build"]
+	path = build
+	url = ../build.git

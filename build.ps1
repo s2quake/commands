@@ -17,33 +17,11 @@
 
 param(
     [string]$OutputPath = "",
-    [string]$Framework = "net7.0",
+    [string]$Framework = "",
     [string]$KeyPath = "",
-    [string]$LogPath = "",
-    [switch]$Force
+    [string]$LogPath = ""
 )
 
-$solutionPath = "./commands.sln"
-$propPaths = (
-    "./JSSoft.Library/Directory.Build.props",
-    "./JSSoft.Library.Commands/Directory.Build.props"
-)
-
-try {
-    $solutionPath = Join-Path $PSScriptRoot $solutionPath -Resolve
-    $propPaths = $propPaths | ForEach-Object { Join-Path $PSScriptRoot $_ -Resolve }
-    if ($Env:COMMANDS_BUILD_PATH) {
-        $buildFile = $Env:COMMANDS_BUILD_PATH
-    }
-    else {
-        $buildFile = "./build-temp.ps1"
-        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/s2quake/build/master/build.ps1" -OutFile $buildFile
-    }
-    $buildFile = Resolve-Path $buildFile
-    & $buildFile $solutionPath $propPaths -Publish -KeyPath $KeyPath -Sign -OutputPath $OutputPath -Framework $Framework -LogPath $LogPath -Force:$Force
-}
-finally {
-    if (-not $Env:COMMANDS_BUILD_PATH) {
-        Remove-Item $buildFile
-    }
-}
+$solutionPath = Join-Path $PSScriptRoot "commands.sln" -Resolve
+$buildFile = Join-Path $PSScriptRoot "build" "build.ps1" -Resolve
+& $buildFile $solutionPath -Publish -KeyPath $KeyPath -Sign -OutputPath $OutputPath -Framework $Framework -LogPath $LogPath
