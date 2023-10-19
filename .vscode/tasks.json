@@ -5,7 +5,7 @@
     "tasks": [
         {
             "label": "build",
-            "command": "dotnet build",
+            "command": "dotnet build --framework net7.0",
             "type": "shell",
             "group": {
                 "kind": "build",

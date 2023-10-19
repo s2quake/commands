@@ -17,7 +17,7 @@
 
 param(
     [string]$OutputPath = "",
-    [string]$Framework = "",
+    [string]$Framework = "net7.0",
     [string]$KeyPath = "",
     [string]$LogPath = ""
 )

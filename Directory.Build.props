@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <TargetFrameworks>net7.0</TargetFrameworks>
     <PublishGroup>commands</PublishGroup>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)commands.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 </Project>
