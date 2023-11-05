@@ -58,8 +58,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.AppUI/bin/Debug/net7.0/app-ui.dll",
             "cwd": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.AppUI/bin/Debug/net7.0",
-            "stopAtEntry": false,
-            "internalConsoleOptions": "neverOpen"
+            "stopAtEntry": false
         }
     ]
 }
