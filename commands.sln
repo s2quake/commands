@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -12,13 +12,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Library.Commands.Rep
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Library.Commands.Test", "JSSoft.Library.Commands\JSSoft.Library.Commands.Test\JSSoft.Library.Commands.Test.csproj", "{16C6DF61-5111-4162-9CF7-583937AD9708}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "etc", "etc", "{DF2FD188-91BD-43CC-9EDB-A95447DCDBD8}"
-	ProjectSection(SolutionItems) = preProject
-		JSSoft.Library.Commands\.editorconfig = JSSoft.Library.Commands\.editorconfig
-		JSSoft.Library.Commands\Directory.Build.props = JSSoft.Library.Commands\Directory.Build.props
-		JSSoft.Library.Commands\netfx.props = JSSoft.Library.Commands\netfx.props
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Library", "JSSoft.Library\JSSoft.Library\JSSoft.Library.csproj", "{ACDCCD08-4DEE-4EEB-B5FD-266F88E6B631}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Library.Test", "JSSoft.Library\JSSoft.Library.Test\JSSoft.Library.Test.csproj", "{D9A88033-6BEA-4B73-82BA-4BA8387729D7}"
@@ -28,6 +21,10 @@ EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "JSSoft.Library.Commands.Shared", "JSSoft.Library.Commands\JSSoft.Library.Commands.Shared\JSSoft.Library.Commands.Shared.shproj", "{F6427925-5255-4B00-BE11-543B0539CC07}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Library.Commands.Sets", "JSSoft.Library.Commands\JSSoft.Library.Commands.Sets\JSSoft.Library.Commands.Sets.csproj", "{E67B82A8-8EC2-43C1-A59E-39C916AB2EC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSSoft.Library.Commands.AppUI", "JSSoft.Library.Commands\JSSoft.Library.Commands.AppUI\JSSoft.Library.Commands.AppUI.csproj", "{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Library.Terminals", "JSSoft.Library.Commands\JSSoft.Library.Terminals\JSSoft.Library.Terminals.csproj", "{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -147,6 +144,30 @@ Global
 		{E67B82A8-8EC2-43C1-A59E-39C916AB2EC3}.Release|x64.Build.0 = Release|Any CPU
 		{E67B82A8-8EC2-43C1-A59E-39C916AB2EC3}.Release|x86.ActiveCfg = Release|Any CPU
 		{E67B82A8-8EC2-43C1-A59E-39C916AB2EC3}.Release|x86.Build.0 = Release|Any CPU
+		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Debug|x64.Build.0 = Debug|Any CPU
+		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Debug|x86.Build.0 = Debug|Any CPU
+		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Release|x64.ActiveCfg = Release|Any CPU
+		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Release|x64.Build.0 = Release|Any CPU
+		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Release|x86.ActiveCfg = Release|Any CPU
+		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Release|x86.Build.0 = Release|Any CPU
+		{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}.Debug|x64.Build.0 = Debug|Any CPU
+		{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}.Debug|x86.Build.0 = Debug|Any CPU
+		{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}.Release|x64.ActiveCfg = Release|Any CPU
+		{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}.Release|x64.Build.0 = Release|Any CPU
+		{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}.Release|x86.ActiveCfg = Release|Any CPU
+		{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

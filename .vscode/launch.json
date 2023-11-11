@@ -51,6 +51,14 @@
             "cwd": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.Sets/bin/Debug/net7.0",
             "stopAtEntry": false,
             "internalConsoleOptions": "neverOpen"
+        },
+        {
+            "name": "launch-app-ui",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.AppUI/bin/Debug/net7.0/app-ui.dll",
+            "cwd": "${workspaceFolder}/JSSoft.Library.Commands/JSSoft.Library.Commands.AppUI/bin/Debug/net7.0",
+            "stopAtEntry": false
         }
     ]
 }
