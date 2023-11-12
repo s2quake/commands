@@ -1,17 +1,22 @@
 # Ntreev.Library.Commands
 
+## Summary
+
+Parses a string to set a value to a specified property or invoke a specified method.
+
+Like Terminal or Powershell, it provides a REPL environment to provide a command-based development environment.
+
 ## Requirements
 
 ```plain
 dotnet sdk 7.0.400
-c# 12
+c# 11
 ```
 
 ## Clone
 
 ```plain
-git clone https://github.com/s2quake/commands.git --branch develop --recursive
-cd commands
+git clone https://github.com/s2quake/commands.git --recursive
 ```
 
 > This repository contains two submodules, so the ``--recursive`` option must be included when cloning.
@@ -39,31 +44,26 @@ dotnet build -p:TargetFrameworks=netcoreapp3.1 --framework netcoreapp3.1
 # netstandard2.1
 dotnet build -p:TargetFrameworks=netstandard2.1 --framework netstandard2.1
 
-# netstandard2.1
-dotnet build -p:TargetFrameworks=netstandard2.1 --framework netstandard2.1
 ```
 
 ## Run Examples
 
 ```shell
 # Run the property settings example project
-dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Parse --framework netstandard2.1 -- --help
+dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Parse --framework net7.0 -- --help
 
 # Run the method call example project
-dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke --framework netstandard2.1 -- --help
+dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke --framework net7.0 -- --help
 
 # Run the CommandContext Execution example Project
-dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Sets --framework netstandard2.1 -- --help
+dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Sets --framework net7.0 -- --help
 
 # Run the CommandContext Execution Example Project in the REPL environment
-dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Repl --framework netstandard2.1
+dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Repl --framework net7.0
+
+# Run the CommandContext Execution Example Project with Avalonia UI
+dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.AppUI --framework net7.0
 ```
-
-## Summary
-
-Provides the function to fill in the value of the specified object property or call a function by parsing the command syntax.
-
-Provides a console environment to control applications by building instruction sets.
 
 ## Parse
 
