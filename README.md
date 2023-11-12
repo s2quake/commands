@@ -120,7 +120,7 @@ var commands = new ICommand[]
     new ExitCommand()
 };
 var commandContext = new CommandContext(commands);
-var terminal = new Terminal(commandContext);
+var terminal = new SystemTerminal(commandContext);
 await terminal.StartAsync(CancellationToken.None);
 ```
 
@@ -134,7 +134,7 @@ To define the value required for command syntax, define **CommandPropertyRequire
 
 ```csharp
 [CommandPropertyRequired]
-public string Value1 { get; set; }
+public string Value1 { get; set; } = string.Empty;
 
 [CommandPropertyRequired]
 public int Value2 { get; set; }
@@ -150,7 +150,7 @@ You can set default values ​​like this: If there is no value in the command 
 
 ```csharp
 [CommandPropertyRequired]
-public string Value1 { get; set; }
+public string Value1 { get; set; } = string.Empty;
 
 [CommandPropertyRequired(DefaultValue = 1)]
 public int Value2 { get; set; }
@@ -167,7 +167,7 @@ An explicit required argument indicates that the command syntax must have a valu
 
 ```csharp
 [CommandPropertyRequired]
-public string Value1 { get; set; }
+public string Value1 { get; set; } = string.Empty;
 
 [CommandPropertyExplicitRequired]
 public int Value2 { get; set; }
@@ -185,7 +185,7 @@ In order to use the default values ​​of explicit required arguments, the com
 
 ```csharp
 [CommandPropertyRequired]
-public string Value1 { get; set; }
+public string Value1 { get; set; } = string.Empty;
 
 [CommandPropertyExplicitRequired(DefaultValue = 1)]
 public int Value2 { get; set; }
@@ -206,7 +206,7 @@ The optional argument can be set whether or not to use a value using a switch st
 
 ```csharp
 [CommandProperty]
-public string Value { get; set; }
+public string Value { get; set; } = string.Empty;
 ```
 
 ```plain
@@ -218,7 +218,7 @@ To use the default, the command syntax must include a switch statement such as -
 
 ```csharp
 [CommandProperty(DefaultValue = "1")]
-public string Value { get; set; }
+public string Value { get; set; } = string.Empty;
 ```
 
 ```plain
@@ -241,7 +241,7 @@ The property type of a variable arguments must be an array and must be defined f
 
 ```csharp
 [CommandPropertyArray]
-public string[] Values { get; set; }
+public string[] Values { get; set; } = Array.Empty<string>();
 ```
 
 ```plain
@@ -318,7 +318,7 @@ Properties and methods defined as static can be included in the object and used.
 static class GlobalSettings
 {
     [CommandProperty]
-    public static string ID { get; set; }
+    public static string ID { get; set; } = string.Empty;
 
     [CommandProperty]
     public static string Password { get; set; }
@@ -365,7 +365,7 @@ The property and method names defined as CommandProperty and CommandMethod are c
 
 ```csharp
 [CommandProperty("custom-value", 'v')]
-public string Value { get; set; }
+public string Value { get; set; } = string.Empty;
 ```
 
 ```plain
@@ -376,7 +376,7 @@ public string Value { get; set; }
 
 ```csharp
 [CommandProperty('v')]
-public string Value { get; set; }
+public string Value { get; set; } = string.Empty;
 ```
 
 ```plain
@@ -387,7 +387,7 @@ public string Value { get; set; }
 
 ```csharp
 [CommandProperty('v', AllowName = true)]
-public string Value { get; set; }
+public string Value { get; set; } = string.Empty;
 ```
 
 ```plain
@@ -483,6 +483,44 @@ class UserPartialCommand : CommandMethodBase
     [CommandMethod]
     public void SendMessage(string userID, string message)
     {
+    }
+}
+```
+
+## SubCommand AsyncMethod
+
+You can use asynchronous methods, as shown in the example below.
+The parameters CancellationToken and IProgress<ProgressInfo> are optional, but should always be the last declaration.
+
+For more information, see the ``Choosing the overloads to provide`` topic in the [TAP](https://learn.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap).
+
+The name of an asynchronous method is used without the suffix Async.
+
+```csharp
+class UserCommand : CommandMethodBase
+{
+    [CommandMethod]
+    public Task Invoke1Async()
+    {
+        return Task.CompletedTask;
+    }
+
+    [CommandMethod]
+    public Task Invoke2Async(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
+
+    [CommandMethod]
+    public Task Invoke3Async(IProgress<ProgressInfo> progress)
+    {
+        return Task.CompletedTask;
+    }
+
+    [CommandMethod]
+    public Task Invoke4Async(CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
+    {
+        return Task.CompletedTask;
     }
 }
 ```
