@@ -44,6 +44,9 @@ dotnet build -p:TargetFrameworks=netcoreapp3.1 --framework netcoreapp3.1
 # netstandard2.1
 dotnet build -p:TargetFrameworks=netstandard2.1 --framework netstandard2.1
 
+# net481
+dotnet build -p:TargetFrameworks=net481 --framework net481
+
 ```
 
 ## Run Examples
