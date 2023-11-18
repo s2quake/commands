@@ -9,8 +9,8 @@ Like Terminal or Powershell, it provides a REPL environment to provide a command
 ## Requirements
 
 ```plain
-dotnet sdk 7.0.400
-c# 11
+dotnet sdk 8.0.100 or later
+c# 12
 ```
 
 ## Clone
@@ -23,7 +23,7 @@ git clone https://github.com/s2quake/commands.git --recursive
 >
 > Or run ``git submodule udpate --init --`` on the repository path.
 
-## Build - NET 7.0
+## Build - NET 8.0
 
 ```plain
 dotnet build
@@ -32,11 +32,8 @@ dotnet build
 ## Other Framework Build
 
 ```shell
-# net6.0
-dotnet build -p:TargetFrameworks=net6.0 --framework net6.0
-
-# net5.0
-dotnet build -p:TargetFrameworks=net5.0 --framework net5.0
+# net7.0
+dotnet build -p:TargetFrameworks=net7.0 --framework net7.0
 
 # netcoreapp3.1
 dotnet build -p:TargetFrameworks=netcoreapp3.1 --framework netcoreapp3.1
@@ -53,19 +50,19 @@ dotnet build -p:TargetFrameworks=net481 --framework net481
 
 ```shell
 # Run the property settings example project
-dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Parse --framework net7.0 -- --help
+dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Parse --framework net8.0 -- --help
 
 # Run the method call example project
-dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke --framework net7.0 -- --help
+dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke --framework net8.0 -- --help
 
 # Run the CommandContext Execution example Project
-dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Sets --framework net7.0 -- --help
+dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Sets --framework net8.0 -- --help
 
 # Run the CommandContext Execution Example Project in the REPL environment
-dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Repl --framework net7.0
+dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Repl --framework net8.0
 
 # Run the CommandContext Execution Example Project with Avalonia UI
-dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.AppUI --framework net7.0
+dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.AppUI --framework net8.0
 ```
 
 ## Parse
