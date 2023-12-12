@@ -2,6 +2,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <PublishGroup>commands</PublishGroup>
-    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)/build/public.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile Condition="Exists('$(MSBuildThisFileDirectory)/build/public.snk')">$(MSBuildThisFileDirectory)/build/public.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 </Project>
