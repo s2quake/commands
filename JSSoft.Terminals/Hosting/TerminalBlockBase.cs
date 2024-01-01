@@ -112,6 +112,7 @@ abstract class TerminalBlockBase(Terminal terminal)
         }
         _index = index;
         _beginIndex = beginIndex;
+        lines.Take(_index.Linefeed());
     }
 
     public event EventHandler<TerminalTextChangedEventArgs>? TextChanged;
@@ -139,7 +140,6 @@ abstract class TerminalBlockBase(Terminal terminal)
         }
         _index = context.Index;
         _beginIndex = context.BeginIndex;
-        lines.Prepare(_beginIndex, _index);
         lines.Update();
         lines.Take(_index.Linefeed());
         InvokeTextChangedEvent(0);
@@ -188,7 +188,6 @@ abstract class TerminalBlockBase(Terminal terminal)
             Span = span,
         };
         var index2 = index1.Expect(span);
-        var parent = index1.Y < lines.Count ? lines[index1] : null;
         var line = lines.Prepare(beginIndex, index2);
         line.SetCharacterInfo(index2, characterInfo);
         context.Index = index2 + span;
@@ -203,7 +202,6 @@ abstract class TerminalBlockBase(Terminal terminal)
     private TerminalIndex UpdateString(TerminalIndex index, TerminalIndex beginIndex, TerminalLineCollection lines, TerminalCharacterInfo[] @string)
     {
         var font = _terminal.ActualStyle.Font;
-        lines.Prepare(beginIndex, beginIndex);
         for (var x = 0; x < @string.Length; x++)
         {
             var item = @string[x];
@@ -220,6 +218,7 @@ abstract class TerminalBlockBase(Terminal terminal)
             line.SetCharacterInfo(index2, characterInfo);
             index = index2 + characterInfo.Span;
         }
-        return index.X != 0 ? index.Linefeed() : index;
+        lines.Prepare(beginIndex, index);
+        return index.Linefeed();
     }
 }

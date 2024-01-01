@@ -101,7 +101,6 @@ sealed class TerminalBlockCollection : IEnumerable<TerminalBlockBase>
 
     public TerminalCharacterInfo? GetInfo(int x, int y)
     {
-        var bufferWidth = _terminal.BufferSize.Width;
         if (y < 0 || y >= _indexes.Count)
             return null;
         var block = _indexes[y];
@@ -109,9 +108,6 @@ sealed class TerminalBlockCollection : IEnumerable<TerminalBlockBase>
         var y1 = y - block.Top;
         if (y1 < block.Lines.Count)
             return block.Lines[y1][x1];
-        // var index = x + (y - block.Top) * bufferWidth;
-        // if (index >= 0 && index < block.Items.Count)
-        //     return block.Items[index];
         return null;
     }
 
@@ -119,13 +115,11 @@ sealed class TerminalBlockCollection : IEnumerable<TerminalBlockBase>
     {
         if (y < 0 || y >= _indexes.Count)
             return null;
-
-        // var bufferWidth = _terminal.BufferSize.Width;
         var block = _indexes[y];
-        // var x1 = x;
         var y1 = y - block.Top;
-        // if (y1 < block.Lines.Count)
-        return block.Lines[y1];
+        if (y1 < block.Lines.Count)
+            return block.Lines[y1];
+        return null;
     }
 
     public event EventHandler? Updated;

@@ -485,9 +485,11 @@ public partial class Terminal : ITerminal
 
         var size = new TerminalSize((int)width, (int)height);
         var bufferSize = GetBufferSize(this, size);
-        if (bufferSize != _bufferSize)
+        if (bufferSize == _bufferSize)
+            return;
+
+        using (var _ = _setter.LockEvent())
         {
-            using var _ = _setter.LockEvent();
             _setter.SetField(ref _size, size, nameof(Size));
             _setter.SetField(ref _bufferSize, bufferSize, nameof(BufferSize));
             _blocks.Update();
@@ -500,9 +502,9 @@ public partial class Terminal : ITerminal
             Scroll.IsVisible = Scroll.Maximum > 0;
             Scroll.Value = Scroll.CoerceValue(Scroll.Value);
             Scroll.PropertyChanged += Scroll_PropertyChanged;
-            _view.Update(_blocks);
-            UpdateCursorCoordinate();
         }
+        _view.Update(_blocks);
+        UpdateCursorCoordinate();
     }
 
     public void Update(params ITerminalRow[] rows) => InvokeUpdatedEvent(rows);

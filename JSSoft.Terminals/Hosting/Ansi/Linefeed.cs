@@ -23,6 +23,7 @@ sealed class Linefeed : IAsciiCode
     public void Process(TerminalLineCollection lines, AsciiCodeContext context)
     {
         var index = context.Index;
+        lines.Prepare(context.BeginIndex, context.Index);
         context.Index = index.Linefeed();
         context.BeginIndex = context.Index;
         context.TextIndex++;

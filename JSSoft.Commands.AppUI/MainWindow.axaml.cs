@@ -80,8 +80,8 @@ public partial class MainWindow : Window
         }
         catch (Exception exception)
         {
-            e.Fail(token, exception);
             _commandContext.Error.WriteLine(TerminalStringBuilder.GetString(exception.Message, TerminalColorType.BrightRed));
+            e.Fail(token, exception);
         }
     }
 

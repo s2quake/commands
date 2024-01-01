@@ -62,7 +62,7 @@ sealed class TerminalLineCollection(Terminal terminal) : IEnumerable<TerminalLin
 
     public void Take(TerminalIndex index)
     {
-        while (index.Y <= _lineList.Count)
+        while (index.Y < _lineList.Count)
         {
             _lineList.RemoveAt(_lineList.Count - 1);
         }
