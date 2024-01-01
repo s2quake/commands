@@ -23,5 +23,11 @@ param(
 )
 
 $solutionPath = Join-Path $PSScriptRoot "commands.sln" -Resolve
-$buildFile = Join-Path $PSScriptRoot ".build" "build.ps1" -Resolve
+$buildFile = Join-Path $PSScriptRoot ".build" "build.ps1"
+if (!$buildFile -or !(Test-Path -Path $buildFile -ErrorAction SilentlyContinue)) {
+    
+    Write-Error "To build, you need the .build submodule.`nPlease execute the command below and try again.`ngit submodule update --init .build"
+    exit 1
+}
+$buildFile = Resolve-Path -Path $buildFile
 & $buildFile $solutionPath -Publish -KeyPath $KeyPath -Sign -OutputPath $OutputPath -Framework $Framework -LogPath $LogPath
