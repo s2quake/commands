@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>f6427925-5255-4b00-be11-543b0539cc07</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>JSSoft.Commands.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\AddCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\CleanCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\CopyCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\EchoCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\FilterProperties.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\GlobalSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\HelpCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\ListDirectoryCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\StashCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\StashCommandExtension.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\TestCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\TestCommandExtension.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\VersionCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IApplication.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Commands\AddCommand.resx" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Commands\CleanCommand.resx" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Commands\CopyCommand.resx" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Commands\FilterProperties.resx" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Commands\GlobalSettings.resx" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Commands\ListDirectoryCommand.resx" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Commands\StashCommand.resx" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Commands\StashCommandExtension.resx" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PublishName>commands</PublishName>
+    <DefineConstants>JSSOFT_TERMINALS</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Unix.dat" />
+    <None Remove="Win32NT.dat" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Unix.dat" />
+    <EmbeddedResource Include="Win32NT.dat" />
+  </ItemGroup>
+</Project>

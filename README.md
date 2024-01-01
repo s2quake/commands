@@ -16,12 +16,8 @@ c# 12
 ## Clone
 
 ```plain
-git clone https://github.com/s2quake/commands.git --recursive
+git clone https://github.com/s2quake/commands.git
 ```
-
-> This repository contains two submodules, so the ``--recursive`` option must be included when cloning.
->
-> Or run ``git submodule udpate --init --`` on the repository path.
 
 ## Build - NET 8.0
 
@@ -50,19 +46,19 @@ dotnet build -p:TargetFrameworks=net481 --framework net481
 
 ```shell
 # Run the property settings example project
-dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Parse --framework net8.0 -- --help
+dotnet run --project JSSoft.Commands.Parse --framework net8.0 -- --help
 
 # Run the method call example project
-dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke --framework net8.0 -- --help
+dotnet run --project JSSoft.Commands.Invoke --framework net8.0 -- --help
 
 # Run the CommandContext Execution example Project
-dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Sets --framework net8.0 -- --help
+dotnet run --project JSSoft.Commands.Sets --framework net8.0 -- --help
 
 # Run the CommandContext Execution Example Project in the REPL environment
-dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.Repl --framework net8.0
+dotnet run --project JSSoft.Commands.Repl --framework net8.0
 
 # Run the CommandContext Execution Example Project with Avalonia UI
-dotnet run --project JSSoft.Library.Commands/JSSoft.Library.Commands.AppUI --framework net8.0
+dotnet run --project JSSoft.Commands.AppUI --framework net8.0
 ```
 
 ## Parse
@@ -75,7 +71,7 @@ var parser = new CommandParser(settings);
 parser.Parse(args);
 ```
 
-> See the JSSoft.Library.Commands/JSSoft.Library.Commands.Parse project
+> See the JSSoft.Commands.Parse project
 
 ## Invoke
 
@@ -87,7 +83,7 @@ var invoker = new CommandInvoker(commands);
 invoker.Invoke(args);
 ```
 
-> See the JSSoft.Library.Commands/JSSoft.Library.Commands.Invoke project
+> See the JSSoft.Commands.Invoke project
 
 ## CommandContext
 
@@ -108,7 +104,7 @@ or
 await commandContext.ExecuteAsync(args);
 ```
 
-> See the JSSoft.Library.Commands/JSSoft.Library.Commands.Sets project
+> See the JSSoft.Commands.Sets project
 
 It can be combined with user input such as EditBox, TextBox, InputText to build a console or REPL-like environment.
 
@@ -124,7 +120,7 @@ var terminal = new SystemTerminal(commandContext);
 await terminal.StartAsync(CancellationToken.None);
 ```
 
-> See the JSSoft.Library.Commands/JSSoft.Library.Commands.Repl project
+> See the JSSoft.Commands.Repl project
 
 ## Property
 
@@ -529,7 +525,7 @@ class UserCommand : CommandMethodBase
 
 Released under the MIT License.
 
-Copyright (c) 2020 Jeesu Choi
+Copyright (c) 2024 Jeesu Choi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 documentation files (the "Software"), to deal in the Software without restriction, including without limitation the

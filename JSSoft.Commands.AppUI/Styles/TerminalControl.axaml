@@ -1,0 +1,21 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ctrl="using:JSSoft.Commands.AppUI.Controls">
+
+    <Style Selector="ctrl|TerminalControl">
+        <Setter Property="Background" Value="Black" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Grid Background="{TemplateBinding Background}">
+                        <Border BorderThickness="20">
+                            <ctrl:TerminalPresenter Name="PART_TerminalPresenter" />
+                        </Border>
+                        <ScrollBar Name="PART_VerticalScrollBar" Orientation="Vertical" HorizontalAlignment="Right" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</Styles>

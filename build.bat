@@ -2,7 +2,7 @@
 
 REM Released under the MIT License.
 
-REM Copyright (c) 2020 Jeesu Choi
+REM Copyright (c) 2024 Jeesu Choi
 
 REM Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 REM documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
