@@ -95,6 +95,7 @@ sealed class TerminalBlockCollection : IEnumerable<TerminalBlockBase>
             _indexes.SetRange(index: item.Top, length: item.Height, value: item);
         }
         Height = y;
+        _indexes.Take(Height);
         Updated?.Invoke(this, EventArgs.Empty);
     }
 
@@ -114,6 +115,19 @@ sealed class TerminalBlockCollection : IEnumerable<TerminalBlockBase>
         return null;
     }
 
+    public TerminalLine? GetLine(int y)
+    {
+        if (y < 0 || y >= _indexes.Count)
+            return null;
+
+        // var bufferWidth = _terminal.BufferSize.Width;
+        var block = _indexes[y];
+        // var x1 = x;
+        var y1 = y - block.Top;
+        // if (y1 < block.Lines.Count)
+        return block.Lines[y1];
+    }
+
     public event EventHandler? Updated;
 
     private void UpdateTransform(int index, int y)
@@ -127,6 +141,7 @@ sealed class TerminalBlockCollection : IEnumerable<TerminalBlockBase>
             _indexes.SetRange(index: item.Top, length: item.Height, value: item);
         }
         Height = y;
+        _indexes.Take(Height);
     }
 
     private void Block_TextChanged(object? sender, TerminalTextChangedEventArgs e)

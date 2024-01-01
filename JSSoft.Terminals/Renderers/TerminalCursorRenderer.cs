@@ -217,9 +217,9 @@ public class TerminalCursorRenderer : TerminalRendererBase
         {
             if (coord.Y >= 0 && coord.Y < terminal.View.Count)
             {
-                if (coord.X >= 0 && coord.X < terminal.View[coord.Y].Cells.Count)
+                if (coord.X >= 0 && coord.X < terminal.View[coord.Y].Length)
                 {
-                    cell = terminal.View[coord.Y].Cells[coord.X];
+                    cell = terminal.View[coord.Y][coord.X];
                     return true;
                 }
             }

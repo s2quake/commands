@@ -24,9 +24,9 @@ public interface ITerminalRow
 
     int Index { get; }
 
-    IReadOnlyList<TerminalCharacterInfo> Cells { get; }
-
     bool IsSelected { get; }
 
-    bool IsEmpty { get; }
+    int Length { get; }
+
+    TerminalCharacterInfo this[int index] { get; }
 }

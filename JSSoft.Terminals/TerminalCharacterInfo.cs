@@ -26,8 +26,6 @@ public struct TerminalCharacterInfo
 
     public int Span { get; set; }
 
-    // public int Offset { get; set; }
-
     public int Group { get; set; }
 
     public static TerminalCharacterInfo Empty { get; } = new TerminalCharacterInfo();

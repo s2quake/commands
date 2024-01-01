@@ -220,6 +220,6 @@ abstract class TerminalBlockBase(Terminal terminal)
             line.SetCharacterInfo(index2, characterInfo);
             index = index2 + characterInfo.Span;
         }
-        return index.Linefeed();
+        return index.X != 0 ? index.Linefeed() : index;
     }
 }

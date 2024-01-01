@@ -41,7 +41,7 @@ public class TerminalRowRenderer(ITerminalRow row) : ITerminalRenderer
     public virtual void Render(ITerminalDrawingContext drawingContext)
     {
         _rectRuns ??= TerminalRectRunFactory<TerminalRectRun>.Create(_row, item => new TerminalRectRun(item));
-        if (_row.IsEmpty is false && _glyphRuns is null)
+        if (_row.Length > 0 && _glyphRuns is null)
         {
             var font = _row.Terminal.ActualStyle.Font;
             _glyphRuns = TerminalGlyphRunFactory<TerminalGlyphRun>.Create(_row, item => new TerminalGlyphRun(item));

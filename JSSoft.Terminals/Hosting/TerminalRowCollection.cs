@@ -32,35 +32,22 @@ sealed class TerminalRowCollection : List<TerminalRow>
         Resize(_terminal.BufferSize.Height);
     }
 
-    public void Update(TerminalBlockCollection _blocks)
+    public void Update(TerminalBlockCollection blocks)
     {
         var scroll = _terminal.Scroll;
-        var bufferWidth = _terminal.BufferSize.Width;
-
-        for (var i = 0; i < this.Count; i++)
+        for (var i = 0; i < Count; i++)
         {
             var y = scroll.Value + i;
             var row = this[i];
-            row.Reset();
-
-            for (var x = 0; x < bufferWidth; x++)
-            {
-                if (_blocks.GetInfo(x, y) is { } characterInfo)
-                {
-                    row.Cells.Count = x + 1;
-                    row.Cells.Set(x, characterInfo);
-                }
-            }
+            var line = blocks.GetLine(y);
+            row.Sync(line);
         }
-
         Updated?.Invoke(this, new([.. this]));
     }
 
     public TerminalRow Prepare()
     {
-        var row = _poolStack.Count != 0 ? _poolStack.Pop() : new TerminalRow(_terminal);
-        row.Cells.Count = _terminal.BufferSize.Width;
-        return row;
+        return _poolStack.Count != 0 ? _poolStack.Pop() : new TerminalRow(_terminal);
     }
 
     public event EventHandler<TerminalRowUpdateEventArgs>? Updated;
@@ -83,14 +70,8 @@ sealed class TerminalRowCollection : List<TerminalRow>
         for (var i = Count; i < bufferHeight; i++)
         {
             var item = _poolStack.Count != 0 ? _poolStack.Pop() : new TerminalRow(_terminal);
-            item.Reset();
             Add(item);
             item.Index = i;
-        }
-        for (var i = Count - 1; i >= 0; i--)
-        {
-            var row = this[i];
-            row.Cells.Count = _terminal.BufferSize.Width;
         }
     }
 }

@@ -18,47 +18,45 @@
 
 namespace JSSoft.Terminals.Hosting;
 
-sealed class TerminalRow : ITerminalRow
+sealed class TerminalRow(Terminal terminal) : ITerminalRow
 {
-    public TerminalRow(Terminal terminal)
-    {
-        Terminal = terminal;
-        Cells = new(this);
-    }
+    private readonly TerminalArray<TerminalCharacterInfo?> _items = new();
 
-    public TerminalCellCollection Cells { get; }
-
-    public Terminal Terminal { get; }
+    public Terminal Terminal { get; } = terminal;
 
     public int Index { get; set; }
 
     public bool IsSelected { get; private set; }
 
-    public bool IsEmpty => ReferenceCount == 0;
+    public int Length => _items.Count;
 
-    public int ReferenceCount { get; set; }
-
-    public void Reset()
+    public void Sync(TerminalLine? line)
     {
-        ResetAfter(0);
-        if (ReferenceCount != 0)
+        if (line == null)
         {
-            Console.WriteLine(this.Index);
+            _items.Reset();
+        }
+        else
+        {
+            _items.Take(line.Length);
+            for (var i = 0; i < line.Length; i++)
+            {
+                _items[i] = line[i];
+            }
         }
     }
 
-    public void ResetAfter(int index)
+    public TerminalCharacterInfo this[int index]
     {
-        for (var i = index; i < Cells.Capacity; i++)
+        get
         {
-            Cells.Reset(i);
+            if (index < _items.Count && _items[index] is { } characterInfo)
+                return characterInfo;
+            return TerminalCharacterInfo.Empty;
         }
-        Cells.Count = Terminal.BufferSize.Width;
     }
 
     #region ITerminalRow
-
-    IReadOnlyList<TerminalCharacterInfo> ITerminalRow.Cells => Cells;
 
     ITerminal ITerminalRow.Terminal => Terminal;
 

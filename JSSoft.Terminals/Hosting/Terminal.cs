@@ -485,21 +485,24 @@ public partial class Terminal : ITerminal
 
         var size = new TerminalSize((int)width, (int)height);
         var bufferSize = GetBufferSize(this, size);
-        using var _ = _setter.LockEvent();
-        _setter.SetField(ref _size, size, nameof(Size));
-        _setter.SetField(ref _bufferSize, bufferSize, nameof(BufferSize));
-        _blocks.Update();
-        Scroll.PropertyChanged -= Scroll_PropertyChanged;
-        Scroll.ViewportSize = _bufferSize.Height;
-        Scroll.SmallChange = 1;
-        Scroll.LargeChange = _bufferSize.Height;
-        Scroll.Minimum = 0;
-        Scroll.Maximum = GetScrollMaximum();
-        Scroll.IsVisible = Scroll.Maximum > 0;
-        Scroll.Value = Scroll.CoerceValue(Scroll.Value);
-        Scroll.PropertyChanged += Scroll_PropertyChanged;
-        _view.Update(_blocks);
-        UpdateCursorCoordinate();
+        if (bufferSize != _bufferSize)
+        {
+            using var _ = _setter.LockEvent();
+            _setter.SetField(ref _size, size, nameof(Size));
+            _setter.SetField(ref _bufferSize, bufferSize, nameof(BufferSize));
+            _blocks.Update();
+            Scroll.PropertyChanged -= Scroll_PropertyChanged;
+            Scroll.ViewportSize = _bufferSize.Height;
+            Scroll.SmallChange = 1;
+            Scroll.LargeChange = _bufferSize.Height;
+            Scroll.Minimum = 0;
+            Scroll.Maximum = GetScrollMaximum();
+            Scroll.IsVisible = Scroll.Maximum > 0;
+            Scroll.Value = Scroll.CoerceValue(Scroll.Value);
+            Scroll.PropertyChanged += Scroll_PropertyChanged;
+            _view.Update(_blocks);
+            UpdateCursorCoordinate();
+        }
     }
 
     public void Update(params ITerminalRow[] rows) => InvokeUpdatedEvent(rows);
