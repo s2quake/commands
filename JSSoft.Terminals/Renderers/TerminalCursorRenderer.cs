@@ -166,7 +166,7 @@ public class TerminalCursorRenderer : TerminalRendererBase
         var terminal = _terminal;
         var backgroundRect = terminal.GetBackgroundRect(coord, span);
         var cursorBackgroundColor = CursorBackgroundColor;
-        var cursorThickness = CursorThickness;
+        // var cursorThickness = CursorThickness;
         drawingContext.FillRectangle(cursorBackgroundColor, backgroundRect);
         _cursorGlyphRun?.Render(drawingContext);
     }
@@ -199,17 +199,13 @@ public class TerminalCursorRenderer : TerminalRendererBase
             return false;
         if (character == ' ')
             return false;
-        if (character == '\n')
-            return false;
-        if (character == '\r')
-            return false;
         return true;
     }
 
     private static TerminalGlyphRun? GetGlyphRun(TerminalCursorRenderer obj)
     {
         var terminal = obj._terminal;
-        var cursorCoordinate = terminal.CursorCoordinate;
+        var cursorCoordinate = terminal.CursorCoordinate - new TerminalCoord(0, terminal.Scroll.Value);
         if (TryGetCell(terminal, cursorCoordinate, out var cell) == true && Predicate(cell.Character) == true)
         {
             var row = terminal.View[cursorCoordinate.Y];
