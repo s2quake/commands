@@ -1,3 +1,4 @@
-[submodule "build"]
-	path = build
+[submodule ".build"]
+	path = .build
 	url = ../build.git
+	branch = develop

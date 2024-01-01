@@ -17,11 +17,11 @@
 
 param(
     [string]$OutputPath = "",
-    [string]$Framework = "net7.0",
+    [string]$Framework = "net8.0",
     [string]$KeyPath = "",
     [string]$LogPath = ""
 )
 
 $solutionPath = Join-Path $PSScriptRoot "commands.sln" -Resolve
-$buildFile = Join-Path $PSScriptRoot "build" "build.ps1" -Resolve
+$buildFile = Join-Path $PSScriptRoot ".build" "build.ps1" -Resolve
 & $buildFile $solutionPath -Publish -KeyPath $KeyPath -Sign -OutputPath $OutputPath -Framework $Framework -LogPath $LogPath
