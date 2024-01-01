@@ -77,6 +77,8 @@ sealed class TerminalFont : ITerminalFont
                 break;
             }
         }
+        if (index == -1)
+            return _typefacesN[0];
         if (isBold == true)
             return _typefacesB[index];
         return _typefacesN[index];
