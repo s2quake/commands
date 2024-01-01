@@ -25,7 +25,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     <FileVersion>6.0.0</FileVersion>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/s2quake/commands</RepositoryUrl>
-    <LicenseUrl>https://github.com/s2quake/commands/blob/master/LICENSE.md</LicenseUrl>
+    <LicenseUrl>https://github.com/s2quake/commands/blob/main/LICENSE</LicenseUrl>
     <Copyright>Copyright (c) 2024 Jeesu Choi</Copyright>
     <Description>Parse command line or Supports console environment like REPL.</Description>
     <Authors>s2quake</Authors>
