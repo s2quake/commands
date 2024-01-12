@@ -29,7 +29,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     <Copyright>Copyright (c) 2024 Jeesu Choi</Copyright>
     <Description>Parse command line or Supports console environment like REPL.</Description>
     <Authors>s2quake</Authors>
-    <PackageVersion>5.1.0</PackageVersion>
+    <PackageVersion>6.0.0</PackageVersion>
     <PackageProjectUrl>https://github.com/s2quake/commands</PackageProjectUrl>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <LangVersion>preview</LangVersion>
@@ -41,7 +41,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Nullable>enable</Nullable>
     <PublishGroup>commands</PublishGroup>
-    <AssemblyOriginatorKeyFile Condition="Exists('$(MSBuildThisFileDirectory)/build/public.snk')">$(MSBuildThisFileDirectory)/build/public.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile Condition="Exists('$(MSBuildThisFileDirectory).build/public.snk')">$(MSBuildThisFileDirectory).build/public.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <None Include="../LICENSE.md" Pack="true" PackagePath="" />
