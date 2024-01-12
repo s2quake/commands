@@ -99,6 +99,8 @@ public struct CommandSettings
         set => _versionShortName = value;
     }
 
+    public bool AllowEmpty { get; set; }
+
     internal static TimeSpan AsyncTimeout { get; } = TimeSpan.FromSeconds(1);
 
     internal static BindingFlags GetBindingFlags(Type type)

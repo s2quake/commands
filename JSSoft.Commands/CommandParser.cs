@@ -63,7 +63,7 @@ public class CommandParser : CommandAnalyzer
 
     protected virtual void OnValidate(string[] args)
     {
-        if (CommandUtility.IsEmptyArgs(args) == true)
+        if (CommandUtility.IsEmptyArgs(args) == true && Settings.AllowEmpty == false)
             throw new CommandParsingException(this, CommandParsingError.Empty, args);
         if (Settings.ContainsHelpOption(args) == true)
             throw new CommandParsingException(this, CommandParsingError.Help, args);

@@ -131,7 +131,7 @@ public class CommandInvoker : CommandAnalyzer
 
     protected virtual void OnValidate(string[] args)
     {
-        if (CommandUtility.IsEmptyArgs(args) == true)
+        if (CommandUtility.IsEmptyArgs(args) == true && Settings.AllowEmpty == false)
             throw new CommandInvocationException(this, CommandInvocationError.Empty, args);
         if (Settings.ContainsHelpOption(args) == true)
             throw new CommandInvocationException(this, CommandInvocationError.Help, args);
