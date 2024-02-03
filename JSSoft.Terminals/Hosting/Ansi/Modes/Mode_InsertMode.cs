@@ -16,13 +16,19 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi;
+namespace JSSoft.Terminals.Hosting.Ansi.Modes;
 
-interface ISequence
+/// <summary>
+/// https://terminalguide.namepad.de/mode/4/
+/// </summary>
+sealed class Mode_InsertMode : ModeBase
 {
-    void Process(TerminalLineCollection lines, SequenceContext context);
+    public Mode_InsertMode()
+        : base("4")
+    {
+    }
 
-    SequenceType Type { get; }
-
-    char Character { get; }
+    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    {
+    }
 }

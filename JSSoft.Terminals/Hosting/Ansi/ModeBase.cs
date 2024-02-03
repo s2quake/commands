@@ -16,19 +16,18 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi.CSI;
+namespace JSSoft.Terminals.Hosting.Ansi;
 
-/// <summary>
-/// https://terminalguide.namepad.de/seq/csi_sp_t_bang/
-/// </summary>
-sealed class SoftReset : CSISequenceBase
+abstract class ModeBase(string name) : IMode
 {
-    public SoftReset()
-        : base('p')
-    {
-    }
+    public string Name { get; } = name;
 
-    protected override void OnProcess(TerminalLineCollection lines, EscapeSequenceContext context)
-    {
-    }
+    protected abstract void OnProcess(TerminalLineCollection lines, SequenceContext context);
+
+    #region IMode
+
+    void IMode.Process(TerminalLineCollection lines, SequenceContext context)
+        => OnProcess(lines, context);
+
+    #endregion
 }

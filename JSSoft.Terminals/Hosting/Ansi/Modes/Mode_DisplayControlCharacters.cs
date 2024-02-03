@@ -16,23 +16,19 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi.CSI;
+namespace JSSoft.Terminals.Hosting.Ansi.Modes;
 
 /// <summary>
-/// https://terminalguide.namepad.de/seq/csi_sm/
+/// https://terminalguide.namepad.de/mode/3/
 /// </summary>
-sealed class SelectGraphicRendition : CSISequenceBase
+sealed class Mode_DisplayControlCharacters : ModeBase
 {
-    public SelectGraphicRendition()
-        : base('m')
+    public Mode_DisplayControlCharacters()
+        : base("3")
     {
     }
 
-    protected override void OnProcess(TerminalLineCollection lines, EscapeSequenceContext context)
+    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
-        var displayInfo = context.DisplayInfo;
-        var codes = context.Option.Split(';', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
-        displayInfo.SetGraphicRendition(codes);
-        context.DisplayInfo = displayInfo;
     }
 }

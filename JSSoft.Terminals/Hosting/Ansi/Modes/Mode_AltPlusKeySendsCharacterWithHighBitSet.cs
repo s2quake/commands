@@ -16,27 +16,19 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using JSSoft.Terminals.Hosting.Ansi.CSI;
-
-namespace JSSoft.Terminals.Hosting.Ansi.CSI;
+namespace JSSoft.Terminals.Hosting.Ansi.Modes;
 
 /// <summary>
-/// https://terminalguide.namepad.de/seq/csi_ce/
+/// https://terminalguide.namepad.de/mode/p1034/
 /// </summary>
-sealed class CursorNextLine : CSISequenceBase
+sealed class Mode_AltPlusKeySendsCharacterWithHighBitSet : ModeBase
 {
-    public CursorNextLine()
-        : base('E')
+    public Mode_AltPlusKeySendsCharacterWithHighBitSet()
+        : base("?1034")
     {
     }
 
-    protected override void OnProcess(TerminalLineCollection lines, EscapeSequenceContext context)
+    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
-        var view = context.View;
-        var index = context.Index;
-        var value = context.GetOptionValue(index: 0) ?? 1;
-        var count = Math.Max(1, value);
-        index = index.CursorDown(count, view.Bottom).MoveToFirstOfLine();
-        context.Index = index;
     }
 }

@@ -24,11 +24,11 @@ abstract class SequenceBase(SequenceType type, char character) : ISequence
 
     public char Character { get; } = character;
 
-    protected abstract void OnProcess(TerminalLineCollection lines, EscapeSequenceContext context);
+    protected abstract void OnProcess(TerminalLineCollection lines, SequenceContext context);
 
     #region ISequence
 
-    void ISequence.Process(TerminalLineCollection lines, EscapeSequenceContext context)
+    void ISequence.Process(TerminalLineCollection lines, SequenceContext context)
         => OnProcess(lines, context);
 
     #endregion

@@ -16,7 +16,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using JSSoft.Terminals.Hosting.Ansi.CSI;
+using JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 namespace JSSoft.Terminals.Hosting.Ansi.EraseFunctions;
 
@@ -25,14 +25,14 @@ namespace JSSoft.Terminals.Hosting.Ansi.EraseFunctions;
 /// </summary>
 sealed class EraseDisplay : CSISequenceBase
 {
-    private static readonly Action<TerminalLineCollection, EscapeSequenceContext> EmptyAction = (items, context) => { };
+    private static readonly Action<TerminalLineCollection, SequenceContext> EmptyAction = (items, context) => { };
 
     public EraseDisplay()
         : base('J')
     {
     }
 
-    protected override void OnProcess(TerminalLineCollection lines, EscapeSequenceContext context)
+    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
         var option = context.GetOptionValue(index: 0) ?? 0;
         var action = GetAction(option);
@@ -40,7 +40,7 @@ sealed class EraseDisplay : CSISequenceBase
     }
 
     // erase from cursor until end of screen
-    private void Action0(TerminalLineCollection lines, EscapeSequenceContext context)
+    private void Action0(TerminalLineCollection lines, SequenceContext context)
     {
         var view = context.View;
         var index0 = context.Index;
@@ -50,7 +50,7 @@ sealed class EraseDisplay : CSISequenceBase
     }
 
     // erase from cursor to beginning of screen
-    private void Action1(TerminalLineCollection lines, EscapeSequenceContext context)
+    private void Action1(TerminalLineCollection lines, SequenceContext context)
     {
         var view = context.View;
         var index0 = new TerminalIndex(x: view.Left, y: view.Top, view.Width);
@@ -60,7 +60,7 @@ sealed class EraseDisplay : CSISequenceBase
     }
 
     // erase entire screen
-    private void Action2(TerminalLineCollection lines, EscapeSequenceContext context)
+    private void Action2(TerminalLineCollection lines, SequenceContext context)
     {
         var view = context.View;
         var index0 = new TerminalIndex(x: view.Left, y: view.Top, view.Width);
@@ -70,12 +70,12 @@ sealed class EraseDisplay : CSISequenceBase
     }
 
     // erase saved lines
-    private void Action3(TerminalLineCollection lines, EscapeSequenceContext context)
+    private void Action3(TerminalLineCollection lines, SequenceContext context)
     {
 
     }
 
-    private Action<TerminalLineCollection, EscapeSequenceContext> GetAction(int option) => option switch
+    private Action<TerminalLineCollection, SequenceContext> GetAction(int option) => option switch
     {
         0 => Action0,
         1 => Action1,

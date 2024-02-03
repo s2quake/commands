@@ -16,21 +16,19 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using JSSoft.Terminals.Hosting.Ansi.ESC;
-
-namespace JSSoft.Terminals.Hosting.Ansi.EraseFunctions;
+namespace JSSoft.Terminals.Hosting.Ansi.Modes;
 
 /// <summary>
-/// https://terminalguide.namepad.de/seq/a_esc_sc/
+/// https://terminalguide.namepad.de/mode/3/
 /// </summary>
-sealed class FullReset : ESCSequenceBase
+sealed class Mode_132ColumnMode : ModeBase
 {
-    public FullReset()
-        : base('c')
+    public Mode_132ColumnMode()
+        : base("?3")
     {
     }
 
-    protected override void OnProcess(TerminalLineCollection lines, EscapeSequenceContext context)
+    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
     }
 }

@@ -16,13 +16,25 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi;
+namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-interface ISequence
+sealed class SetCursorPosition : CSISequenceBase
 {
-    void Process(TerminalLineCollection lines, SequenceContext context);
+    public SetCursorPosition()
+        : base('H')
+    {
+    }
 
-    SequenceType Type { get; }
-
-    char Character { get; }
+    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    {
+        var view = context.View;
+        var r1 = (context.GetOptionValue(index: 0) ?? 1) - 1;
+        var c1 = (context.GetOptionValue(index: 1) ?? 1) - 1;
+        var r2 = TerminalMathUtility.Clamp(r1, 0, view.Height - 1) + view.Y;
+        var c2 = TerminalMathUtility.Clamp(c1, 0, view.Width - 1);
+        var index = new TerminalIndex(new TerminalCoord(c2, r2), view.Width);
+        // context.OriginCoordinate = (TerminalCoord)index;
+        context.Index = index;
+        context.BeginIndex = index.CarriageReturn();
+    }
 }

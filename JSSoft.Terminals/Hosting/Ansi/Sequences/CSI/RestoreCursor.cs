@@ -16,19 +16,24 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi.ESC;
+namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 /// <summary>
-/// https://terminalguide.namepad.de/seq/a_esc_ch/
+/// https://terminalguide.namepad.de/seq/csi_su/
 /// </summary>
-sealed class HorizontalTabSet : ESCSequenceBase
+sealed class RestoreCursor : CSISequenceBase
 {
-    public HorizontalTabSet()
-        : base('H')
+    public RestoreCursor()
+        : base('u')
     {
     }
 
-    protected override void OnProcess(TerminalLineCollection lines, EscapeSequenceContext context)
+    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
+        var view = context.View;
+        var index = context.Index;
+        var viewCoord = context.ViewCoordinate;
+        var coord = viewCoord + new TerminalCoord(0, view.Y);
+        context.Index = new TerminalIndex(coord, view.Width);
     }
 }

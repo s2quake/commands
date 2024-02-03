@@ -16,12 +16,23 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-// namespace JSSoft.Terminals.Hosting.Ansi.CSI;
+namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-// sealed class ReportCursorPosition : ISequence
-// {
-//     public void Process(TerminalLineCollection lines, EscapeSequenceContext context)
-//     {
-        
-//     }
-// }
+/// <summary>
+/// https://terminalguide.namepad.de/seq/csi_sm/
+/// </summary>
+sealed class SelectGraphicRendition : CSISequenceBase
+{
+    public SelectGraphicRendition()
+        : base('m')
+    {
+    }
+
+    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    {
+        var displayInfo = context.DisplayInfo;
+        var codes = context.Option.Split(';', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
+        displayInfo.SetGraphicRendition(codes);
+        context.DisplayInfo = displayInfo;
+    }
+}

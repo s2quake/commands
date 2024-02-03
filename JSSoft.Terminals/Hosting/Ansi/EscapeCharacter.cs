@@ -16,10 +16,6 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using System.Diagnostics;
-using JSSoft.Terminals.Hosting.Ansi.CSI;
-using JSSoft.Terminals.Hosting.Ansi.EraseFunctions;
-
 namespace JSSoft.Terminals.Hosting.Ansi;
 
 sealed class EscapeCharacter : IAsciiCode
@@ -60,13 +56,17 @@ sealed class EscapeCharacter : IAsciiCode
                 var character = context.Text[i];
                 if (CSISequenceByCharacter.ContainsKey(character) == true)
                 {
-                    var escapeSequence = CSISequenceByCharacter[character];
+                    var sequence = CSISequenceByCharacter[character];
                     var option = context.Text.Substring(s1, i - s1);
-                    var escapeSequenceContext = new EscapeSequenceContext(option, context);
-                    Console.WriteLine($"ESC [ {option}{character}");
-                    escapeSequence.Process(lines, escapeSequenceContext);
+                    var sequenceContext = new SequenceContext(option, context);
+                    Console.WriteLine($"ESC [ {string.Join(" ", [option, character])} => {sequence.GetType()}");
+                    sequence.Process(lines, sequenceContext);
                     context.TextIndex = i + 1;
                     return;
+                }
+                if (character == '\x1b')
+                {
+                    throw new NotSupportedException();
                 }
             }
         }
@@ -78,17 +78,17 @@ sealed class EscapeCharacter : IAsciiCode
                 var character = context.Text[i];
                 if (ESCSequenceByCharacter.ContainsKey(character) == true)
                 {
-                    var escapeSequence = ESCSequenceByCharacter[character];
+                    var sequence = ESCSequenceByCharacter[character];
                     var option = context.Text.Substring(s1, i - s1);
-                    var escapeSequenceContext = new EscapeSequenceContext(option, context);
-                    Console.WriteLine($"ESC {option}{character}");
-                    escapeSequence.Process(lines, escapeSequenceContext);
+                    var sequenceContext = new SequenceContext(option, context);
+                    Console.WriteLine($"ESC {string.Join(" ", [option, character])} => {sequence.GetType()}");
+                    sequence.Process(lines, sequenceContext);
                     context.TextIndex = i + 1;
                     return;
                 }
                 if (character == '\x1b')
                 {
-                    throw new NotImplementedException();
+                    throw new NotSupportedException();
                 }
             }
         }

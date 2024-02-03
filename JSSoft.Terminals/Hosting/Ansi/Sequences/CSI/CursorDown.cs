@@ -16,9 +16,9 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using JSSoft.Terminals.Hosting.Ansi.CSI;
+using JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-namespace JSSoft.Terminals.Hosting.Ansi.CSI;
+namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 /// <summary>
 /// https://terminalguide.namepad.de/seq/csi_cb/
@@ -30,7 +30,7 @@ sealed class CursorDown : CSISequenceBase
     {
     }
 
-    protected override void OnProcess(TerminalLineCollection lines, EscapeSequenceContext context)
+    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
         var view = context.View;
         var index = context.Index;

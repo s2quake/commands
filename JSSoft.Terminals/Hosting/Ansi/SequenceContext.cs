@@ -20,7 +20,7 @@ using System.Text;
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-sealed class EscapeSequenceContext(string option, AsciiCodeContext asciiCodeContext)
+sealed class SequenceContext(string option, AsciiCodeContext asciiCodeContext)
 {
     private readonly AsciiCodeContext _asciiCodeContext = asciiCodeContext;
 

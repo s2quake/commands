@@ -16,7 +16,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using JSSoft.Terminals.Hosting.Ansi.CSI;
+using JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 namespace JSSoft.Terminals.Hosting.Ansi.EraseFunctions;
 
@@ -25,14 +25,14 @@ namespace JSSoft.Terminals.Hosting.Ansi.EraseFunctions;
 /// </summary>
 sealed class EraseLine : CSISequenceBase
 {
-    private static readonly Action<TerminalLineCollection, EscapeSequenceContext> EmptyAction = (items, context) => { };
+    private static readonly Action<TerminalLineCollection, SequenceContext> EmptyAction = (items, context) => { };
 
     public EraseLine()
         : base('K')
     {
     }
 
-    protected override void OnProcess(TerminalLineCollection lines, EscapeSequenceContext context)
+    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
         var option = context.GetOptionValue(index: 0) ?? 0;
         var action = GetAction(option);
@@ -40,7 +40,7 @@ sealed class EraseLine : CSISequenceBase
     }
 
     // erase from cursor to end of line
-    private void Action0(TerminalLineCollection lines, EscapeSequenceContext context)
+    private void Action0(TerminalLineCollection lines, SequenceContext context)
     {
         var index = context.Index;
         if (lines.TryGetLine(index, out var line) == true)
@@ -50,7 +50,7 @@ sealed class EraseLine : CSISequenceBase
     }
 
     // erase start of line to the cursor
-    private void Action1(TerminalLineCollection lines, EscapeSequenceContext context)
+    private void Action1(TerminalLineCollection lines, SequenceContext context)
     {
         var index = context.Index;
         var index1 = index.MoveToFirstOfLine();
@@ -61,7 +61,7 @@ sealed class EraseLine : CSISequenceBase
     }
 
     // erase the entire line
-    private void Action2(TerminalLineCollection lines, EscapeSequenceContext context)
+    private void Action2(TerminalLineCollection lines, SequenceContext context)
     {
         var view = context.View;
         var index = context.Index;
@@ -69,7 +69,7 @@ sealed class EraseLine : CSISequenceBase
         line.Erase(0, line.Length);
     }
 
-    private Action<TerminalLineCollection, EscapeSequenceContext> GetAction(int option) => option switch
+    private Action<TerminalLineCollection, SequenceContext> GetAction(int option) => option switch
     {
         0 => Action0,
         1 => Action1,

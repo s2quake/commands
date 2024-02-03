@@ -16,13 +16,19 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi;
+namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-interface ISequence
+/// <summary>
+/// https://terminalguide.namepad.de/seq/csi_sl/
+/// https://terminalguide.namepad.de/seq/csi_sl__p/
+/// </summary>
+sealed class ResetMode : CSISequenceBase
 {
-    void Process(TerminalLineCollection lines, SequenceContext context);
+    public ResetMode()
+        : base('l')
+    {
+    }
 
-    SequenceType Type { get; }
-
-    char Character { get; }
+    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+        => ModeUtility.Process(lines, context);
 }

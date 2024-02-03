@@ -16,24 +16,11 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi.CSI;
+namespace JSSoft.Terminals.Hosting.Ansi;
 
-/// <summary>
-/// https://terminalguide.namepad.de/seq/csi_cg/
-/// </summary>
-sealed class CursorHorizontalPositionAbsolute : CSISequenceBase
+interface IMode
 {
-    public CursorHorizontalPositionAbsolute()
-        : base('G')
-    {
-    }
+    void Process(TerminalLineCollection lines, SequenceContext context);
 
-    protected override void OnProcess(TerminalLineCollection lines, EscapeSequenceContext context)
-    {
-        var view = context.View;
-        var index = context.Index;
-        var c1 = (context.GetOptionValue(index: 0) ?? 1) - 1;
-        var c2 = TerminalMathUtility.Clamp(c1, 0, view.Width - 1);
-        context.Index = index.CursorToColumn(c2);
-    }
+    string Name { get; }
 }

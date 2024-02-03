@@ -16,9 +16,12 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi.CSI;
+// namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-abstract class CSISequenceBase(char character)
-    : SequenceBase(SequenceType.CSI, character)
-{
-}
+// sealed class ReportCursorPosition : ISequence
+// {
+//     public void Process(TerminalLineCollection lines, EscapeSequenceContext context)
+//     {
+        
+//     }
+// }

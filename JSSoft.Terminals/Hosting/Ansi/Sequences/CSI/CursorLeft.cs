@@ -16,25 +16,24 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using JSSoft.Terminals.Hosting.Ansi.CSI;
+using JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-namespace JSSoft.Terminals.Hosting.Ansi.CSI;
+namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 /// <summary>
-/// https://terminalguide.namepad.de/seq/csi_cc/
+/// https://terminalguide.namepad.de/seq/csi_cd/
 /// </summary>
-sealed class CursorRight : CSISequenceBase
+sealed class CursorLeft : CSISequenceBase
 {
-    public CursorRight()
-        : base('C')
+    public CursorLeft()
+        : base('D')
     {
     }
-
-    protected override void OnProcess(TerminalLineCollection lines, EscapeSequenceContext context)
+    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
         var index = context.Index;
         var value = context.GetOptionValue(index: 0) ?? 1;
         var count = Math.Max(1, value);
-        context.Index = index.CursorRight(count);
+        context.Index = index.CursorLeft(count);
     }
 }

@@ -16,9 +16,9 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi.ESC;
+namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-abstract class ESCSequenceBase(char character)
-    : SequenceBase(SequenceType.ESC, character)
+abstract class CSISequenceBase(char character)
+    : SequenceBase(SequenceType.CSI, character)
 {
 }
