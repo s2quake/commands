@@ -32,6 +32,19 @@ sealed class TerminalLineCollection(Terminal terminal) : IEnumerable<TerminalLin
 
     public TerminalLine this[TerminalIndex index] => _lineList[index.Y];
 
+    public int IndexOf(TerminalLine item) => _lineList.IndexOf(item);
+
+    public bool TryGetLine(TerminalIndex index, out TerminalLine line)
+    {
+        if (index.Y < _lineList.Count)
+        {
+            line = _lineList[index.Y];
+            return true;
+        }
+        line = null!;
+        return false;
+    }
+
     public TerminalCharacterInfo? GetCharacterInfo(TerminalIndex index)
         => index.Value < _items.Count ? _items[index.Value] : null;
 
@@ -62,9 +75,14 @@ sealed class TerminalLineCollection(Terminal terminal) : IEnumerable<TerminalLin
 
     public void Take(TerminalIndex index)
     {
-        while (index.Y < _lineList.Count)
+        while (index.Y + 1 < _lineList.Count)
         {
+            _lineList[_lineList.Count - 1].Parent = null;
             _lineList.RemoveAt(_lineList.Count - 1);
+        }
+        if (index.Y < _lineList.Count)
+        {
+            _lineList[index.Y].Take(index.X);
         }
         _items.Take(index.Value);
     }

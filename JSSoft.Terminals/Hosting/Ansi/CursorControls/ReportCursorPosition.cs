@@ -1,4 +1,4 @@
-// Released under the MIT License.
+﻿// Released under the MIT License.
 // 
 // Copyright (c) 2024 Jeesu Choi
 // 
@@ -16,11 +16,12 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals;
+namespace JSSoft.Terminals.Hosting.Ansi.CursorControls;
 
-public readonly struct TerminalTextChange(int index, int length)
+sealed class ReportCursorPosition : IEscapeSequence
 {
-    public int Index { get; } = index;
-
-    public int Length { get; } = length;
+    public void Process(TerminalLineCollection lines, EscapeSequenceContext context)
+    {
+        
+    }
 }

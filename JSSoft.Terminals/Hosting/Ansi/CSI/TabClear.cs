@@ -1,4 +1,4 @@
-// Released under the MIT License.
+﻿// Released under the MIT License.
 // 
 // Copyright (c) 2024 Jeesu Choi
 // 
@@ -16,9 +16,15 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals;
+namespace JSSoft.Terminals.Hosting.Ansi.CSI;
 
-public sealed class TerminalTextChangedEventArgs(int index) : EventArgs
+/// <summary>
+/// https://terminalguide.namepad.de/seq/csi_sg/
+/// </summary>
+sealed class TabClear : IEscapeSequence
 {
-    public int Index { get; } = index;
+    public void Process(TerminalLineCollection lines, EscapeSequenceContext context)
+    {
+        int qwer = 0;
+    }
 }

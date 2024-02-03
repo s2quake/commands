@@ -40,29 +40,7 @@ sealed class TerminalLine : IDisposable
         _group = GetHashCode();
     }
 
-    public TerminalCharacterInfo? this[int index]
-    {
-        get => _items[index + _offset];
-        // private set
-        // {
-        //     if (value is { } characterInfo)
-        //     {
-        //         _items[index + _offset] = characterInfo;
-        //         for (var i = 1; i < characterInfo.Span; i++)
-        //         {
-        //             _items[index + i + _offset] = new TerminalCharacterInfo
-        //             {
-        //                 Span = -i,
-        //                 Offset = characterInfo.Offset + i,
-        //             };
-        //         }
-        //     }
-        //     else
-        //     {
-        //         _items[index] = null;
-        //     }
-        // }
-    }
+    public TerminalCharacterInfo? this[int index] => _items[index + _offset];
 
     public int Length { get; private set; }
 
@@ -223,7 +201,7 @@ sealed class TerminalLine : IDisposable
             throw new InvalidOperationException("This is not the first line.");
 
         TerminalLine[] lines = [this, .. _children];
-        var capacity = GetCapacity(this);
+        var capacity = lines.Sum(item => item.Length);
         var itemList = new List<TerminalCharacterInfo>(capacity);
         foreach (var line in lines)
         {
@@ -266,6 +244,16 @@ sealed class TerminalLine : IDisposable
         IsModified = true;
     }
 
+    public void Take(int index)
+    {
+        for (var i = index; i < _width; i++)
+        {
+            _items[i + _offset] = null;
+        }
+        Length = index;
+        IsModified = true;
+    }
+
     public void Dispose()
     {
         if (_parent != null)
@@ -274,15 +262,5 @@ sealed class TerminalLine : IDisposable
             throw new ObjectDisposedException($"{this}");
 
         _isDisposed = true;
-    }
-
-    private static int GetCapacity(TerminalLine line)
-    {
-        var capacity = line.Length;
-        foreach (var item in line.Children)
-        {
-            capacity += item.Length;
-        }
-        return capacity;
     }
 }

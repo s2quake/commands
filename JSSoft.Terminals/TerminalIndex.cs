@@ -140,7 +140,7 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
         }) + 1;
     }
 
-    internal readonly TerminalIndex MoveForward(TerminalBlockBase block, int characterCount)
+    internal readonly TerminalIndex MoveForward(TerminalBlock block, int characterCount)
     {
         var index = this;
         for (var i = 0; i < characterCount; i++)
@@ -150,7 +150,7 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
         return index;
     }
 
-    internal readonly TerminalIndex MoveForward(TerminalBlockBase block)
+    internal readonly TerminalIndex MoveForward(TerminalBlock block)
     {
         var index = this;
         if (index.Y >= 0 && index.Y < block.Lines.Count)

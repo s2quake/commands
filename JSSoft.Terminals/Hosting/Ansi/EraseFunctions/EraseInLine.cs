@@ -33,8 +33,10 @@ sealed class EraseInLine : IEscapeSequence
     private void Action0(TerminalLineCollection lines, EscapeSequenceContext context)
     {
         var index = context.Index;
-        var line = lines[index];
-        line.Erase(index, line.Length - index.X);
+        if (lines.TryGetLine(index, out var line) == true)
+        {
+            line.Erase(index, line.Length - index.X);
+        }
     }
 
     // erase start of line to the cursor

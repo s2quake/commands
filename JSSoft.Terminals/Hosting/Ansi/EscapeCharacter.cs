@@ -16,7 +16,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using System.IO;
+using JSSoft.Terminals.Hosting.Ansi.CSI;
 using JSSoft.Terminals.Hosting.Ansi.CursorControls;
 using JSSoft.Terminals.Hosting.Ansi.EraseFunctions;
 
@@ -39,15 +39,27 @@ sealed class EscapeCharacter : IAsciiCode
         { 'm', new GraphicsMode() },
         { 's', new SaveCursorPosition() },
         { 'u', new RestoreCursorPosition() },
+
+        { 'n', new ReportCursorPosition() },
+        { 'R', new ReportCursorPosition() },
+        { 'x', new ReportCursorPosition() },
         
         { 'J', new EraseInDisplay() },
         { 'K', new EraseInLine() },
+
+        { 'p', new SoftReset() },
+        { 'l', new ResetMode() },
+        { 'g', new TabClear() },
+        { 'h', new CommonPrivateModes2() },
     };
 
     private static readonly Dictionary<char, IEscapeSequence> ESCSequenceByCharacter = new()
     {
         { '7', new SaveCursorPosition() },
         { '8', new RestoreCursorPosition() },
+
+        { 'c', new FullReset() },
+        { 'H', new HorizontalTabSet() },
     };
 
     public void Process(TerminalLineCollection lines, AsciiCodeContext context)

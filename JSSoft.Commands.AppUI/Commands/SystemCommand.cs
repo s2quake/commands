@@ -35,9 +35,6 @@ sealed class SystemCommand(TerminalControl terminalControl) : CommandAsyncBase
     {
         var process = new SystemProcess("brew")
         {
-            Out = _terminalControl.Out,
-            Error = _terminalControl.Error,
-            In = _terminalControl.In,
             ArgumentList =
             {
                 "list"

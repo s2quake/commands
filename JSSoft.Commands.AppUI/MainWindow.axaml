@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ctrl="using:JSSoft.Commands.AppUI.Controls"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="300"
-        Width="570" Height="340"
+        Width="680" Height="340"
         x:Class="JSSoft.Commands.AppUI.MainWindow"
         Title="JSSoft.Commands.AppUI">
     <Window.Resources>

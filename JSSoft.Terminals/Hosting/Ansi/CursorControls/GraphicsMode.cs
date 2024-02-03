@@ -23,7 +23,7 @@ sealed class GraphicsMode : IEscapeSequence
     public void Process(TerminalLineCollection lines, EscapeSequenceContext context)
     {
         var displayInfo = context.DisplayInfo;
-        var codes = context.Option.Split(';').Select(int.Parse).ToArray();
+        var codes = context.Option.Split(';', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
         displayInfo.SetGraphicRendition(codes);
         context.DisplayInfo = displayInfo;
     }

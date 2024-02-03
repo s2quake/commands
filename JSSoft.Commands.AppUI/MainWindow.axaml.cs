@@ -75,12 +75,20 @@ public partial class MainWindow : Window
         var progress = new TerminalProgress(_terminal);
         try
         {
+            _terminal.AppendLine(_terminal.Prompt + e.Command);
             await _commandContext.ExecuteAsync(e.Command, cancellationTokenSource.Token, progress);
             e.Success(token);
         }
         catch (Exception exception)
         {
-            _commandContext.Error.WriteLine(TerminalStringBuilder.GetString(exception.Message, TerminalColorType.BrightRed));
+            var message = exception.Message;
+            var tsb = new TerminalStringBuilder
+            {
+                Foreground = TerminalColorType.BrightRed
+            };
+            tsb.Append(message);
+            tsb.AppendEnd();
+            _commandContext.Error.WriteLine(tsb.ToString());
             e.Fail(token, exception);
         }
     }

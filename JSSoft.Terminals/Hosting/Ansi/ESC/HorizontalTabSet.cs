@@ -1,4 +1,4 @@
-// Released under the MIT License.
+﻿// Released under the MIT License.
 // 
 // Copyright (c) 2024 Jeesu Choi
 // 
@@ -16,12 +16,14 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting;
+namespace JSSoft.Terminals.Hosting.Ansi.EraseFunctions;
 
-sealed class TerminalPrompt(Terminal terminal) : TerminalBlockBase(terminal)
+/// <summary>
+/// https://terminalguide.namepad.de/seq/a_esc_ch/
+/// </summary>
+sealed class HorizontalTabSet : IEscapeSequence
 {
-    public void Set(string text, TerminalDisplayInfo displayInfo)
+    public void Process(TerminalLineCollection lines, EscapeSequenceContext context)
     {
-        SetText(text, displayInfo);
     }
 }

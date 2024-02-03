@@ -17,7 +17,6 @@
 // 
 
 using System.ComponentModel;
-using System.IO;
 using JSSoft.Terminals.Input;
 using JSSoft.Terminals.Serializations;
 
@@ -70,12 +69,6 @@ public interface ITerminal : INotifyPropertyChanged
     ITerminalSelection Selections { get; }
 
     TerminalSelection Selecting { get; set; }
-
-    TextWriter Out { get; set; }
-
-    TextWriter Error { get; set; }
-
-    TextReader In { get; set; }
 
     TerminalPoint ViewToWorld(TerminalPoint position);
 

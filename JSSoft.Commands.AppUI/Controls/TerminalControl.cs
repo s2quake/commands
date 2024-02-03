@@ -33,6 +33,12 @@ using JSSoft.Terminals.Extensions;
 using Avalonia.Utilities;
 using JSSoft.Terminals.Serializations;
 using System.IO;
+using Pty.Net;
+using System.Threading;
+using System.Text;
+using Avalonia.Threading;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace JSSoft.Commands.AppUI.Controls;
 
@@ -76,6 +82,8 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
     private Visual _inputVisual;
     private Window? _window;
 
+    private IPtyConnection? _pty;
+
     static TerminalControl()
     {
         FocusableProperty.OverrideDefaultValue(typeof(TerminalControl), true);
@@ -86,20 +94,61 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         _terminal = new(_terminalStyle, _terminalScroll);
         _terminal.PropertyChanged += Terminal_PropertyChanged;
         _inputHandler = _terminal.InputHandler;
-        _terminal.Prompt = "터미널 $ ";
+        // _terminal.Prompt = "터미널 $ ";
         _terminal.Completor = GetCompletion;
         _terminal.Executing += Terminal_Executing;
         _terminal.Executed += Terminal_Executed;
         _terminalScroll.PropertyChanged += TerminalScroll_PropertyChanged;
         _inputVisual = this;
 
-        _terminal.AppendLine("Last login: Mon Dec 25 21:19:42 on ttys002");
+        // _terminal.AppendLine("Last login: Mon Dec 25 21:19:42 on ttys002");
         // _terminal.AppendLine("1");
         // _terminal.AppendLine("2");
         // _terminal.AppendLine("3");
         // _terminal.AppendLine("4");
         // _terminal.AppendLine("5");
         // _terminal.OriginCoordinate = new TerminalCoord(0, 6);
+
+        string app = TerminalEnvironment.IsWindows() == true ? Path.Combine(Environment.SystemDirectory, "cmd.exe") : "sh";
+        var options = new PtyOptions
+        {
+            Name = "Custom terminal",
+            Cols = _terminal.BufferSize.Width,
+            Rows = _terminal.BufferSize.Height,
+            Cwd = Environment.CurrentDirectory,
+            App = app,
+            Environment = new Dictionary<string, string>()
+            {
+                { "FOO", "bar" },
+                { "Bazz", string.Empty },
+            },
+        };
+
+        async void wow()
+        {
+            _pty = await PtyProvider.SpawnAsync(options, cancellationToken: default);
+            // _pty.Resize(_terminal.BufferSize.Width, _terminal.BufferSize.Height);
+            ReadStream(_pty);
+        }
+        wow();
+    }
+
+    private async void ReadStream(IPtyConnection pty)
+    {
+        var buffer = new byte[4096];
+        var cancellationTokenSource = new CancellationTokenSource();
+
+        while (true)
+        {
+            var count = await pty.ReaderStream.ReadAsync(buffer, cancellationTokenSource.Token);
+            if (count == 0)
+            {
+                break;
+            }
+            var t = Encoding.UTF8.GetString(buffer, 0, count);
+            Trace.WriteLine(Regex.Escape(t));
+            Dispatcher.UIThread.Invoke(() => _terminal.Append(t));
+        }
     }
 
     public bool IsReadOnly
@@ -126,22 +175,9 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         private set => SetAndRaise(BufferSizeProperty, ref _bufferWidth, value);
     }
 
-    public TextWriter Out
+    public string Prompt
     {
-        get => _terminal.Out;
-        set => _terminal.Out = value;
-    }
-
-    public TextWriter Error
-    {
-        get => _terminal.Error;
-        set => _terminal.Error = value;
-    }
-
-    public TextReader In
-    {
-        get => _terminal.In;
-        set => _terminal.In = value;
+        get => _terminal.Prompt;
     }
 
     public void Append(string text) => _terminal.Append(text);
@@ -208,6 +244,11 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
             _terminalScroll.ScrollBar = scrollBar;
             _scrollBar = scrollBar;
         }
+    }
+
+    protected override void OnLoaded(RoutedEventArgs e)
+    {
+        base.OnLoaded(e);
     }
 
     protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
@@ -367,13 +408,20 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         else if (e.PropertyName == nameof(ITerminal.BufferSize))
         {
             BufferSize = new Size(_terminal.BufferSize.Width, _terminal.BufferSize.Height);
+            // _pty.Resize(_terminal.BufferSize.Width, _terminal.BufferSize.Height);
         }
     }
 
-    private void Terminal_Executing(object? sender, TerminalExecutingEventArgs e)
+    private async void Terminal_Executing(object? sender, TerminalExecutingEventArgs e)
     {
-        var args = new TerminalExecutingRoutedEventArgs(e, ExecutingEvent);
-        RaiseEvent(args);
+        // var args = new TerminalExecutingRoutedEventArgs(e, ExecutingEvent);
+        // RaiseEvent(args);
+
+        var token = e.GetToken();
+        var commandBuffer = Encoding.UTF8.GetBytes(e.Command + "\n");
+        await _pty.WriterStream.WriteAsync(commandBuffer, cancellationToken: default);
+        await _pty.WriterStream.FlushAsync();
+        e.Success(token);
     }
 
     private void Terminal_Executed(object? sender, TerminalExecutedEventArgs e)

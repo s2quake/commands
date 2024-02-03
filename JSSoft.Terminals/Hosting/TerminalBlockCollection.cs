@@ -20,35 +20,30 @@ using System.Collections;
 
 namespace JSSoft.Terminals.Hosting;
 
-sealed class TerminalBlockCollection : IEnumerable<TerminalBlockBase>
+sealed class TerminalBlockCollection : IEnumerable<TerminalBlock>
 {
     private readonly Queue<TerminalBlock> _poolQueue = [];
     private readonly List<TerminalBlock> _itemList;
     private readonly Terminal _terminal;
-    private readonly TerminalArray<TerminalBlockBase> _indexes = [];
+    private readonly TerminalArray<TerminalBlock> _indexes = [];
 
     public TerminalBlockCollection(Terminal terminal)
     {
-        OutputBlock = new TerminalBlock(terminal);
-        PromptBlock = new TerminalPrompt(terminal);
-        _itemList = [OutputBlock];
+        CurrentBlock = new TerminalBlock(terminal);
+        _itemList = [CurrentBlock];
         _terminal = terminal;
-        OutputBlock.Index = _itemList.IndexOf(OutputBlock);
-        PromptBlock.Index = _itemList.Count;
+        CurrentBlock.Index = _itemList.IndexOf(CurrentBlock);
         UpdateTransform(index: 0, y: 0);
-        OutputBlock.TextChanged += Block_TextChanged;
-        PromptBlock.TextChanged += Block_TextChanged;
+        CurrentBlock.TextChanged += Block_TextChanged;
     }
 
-    public TerminalPrompt PromptBlock { get; }
+    public TerminalBlock CurrentBlock { get; private set; }
 
-    public TerminalBlock OutputBlock { get; private set; }
-
-    public int Count => _itemList.Count + 1;
+    public int Count => _itemList.Count;
 
     public int Height { get; private set; }
 
-    public TerminalBlockBase this[int index] => index == _itemList.Count ? PromptBlock : _itemList[index];
+    public TerminalBlock this[int index] => _itemList[index];
 
     public void Clear()
     {
@@ -64,23 +59,15 @@ sealed class TerminalBlockCollection : IEnumerable<TerminalBlockBase>
             item.Clear();
         }
         _itemList.Clear();
-        OutputBlock = _poolQueue.TryDequeue(out var outputBlock) == true ? outputBlock : new TerminalBlock(_terminal);
-        _itemList.Add(OutputBlock);
-        OutputBlock.Index = _itemList.IndexOf(OutputBlock);
-        PromptBlock.Index = _itemList.Count;
+        CurrentBlock = _poolQueue.TryDequeue(out var outputBlock) == true ? outputBlock : new TerminalBlock(_terminal);
+        _itemList.Add(CurrentBlock);
+        CurrentBlock.Index = _itemList.IndexOf(CurrentBlock);
         UpdateTransform(index: 0, y: 0);
-        OutputBlock.TextChanged += Block_TextChanged;
+        CurrentBlock.TextChanged += Block_TextChanged;
         Updated?.Invoke(this, EventArgs.Empty);
     }
 
-    public int IndexOf(TerminalBlockBase item)
-    {
-        if (item == PromptBlock)
-            return _itemList.Count;
-        if (item is TerminalBlock block)
-            return _itemList.IndexOf(block);
-        return -1;
-    }
+    public int IndexOf(TerminalBlock item) => _itemList.IndexOf(item);
 
     public void Update()
     {
@@ -138,9 +125,9 @@ sealed class TerminalBlockCollection : IEnumerable<TerminalBlockBase>
         _indexes.Take(Height);
     }
 
-    private void Block_TextChanged(object? sender, TerminalTextChangedEventArgs e)
+    private void Block_TextChanged(object? sender, EventArgs e)
     {
-        if (sender is TerminalBlockBase block)
+        if (sender is TerminalBlock block)
         {
             var index = block.Index;
             var y = block.Top;
@@ -151,13 +138,12 @@ sealed class TerminalBlockCollection : IEnumerable<TerminalBlockBase>
 
     #region IEnumerable
 
-    IEnumerator<TerminalBlockBase> IEnumerable<TerminalBlockBase>.GetEnumerator()
+    IEnumerator<TerminalBlock> IEnumerable<TerminalBlock>.GetEnumerator()
     {
         foreach (var item in _itemList)
         {
             yield return item;
         }
-        yield return PromptBlock;
     }
 
     IEnumerator IEnumerable.GetEnumerator()
@@ -166,7 +152,6 @@ sealed class TerminalBlockCollection : IEnumerable<TerminalBlockBase>
         {
             yield return item;
         }
-        yield return PromptBlock;
     }
 
     #endregion
