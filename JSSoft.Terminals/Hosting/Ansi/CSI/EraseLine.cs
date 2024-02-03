@@ -16,53 +16,57 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using JSSoft.Terminals.Hosting.Ansi.CSI;
+
 namespace JSSoft.Terminals.Hosting.Ansi.EraseFunctions;
 
-sealed class EraseInDisplay : IEscapeSequence
+/// <summary>
+/// https://terminalguide.namepad.de/seq/csi_ck/
+/// </summary>
+sealed class EraseLine : CSISequenceBase
 {
     private static readonly Action<TerminalLineCollection, EscapeSequenceContext> EmptyAction = (items, context) => { };
 
-    public void Process(TerminalLineCollection lines, EscapeSequenceContext context)
+    public EraseLine()
+        : base('K')
+    {
+    }
+
+    protected override void OnProcess(TerminalLineCollection lines, EscapeSequenceContext context)
     {
         var option = context.GetOptionValue(index: 0) ?? 0;
         var action = GetAction(option);
         action.Invoke(lines, context);
     }
 
-    // erase from cursor until end of screen
+    // erase from cursor to end of line
     private void Action0(TerminalLineCollection lines, EscapeSequenceContext context)
     {
-        var view = context.View;
-        var index0 = context.Index;
-        var index1 = new TerminalIndex(x: view.Right - 1, y: view.Bottom - 1, view.Width);
-        var length = Math.Min(lines.Count, index1.Value) - index0.X;
-        lines.Erase(index0, length);
+        var index = context.Index;
+        if (lines.TryGetLine(index, out var line) == true)
+        {
+            line.Erase(index, line.Length - index.X);
+        }
     }
 
-    // erase from cursor to beginning of screen
+    // erase start of line to the cursor
     private void Action1(TerminalLineCollection lines, EscapeSequenceContext context)
     {
-        var view = context.View;
-        var index0 = new TerminalIndex(x: view.Left, y: view.Top, view.Width);
-        var index1 = context.Index;
-        var length = index1 - index0;
-        lines.Erase(index0, length);
+        var index = context.Index;
+        var index1 = index.MoveToFirstOfLine();
+        var index2 = index;
+        var length = Math.Max(index2 - index1, 1);
+        var line = lines[index1];
+        line.Erase(index1, length);
     }
 
-    // erase entire screen
+    // erase the entire line
     private void Action2(TerminalLineCollection lines, EscapeSequenceContext context)
     {
         var view = context.View;
-        var index0 = new TerminalIndex(x: view.Left, y: view.Top, view.Width);
-        var index1 = new TerminalIndex(x: view.Right - 1, y: view.Bottom - 1, view.Width);
-        var length = Math.Min(lines.Count, index1.Value) - index0.Value;
-        lines.Erase(index0, length);
-    }
-
-    // erase saved lines
-    private void Action3(TerminalLineCollection lines, EscapeSequenceContext context)
-    {
-
+        var index = context.Index;
+        var line = lines[index];
+        line.Erase(0, line.Length);
     }
 
     private Action<TerminalLineCollection, EscapeSequenceContext> GetAction(int option) => option switch
@@ -70,7 +74,6 @@ sealed class EraseInDisplay : IEscapeSequence
         0 => Action0,
         1 => Action1,
         2 => Action2,
-        3 => Action3,
         _ => EmptyAction,
     };
 }

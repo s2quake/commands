@@ -16,14 +16,25 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi.EraseFunctions;
+using JSSoft.Terminals.Hosting.Ansi.CSI;
 
-sealed class CommonPrivateModes2 : IEscapeSequence
+namespace JSSoft.Terminals.Hosting.Ansi.CSI;
+
+/// <summary>
+/// https://terminalguide.namepad.de/seq/csi_cc/
+/// </summary>
+sealed class CursorRight : CSISequenceBase
 {
-    private static readonly Action<TerminalLineCollection, EscapeSequenceContext> EmptyAction = (items, context) => { };
-
-    public void Process(TerminalLineCollection lines, EscapeSequenceContext context)
+    public CursorRight()
+        : base('C')
     {
+    }
 
+    protected override void OnProcess(TerminalLineCollection lines, EscapeSequenceContext context)
+    {
+        var index = context.Index;
+        var value = context.GetOptionValue(index: 0) ?? 1;
+        var count = Math.Max(1, value);
+        context.Index = index.CursorRight(count);
     }
 }

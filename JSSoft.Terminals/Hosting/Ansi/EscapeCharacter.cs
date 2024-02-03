@@ -16,51 +16,38 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using System.Diagnostics;
 using JSSoft.Terminals.Hosting.Ansi.CSI;
-using JSSoft.Terminals.Hosting.Ansi.CursorControls;
 using JSSoft.Terminals.Hosting.Ansi.EraseFunctions;
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
 sealed class EscapeCharacter : IAsciiCode
 {
-    // Control Sequence Introducer
-    private static readonly Dictionary<char, IEscapeSequence> CSISequenceByCharacter = new()
+    private static readonly Dictionary<SequenceType, Dictionary<char, ISequence>> SequencesByType = new()
     {
-        { 'H', new CursorPosition() },
-        { 'f', new CursorPosition() },
-        { 'A', new CursorUp() },
-        { 'B', new CursorDown() },
-        { 'C', new CursorRight() },
-        { 'D', new CursorLeft() },
-        { 'E', new CursorToBeginningOfNextLine() },
-        { 'F', new CursorToBeginningOfPreviousLine() },
-        { 'G', new CursorToColumn() },
-        { 'm', new GraphicsMode() },
-        { 's', new SaveCursorPosition() },
-        { 'u', new RestoreCursorPosition() },
-
-        { 'n', new ReportCursorPosition() },
-        { 'R', new ReportCursorPosition() },
-        { 'x', new ReportCursorPosition() },
-        
-        { 'J', new EraseInDisplay() },
-        { 'K', new EraseInLine() },
-
-        { 'p', new SoftReset() },
-        { 'l', new ResetMode() },
-        { 'g', new TabClear() },
-        { 'h', new CommonPrivateModes2() },
+        { SequenceType.ESC, new Dictionary<char, ISequence>() },
+        { SequenceType.CSI, new Dictionary<char, ISequence>() },
+        { SequenceType.DCS, new Dictionary<char, ISequence>() },
+        { SequenceType.OSC, new Dictionary<char, ISequence>() },
     };
+    private static readonly Dictionary<char, ISequence> CSISequenceByCharacter = SequencesByType[SequenceType.CSI];
+    private static readonly Dictionary<char, ISequence> ESCSequenceByCharacter = SequencesByType[SequenceType.ESC];
 
-    private static readonly Dictionary<char, IEscapeSequence> ESCSequenceByCharacter = new()
+    static EscapeCharacter()
     {
-        { '7', new SaveCursorPosition() },
-        { '8', new RestoreCursorPosition() },
-
-        { 'c', new FullReset() },
-        { 'H', new HorizontalTabSet() },
-    };
+        var types = typeof(EscapeCharacter).Assembly.GetTypes();
+        var query = from type in types
+                    where typeof(ISequence).IsAssignableFrom(type) == true
+                    where type.IsAbstract != true
+                    select type;
+        var items = query.ToArray();
+        foreach (var item in items)
+        {
+            var obj = (ISequence)Activator.CreateInstance(item)!;
+            SequencesByType[obj.Type].Add(obj.Character, obj);
+        }
+    }
 
     public void Process(TerminalLineCollection lines, AsciiCodeContext context)
     {
@@ -76,6 +63,7 @@ sealed class EscapeCharacter : IAsciiCode
                     var escapeSequence = CSISequenceByCharacter[character];
                     var option = context.Text.Substring(s1, i - s1);
                     var escapeSequenceContext = new EscapeSequenceContext(option, context);
+                    Console.WriteLine($"ESC [ {option}{character}");
                     escapeSequence.Process(lines, escapeSequenceContext);
                     context.TextIndex = i + 1;
                     return;
@@ -93,9 +81,14 @@ sealed class EscapeCharacter : IAsciiCode
                     var escapeSequence = ESCSequenceByCharacter[character];
                     var option = context.Text.Substring(s1, i - s1);
                     var escapeSequenceContext = new EscapeSequenceContext(option, context);
+                    Console.WriteLine($"ESC {option}{character}");
                     escapeSequence.Process(lines, escapeSequenceContext);
                     context.TextIndex = i + 1;
                     return;
+                }
+                if (character == '\x1b')
+                {
+                    throw new NotImplementedException();
                 }
             }
         }

@@ -16,15 +16,25 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi.CursorControls;
+namespace JSSoft.Terminals.Hosting.Ansi.CSI;
 
-sealed class GraphicsMode : IEscapeSequence
+sealed class SetCursorPosition : CSISequenceBase
 {
-    public void Process(TerminalLineCollection lines, EscapeSequenceContext context)
+    public SetCursorPosition()
+        : base('H')
     {
-        var displayInfo = context.DisplayInfo;
-        var codes = context.Option.Split(';', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
-        displayInfo.SetGraphicRendition(codes);
-        context.DisplayInfo = displayInfo;
+    }
+
+    protected override void OnProcess(TerminalLineCollection lines, EscapeSequenceContext context)
+    {
+        var view = context.View;
+        var r1 = (context.GetOptionValue(index: 0) ?? 1) - 1;
+        var c1 = (context.GetOptionValue(index: 1) ?? 1) - 1;
+        var r2 = TerminalMathUtility.Clamp(r1, 0, view.Height - 1) + view.Y;
+        var c2 = TerminalMathUtility.Clamp(c1, 0, view.Width - 1);
+        var index = new TerminalIndex(new TerminalCoord(c2, r2), view.Width);
+        // context.OriginCoordinate = (TerminalCoord)index;
+        context.Index = index;
+        context.BeginIndex = index.CarriageReturn();
     }
 }

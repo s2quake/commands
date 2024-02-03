@@ -16,16 +16,27 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi.CursorControls;
+using JSSoft.Terminals.Hosting.Ansi.CSI;
 
-sealed class CursorToColumn : IEscapeSequence
+namespace JSSoft.Terminals.Hosting.Ansi.CSI;
+
+/// <summary>
+/// https://terminalguide.namepad.de/seq/csi_cb/
+/// </summary>
+sealed class CursorDown : CSISequenceBase
 {
-    public void Process(TerminalLineCollection lines, EscapeSequenceContext context)
+    public CursorDown()
+        : base('B')
+    {
+    }
+
+    protected override void OnProcess(TerminalLineCollection lines, EscapeSequenceContext context)
     {
         var view = context.View;
         var index = context.Index;
-        var c1 = (context.GetOptionValue(index: 0) ?? 1) - 1;
-        var c2 = TerminalMathUtility.Clamp(c1, 0, view.Width - 1);
-        context.Index = index.CursorToColumn(c2);
+        var value = context.GetOptionValue(index: 0) ?? 1;
+        var count = Math.Max(1, value);
+        index = index.CursorDown(count, view.Bottom);
+        context.Index = index;
     }
 }

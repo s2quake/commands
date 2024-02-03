@@ -16,14 +16,19 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi.EraseFunctions;
+namespace JSSoft.Terminals.Hosting.Ansi.ESC;
 
 /// <summary>
 /// https://terminalguide.namepad.de/seq/a_esc_ch/
 /// </summary>
-sealed class HorizontalTabSet : IEscapeSequence
+sealed class HorizontalTabSet : ESCSequenceBase
 {
-    public void Process(TerminalLineCollection lines, EscapeSequenceContext context)
+    public HorizontalTabSet()
+        : base('H')
+    {
+    }
+
+    protected override void OnProcess(TerminalLineCollection lines, EscapeSequenceContext context)
     {
     }
 }

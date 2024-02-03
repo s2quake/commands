@@ -16,16 +16,23 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi.CursorControls;
+namespace JSSoft.Terminals.Hosting.Ansi.CSI;
 
-sealed class RestoreCursorPosition : IEscapeSequence
+/// <summary>
+/// Cursor Previous Line
+/// </summary>
+sealed class CursorPreviousLine : CSISequenceBase
 {
-    public void Process(TerminalLineCollection lines, EscapeSequenceContext context)
+    public CursorPreviousLine()
+        : base('F')
     {
-        var view = context.View;
+    }
+
+    protected override void OnProcess(TerminalLineCollection lines, EscapeSequenceContext context)
+    {
         var index = context.Index;
-        var viewCoord = context.ViewCoordinate;
-        var coord = viewCoord + new TerminalCoord(0, view.Y);
-        context.Index = new TerminalIndex(coord, view.Width);
+        var value = context.GetOptionValue(index: 0) ?? 1;
+        var count = Math.Max(1, value);
+        context.Index = index.CursorRight(count);
     }
 }

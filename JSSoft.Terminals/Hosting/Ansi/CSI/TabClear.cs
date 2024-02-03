@@ -21,10 +21,14 @@ namespace JSSoft.Terminals.Hosting.Ansi.CSI;
 /// <summary>
 /// https://terminalguide.namepad.de/seq/csi_sg/
 /// </summary>
-sealed class TabClear : IEscapeSequence
+sealed class TabClear : CSISequenceBase
 {
-    public void Process(TerminalLineCollection lines, EscapeSequenceContext context)
+    public TabClear()
+        : base('g')
     {
-        int qwer = 0;
+    }
+
+    protected override void OnProcess(TerminalLineCollection lines, EscapeSequenceContext context)
+    {
     }
 }

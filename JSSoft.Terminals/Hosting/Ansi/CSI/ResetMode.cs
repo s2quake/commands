@@ -22,10 +22,14 @@ namespace JSSoft.Terminals.Hosting.Ansi.CSI;
 /// https://terminalguide.namepad.de/seq/csi_sl/
 /// https://terminalguide.namepad.de/seq/csi_sl__p/
 /// </summary>
-sealed class ResetMode : IEscapeSequence
+sealed class ResetMode : CSISequenceBase
 {
-    public void Process(TerminalLineCollection lines, EscapeSequenceContext context)
+    public ResetMode()
+        : base('l')
     {
-        int qwer = 0;
+    }
+
+    protected override void OnProcess(TerminalLineCollection lines, EscapeSequenceContext context)
+    {
     }
 }

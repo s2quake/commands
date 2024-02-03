@@ -16,15 +16,27 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi.CursorControls;
+using JSSoft.Terminals.Hosting.Ansi.CSI;
 
-sealed class CursorToBeginningOfPreviousLine : IEscapeSequence
+namespace JSSoft.Terminals.Hosting.Ansi.CSI;
+
+/// <summary>
+/// https://terminalguide.namepad.de/seq/csi_ce/
+/// </summary>
+sealed class CursorNextLine : CSISequenceBase
 {
-    public void Process(TerminalLineCollection lines, EscapeSequenceContext context)
+    public CursorNextLine()
+        : base('E')
     {
+    }
+
+    protected override void OnProcess(TerminalLineCollection lines, EscapeSequenceContext context)
+    {
+        var view = context.View;
         var index = context.Index;
         var value = context.GetOptionValue(index: 0) ?? 1;
         var count = Math.Max(1, value);
-        context.Index = index.CursorRight(count);
+        index = index.CursorDown(count, view.Bottom).MoveToFirstOfLine();
+        context.Index = index;
     }
 }

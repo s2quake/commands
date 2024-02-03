@@ -16,21 +16,25 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using JSSoft.Terminals.Hosting.Ansi.ESC;
-
-namespace JSSoft.Terminals.Hosting.Ansi.EraseFunctions;
+namespace JSSoft.Terminals.Hosting.Ansi.CSI;
 
 /// <summary>
-/// https://terminalguide.namepad.de/seq/a_esc_sc/
+/// https://terminalguide.namepad.de/seq/csi_ca/
 /// </summary>
-sealed class FullReset : ESCSequenceBase
+sealed class CursorUp : CSISequenceBase
 {
-    public FullReset()
-        : base('c')
+    public CursorUp()
+        : base('A')
     {
     }
 
     protected override void OnProcess(TerminalLineCollection lines, EscapeSequenceContext context)
     {
+        var view = context.View;
+        var index = context.Index;
+        var value = context.GetOptionValue(index: 0) ?? 1;
+        var count = Math.Max(1, value);
+        index = index.CursorUp(count, view.Top);
+        context.Index = index;
     }
 }

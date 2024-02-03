@@ -21,10 +21,14 @@ namespace JSSoft.Terminals.Hosting.Ansi.CSI;
 /// <summary>
 /// https://terminalguide.namepad.de/seq/csi_sp_t_bang/
 /// </summary>
-sealed class SoftReset : IEscapeSequence
+sealed class SoftReset : CSISequenceBase
 {
-    public void Process(TerminalLineCollection lines, EscapeSequenceContext context)
+    public SoftReset()
+        : base('p')
     {
-        int qwer = 0;
+    }
+
+    protected override void OnProcess(TerminalLineCollection lines, EscapeSequenceContext context)
+    {
     }
 }

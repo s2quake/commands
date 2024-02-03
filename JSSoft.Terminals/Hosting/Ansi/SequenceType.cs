@@ -16,21 +16,15 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using JSSoft.Terminals.Hosting.Ansi.ESC;
+namespace JSSoft.Terminals.Hosting.Ansi;
 
-namespace JSSoft.Terminals.Hosting.Ansi.EraseFunctions;
-
-/// <summary>
-/// https://terminalguide.namepad.de/seq/a_esc_sc/
-/// </summary>
-sealed class FullReset : ESCSequenceBase
+enum SequenceType
 {
-    public FullReset()
-        : base('c')
-    {
-    }
+    ESC,
 
-    protected override void OnProcess(TerminalLineCollection lines, EscapeSequenceContext context)
-    {
-    }
+    CSI,
+
+    DCS,
+
+    OSC
 }
