@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Pty.Net.Mac
+namespace JSSoft.Terminals.Pty.Linux
 {
     using System;
     using System.Collections.Generic;
@@ -9,10 +9,10 @@ namespace Pty.Net.Mac
     using System.Runtime.InteropServices;
     using System.Threading;
     using System.Threading.Tasks;
-    using static Pty.Net.Mac.NativeMethods;
+    using static JSSoft.Terminals.Pty.Linux.NativeMethods;
 
     /// <summary>
-    /// Provides a pty connection for MacOS machines.
+    /// Provides a pty connection for linux machines.
     /// </summary>
     internal class PtyProvider : Unix.PtyProvider
     {
@@ -41,8 +41,6 @@ namespace Pty.Net.Mac
                 { TermSpecialControlCharacter.VDISCARD, 15 },
                 { TermSpecialControlCharacter.VMIN, 1 },
                 { TermSpecialControlCharacter.VTIME, 0 },
-                { TermSpecialControlCharacter.VDSUSP, 25 },
-                { TermSpecialControlCharacter.VSTATUS, 20 },
             };
 
             var term = new Termios(

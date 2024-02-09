@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Pty.Net.Mac;
+namespace JSSoft.Terminals.Pty.Mac;
 
 /// <summary>
 /// Defines native types and methods for interop with Mac OS system APIs.

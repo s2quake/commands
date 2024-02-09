@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Pty.Net.Windows
+namespace JSSoft.Terminals.Pty.Windows
 {
     using System;
     using System.Diagnostics;
     using System.IO;
-    using static Pty.Net.Windows.NativeMethods;
-    using static Pty.Net.Windows.WinptyNativeInterop;
+    using static JSSoft.Terminals.Pty.Windows.NativeMethods;
+    using static JSSoft.Terminals.Pty.Windows.WinptyNativeInterop;
 
     /// <summary>
     /// A connection to a pseudoterminal spawned via winpty.

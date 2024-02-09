@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Commands.AppUI", "JS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Terminals", "JSSoft.Terminals\JSSoft.Terminals.csproj", "{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSSoft.Terminals.Pty", "JSSoft.Terminals.Pty\JSSoft.Terminals.Pty.csproj", "{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -127,6 +129,18 @@ Global
 		{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}.Release|x64.Build.0 = Release|Any CPU
 		{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}.Release|x86.ActiveCfg = Release|Any CPU
 		{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}.Release|x86.Build.0 = Release|Any CPU
+		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Debug|x64.Build.0 = Debug|Any CPU
+		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Debug|x86.Build.0 = Debug|Any CPU
+		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Release|x64.ActiveCfg = Release|Any CPU
+		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Release|x64.Build.0 = Release|Any CPU
+		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Release|x86.ActiveCfg = Release|Any CPU
+		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

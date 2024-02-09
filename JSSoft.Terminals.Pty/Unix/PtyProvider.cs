@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Pty.Net.Unix;
+namespace JSSoft.Terminals.Pty.Unix;
 
 /// <summary>
 /// Abstract class that provides a pty connection for unix-like machines.

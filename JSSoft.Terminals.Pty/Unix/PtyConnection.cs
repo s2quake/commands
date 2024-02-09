@@ -6,7 +6,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-namespace Pty.Net.Unix;
+namespace JSSoft.Terminals.Pty.Unix;
 /// <summary>
 /// A connection to a Unix-style pseudoterminal.
 /// </summary>

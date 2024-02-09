@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Pty.Net.Linux
+namespace JSSoft.Terminals.Pty.Linux
 {
     using System.Diagnostics;
-    using static Pty.Net.Linux.NativeMethods;
+    using static JSSoft.Terminals.Pty.Linux.NativeMethods;
 
     /// <summary>
     /// A connection to a pseudoterminal on linux machines.

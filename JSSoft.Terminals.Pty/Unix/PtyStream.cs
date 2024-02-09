@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using Microsoft.Win32.SafeHandles;
 
-namespace Pty.Net.Unix;
+namespace JSSoft.Terminals.Pty.Unix;
 
 /// <summary>
 /// A stream connected to a pty.

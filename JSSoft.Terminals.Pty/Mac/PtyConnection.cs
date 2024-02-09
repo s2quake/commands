@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Pty.Net.Mac
+namespace JSSoft.Terminals.Pty.Mac
 {
     using System.Diagnostics;
-    using static Pty.Net.Mac.NativeMethods;
+    using static JSSoft.Terminals.Pty.Mac.NativeMethods;
 
     /// <summary>
     /// A connection to a pseudoterminal on MacOS machines.
