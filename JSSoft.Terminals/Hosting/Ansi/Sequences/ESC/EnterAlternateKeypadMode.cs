@@ -19,12 +19,12 @@
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.ESC;
 
 /// <summary>
-/// https://terminalguide.namepad.de/seq/a_esc_ch/
+/// ESC =
 /// </summary>
-sealed class HorizontalTabSet : ESCSequenceBase
+sealed class EnterAlternateKeypadMode : ESCSequenceBase
 {
-    public HorizontalTabSet()
-        : base('H')
+    public EnterAlternateKeypadMode()
+        : base('=')
     {
     }
 

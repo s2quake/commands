@@ -19,14 +19,17 @@
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 /// <summary>
-/// CSI Ps g
+/// CSI > Pp ; Pv m
+/// CSI > Pp m
 /// </summary>
-sealed class TabClear : CSISequenceBase
+sealed class SetResetKeyModifierOptions : CSISequenceBase
 {
-    public TabClear()
-        : base('g')
+    public SetResetKeyModifierOptions()
+        : base('m')
     {
     }
+
+    public override string Prefix => ">";
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {

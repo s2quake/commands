@@ -19,14 +19,16 @@
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 /// <summary>
-/// CSI Ps g
+/// CSI Ps SP t
 /// </summary>
-sealed class TabClear : CSISequenceBase
+sealed class SetWarningBellVolume : CSISequenceBase
 {
-    public TabClear()
-        : base('g')
+    public SetWarningBellVolume()
+        : base('t')
     {
     }
+
+    public override string Suffix => " ";
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {

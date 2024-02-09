@@ -16,19 +16,9 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
+namespace JSSoft.Terminals.Hosting.Ansi.Sequences.OSC;
 
-/// <summary>
-/// CSI Ps g
-/// </summary>
-sealed class TabClear : CSISequenceBase
+abstract class OperatingSystemCommandsBase(char character)
+    : OSCSequenceBase(character)
 {
-    public TabClear()
-        : base('g')
-    {
-    }
-
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
-    {
-    }
 }

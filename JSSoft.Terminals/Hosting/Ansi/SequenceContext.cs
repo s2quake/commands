@@ -26,7 +26,7 @@ sealed class SequenceContext(string option, AsciiCodeContext asciiCodeContext)
 
     public string Option { get; } = option;
 
-    public int?[] Options { get; } = option.Split(';').Select(Parse).ToArray();
+    public int[] Options { get; } = option.Split(';').Select(Parse).ToArray();
 
     public ITerminalFont Font => _asciiCodeContext.Font;
 
@@ -62,12 +62,12 @@ sealed class SequenceContext(string option, AsciiCodeContext asciiCodeContext)
 
     public TerminalRect View => _asciiCodeContext.View;
 
-    public int? GetOptionValue(int index)
+    public int GetNumericValue(int index, int defaultValue)
     {
-        return index < Options.Length ? Options[index] : null;
+        return index < Options.Length ? Options[index] : defaultValue;
     }
 
-    private static int? Parse(string s)
+    public static int Parse(string s)
     {
         var sb = new StringBuilder(s.Length);
         foreach (var item in s)
@@ -77,6 +77,6 @@ sealed class SequenceContext(string option, AsciiCodeContext asciiCodeContext)
                 sb.Append(item);
             }
         }
-        return int.TryParse(sb.ToString(), out var i) == true ? i : null;
+        return int.TryParse(sb.ToString(), out var i) == true ? i : 0;
     }
 }

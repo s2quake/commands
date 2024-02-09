@@ -19,12 +19,12 @@
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 /// <summary>
-/// CSI Ps g
+/// CSI Ps ; Ps ; Ps t
 /// </summary>
-sealed class TabClear : CSISequenceBase
+sealed class WindowManipulation : CSISequenceBase
 {
-    public TabClear()
-        : base('g')
+    public WindowManipulation()
+        : base('t')
     {
     }
 

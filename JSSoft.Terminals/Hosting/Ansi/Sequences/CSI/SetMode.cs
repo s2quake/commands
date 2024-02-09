@@ -19,7 +19,7 @@
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 /// <summary>
-/// https://terminalguide.namepad.de/seq/csi_sh/
+/// CSI Pm h
 /// </summary>
 sealed class SetMode : CSISequenceBase
 {

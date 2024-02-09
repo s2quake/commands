@@ -16,12 +16,19 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-// namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
+namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-// sealed class ReportCursorPosition : ISequence
-// {
-//     public void Process(TerminalLineCollection lines, EscapeSequenceContext context)
-//     {
-        
-//     }
-// }
+/// <summary>
+/// CSI Ps ; Ps r
+/// </summary>
+sealed class SetScrollingRegion : CSISequenceBase
+{
+    public SetScrollingRegion()
+        : base('r')
+    {
+    }
+
+    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    {
+    }
+}

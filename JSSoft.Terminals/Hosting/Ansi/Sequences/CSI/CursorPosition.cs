@@ -16,51 +16,27 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using JSSoft.Terminals.Hosting.Ansi.Modes;
-
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-// ESC [ ? Ⓝ $ p
-//   	Request Mode (?) (DECRQM)
-//      https://terminalguide.namepad.de/seq/csi_sp__p_t_dollar/
-// ESC [ > Ⓝ p
-//   	Change Mouse Pointer Auto Hide
-//      https://terminalguide.namepad.de/seq/csi_sp__q/
-// ESC [ ! p
-//   	Soft Reset (DECSTR)	todo
-//      https://terminalguide.namepad.de/seq/csi_sp_t_bang/
-// ESC [ Ⓝ $ p
-//   	Request Mode (RQM)
-//      https://terminalguide.namepad.de/seq/csi_sp_t_dollar/
-// ESC [ [ Ⓝ ] # p
-//   	Alias: Save Rendition Attributes
-//      https://terminalguide.namepad.de/seq/csi_sp_t_hash/
-// ESC [ Ⓝ + p
-//   	??? DECSR
-//      https://terminalguide.namepad.de/seq/csi_sp_t_plus/
-// ESC [ Ⓝ ; Ⓝ " p
-//   	Select VT-XXX Conformance Level (DECSCL)
-//      https://terminalguide.namepad.de/seq/csi_sp_t_quote/
-sealed class SoftReset : CSISequenceBase
+/// <summary>
+/// CSI Ps ; Ps H
+/// </summary>
+sealed class CursorPosition : CSISequenceBase
 {
-    public SoftReset()
-        : base('p')
+    public CursorPosition()
+        : base('H')
     {
     }
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
-        GetAction().Invoke(lines, context);
-
-        Action<TerminalLineCollection, SequenceContext> GetAction() => context.Option switch
-        {
-            "!" => OnSoftReset,
-            _ => (l, c) => { }
-            ,
-        };
-    }
-
-    private void OnSoftReset(TerminalLineCollection lines, SequenceContext context)
-    {
+        var view = context.View;
+        var r1 = context.GetNumericValue(index: 0, defaultValue: 1) - 1;
+        var c1 = context.GetNumericValue(index: 1, defaultValue: 1) - 1;
+        var r2 = TerminalMathUtility.Clamp(r1, 0, view.Height - 1) + view.Y;
+        var c2 = TerminalMathUtility.Clamp(c1, 0, view.Width - 1);
+        var index = new TerminalIndex(new TerminalCoord(c2, r2), view.Width);
+        context.Index = index;
+        context.BeginIndex = index.CarriageReturn();
     }
 }

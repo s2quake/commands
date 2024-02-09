@@ -19,14 +19,16 @@
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 /// <summary>
-/// CSI Ps g
+/// CSI Pt ; Pl ; Pb ; Pr ; Pm $ r
 /// </summary>
-sealed class TabClear : CSISequenceBase
+sealed class ChangeAttributesInRectangularArea : CSISequenceBase
 {
-    public TabClear()
-        : base('g')
+    public ChangeAttributesInRectangularArea()
+        : base('r')
     {
     }
+
+    public override string Suffix => "$";
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {

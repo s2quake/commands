@@ -19,14 +19,16 @@
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 /// <summary>
-/// CSI Ps g
+/// CSI > Ps c
 /// </summary>
-sealed class TabClear : CSISequenceBase
+sealed class SendDeviceAttributes_Secondary : CSISequenceBase
 {
-    public TabClear()
-        : base('g')
+    public SendDeviceAttributes_Secondary()
+        : base('c')
     {
     }
+
+    public override string Prefix => ">";
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {

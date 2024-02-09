@@ -19,14 +19,16 @@
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 /// <summary>
-/// CSI Ps g
+/// CSI > Pm t
 /// </summary>
-sealed class TabClear : CSISequenceBase
+sealed class SetTitleMode : CSISequenceBase
 {
-    public TabClear()
-        : base('g')
+    public SetTitleMode()
+        : base('t')
     {
     }
+
+    public override string Prefix => ">";
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {

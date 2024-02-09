@@ -19,7 +19,7 @@
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 /// <summary>
-/// https://terminalguide.namepad.de/seq/csi_ca/
+/// CSI Ps A
 /// </summary>
 sealed class CursorUp : CSISequenceBase
 {
@@ -32,7 +32,7 @@ sealed class CursorUp : CSISequenceBase
     {
         var view = context.View;
         var index = context.Index;
-        var value = context.GetOptionValue(index: 0) ?? 1;
+        var value = context.GetNumericValue(index: 0, defaultValue: 1);
         var count = Math.Max(1, value);
         index = index.CursorUp(count, view.Top);
         context.Index = index;

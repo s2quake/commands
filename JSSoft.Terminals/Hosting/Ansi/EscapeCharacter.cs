@@ -16,82 +16,11 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+
 namespace JSSoft.Terminals.Hosting.Ansi;
 
 sealed class EscapeCharacter : IAsciiCode
 {
-    private static readonly Dictionary<SequenceType, Dictionary<char, ISequence>> SequencesByType = new()
-    {
-        { SequenceType.ESC, new Dictionary<char, ISequence>() },
-        { SequenceType.CSI, new Dictionary<char, ISequence>() },
-        { SequenceType.DCS, new Dictionary<char, ISequence>() },
-        { SequenceType.OSC, new Dictionary<char, ISequence>() },
-    };
-    private static readonly Dictionary<char, ISequence> CSISequenceByCharacter = SequencesByType[SequenceType.CSI];
-    private static readonly Dictionary<char, ISequence> ESCSequenceByCharacter = SequencesByType[SequenceType.ESC];
-
-    static EscapeCharacter()
-    {
-        var types = typeof(EscapeCharacter).Assembly.GetTypes();
-        var query = from type in types
-                    where typeof(ISequence).IsAssignableFrom(type) == true
-                    where type.IsAbstract != true
-                    select type;
-        var items = query.ToArray();
-        foreach (var item in items)
-        {
-            var obj = (ISequence)Activator.CreateInstance(item)!;
-            SequencesByType[obj.Type].Add(obj.Character, obj);
-        }
-    }
-
     public void Process(TerminalLineCollection lines, AsciiCodeContext context)
-    {
-        var c = context.Text[context.TextIndex + 1];
-        if (c == '[')
-        {
-            var s1 = context.TextIndex + 2;
-            for (var i = s1; i < context.Text.Length; i++)
-            {
-                var character = context.Text[i];
-                if (CSISequenceByCharacter.ContainsKey(character) == true)
-                {
-                    var sequence = CSISequenceByCharacter[character];
-                    var option = context.Text.Substring(s1, i - s1);
-                    var sequenceContext = new SequenceContext(option, context);
-                    Console.WriteLine($"ESC [ {string.Join(" ", [option, character])} => {sequence.GetType()}");
-                    sequence.Process(lines, sequenceContext);
-                    context.TextIndex = i + 1;
-                    return;
-                }
-                if (character == '\x1b')
-                {
-                    throw new NotSupportedException();
-                }
-            }
-        }
-        else
-        {
-            var s1 = context.TextIndex + 1;
-            for (var i = s1; i < context.Text.Length; i++)
-            {
-                var character = context.Text[i];
-                if (ESCSequenceByCharacter.ContainsKey(character) == true)
-                {
-                    var sequence = ESCSequenceByCharacter[character];
-                    var option = context.Text.Substring(s1, i - s1);
-                    var sequenceContext = new SequenceContext(option, context);
-                    Console.WriteLine($"ESC {string.Join(" ", [option, character])} => {sequence.GetType()}");
-                    sequence.Process(lines, sequenceContext);
-                    context.TextIndex = i + 1;
-                    return;
-                }
-                if (character == '\x1b')
-                {
-                    throw new NotSupportedException();
-                }
-            }
-        }
-        context.TextIndex = context.Text.Length;
-    }
+        => SequenceUtility.Process(lines, context);
 }

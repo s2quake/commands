@@ -22,6 +22,10 @@ abstract class SequenceBase(SequenceType type, char character) : ISequence
 {
     public SequenceType Type { get; } = type;
 
+    public virtual string Prefix => string.Empty;
+
+    public virtual string Suffix => string.Empty;
+
     public char Character { get; } = character;
 
     protected abstract void OnProcess(TerminalLineCollection lines, SequenceContext context);

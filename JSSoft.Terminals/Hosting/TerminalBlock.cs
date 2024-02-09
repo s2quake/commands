@@ -79,11 +79,14 @@ sealed class TerminalBlock(Terminal terminal)
 
     private void UpdateCommand()
     {
+        // if (_command == string.Empty)
+        //     return;
+
         var command = _command + char.MinValue;
         var index = _index;
         var beginIndex = _beginIndex;
         var lines = Lines;
-        lines.Take(_index);
+        // lines.Take(_index);
         for (var i = 0; i < command.Length; i++)
         {
             var character = command[i];
@@ -165,8 +168,8 @@ sealed class TerminalBlock(Terminal terminal)
         {
             var @string = strings[y];
             index = y > 0 ? index.Linefeed() : index;
-            index = UpdateString(index, beginIndex, lines, @string);
             beginIndex = index;
+            index = UpdateString(index, beginIndex, lines, @string);
         }
         _index = index;
         _beginIndex = beginIndex;
@@ -204,7 +207,6 @@ sealed class TerminalBlock(Terminal terminal)
         }
         _index = context.Index;
         _beginIndex = context.BeginIndex;
-
 
         UpdateCommand();
 

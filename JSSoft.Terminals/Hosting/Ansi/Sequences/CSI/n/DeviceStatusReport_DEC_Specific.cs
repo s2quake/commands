@@ -19,14 +19,16 @@
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 /// <summary>
-/// CSI Ps g
+/// CSI ? Ps n
 /// </summary>
-sealed class TabClear : CSISequenceBase
+sealed class DeviceStatusReport_DEC_Specific : CSISequenceBase
 {
-    public TabClear()
-        : base('g')
+    public DeviceStatusReport_DEC_Specific()
+        : base('n')
     {
     }
+
+    public override string Prefix => "?";
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {

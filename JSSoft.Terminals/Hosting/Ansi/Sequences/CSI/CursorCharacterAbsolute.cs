@@ -19,16 +19,21 @@
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 /// <summary>
-/// CSI Ps g
+/// CSI Ps G
 /// </summary>
-sealed class TabClear : CSISequenceBase
+sealed class CursorCharacterAbsolute : CSISequenceBase
 {
-    public TabClear()
-        : base('g')
+    public CursorCharacterAbsolute()
+        : base('G')
     {
     }
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
+        var view = context.View;
+        var index = context.Index;
+        var c1 = context.GetNumericValue(index: 0, defaultValue: 1) - 1;
+        var c2 = TerminalMathUtility.Clamp(c1, 0, view.Width - 1);
+        context.Index = index.CursorToColumn(c2);
     }
 }

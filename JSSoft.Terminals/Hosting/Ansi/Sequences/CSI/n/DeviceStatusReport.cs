@@ -18,23 +18,17 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class SetCursorPosition : CSISequenceBase
+/// <summary>
+/// CSI Ps n
+/// </summary>
+sealed class DeviceStatusReport : CSISequenceBase
 {
-    public SetCursorPosition()
-        : base('H')
+    public DeviceStatusReport()
+        : base('n')
     {
     }
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
-        var view = context.View;
-        var r1 = (context.GetOptionValue(index: 0) ?? 1) - 1;
-        var c1 = (context.GetOptionValue(index: 1) ?? 1) - 1;
-        var r2 = TerminalMathUtility.Clamp(r1, 0, view.Height - 1) + view.Y;
-        var c2 = TerminalMathUtility.Clamp(c1, 0, view.Width - 1);
-        var index = new TerminalIndex(new TerminalCoord(c2, r2), view.Width);
-        // context.OriginCoordinate = (TerminalCoord)index;
-        context.Index = index;
-        context.BeginIndex = index.CarriageReturn();
     }
 }

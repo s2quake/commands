@@ -18,15 +18,14 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-/// <summary>
-/// CSI Ps g
-/// </summary>
-sealed class TabClear : CSISequenceBase
+sealed class SoftTerminalReset : CSISequenceBase
 {
-    public TabClear()
-        : base('g')
+    public SoftTerminalReset()
+        : base('p')
     {
     }
+
+    public override string Prefix => "!";
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {

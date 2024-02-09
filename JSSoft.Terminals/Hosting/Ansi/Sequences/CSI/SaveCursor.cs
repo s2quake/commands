@@ -19,7 +19,7 @@
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 /// <summary>
-/// https://terminalguide.namepad.de/seq/csi_ss_0param/
+/// CSI s
 /// </summary>
 sealed class SaveCursor : CSISequenceBase
 {
@@ -32,7 +32,7 @@ sealed class SaveCursor : CSISequenceBase
     {
         var view = context.View;
         var index = context.Index;
-        var value = context.GetOptionValue(index: 0) ?? 1;
+        var value = context.GetNumericValue(index: 0, defaultValue: 1);
         var count = Math.Max(1, value);
         context.ViewCoordinate = (TerminalCoord)(index - index.Width * view.Y);
     }

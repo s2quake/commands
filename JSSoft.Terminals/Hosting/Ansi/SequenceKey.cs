@@ -16,25 +16,16 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
+namespace JSSoft.Terminals.Hosting.Ansi;
 
-namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
-
-/// <summary>
-/// https://terminalguide.namepad.de/seq/csi_cc/
-/// </summary>
-sealed class CursorRight : CSISequenceBase
+record struct SequenceKey(string Prefix, string Suffix) : IEquatable<string>
 {
-    public CursorRight()
-        : base('C')
+    public readonly bool Equals(string? other)
     {
-    }
-
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
-    {
-        var index = context.Index;
-        var value = context.GetOptionValue(index: 0) ?? 1;
-        var count = Math.Max(1, value);
-        context.Index = index.CursorRight(count);
+        if (other is not null)
+        {
+            return other.StartsWith(Prefix) == true && other.EndsWith(Suffix) == true;
+        }
+        return false;
     }
 }

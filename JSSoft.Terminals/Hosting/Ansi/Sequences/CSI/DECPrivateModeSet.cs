@@ -19,21 +19,20 @@
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 /// <summary>
-/// https://terminalguide.namepad.de/seq/csi_cg/
+/// CSI ? Pm h
 /// </summary>
-sealed class CursorHorizontalPositionAbsolute : CSISequenceBase
+sealed class DECPrivateModeSet : CSISequenceBase
 {
-    public CursorHorizontalPositionAbsolute()
-        : base('G')
+    public DECPrivateModeSet()
+        : base('h')
     {
     }
 
+    public override string Prefix => "?";
+
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
-        var view = context.View;
-        var index = context.Index;
-        var c1 = (context.GetOptionValue(index: 0) ?? 1) - 1;
-        var c2 = TerminalMathUtility.Clamp(c1, 0, view.Width - 1);
-        context.Index = index.CursorToColumn(c2);
+        var option = context.Option;
+        int qwre = 0;
     }
 }

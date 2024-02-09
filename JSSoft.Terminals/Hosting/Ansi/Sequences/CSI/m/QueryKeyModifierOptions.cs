@@ -19,14 +19,16 @@
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 /// <summary>
-/// CSI Ps g
+/// CSI ? Pp m
 /// </summary>
-sealed class TabClear : CSISequenceBase
+sealed class QueryKeyModifierOptions : CSISequenceBase
 {
-    public TabClear()
-        : base('g')
+    public QueryKeyModifierOptions()
+        : base('m')
     {
     }
+
+    public override string Prefix => "?";
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {

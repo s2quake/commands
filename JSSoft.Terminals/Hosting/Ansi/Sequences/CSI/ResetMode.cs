@@ -19,8 +19,11 @@
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 /// <summary>
-/// https://terminalguide.namepad.de/seq/csi_sl/
-/// https://terminalguide.namepad.de/seq/csi_sl__p/
+/// CSI Pm l  Reset Mode (RM).
+///             Ps = 2  ⇒  Keyboard Action Mode (KAM).
+///             Ps = 4  ⇒  Replace Mode (IRM).
+///             Ps = 1 2  ⇒  Send/receive (SRM).
+///             Ps = 2 0  ⇒  Normal Linefeed (LNM).
 /// </summary>
 sealed class ResetMode : CSISequenceBase
 {
@@ -30,5 +33,8 @@ sealed class ResetMode : CSISequenceBase
     }
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
-        => ModeUtility.Process(lines, context);
+    {
+        var option = context.Option;
+        int qwre = 0;
+    }
 }

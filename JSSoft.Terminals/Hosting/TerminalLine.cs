@@ -182,6 +182,7 @@ sealed class TerminalLine : IDisposable
 
         var i1 = index;
         var i2 = index + characterInfo.Span;
+        characterInfo.Group = _group;
         _items[i1++ + _offset] = characterInfo;
         for (; i1 < i2; i1++)
         {

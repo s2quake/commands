@@ -26,7 +26,7 @@ public interface ITerminal : INotifyPropertyChanged
 {
     string Command { get; set; }
 
-    string Prompt { get; set; }
+    // string Prompt { get; set; }
 
     int CursorPosition { get; set; }
 

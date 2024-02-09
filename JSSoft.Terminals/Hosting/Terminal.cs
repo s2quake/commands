@@ -37,7 +37,7 @@ public class Terminal : ITerminal
     private readonly TerminalBlockCollection _blocks;
 
     private TerminalBlock _outputBlock;
-    private string _prompt = string.Empty;
+    // private string _prompt = string.Empty;
     private string _inputText = string.Empty;
     private string _command = string.Empty;
     private string _completion = string.Empty;
@@ -136,21 +136,21 @@ public class Terminal : ITerminal
         }
     }
 
-    public string Prompt
-    {
-        get => _prompt;
-        set
-        {
-            if (_prompt != value)
-            {
-                using var _ = _setter.LockEvent();
-                _setter.SetField(ref _prompt, value, nameof(Prompt));
-                _setter.SetField(ref _cursorPosition, _command.Length, nameof(CursorPosition));
-                _block.Command = _command;
-                UpdateCursorCoordinate();
-            }
-        }
-    }
+    // public string Prompt
+    // {
+    //     get => _prompt;
+    //     set
+    //     {
+    //         if (_prompt != value)
+    //         {
+    //             using var _ = _setter.LockEvent();
+    //             _setter.SetField(ref _prompt, value, nameof(Prompt));
+    //             _setter.SetField(ref _cursorPosition, _command.Length, nameof(CursorPosition));
+    //             _block.Command = _command;
+    //             UpdateCursorCoordinate();
+    //         }
+    //     }
+    // }
 
     public string Command
     {
@@ -460,17 +460,19 @@ public class Terminal : ITerminal
         using (var _ = _setter.LockEvent())
         {
             _setter.SetField(ref _size, size, nameof(Size));
-            _setter.SetField(ref _bufferSize, bufferSize, nameof(BufferSize));
-            _blocks.Update();
-            Scroll.PropertyChanged -= Scroll_PropertyChanged;
-            Scroll.ViewportSize = _bufferSize.Height;
-            Scroll.SmallChange = 1;
-            Scroll.LargeChange = _bufferSize.Height;
-            Scroll.Minimum = 0;
-            Scroll.Maximum = GetScrollMaximum();
-            Scroll.IsVisible = Scroll.Maximum > 0;
-            Scroll.Value = Scroll.CoerceValue(Scroll.Value);
-            Scroll.PropertyChanged += Scroll_PropertyChanged;
+            if (_setter.SetField(ref _bufferSize, bufferSize, nameof(BufferSize)) == true)
+            {
+                _blocks.Update();
+                Scroll.PropertyChanged -= Scroll_PropertyChanged;
+                Scroll.ViewportSize = _bufferSize.Height;
+                Scroll.SmallChange = 1;
+                Scroll.LargeChange = _bufferSize.Height;
+                Scroll.Minimum = 0;
+                Scroll.Maximum = GetScrollMaximum();
+                Scroll.IsVisible = Scroll.Maximum > 0;
+                Scroll.Value = Scroll.CoerceValue(Scroll.Value);
+                Scroll.PropertyChanged += Scroll_PropertyChanged;
+            }
         }
         _view.Update(_blocks);
         UpdateCursorCoordinate();
@@ -486,7 +488,7 @@ public class Terminal : ITerminal
             throw new InvalidOperationException("Terminal is being executed.");
 
         var commandText = _command;
-        var prompt = _prompt;
+        // var prompt = _prompt;
         if (_historyList.Contains(commandText) == false)
         {
             _historyList.Add(commandText);
@@ -505,7 +507,7 @@ public class Terminal : ITerminal
             _inputText = string.Empty;
             _completion = string.Empty;
         }
-        ExecuteEvent(commandText, prompt);
+        ExecuteEvent(commandText);
     }
 
     public void Clear()
@@ -691,14 +693,12 @@ public class Terminal : ITerminal
     {
         var data = new TerminalDataInfo
         {
-            Prompt = _prompt,
             Command = _command,
             InputText = _inputText,
             Completion = _completion,
             CursorPosition = _cursorPosition,
             Histories = [.. _historyList],
             HistoryIndex = _historyIndex,
-            PromptDisplayInfo = new TerminalDisplayInfo[_prompt.Length],
             CommandDisplayInfo = new TerminalDisplayInfo[_command.Length],
         };
 
@@ -709,7 +709,6 @@ public class Terminal : ITerminal
     {
         using var _ = _setter.LockEvent();
         _setter.SetField(ref _command, data.Command, nameof(Command));
-        _setter.SetField(ref _prompt, data.Prompt, nameof(Prompt));
         _setter.SetField(ref _cursorPosition, data.CursorPosition, nameof(CursorPosition));
         _inputText = data.InputText;
         _completion = data.Completion;
@@ -930,7 +929,7 @@ public class Terminal : ITerminal
         using var _ = _setter.LockEvent();
         _outputBlock.Take();
         _setter.SetField(ref _isExecuting, false, nameof(IsExecuting));
-        _setter.SetField(ref _prompt, prompt, nameof(Prompt));
+        // _setter.SetField(ref _prompt, prompt, nameof(Prompt));
         _setter.SetField(ref _cursorPosition, 0, nameof(CursorPosition));
         _block.Command = _command;
         _inputText = string.Empty;
@@ -939,11 +938,12 @@ public class Terminal : ITerminal
         BringIntoView(_cursorCoordinate.Y);
     }
 
-    private void ExecuteEvent(string commandText, string prompt)
+    private void ExecuteEvent(string commandText)
     {
         var action = new Action<Exception?>((e) =>
         {
-            InsertPrompt(_prompt != string.Empty ? _prompt : prompt);
+            // InsertPrompt(_prompt != string.Empty ? _prompt : prompt);
+            _setter.SetField(ref _isExecuting, false, nameof(IsExecuting));
             _executed?.Invoke(this, new TerminalExecutedEventArgs(commandText, e));
         });
         var eventArgs = new TerminalExecutingEventArgs(commandText, action);

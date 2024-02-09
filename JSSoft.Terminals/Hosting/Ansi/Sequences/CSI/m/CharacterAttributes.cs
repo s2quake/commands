@@ -19,16 +19,20 @@
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 /// <summary>
-/// CSI Ps g
+/// CSI Pm m
 /// </summary>
-sealed class TabClear : CSISequenceBase
+sealed class CharacterAttributes : CSISequenceBase
 {
-    public TabClear()
-        : base('g')
+    public CharacterAttributes()
+        : base('m')
     {
     }
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
+        var displayInfo = context.DisplayInfo;
+        var codes = context.Options;
+        displayInfo.SetGraphicRendition(codes);
+        context.DisplayInfo = displayInfo;
     }
 }

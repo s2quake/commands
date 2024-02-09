@@ -16,12 +16,10 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
-
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 /// <summary>
-/// https://terminalguide.namepad.de/seq/csi_ce/
+/// CSI Ps E
 /// </summary>
 sealed class CursorNextLine : CSISequenceBase
 {
@@ -34,7 +32,7 @@ sealed class CursorNextLine : CSISequenceBase
     {
         var view = context.View;
         var index = context.Index;
-        var value = context.GetOptionValue(index: 0) ?? 1;
+        var value = context.GetNumericValue(index: 0, defaultValue: 1);
         var count = Math.Max(1, value);
         index = index.CursorDown(count, view.Bottom).MoveToFirstOfLine();
         context.Index = index;

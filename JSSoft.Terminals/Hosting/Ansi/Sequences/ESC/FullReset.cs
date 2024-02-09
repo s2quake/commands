@@ -19,7 +19,7 @@
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.ESC;
 
 /// <summary>
-/// https://terminalguide.namepad.de/seq/a_esc_sc/
+/// ESC c
 /// </summary>
 sealed class FullReset : ESCSequenceBase
 {

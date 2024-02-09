@@ -24,5 +24,9 @@ interface ISequence
 
     SequenceType Type { get; }
 
+    string Prefix { get; }
+
+    string Suffix { get; }
+
     char Character { get; }
 }
