@@ -16,45 +16,31 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi;
+namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class AsciiCodeContext(string text, ITerminal terminal)
+/// <summary>
+/// CSI Ps @
+/// CSI Ps SP @
+/// </summary>
+sealed class InsertCharacter : CSISequenceBase
 {
-    private TerminalIndex _index;
-
-    public string Text { get; } = text;
-
-    public int TextIndex { get; set; }
-
-    public ITerminalFont Font { get; } = terminal.ActualStyle.Font;
-
-    public TerminalIndex BeginIndex { get; set; }
-
-    public TerminalIndex Index
+    public InsertCharacter()
+        : base('@')
     {
-        get => _index;
-        set
+    }
+
+    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    {
+        var index = context.Index;
+        var line = lines[index.Y];
+        var font = context.Font;
+        var span = TerminalFontUtility.GetGlyphSpan(font, ' ');
+        var characterInfo = new TerminalCharacterInfo
         {
-            if (value.X < 0 || value.Y < 0)
-                throw new ArgumentOutOfRangeException(nameof(value));
-
-            _index = value;
-        }
+            Character = ' ',
+            DisplayInfo = context.DisplayInfo,
+            Span = span,
+        };
+        line.InsertCharacter(index, characterInfo);
     }
-
-    public TerminalDisplayInfo DisplayInfo { get; set; }
-
-    public TerminalCoord OriginCoordinate
-    {
-        get => terminal.OriginCoordinate;
-        set => terminal.OriginCoordinate = value;
-    }
-
-    public TerminalCoord ViewCoordinate
-    {
-        get => terminal.ViewCoordinate;
-        set => terminal.ViewCoordinate = value;
-    }
-
-    public TerminalRect View { get; } = new TerminalRect(0, terminal.Scroll.Value, terminal.BufferSize.Width, terminal.BufferSize.Height);
 }

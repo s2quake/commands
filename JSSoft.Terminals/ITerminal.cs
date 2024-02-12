@@ -92,19 +92,21 @@ public interface ITerminal : INotifyPropertyChanged
 
     void ResetColor();
 
-    void Delete();
+    // void Delete();
 
-    void Backspace();
+    // void Backspace();
 
     void NextCompletion();
 
     void PrevCompletion();
 
-    void NextHistory();
+    // void NextHistory();
 
-    void PrevHistory();
+    // void PrevHistory();
 
-    void Execute();
+    void ProcessText(string text);
+
+    // void Execute();
 
     void Cancel();
 
@@ -114,9 +116,9 @@ public interface ITerminal : INotifyPropertyChanged
 
     event EventHandler? CancellationRequested;
 
-    event EventHandler<TerminalExecutingEventArgs>? Executing;
+    // event EventHandler<TerminalExecutingEventArgs>? Executing;
 
-    event EventHandler<TerminalExecutedEventArgs>? Executed;
+    // event EventHandler<TerminalExecutedEventArgs>? Executed;
 
     event EventHandler<TerminalUpdateEventArgs>? Updated;
 }

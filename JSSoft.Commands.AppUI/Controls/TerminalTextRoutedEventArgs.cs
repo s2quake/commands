@@ -1,4 +1,4 @@
-﻿// Released under the MIT License.
+// Released under the MIT License.
 // 
 // Copyright (c) 2024 Jeesu Choi
 // 
@@ -16,45 +16,20 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi;
+using Avalonia.Interactivity;
+using JSSoft.Terminals;
 
-sealed class AsciiCodeContext(string text, ITerminal terminal)
+namespace JSSoft.Commands.AppUI.Controls;
+
+public sealed class TerminalTextRoutedEventArgs : RoutedEventArgs
 {
-    private TerminalIndex _index;
+    private readonly TerminalTextEventArgs _e;
 
-    public string Text { get; } = text;
-
-    public int TextIndex { get; set; }
-
-    public ITerminalFont Font { get; } = terminal.ActualStyle.Font;
-
-    public TerminalIndex BeginIndex { get; set; }
-
-    public TerminalIndex Index
+    internal TerminalTextRoutedEventArgs(TerminalTextEventArgs e, RoutedEvent? routedEvent)
+        : base(routedEvent)
     {
-        get => _index;
-        set
-        {
-            if (value.X < 0 || value.Y < 0)
-                throw new ArgumentOutOfRangeException(nameof(value));
-
-            _index = value;
-        }
+        _e = e;
     }
 
-    public TerminalDisplayInfo DisplayInfo { get; set; }
-
-    public TerminalCoord OriginCoordinate
-    {
-        get => terminal.OriginCoordinate;
-        set => terminal.OriginCoordinate = value;
-    }
-
-    public TerminalCoord ViewCoordinate
-    {
-        get => terminal.ViewCoordinate;
-        set => terminal.ViewCoordinate = value;
-    }
-
-    public TerminalRect View { get; } = new TerminalRect(0, terminal.Scroll.Value, terminal.BufferSize.Width, terminal.BufferSize.Height);
+    public string Text => _e.Text;
 }

@@ -22,27 +22,49 @@ public static class ITerminalExtensions
 {
     public static void MoveToFirst(this ITerminal @this)
     {
-        @this.CursorPosition = 0;
+        @this.ProcessText("\x01");
         @this.BringIntoView();
     }
 
     public static void MoveToLast(this ITerminal @this)
     {
-        @this.CursorPosition = @this.Command.Length;
+        @this.ProcessText("\x1b[F");
         @this.BringIntoView();
     }
 
     public static void MoveLeft(this ITerminal @this)
     {
-        if (@this.CursorPosition > 0)
-            @this.CursorPosition--;
+        @this.ProcessText($"\x1b[D");
         @this.BringIntoView();
     }
 
     public static void MoveRight(this ITerminal @this)
     {
-        if (@this.CursorPosition < @this.Command.Length)
-            @this.CursorPosition++;
+        @this.ProcessText($"\x1b[C");
+        @this.BringIntoView();
+    }
+
+    public static void NextHistory(this ITerminal @this)
+    {
+        @this.ProcessText($"\x1b[B");
+        @this.BringIntoView();
+    }
+
+    public static void PrevHistory(this ITerminal @this)
+    {
+        @this.ProcessText($"\x1b[A");
+        @this.BringIntoView();
+    }
+
+    public static void Backspace(this ITerminal @this)
+    {
+        @this.ProcessText($"\b");
+        @this.BringIntoView();
+    }
+
+    public static void Delete(this ITerminal @this)
+    {
+        @this.ProcessText($"\x1b[3~");
         @this.BringIntoView();
     }
 

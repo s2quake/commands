@@ -218,8 +218,7 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
     public readonly TerminalIndex Backspace()
     {
         var coord = (TerminalCoord)this;
-        coord.X = Math.Min(coord.X, Value - 1);
-        coord.X--;
+        coord.X = Math.Max(0, Value - 1);
         return new TerminalIndex(coord, Width);
     }
 

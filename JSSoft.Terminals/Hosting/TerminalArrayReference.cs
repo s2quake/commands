@@ -1,4 +1,4 @@
-﻿// Released under the MIT License.
+// Released under the MIT License.
 // 
 // Copyright (c) 2024 Jeesu Choi
 // 
@@ -16,45 +16,52 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi;
+using System.Collections;
 
-sealed class AsciiCodeContext(string text, ITerminal terminal)
+namespace JSSoft.Terminals.Hosting;
+
+sealed class TerminalArrayReference<T>(TerminalArray<T> @array, int offset, int length)
+    : IEnumerable<T>
 {
-    private TerminalIndex _index;
+    private readonly TerminalArray<T> _array = @array;
+    private readonly int _offset = offset;
 
-    public string Text { get; } = text;
+    public int Length { get; } = length;
 
-    public int TextIndex { get; set; }
-
-    public ITerminalFont Font { get; } = terminal.ActualStyle.Font;
-
-    public TerminalIndex BeginIndex { get; set; }
-
-    public TerminalIndex Index
+    public T this[int index]
     {
-        get => _index;
+        get
+        {
+            if (index < 0 || index >= Length)
+                throw new ArgumentOutOfRangeException(nameof(index));
+
+            return _array[index + _offset];
+        }
         set
         {
-            if (value.X < 0 || value.Y < 0)
-                throw new ArgumentOutOfRangeException(nameof(value));
-
-            _index = value;
+            if (index < 0 || index >= Length)
+                throw new ArgumentOutOfRangeException(nameof(index));
+            _array[index + _offset] = value;
         }
     }
 
-    public TerminalDisplayInfo DisplayInfo { get; set; }
+    #region IEnumerable
 
-    public TerminalCoord OriginCoordinate
+    IEnumerator<T> IEnumerable<T>.GetEnumerator()
     {
-        get => terminal.OriginCoordinate;
-        set => terminal.OriginCoordinate = value;
+        for (var i = 0; i < Length; i++)
+        {
+            yield return _array[i + _offset];
+        }
     }
 
-    public TerminalCoord ViewCoordinate
+    IEnumerator IEnumerable.GetEnumerator()
     {
-        get => terminal.ViewCoordinate;
-        set => terminal.ViewCoordinate = value;
+        for (var i = 0; i < Length; i++)
+        {
+            yield return _array[i + _offset];
+        }
     }
 
-    public TerminalRect View { get; } = new TerminalRect(0, terminal.Scroll.Value, terminal.BufferSize.Width, terminal.BufferSize.Height);
+    #endregion
 }

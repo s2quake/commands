@@ -39,7 +39,7 @@ sealed class CommandTerminal : IDisposable
         _commandContext.Error = new TerminalControlTextWriter(_terminal);
         _terminal.Completor = _commandContext.GetCompletion;
         // _terminal.PropertyChanged += Terminal_PropertyChanged;
-        _terminal.Executing += Terminal_Executing;
+        // _terminal.Executing += Terminal_Executing;
         _terminal.Append(_prompt);
     }
 

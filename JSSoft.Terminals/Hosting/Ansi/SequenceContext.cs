@@ -26,7 +26,7 @@ sealed class SequenceContext(string option, AsciiCodeContext asciiCodeContext)
 
     public string Option { get; } = option;
 
-    public int[] Options { get; } = option.Split(';').Select(Parse).ToArray();
+    public int[] Options { get; } = option == string.Empty ? [] : option.Split(';').Select(Parse).ToArray();
 
     public ITerminalFont Font => _asciiCodeContext.Font;
 

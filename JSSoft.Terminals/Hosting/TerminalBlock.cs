@@ -45,8 +45,8 @@ sealed class TerminalBlock(Terminal terminal)
         {
             if (Lines.Count > 0)
             {
-                if (Lines.Last().Length == 0)
-                    return Lines.Count - 1;
+                // if (Lines.Last().Length == 0)
+                //     return Lines.Count - 1;
                 return Lines.Count;
             }
             return 0;
@@ -79,6 +79,7 @@ sealed class TerminalBlock(Terminal terminal)
 
     private void UpdateCommand()
     {
+        return;
         // if (_command == string.Empty)
         //     return;
 
@@ -118,7 +119,14 @@ sealed class TerminalBlock(Terminal terminal)
             var y = index.Value / bufferWidth;
             return new TerminalCoord(x, Top + y);
         }
-        return TerminalCoord.Empty;
+        else
+        {
+            var bufferWidth = _terminal.BufferSize.Width;
+            var x = index.Value % bufferWidth;
+            var y = index.Value / bufferWidth;
+            return new TerminalCoord(x, Top + y);
+        }
+        // return TerminalCoord.Empty;
     }
 
     public void Clear()
@@ -208,7 +216,7 @@ sealed class TerminalBlock(Terminal terminal)
         _index = context.Index;
         _beginIndex = context.BeginIndex;
 
-        UpdateCommand();
+        // UpdateCommand();
 
         lines.Update();
         InvokeTextChangedEvent();

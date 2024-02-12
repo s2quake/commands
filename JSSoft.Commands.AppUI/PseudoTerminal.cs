@@ -23,11 +23,11 @@ using JSSoft.Terminals.Pty;
 using System.Threading;
 using System.Text;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
 using System.IO;
 using Avalonia.Threading;
 using JSSoft.Commands.AppUI.Controls;
 using System.Threading.Tasks;
+using Avalonia.Interactivity;
 
 namespace JSSoft.Commands.AppUI;
 
@@ -73,9 +73,23 @@ public sealed class PseudoTerminal
         };
 
         _pty = await PtyProvider.SpawnAsync(options, cancellationToken);
+        // await WriteAsync("abca");
         _cancellationTokenSource = new();
-        _terminalControl.Executing += TerminalControl_Executing;
+        // _terminalControl.Executing += TerminalControl_Executing;
+        _terminalControl.TextProcessed += TerminalControl_TextProcessed;
+        _terminalControl.CancellationRequested += TerminalControl_CancellationRequested;
         ReadStream(_pty, Append, _cancellationTokenSource.Token);
+    }
+
+    private void TerminalControl_TextProcessed(object? sender, TerminalTextRoutedEventArgs e)
+    {
+        if (_pty is null)
+            throw new InvalidOperationException();
+
+        var text = e.Text;
+        var commandBuffer = Encoding.UTF8.GetBytes(text);
+        _pty.WriterStream.Write(commandBuffer);
+        _pty.WriterStream.Flush();
     }
 
     public async Task CloseAsync(CancellationToken cancellationToken)
@@ -83,7 +97,8 @@ public sealed class PseudoTerminal
         if (_pty is null || _cancellationTokenSource is null)
             throw new InvalidOperationException();
 
-        _terminalControl.Executing -= TerminalControl_Executing;
+        _terminalControl.TextProcessed -= TerminalControl_TextProcessed;
+        // _terminalControl.Executing -= TerminalControl_Executing;
         _cancellationTokenSource.Cancel();
         // _pty.Kill();
         // _pty.WaitForExit(milliseconds: 1000);
@@ -106,12 +121,17 @@ public sealed class PseudoTerminal
                     break;
                 }
                 var t = Encoding.UTF8.GetString(buffer, 0, count);
-                Trace.WriteLine(Regex.Escape(t));
+                Trace.WriteLine($"Read: {ToLiteral(t)}");
                 action(t);
             }
         }
         catch (TaskCanceledException)
         {
+        }
+
+        static string ToLiteral(string valueTextForCompiler)
+        {
+            return Microsoft.CodeAnalysis.CSharp.SymbolDisplay.FormatLiteral(valueTextForCompiler, false);
         }
     }
 
@@ -120,15 +140,28 @@ public sealed class PseudoTerminal
         Dispatcher.UIThread.Invoke(() => _terminalControl.Append(text));
     }
 
-    private async void TerminalControl_Executing(object? sender, TerminalExecutingRoutedEventArgs e)
+    private async Task WriteAsync(string text)
     {
         if (_pty is null)
             throw new InvalidOperationException();
 
-        var token = e.GetToken();
-        var commandBuffer = Encoding.UTF8.GetBytes(e.Command + "\n");
+        var commandBuffer = Encoding.UTF8.GetBytes(text);
         await _pty.WriterStream.WriteAsync(commandBuffer, cancellationToken: default);
         await _pty.WriterStream.FlushAsync();
-        e.Success(token);
+    }
+
+
+    // private async void TerminalControl_Executing(object? sender, TerminalExecutingRoutedEventArgs e)
+    // {
+    //     var token = e.GetToken();
+    //     await WriteAsync(e.Command + "\n");
+    //     // var commandBuffer = Encoding.UTF8.GetBytes(e.Command + "\n");
+    //     // await _pty.WriterStream.WriteAsync(commandBuffer, cancellationToken: default);
+    //     // await _pty.WriterStream.FlushAsync();
+    //     e.Success(token);
+    // }
+
+    private void TerminalControl_CancellationRequested(object? sender, RoutedEventArgs e)
+    {
     }
 }

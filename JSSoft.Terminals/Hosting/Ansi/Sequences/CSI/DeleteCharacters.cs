@@ -16,45 +16,22 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi;
+namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class AsciiCodeContext(string text, ITerminal terminal)
+/// <summary>
+/// CSI Ps P
+/// </summary>
+sealed class DeleteCharacters : CSISequenceBase
 {
-    private TerminalIndex _index;
-
-    public string Text { get; } = text;
-
-    public int TextIndex { get; set; }
-
-    public ITerminalFont Font { get; } = terminal.ActualStyle.Font;
-
-    public TerminalIndex BeginIndex { get; set; }
-
-    public TerminalIndex Index
+    public DeleteCharacters()
+        : base('P')
     {
-        get => _index;
-        set
-        {
-            if (value.X < 0 || value.Y < 0)
-                throw new ArgumentOutOfRangeException(nameof(value));
-
-            _index = value;
-        }
     }
-
-    public TerminalDisplayInfo DisplayInfo { get; set; }
-
-    public TerminalCoord OriginCoordinate
+    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
-        get => terminal.OriginCoordinate;
-        set => terminal.OriginCoordinate = value;
+        var index = context.Index;
+        var line = lines[index.Y];
+        var length = context.GetNumericValue(index: 0, defaultValue: 1);
+        line.Delete(index.X, length);
     }
-
-    public TerminalCoord ViewCoordinate
-    {
-        get => terminal.ViewCoordinate;
-        set => terminal.ViewCoordinate = value;
-    }
-
-    public TerminalRect View { get; } = new TerminalRect(0, terminal.Scroll.Value, terminal.BufferSize.Width, terminal.BufferSize.Height);
 }

@@ -23,6 +23,7 @@ using JSSoft.Terminals.Extensions;
 using JSSoft.Terminals.Serializations;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.IO;
 
 namespace JSSoft.Terminals.Hosting;
 
@@ -37,7 +38,6 @@ public class Terminal : ITerminal
     private readonly TerminalBlockCollection _blocks;
 
     private TerminalBlock _outputBlock;
-    // private string _prompt = string.Empty;
     private string _inputText = string.Empty;
     private string _command = string.Empty;
     private string _completion = string.Empty;
@@ -64,8 +64,8 @@ public class Terminal : ITerminal
     private TerminalSize _bufferSize = new(80, 25);
     private TerminalSize _size;
 
-    private EventHandler<TerminalExecutingEventArgs>? _executing;
-    private EventHandler<TerminalExecutedEventArgs>? _executed;
+    // private EventHandler<TerminalExecutingEventArgs>? _executing;
+    // private EventHandler<TerminalExecutedEventArgs>? _executed;
 
     internal readonly SynchronizationContext SynchronizationContext;
 
@@ -135,22 +135,6 @@ public class Terminal : ITerminal
             }
         }
     }
-
-    // public string Prompt
-    // {
-    //     get => _prompt;
-    //     set
-    //     {
-    //         if (_prompt != value)
-    //         {
-    //             using var _ = _setter.LockEvent();
-    //             _setter.SetField(ref _prompt, value, nameof(Prompt));
-    //             _setter.SetField(ref _cursorPosition, _command.Length, nameof(CursorPosition));
-    //             _block.Command = _command;
-    //             UpdateCursorCoordinate();
-    //         }
-    //     }
-    // }
 
     public string Command
     {
@@ -410,39 +394,40 @@ public class Terminal : ITerminal
 
     public void ProcessText(string text)
     {
-        var itemList = new List<char>(text.Length);
-        var terminal = this;
-        foreach (var item in text)
-        {
-            if (item == 0 && itemList.Count > 0)
-            {
-                terminal.InsertCharacter([.. itemList]);
-                itemList.Clear();
-            }
-            if (terminal.IsReadOnly == false && terminal.IsExecuting == false && item != 0 && OnKeyPress(item) == false)
-            {
-                if (item == '\n')
-                {
-                    var items = itemList.ToArray();
-                    itemList.Clear();
-                    terminal.InsertCharacter(items);
-                    terminal.Execute();
-                }
-                else
-                {
-                    itemList.Add(item);
-                }
-            }
-        }
-        if (itemList.Count > 0)
-            terminal.InsertCharacter([.. itemList]);
+        TextProcessed?.Invoke(this, new(text));
+        // var itemList = new List<char>(text.Length);
+        // var terminal = this;
+        // foreach (var item in text)
+        // {
+        //     if (item == 0 && itemList.Count > 0)
+        //     {
+        //         terminal.InsertCharacter([.. itemList]);
+        //         itemList.Clear();
+        //     }
+        //     if (terminal.IsReadOnly == false && terminal.IsExecuting == false && item != 0 && OnKeyPress(item) == false)
+        //     {
+        //         if (item == '\n')
+        //         {
+        //             var items = itemList.ToArray();
+        //             itemList.Clear();
+        //             terminal.InsertCharacter(items);
+        //             terminal.Execute();
+        //         }
+        //         else
+        //         {
+        //             itemList.Add(item);
+        //         }
+        //     }
+        // }
+        // if (itemList.Count > 0)
+        //     terminal.InsertCharacter([.. itemList]);
 
-        static bool OnKeyPress(char character)
-        {
-            if (character == '\t' || character == 27 || character == 25)
-                return true;
-            return false;
-        }
+        // static bool OnKeyPress(char character)
+        // {
+        //     if (character == '\t' || character == 27 || character == 25)
+        //         return true;
+        //     return false;
+        // }
     }
 
     public void ResizeBuffer(double width, double height)
@@ -480,35 +465,34 @@ public class Terminal : ITerminal
 
     public void Update(params ITerminalRow[] rows) => InvokeUpdatedEvent(rows);
 
-    public void Execute()
-    {
-        if (_isReadOnly == true)
-            throw new InvalidOperationException("Terminal is readonly.");
-        if (_isExecuting == true)
-            throw new InvalidOperationException("Terminal is being executed.");
+    // public void Execute()
+    // {
+    //     if (_isReadOnly == true)
+    //         throw new InvalidOperationException("Terminal is readonly.");
+    //     if (_isExecuting == true)
+    //         throw new InvalidOperationException("Terminal is being executed.");
 
-        var commandText = _command;
-        // var prompt = _prompt;
-        if (_historyList.Contains(commandText) == false)
-        {
-            _historyList.Add(commandText);
-            _historyIndex = _historyList.Count;
-        }
-        else
-        {
-            _historyIndex = _historyList.LastIndexOf(commandText) + 1;
-        }
+    //     var commandText = _command;
+    //     if (_historyList.Contains(commandText) == false)
+    //     {
+    //         _historyList.Add(commandText);
+    //         _historyIndex = _historyList.Count;
+    //     }
+    //     else
+    //     {
+    //         _historyIndex = _historyList.LastIndexOf(commandText) + 1;
+    //     }
 
-        using (var _ = _setter.LockEvent())
-        {
-            _setter.SetField(ref _command, string.Empty, nameof(Command));
-            _setter.SetField(ref _cursorPosition, 0, nameof(CursorPosition));
-            _block.Command = _command;
-            _inputText = string.Empty;
-            _completion = string.Empty;
-        }
-        ExecuteEvent(commandText);
-    }
+    //     using (var _ = _setter.LockEvent())
+    //     {
+    //         _setter.SetField(ref _command, string.Empty, nameof(Command));
+    //         _setter.SetField(ref _cursorPosition, 0, nameof(CursorPosition));
+    //         _block.Command = _command;
+    //         _inputText = string.Empty;
+    //         _completion = string.Empty;
+    //     }
+    //     ExecuteEvent(commandText);
+    // }
 
     public void Clear()
     {
@@ -561,30 +545,30 @@ public class Terminal : ITerminal
         CompletionImpl(PrevCompletion);
     }
 
-    public void Delete()
-    {
-        if (_cursorPosition < _command.Length)
-        {
-            using var _ = _setter.LockEvent();
-            _setter.SetField(ref _command, _command.Remove(_cursorPosition, 1), nameof(Command));
-            _block.Command = _command;
-            _inputText = _command;
-        }
-    }
+    // public void Delete()
+    // {
+    //     if (_cursorPosition < _command.Length)
+    //     {
+    //         using var _ = _setter.LockEvent();
+    //         _setter.SetField(ref _command, _command.Remove(_cursorPosition, 1), nameof(Command));
+    //         _block.Command = _command;
+    //         _inputText = _command;
+    //     }
+    // }
 
-    public void Backspace()
-    {
-        if (_cursorPosition > 0)
-        {
-            var length = 1;
-            using var _ = _setter.LockEvent();
-            _setter.SetField(ref _command, _command.Remove(_cursorPosition - length, length), nameof(Command));
-            _setter.SetField(ref _cursorPosition, _cursorPosition - length, nameof(CursorPosition));
-            _block.Command = _command;
-            _inputText = _command;
-            UpdateCursorCoordinate();
-        }
-    }
+    // public void Backspace()
+    // {
+    //     if (_cursorPosition > 0)
+    //     {
+    //         var length = 1;
+    //         using var _ = _setter.LockEvent();
+    //         _setter.SetField(ref _command, _command.Remove(_cursorPosition - length, length), nameof(Command));
+    //         _setter.SetField(ref _cursorPosition, _cursorPosition - length, nameof(CursorPosition));
+    //         _block.Command = _command;
+    //         _inputText = _command;
+    //         UpdateCursorCoordinate();
+    //     }
+    // }
 
     public void NextHistory()
     {
@@ -736,17 +720,19 @@ public class Terminal : ITerminal
         }
     }
 
-    public event EventHandler<TerminalExecutingEventArgs>? Executing
-    {
-        add { _executing += value; }
-        remove { _executing -= value; }
-    }
+    // public event EventHandler<TerminalExecutingEventArgs>? Executing
+    // {
+    //     add { _executing += value; }
+    //     remove { _executing -= value; }
+    // }
 
-    public event EventHandler<TerminalExecutedEventArgs>? Executed
-    {
-        add { _executed += value; }
-        remove { _executed -= value; }
-    }
+    // public event EventHandler<TerminalExecutedEventArgs>? Executed
+    // {
+    //     add { _executed += value; }
+    //     remove { _executed -= value; }
+    // }
+
+    public event EventHandler<TerminalTextEventArgs>? TextProcessed;
 
     public event EventHandler? CancellationRequested;
 
@@ -771,10 +757,10 @@ public class Terminal : ITerminal
 
     private void UpdateCursorCoordinate()
     {
-        var index1 = new TerminalIndex(this, TerminalCoord.Empty);
+        // var index1 = new TerminalIndex(this, TerminalCoord.Empty);
         // var index2 = index1.MoveForward(_block, _cursorPosition + _prompt.Length);
-        var index2 = _block._index + _cursorPosition;
-        _setter.SetField(ref _cursorCoordinate, _block.GetCoordinate(index2), nameof(CursorCoordinate));
+        var index = _block._index + _cursorPosition;
+        _setter.SetField(ref _cursorCoordinate, _block.GetCoordinate(index), nameof(CursorCoordinate));
     }
 
     private void InvokePropertyChangedEvent(string propertyName)
@@ -938,23 +924,25 @@ public class Terminal : ITerminal
         BringIntoView(_cursorCoordinate.Y);
     }
 
-    private void ExecuteEvent(string commandText)
-    {
-        var action = new Action<Exception?>((e) =>
-        {
-            // InsertPrompt(_prompt != string.Empty ? _prompt : prompt);
-            _setter.SetField(ref _isExecuting, false, nameof(IsExecuting));
-            _executed?.Invoke(this, new TerminalExecutedEventArgs(commandText, e));
-        });
-        var eventArgs = new TerminalExecutingEventArgs(commandText, action);
-        InvokePropertyChangedEvent(nameof(IsExecuting));
-        _isExecuting = true;
-        _executing?.Invoke(this, eventArgs);
-        if (eventArgs.Token == Guid.Empty)
-        {
-            action(null);
-        }
-    }
+    public StreamWriter StandardInput { get; private set; }
+
+    // private void ExecuteEvent(string commandText)
+    // {
+    //     var action = new Action<Exception?>((e) =>
+    //     {
+    //         // InsertPrompt(_prompt != string.Empty ? _prompt : prompt);
+    //         _setter.SetField(ref _isExecuting, false, nameof(IsExecuting));
+    //         _executed?.Invoke(this, new TerminalExecutedEventArgs(commandText, e));
+    //     });
+    //     var eventArgs = new TerminalExecutingEventArgs(commandText, action);
+    //     InvokePropertyChangedEvent(nameof(IsExecuting));
+    //     _isExecuting = true;
+    //     _executing?.Invoke(this, eventArgs);
+    //     if (eventArgs.Token == Guid.Empty)
+    //     {
+    //         action(null);
+    //     }
+    // }
 
     #region ITerminal
 

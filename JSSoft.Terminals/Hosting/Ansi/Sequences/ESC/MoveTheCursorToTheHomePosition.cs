@@ -30,5 +30,11 @@ sealed class MoveTheCursorToTheHomePosition : ESCSequenceBase
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
+        var view = context.View;
+        var x = 0;
+        var y = 0 + view.Y;
+        var index = new TerminalIndex(new TerminalCoord(x, y), view.Width);
+        context.Index = index;
+        context.BeginIndex = index;
     }
 }

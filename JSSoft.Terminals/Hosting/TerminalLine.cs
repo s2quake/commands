@@ -22,25 +22,23 @@ namespace JSSoft.Terminals.Hosting;
 
 sealed class TerminalLine : IDisposable
 {
-    private readonly TerminalArray<TerminalCharacterInfo?> _items;
+    private readonly TerminalArrayReference<TerminalCharacterInfo?> _items;
     private readonly List<TerminalLine> _children = [];
     private readonly int _y;
     private readonly int _width;
-    private readonly int _offset;
     private int _group;
     private TerminalLine? _parent;
     private bool _isDisposed;
 
     public TerminalLine(TerminalArray<TerminalCharacterInfo?> items, int y, int width)
     {
-        _items = items;
+        _items = new(items, y * width, width);
         _y = y;
         _width = width;
-        _offset = y * width;
         _group = GetHashCode();
     }
 
-    public TerminalCharacterInfo? this[int index] => _items[index + _offset];
+    public TerminalCharacterInfo? this[int index] => _items[index];
 
     public int Length { get; private set; }
 
@@ -96,7 +94,7 @@ sealed class TerminalLine : IDisposable
 
         for (var i = Length - 1; i >= 0; i--)
         {
-            if (_items[i + _offset] is not null)
+            if (_items[i] is not null)
                 continue;
 
             if (i + 1 == Length)
@@ -105,7 +103,7 @@ sealed class TerminalLine : IDisposable
             }
             else
             {
-                _items[i + _offset] = new TerminalCharacterInfo
+                _items[i] = new TerminalCharacterInfo
                 {
                     Character = ' ',
                     Span = 1,
@@ -131,7 +129,7 @@ sealed class TerminalLine : IDisposable
         if (index >= _width)
             throw new ArgumentOutOfRangeException(nameof(index));
 
-        _items[index + _offset] = new TerminalCharacterInfo
+        _items[index] = new TerminalCharacterInfo
         {
             Character = ' ',
             Span = 1,
@@ -160,7 +158,7 @@ sealed class TerminalLine : IDisposable
         var end = index + length;
         for (var i = begin; i < end; i++)
         {
-            _items[i + _offset] = new TerminalCharacterInfo
+            _items[i] = new TerminalCharacterInfo
             {
                 Character = ' ',
                 Span = 1,
@@ -183,10 +181,10 @@ sealed class TerminalLine : IDisposable
         var i1 = index;
         var i2 = index + characterInfo.Span;
         characterInfo.Group = _group;
-        _items[i1++ + _offset] = characterInfo;
+        _items[i1++] = characterInfo;
         for (; i1 < i2; i1++)
         {
-            _items[i1 + _offset] = new TerminalCharacterInfo
+            _items[i1] = new TerminalCharacterInfo
             {
                 Span = -i1,
                 Group = _group,
@@ -194,6 +192,35 @@ sealed class TerminalLine : IDisposable
         }
         IsModified = true;
         Length = Math.Max(Length, i1);
+    }
+
+    public void InsertCharacter(int index, TerminalCharacterInfo characterInfo)
+    {
+        if (index < 0 || index >= _width)
+            throw new ArgumentOutOfRangeException(nameof(index));
+
+        for (var i = _width - 2; i > index; i--)
+        {
+            _items[i + 1] = _items[i];
+        }
+        _items[index] = characterInfo;
+        Length++;
+    }
+
+    public void Delete(int index, int length)
+    {
+        if (index < 0 || index + length >= _width)
+            throw new ArgumentOutOfRangeException(nameof(index));
+
+        for (var i = index + length; i < Length; i++)
+        {
+            _items[i - length] = _items[i];
+        }
+        for (var i = Length - 1; i < Length; i++)
+        {
+            _items[i] = null;
+        }
+        Length -= length;
     }
 
     public TerminalCharacterInfo[] GetCharacterInfos()
@@ -236,7 +263,7 @@ sealed class TerminalLine : IDisposable
         var end = index + length;
         for (var i = end - 1; i >= begin; i--)
         {
-            _items[i + _offset] = null;
+            _items[i] = null;
             if (i + 1 == Length)
             {
                 Length = i;
@@ -249,7 +276,7 @@ sealed class TerminalLine : IDisposable
     {
         for (var i = index; i < _width; i++)
         {
-            _items[i + _offset] = null;
+            _items[i] = null;
         }
         Length = index;
         IsModified = true;

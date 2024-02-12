@@ -54,13 +54,21 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
     public static readonly DirectProperty<TerminalControl, Size> BufferSizeProperty =
         AvaloniaProperty.RegisterDirect<TerminalControl, Size>(nameof(BufferSize), o => o.BufferSize);
 
-    public static readonly RoutedEvent<TerminalExecutingRoutedEventArgs> ExecutingEvent =
-        RoutedEvent.Register<TerminalControl, TerminalExecutingRoutedEventArgs>(
-            nameof(Executing), RoutingStrategies.Bubble);
+    // public static readonly RoutedEvent<TerminalExecutingRoutedEventArgs> ExecutingEvent =
+    //     RoutedEvent.Register<TerminalControl, TerminalExecutingRoutedEventArgs>(
+    //         nameof(Executing), RoutingStrategies.Bubble);
 
-    public static readonly RoutedEvent<TerminalExecutedRoutedEventArgs> ExecutedEvent =
-        RoutedEvent.Register<TerminalControl, TerminalExecutedRoutedEventArgs>(
-            nameof(Executed), RoutingStrategies.Bubble);
+    // public static readonly RoutedEvent<TerminalExecutedRoutedEventArgs> ExecutedEvent =
+    //     RoutedEvent.Register<TerminalControl, TerminalExecutedRoutedEventArgs>(
+    //         nameof(Executed), RoutingStrategies.Bubble);
+
+    public static readonly RoutedEvent<TerminalTextRoutedEventArgs> TextProcessedEvent =
+        RoutedEvent.Register<TerminalControl, TerminalTextRoutedEventArgs>(
+            nameof(TextProcessedEvent), RoutingStrategies.Bubble);
+
+    public static readonly RoutedEvent<RoutedEventArgs> CancellationRequestedEvent =
+        RoutedEvent.Register<TerminalControl, RoutedEventArgs>(
+            nameof(CancellationRequested), RoutingStrategies.Bubble);
 
     private readonly TerminalKeyBindingCollection _keyBindings = new(TerminalKeyBindings.GetDefaultBindings());
 
@@ -75,8 +83,6 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
     private Visual _inputVisual;
     private Window? _window;
 
-    // private IPtyConnection? _pty;
-
     static TerminalControl()
     {
         FocusableProperty.OverrideDefaultValue(typeof(TerminalControl), true);
@@ -87,62 +93,12 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         _terminal = new(_terminalStyle, _terminalScroll);
         _terminal.PropertyChanged += Terminal_PropertyChanged;
         _inputHandler = _terminal.InputHandler;
-        // _terminal.Prompt = "terminal $ ";
         _terminal.Completor = GetCompletion;
-        _terminal.Executing += Terminal_Executing;
-        _terminal.Executed += Terminal_Executed;
+        _terminal.TextProcessed += Terminal_TextProcessed;
+        _terminal.CancellationRequested += Terminal_CancellationRequested;
         _terminalScroll.PropertyChanged += TerminalScroll_PropertyChanged;
         _inputVisual = this;
-
-        // _terminal.AppendLine("Last login: Mon Dec 25 21:19:42 on ttys002");
-        // _terminal.AppendLine("1");
-        // _terminal.AppendLine("2");
-        // _terminal.AppendLine("3");
-        // _terminal.AppendLine("4");
-        // _terminal.Append("terminal $ ");
-        // _terminal.OriginCoordinate = new TerminalCoord(0, 6);
-
-        // string app = TerminalEnvironment.IsWindows() == true ? Path.Combine(Environment.SystemDirectory, "cmd.exe") : "sh";
-        // var options = new PtyOptions
-        // {
-        //     Name = "Custom terminal",
-        //     Cols = _terminal.BufferSize.Width,
-        //     Rows = _terminal.BufferSize.Height,
-        //     Cwd = Environment.CurrentDirectory,
-        //     App = app,
-        //     Environment = new Dictionary<string, string>()
-        //     {
-        //         { "FOO", "bar" },
-        //         { "Bazz", string.Empty },
-        //     },
-        // };
-
-        // async void wow()
-        // {
-        //     _pty = await PtyProvider.SpawnAsync(options, cancellationToken: default);
-        //     // _pty.Resize(_terminal.BufferSize.Width, _terminal.BufferSize.Height);
-        //     ReadStream(_pty);
-        // }
-        // wow();
     }
-
-    // private async void ReadStream(IPtyConnection pty)
-    // {
-    //     var buffer = new byte[4096];
-    //     var cancellationTokenSource = new CancellationTokenSource();
-
-    //     while (true)
-    //     {
-    //         var count = await pty.ReaderStream.ReadAsync(buffer, cancellationTokenSource.Token);
-    //         if (count == 0)
-    //         {
-    //             break;
-    //         }
-    //         var t = Encoding.UTF8.GetString(buffer, 0, count);
-    //         Trace.WriteLine(Regex.Escape(t));
-    //         Dispatcher.UIThread.Invoke(() => _terminal.Append(t));
-    //     }
-    // }
 
     public bool IsReadOnly
     {
@@ -204,16 +160,28 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         }
     }
 
-    public event EventHandler<TerminalExecutingRoutedEventArgs>? Executing
+    // public event EventHandler<TerminalExecutingRoutedEventArgs>? Executing
+    // {
+    //     add => AddHandler(ExecutingEvent, value);
+    //     remove => RemoveHandler(ExecutingEvent, value);
+    // }
+
+    // public event EventHandler<TerminalExecutedRoutedEventArgs>? Executed
+    // {
+    //     add => AddHandler(ExecutedEvent, value);
+    //     remove => RemoveHandler(ExecutedEvent, value);
+    // }
+
+    public event EventHandler<TerminalTextRoutedEventArgs>? TextProcessed
     {
-        add => AddHandler(ExecutingEvent, value);
-        remove => RemoveHandler(ExecutingEvent, value);
+        add => AddHandler(TextProcessedEvent, value);
+        remove => RemoveHandler(TextProcessedEvent, value);
     }
 
-    public event EventHandler<TerminalExecutedRoutedEventArgs>? Executed
+    public event EventHandler<RoutedEventArgs>? CancellationRequested
     {
-        add => AddHandler(ExecutedEvent, value);
-        remove => RemoveHandler(ExecutedEvent, value);
+        add => AddHandler(CancellationRequestedEvent, value);
+        remove => RemoveHandler(CancellationRequestedEvent, value);
     }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -317,28 +285,33 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         base.OnKeyDown(e);
         var modifiers = TerminalMarshal.Convert(e.KeyModifiers);
         var key = TerminalMarshal.Convert(e.Key);
-        if (e.Handled == false && e.Key == Key.Enter && e.KeyModifiers == KeyModifiers.None)
+        if (_keyBindings.Process(_terminal, modifiers, key) != true)
         {
-            _terminal.ProcessText("\n");
-            e.Handled = true;
+            _terminal.ProcessText($"{e.KeySymbol}");
         }
-        if (e.Handled == false && _keyBindings.Process(_terminal, modifiers, key) == true)
-        {
-            e.Handled = true;
-        }
-        if (e.Handled == false && ProcessHotKey(e) == true)
-        {
-            e.Handled = true;
-        }
+        e.Handled = true;
+        // if (e.Handled == false && e.Key == Key.Enter && e.KeyModifiers == KeyModifiers.None)
+        // {
+        //     _terminal.ProcessText("\n");
+        //     e.Handled = true;
+        // }
+        // if (e.Handled == false && _keyBindings.Process(_terminal, modifiers, key) == true)
+        // {
+        //     e.Handled = true;
+        // }
+        // if (e.Handled == false && ProcessHotKey(e) == true)
+        // {
+        //     e.Handled = true;
+        // }
     }
 
     protected override void OnTextInput(TextInputEventArgs e)
     {
-        if (e.Handled == false && e.Text is { } text)
-        {
-            _terminal.ProcessText(text);
-            e.Handled = true;
-        }
+        // if (e.Handled == false && e.Text is { } text)
+        // {
+        //     _terminal.ProcessText(text);
+        //     e.Handled = true;
+        // }
         base.OnTextInput(e);
     }
 
@@ -400,21 +373,27 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         }
     }
 
-    private void Terminal_Executing(object? sender, TerminalExecutingEventArgs e)
-    {
-        var args = new TerminalExecutingRoutedEventArgs(e, ExecutingEvent);
-        RaiseEvent(args);
+    // private void Terminal_Executing(object? sender, TerminalExecutingEventArgs e)
+    // {
+    //     var args = new TerminalExecutingRoutedEventArgs(e, ExecutingEvent);
+    //     RaiseEvent(args);
+    // }
 
-        // var token = e.GetToken();
-        // var commandBuffer = Encoding.UTF8.GetBytes(e.Command + "\n");
-        // await _pty.WriterStream.WriteAsync(commandBuffer, cancellationToken: default);
-        // await _pty.WriterStream.FlushAsync();
-        // e.Success(token);
+    // private void Terminal_Executed(object? sender, TerminalExecutedEventArgs e)
+    // {
+    //     var args = new TerminalExecutedRoutedEventArgs(e, ExecutedEvent);
+    //     RaiseEvent(args);
+    // }
+
+    private void Terminal_TextProcessed(object? sender, TerminalTextEventArgs e)
+    {
+        var args = new TerminalTextRoutedEventArgs(e, TextProcessedEvent);
+        RaiseEvent(args);
     }
 
-    private void Terminal_Executed(object? sender, TerminalExecutedEventArgs e)
+    private void Terminal_CancellationRequested(object? sender, EventArgs e)
     {
-        var args = new TerminalExecutedRoutedEventArgs(e, ExecutedEvent);
+        var args = new RoutedEventArgs(CancellationRequestedEvent);
         RaiseEvent(args);
     }
 

@@ -30,5 +30,7 @@ sealed class FullReset : ESCSequenceBase
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
+        lines.Take(context.Index);
+        context.OriginCoordinate = new (context.Index.X, context.Index.Y);
     }
 }
