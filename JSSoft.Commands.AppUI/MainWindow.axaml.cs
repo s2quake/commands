@@ -55,6 +55,7 @@ public partial class MainWindow : Window
     {
         base.OnLoaded(e);
         _terminal.IsReadOnly = true;
+        _pseudoTerminal.Size = _terminal.BufferSize;
         await _pseudoTerminal.OpenAsync(cancellationToken: default);
         _terminal.IsReadOnly = false;
         _terminal.Focus();
@@ -73,6 +74,7 @@ public partial class MainWindow : Window
         if (e.Property == TerminalControl.BufferSizeProperty)
         {
             Title = $"{_originTitle} — {(int)_terminal.BufferSize.Width}x{(int)_terminal.BufferSize.Height}";
+            Console.WriteLine(Title);
         }
     }
 

@@ -28,6 +28,7 @@ using Avalonia.Threading;
 using JSSoft.Commands.AppUI.Controls;
 using System.Threading.Tasks;
 using Avalonia.Interactivity;
+using Avalonia;
 
 namespace JSSoft.Commands.AppUI;
 
@@ -37,7 +38,7 @@ public sealed class PseudoTerminal
     private IPtyConnection? _pty;
     private CancellationTokenSource? _cancellationTokenSource;
     private string _app = TerminalEnvironment.IsWindows() == true ? Path.Combine(Environment.SystemDirectory, "cmd.exe") : "sh";
-    private TerminalSize _size = new(80, 24);
+    private Size _size = new(80, 24);
 
     public PseudoTerminal(TerminalControl terminalControl)
     {
@@ -50,7 +51,7 @@ public sealed class PseudoTerminal
         set => _app = value;
     }
 
-    public TerminalSize Size
+    public Size Size
     {
         get => _size;
         set => _size = value;
@@ -63,8 +64,8 @@ public sealed class PseudoTerminal
         var options = new PtyOptions
         {
             Name = "Custom terminal",
-            Cols = size.Width,
-            Rows = size.Height,
+            Cols = (int)size.Width,
+            Rows = (int)size.Height,
             Cwd = Environment.CurrentDirectory,
             App = app,
             Environment = new Dictionary<string, string>()
