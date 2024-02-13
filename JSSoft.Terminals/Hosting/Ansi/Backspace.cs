@@ -22,8 +22,10 @@ sealed class Backspace : IAsciiCode
 {
     public void Process(TerminalLineCollection lines, AsciiCodeContext context)
     {
-        var index = context.Index;
-        context.Index = index.Backspace();
+        var index1 = context.Index;
+        var line = lines[index1.Y];
+        var index2 = line.Backspace(index1);
+        context.Index = index2;
         context.TextIndex++;
     }
 }

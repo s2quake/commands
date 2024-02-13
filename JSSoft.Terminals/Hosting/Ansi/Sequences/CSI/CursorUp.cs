@@ -31,10 +31,10 @@ sealed class CursorUp : CSISequenceBase
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
         var view = context.View;
-        var index = context.Index;
+        var index1 = context.Index;
         var value = context.GetNumericValue(index: 0, defaultValue: 1);
         var count = Math.Max(1, value);
-        index = index.CursorUp(count, view.Top);
-        context.Index = index;
+        var index2 = index1.CursorUp(count, view.Top);
+        context.Index = index2;
     }
 }

@@ -24,6 +24,8 @@ namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 /// </summary>
 sealed class InsertCharacter : CSISequenceBase
 {
+    private const char SpaceCharacter = ' ';
+
     public InsertCharacter()
         : base('@')
     {
@@ -31,16 +33,18 @@ sealed class InsertCharacter : CSISequenceBase
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
-        var index = context.Index;
-        var line = lines[index.Y];
+        var index1 = context.Index;
+        var beginIndex = context.BeginIndex;
         var font = context.Font;
-        var span = TerminalFontUtility.GetGlyphSpan(font, ' ');
+        var span = TerminalFontUtility.GetGlyphSpan(font, SpaceCharacter);
         var characterInfo = new TerminalCharacterInfo
         {
-            Character = ' ',
+            Character = SpaceCharacter,
             DisplayInfo = context.DisplayInfo,
             Span = span,
         };
-        line.InsertCharacter(index, characterInfo);
+        var index2 = index1.Expect(span);
+        var line = lines.Prepare(beginIndex, index2);
+        line.InsertCharacter(index2.X, characterInfo);
     }
 }

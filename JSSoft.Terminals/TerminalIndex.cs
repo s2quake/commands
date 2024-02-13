@@ -218,7 +218,15 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
     public readonly TerminalIndex Backspace()
     {
         var coord = (TerminalCoord)this;
-        coord.X = Math.Max(0, Value - 1);
+        if (coord.X == 0)
+        {
+            coord.Y--;
+            coord.X = Width - 1;
+        }
+        else
+        {
+            coord.X--;
+        }
         return new TerminalIndex(coord, Width);
     }
 

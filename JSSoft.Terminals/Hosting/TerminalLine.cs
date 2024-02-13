@@ -28,6 +28,8 @@ sealed class TerminalLine : IDisposable
     private readonly int _width;
     private int _group;
     private TerminalLine? _parent;
+    private TerminalLine? _prev;
+    private TerminalLine? _next;
     private bool _isDisposed;
 
     public TerminalLine(TerminalArray<TerminalCharacterInfo?> items, int y, int width)
@@ -58,12 +60,27 @@ sealed class TerminalLine : IDisposable
             {
                 if (_parent != null)
                 {
+                    _parent._next = _next;
+                    if (_next is not null)
+                    {
+                        _next._prev = _prev;
+                    }
                     _parent._children.Remove(this);
                     _group = GetHashCode();
                 }
                 _parent = value;
                 if (_parent != null)
                 {
+                    if (_parent.Children.Count == 0)
+                    {
+                        _parent._next = this;
+                        _prev = _parent;
+                    }
+                    else
+                    {
+                        _prev = _parent.Children[^1];
+                        _prev._next = this;
+                    }
                     _parent._children.Add(this);
                     _group = _parent.Group;
                 }
@@ -199,10 +216,7 @@ sealed class TerminalLine : IDisposable
         if (index < 0 || index >= _width)
             throw new ArgumentOutOfRangeException(nameof(index));
 
-        for (var i = _width - 2; i > index; i--)
-        {
-            _items[i + 1] = _items[i];
-        }
+        ShiftRight(index, characterInfo.Span);
         _items[index] = characterInfo;
         Length++;
     }
@@ -221,6 +235,16 @@ sealed class TerminalLine : IDisposable
             _items[i] = null;
         }
         Length -= length;
+    }
+
+    public TerminalIndex Backspace(TerminalIndex index)
+    {
+        if (index.Y != _y)
+            throw new ArgumentException("The Y of index is different from the Y of this.", nameof(index));
+        if (_parent is null && index.X <= 0)
+            throw new ArgumentOutOfRangeException(nameof(index));
+
+        return index.Backspace();
     }
 
     public TerminalCharacterInfo[] GetCharacterInfos()
@@ -290,5 +314,18 @@ sealed class TerminalLine : IDisposable
             throw new ObjectDisposedException($"{this}");
 
         _isDisposed = true;
+    }
+
+    private void ShiftRight(int index, int length)
+    {
+        if (index < 0)
+            throw new ArgumentOutOfRangeException(nameof(index));
+        if (length <= 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
+        for (var i = Length - length; i >= index; i--)
+        {
+            _items[i + length] = _items[i];
+        }
     }
 }
