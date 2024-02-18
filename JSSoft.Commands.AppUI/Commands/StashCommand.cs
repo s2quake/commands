@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.IO;
 using System.Text;
 using JSSoft.Commands.AppUI.Controls;
 
@@ -44,18 +45,18 @@ sealed class StashCommand(TerminalControl terminalControl) : CommandMethodBase
     [CommandMethod]
     public void Push(string name = DefaultKey)
     {
-        var data = _terminalControl.Save();
-        _dataByName[name] = data;
+        // var data = _terminalControl.Save();
+        // _dataByName[name] = data;
     }
 
     [CommandMethod]
     public void Pop(string name = DefaultKey)
     {
-        if (_dataByName.ContainsKey(name) == true)
-        {
-            var data = _dataByName[name];
-            _dataByName.Remove(name);
-            _terminalControl.Load(data);
-        }
+        // if (_dataByName.ContainsKey(name) == true)
+        // {
+        //     var data = _dataByName[name];
+        //     _dataByName.Remove(name);
+        //     _terminalControl.Load(data);
+        // }
     }
 }

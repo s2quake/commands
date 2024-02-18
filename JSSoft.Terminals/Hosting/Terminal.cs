@@ -20,7 +20,6 @@ using System.ComponentModel;
 using JSSoft.Terminals.Input;
 using System.Diagnostics;
 using JSSoft.Terminals.Extensions;
-using JSSoft.Terminals.Serializations;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.IO;
@@ -33,18 +32,13 @@ public class Terminal : ITerminal
     private readonly TerminalFieldSetter _setter;
     private readonly TerminalRowCollection _view;
     private readonly TerminalSelection _selections;
-    private readonly List<string> _historyList = [];
     private readonly TerminalBlock _block;
     private readonly TerminalBlockCollection _blocks;
+    private readonly TerminalTextWriter _writer;
+    private readonly TerminalTextReader _reader = new();
 
     private TerminalBlock _outputBlock;
-    private string _inputText = string.Empty;
-    private string _command = string.Empty;
-    private string _completion = string.Empty;
-    private int _historyIndex;
-    private bool _isExecuting;
     private bool _isReadOnly;
-    private int _cursorPosition;
     private TerminalCompletor _completor = (items, find) => [];
     private TerminalColorType? _foregroundColor;
     private TerminalColorType? _backgroundColor;
@@ -55,7 +49,6 @@ public class Terminal : ITerminal
     private TerminalCoord _originCoordinate = TerminalCoord.Empty;
     private TerminalCoord _viewCoordinate = TerminalCoord.Empty;
 
-    private string _compositionString = string.Empty;
     private ITerminalStyle _actualStyle;
     private ITerminalStyle? _style;
 
@@ -63,9 +56,6 @@ public class Terminal : ITerminal
     private Terminals.TerminalSelection _selecting = Terminals.TerminalSelection.Empty;
     private TerminalSize _bufferSize = new(80, 25);
     private TerminalSize _size;
-
-    // private EventHandler<TerminalExecutingEventArgs>? _executing;
-    // private EventHandler<TerminalExecutedEventArgs>? _executed;
 
     internal readonly SynchronizationContext SynchronizationContext;
 
@@ -80,6 +70,7 @@ public class Terminal : ITerminal
         _originStyle = _actualStyle = originStyle;
         Scroll = scroll;
         _blocks = new(this);
+        _writer = new(this);
         _view = new(this);
         _outputBlock = _blocks.CurrentBlock;
         _block = _blocks.CurrentBlock;
@@ -110,48 +101,10 @@ public class Terminal : ITerminal
         set => _setter.SetField(ref _backgroundColor, value, nameof(BackgroundColor));
     }
 
-    public bool IsExecuting => _isExecuting;
-
     public bool IsReadOnly
     {
         get => _isReadOnly;
         set => _setter.SetField(ref _isReadOnly, value, nameof(IsReadOnly));
-    }
-
-    public int CursorPosition
-    {
-        get => _cursorPosition;
-        set
-        {
-            if (value < 0 || value > _command.Length)
-                throw new ArgumentOutOfRangeException(nameof(value));
-
-            if (_cursorPosition != value)
-            {
-                using var _ = _setter.LockEvent();
-                _setter.SetField(ref _cursorPosition, value, nameof(CursorPosition));
-                _inputText = _command.Substring(0, _cursorPosition);
-                UpdateCursorCoordinate();
-            }
-        }
-    }
-
-    public string Command
-    {
-        get => _command;
-        set
-        {
-            if (_command != value)
-            {
-                using var _ = _setter.LockEvent();
-                _setter.SetField(ref _command, value, nameof(Command));
-                _setter.SetField(ref _cursorPosition, _command.Length, nameof(CursorPosition));
-                _block.Command = _command;
-                _inputText = _command;
-                _completion = string.Empty;
-                UpdateCursorCoordinate();
-            }
-        }
     }
 
     public IInputHandler? InputHandler
@@ -301,13 +254,11 @@ public class Terminal : ITerminal
         }
     }
 
-    public string CompositionString
-    {
-        get => _compositionString;
-        set => _setter.SetField(ref _compositionString, value, nameof(CompositionString));
-    }
-
     public ITerminalSelection Selections => _selections;
+
+    public TextWriter Out => _writer;
+
+    public TextReader In => _reader;
 
     public static TerminalSize GetBufferSize(Terminal terminal, TerminalSize size)
     {
@@ -390,44 +341,10 @@ public class Terminal : ITerminal
         }
     }
 
-    public void Paste(string text) => ProcessText(text);
-
-    public void ProcessText(string text)
+    public void Paste(string text)
     {
-        TextProcessed?.Invoke(this, new(text));
-        // var itemList = new List<char>(text.Length);
-        // var terminal = this;
-        // foreach (var item in text)
-        // {
-        //     if (item == 0 && itemList.Count > 0)
-        //     {
-        //         terminal.InsertCharacter([.. itemList]);
-        //         itemList.Clear();
-        //     }
-        //     if (terminal.IsReadOnly == false && terminal.IsExecuting == false && item != 0 && OnKeyPress(item) == false)
-        //     {
-        //         if (item == '\n')
-        //         {
-        //             var items = itemList.ToArray();
-        //             itemList.Clear();
-        //             terminal.InsertCharacter(items);
-        //             terminal.Execute();
-        //         }
-        //         else
-        //         {
-        //             itemList.Add(item);
-        //         }
-        //     }
-        // }
-        // if (itemList.Count > 0)
-        //     terminal.InsertCharacter([.. itemList]);
-
-        // static bool OnKeyPress(char character)
-        // {
-        //     if (character == '\t' || character == 27 || character == 25)
-        //         return true;
-        //     return false;
-        // }
+        // In.Write(text);
+        // In.Flush();
     }
 
     public void ResizeBuffer(double width, double height)
@@ -465,45 +382,11 @@ public class Terminal : ITerminal
 
     public void Update(params ITerminalRow[] rows) => InvokeUpdatedEvent(rows);
 
-    // public void Execute()
-    // {
-    //     if (_isReadOnly == true)
-    //         throw new InvalidOperationException("Terminal is readonly.");
-    //     if (_isExecuting == true)
-    //         throw new InvalidOperationException("Terminal is being executed.");
-
-    //     var commandText = _command;
-    //     if (_historyList.Contains(commandText) == false)
-    //     {
-    //         _historyList.Add(commandText);
-    //         _historyIndex = _historyList.Count;
-    //     }
-    //     else
-    //     {
-    //         _historyIndex = _historyList.LastIndexOf(commandText) + 1;
-    //     }
-
-    //     using (var _ = _setter.LockEvent())
-    //     {
-    //         _setter.SetField(ref _command, string.Empty, nameof(Command));
-    //         _setter.SetField(ref _cursorPosition, 0, nameof(CursorPosition));
-    //         _block.Command = _command;
-    //         _inputText = string.Empty;
-    //         _completion = string.Empty;
-    //     }
-    //     ExecuteEvent(commandText);
-    // }
-
     public void Clear()
     {
         using var _ = _setter.LockEvent();
-        _setter.SetField(ref _command, string.Empty, nameof(Command));
-        _setter.SetField(ref _cursorPosition, 0, nameof(CursorPosition));
-        _block.Command = _command;
         _blocks.Clear();
         _outputBlock = _blocks.CurrentBlock;
-        _inputText = string.Empty;
-        _completion = string.Empty;
     }
 
     public void Cancel()
@@ -514,13 +397,8 @@ public class Terminal : ITerminal
     public void Reset(TerminalCoord coord)
     {
         using var _ = _setter.LockEvent();
-        _setter.SetField(ref _command, string.Empty, nameof(Command));
-        _setter.SetField(ref _cursorPosition, 0, nameof(CursorPosition));
-        _block.Command = _command;
         _blocks.Clear();
         _outputBlock = _blocks.CurrentBlock;
-        _inputText = string.Empty;
-        _completion = string.Empty;
     }
 
     public void Append(string text)
@@ -533,64 +411,6 @@ public class Terminal : ITerminal
         _outputBlock.Append(text, displayInfo);
         UpdateCursorCoordinate();
         BringIntoView(_cursorCoordinate.Y);
-    }
-
-    public void NextCompletion()
-    {
-        CompletionImpl(NextCompletion);
-    }
-
-    public void PrevCompletion()
-    {
-        CompletionImpl(PrevCompletion);
-    }
-
-    // public void Delete()
-    // {
-    //     if (_cursorPosition < _command.Length)
-    //     {
-    //         using var _ = _setter.LockEvent();
-    //         _setter.SetField(ref _command, _command.Remove(_cursorPosition, 1), nameof(Command));
-    //         _block.Command = _command;
-    //         _inputText = _command;
-    //     }
-    // }
-
-    // public void Backspace()
-    // {
-    //     if (_cursorPosition > 0)
-    //     {
-    //         var length = 1;
-    //         using var _ = _setter.LockEvent();
-    //         _setter.SetField(ref _command, _command.Remove(_cursorPosition - length, length), nameof(Command));
-    //         _setter.SetField(ref _cursorPosition, _cursorPosition - length, nameof(CursorPosition));
-    //         _block.Command = _command;
-    //         _inputText = _command;
-    //         UpdateCursorCoordinate();
-    //     }
-    // }
-
-    public void NextHistory()
-    {
-        if (_historyIndex + 1 < _historyList.Count)
-        {
-            _historyIndex++;
-            Command = _historyList[_historyIndex];
-        }
-    }
-
-    public void PrevHistory()
-    {
-        if (_historyIndex > 0)
-        {
-            _historyIndex--;
-            Command = _historyList[_historyIndex];
-        }
-        else if (_historyList.Count == 1)
-        {
-            _historyIndex = 0;
-            Command = _historyList[_historyIndex];
-        }
     }
 
     public static Match[] MatchCompletion(string text)
@@ -673,66 +493,10 @@ public class Terminal : ITerminal
         _setter.SetField(ref _backgroundColor, null, nameof(BackgroundColor));
     }
 
-    public TerminalDataInfo Save()
+    public void WriteInput(string text)
     {
-        var data = new TerminalDataInfo
-        {
-            Command = _command,
-            InputText = _inputText,
-            Completion = _completion,
-            CursorPosition = _cursorPosition,
-            Histories = [.. _historyList],
-            HistoryIndex = _historyIndex,
-            CommandDisplayInfo = new TerminalDisplayInfo[_command.Length],
-        };
-
-        return data;
+        _reader.Write(text);
     }
-
-    public void Load(TerminalDataInfo data)
-    {
-        using var _ = _setter.LockEvent();
-        _setter.SetField(ref _command, data.Command, nameof(Command));
-        _setter.SetField(ref _cursorPosition, data.CursorPosition, nameof(CursorPosition));
-        _inputText = data.InputText;
-        _completion = data.Completion;
-        _historyList.Clear();
-        _historyList.AddRange(data.Histories);
-        _historyIndex = data.HistoryIndex;
-    }
-
-    public void InsertCharacter(params char[] characters)
-    {
-        if (_isReadOnly == true)
-            throw new InvalidOperationException();
-
-        if (characters.Length != 0)
-        {
-            var text = new string(characters);
-            using var _ = _setter.LockEvent();
-            _setter.SetField(ref _command, _command.Insert(_cursorPosition, text), nameof(Command));
-            _setter.SetField(ref _cursorPosition, _cursorPosition + text.Length, nameof(CursorPosition));
-            _block.Command = _command;
-            _inputText = _command;
-            _completion = string.Empty;
-            UpdateCursorCoordinate();
-            BringIntoView(_cursorCoordinate.Y);
-        }
-    }
-
-    // public event EventHandler<TerminalExecutingEventArgs>? Executing
-    // {
-    //     add { _executing += value; }
-    //     remove { _executing -= value; }
-    // }
-
-    // public event EventHandler<TerminalExecutedEventArgs>? Executed
-    // {
-    //     add { _executed += value; }
-    //     remove { _executed -= value; }
-    // }
-
-    public event EventHandler<TerminalTextEventArgs>? TextProcessed;
 
     public event EventHandler? CancellationRequested;
 
@@ -757,9 +521,7 @@ public class Terminal : ITerminal
 
     private void UpdateCursorCoordinate()
     {
-        // var index1 = new TerminalIndex(this, TerminalCoord.Empty);
-        // var index2 = index1.MoveForward(_block, _cursorPosition + _prompt.Length);
-        var index = _block._index + _cursorPosition;
+        var index = _block._index;
         _setter.SetField(ref _cursorCoordinate, _block.GetCoordinate(index), nameof(CursorCoordinate));
     }
 
@@ -847,102 +609,6 @@ public class Terminal : ITerminal
     }
 
     private void InvokeUpdatedEvent(ITerminalRow[] rows) => OnUpdated(new(rows));
-
-    private void CompletionImpl(Func<string[], string, string> func)
-    {
-#if NETFRAMEWORK
-        var matchCompletions = CommandUtility.MatchCompletion(_inputText);
-        var matches = new List<Match>(matchCompletions.Count);
-        foreach (Match item in matchCompletions)
-        {
-            matches.Add(item);
-        }
-#else
-        var matches = new List<Match>(CommandUtility.MatchCompletion(_inputText));
-#endif // NETFRAMEWORK
-        var find = string.Empty;
-        var prefix = false;
-        var postfix = false;
-        var leftText = _inputText;
-        if (matches.Count > 0)
-        {
-            var match = matches.Last();
-            var matchText = match.Value;
-            if (matchText.Length > 0 && matchText.First() == '\"')
-            {
-                prefix = true;
-                matchText = matchText.Substring(1);
-            }
-            if (matchText.Length > 1 && matchText.Last() == '\"')
-            {
-                postfix = true;
-                matchText = matchText.Remove(matchText.Length - 1);
-            }
-            if (matchText == matchText.Trim())
-            {
-                find = matchText;
-                matches.RemoveAt(matches.Count - 1);
-                leftText = _inputText.Remove(match.Index);
-            }
-        }
-
-        var argList = new List<string>();
-        for (var i = 0; i < matches.Count; i++)
-        {
-            var matchText = matches[i].Value.Trim();
-            if (matchText != string.Empty)
-                argList.Add(matchText);
-        }
-
-        var completions = Completor([.. argList], find);
-        if (completions != null && completions.Length != 0)
-        {
-            var completion = func(completions, _completion);
-            var inputText = _inputText;
-            var command = leftText + completion;
-            if (prefix == true || postfix == true)
-            {
-                command = leftText + "\"" + completion + "\"";
-            }
-            Command = command;
-            _inputText = inputText;
-            _completion = completion;
-        }
-    }
-
-    private void InsertPrompt(string prompt)
-    {
-        using var _ = _setter.LockEvent();
-        _outputBlock.Take();
-        _setter.SetField(ref _isExecuting, false, nameof(IsExecuting));
-        // _setter.SetField(ref _prompt, prompt, nameof(Prompt));
-        _setter.SetField(ref _cursorPosition, 0, nameof(CursorPosition));
-        _block.Command = _command;
-        _inputText = string.Empty;
-        _completion = string.Empty;
-        UpdateCursorCoordinate();
-        BringIntoView(_cursorCoordinate.Y);
-    }
-
-    public StreamWriter StandardInput { get; private set; }
-
-    // private void ExecuteEvent(string commandText)
-    // {
-    //     var action = new Action<Exception?>((e) =>
-    //     {
-    //         // InsertPrompt(_prompt != string.Empty ? _prompt : prompt);
-    //         _setter.SetField(ref _isExecuting, false, nameof(IsExecuting));
-    //         _executed?.Invoke(this, new TerminalExecutedEventArgs(commandText, e));
-    //     });
-    //     var eventArgs = new TerminalExecutingEventArgs(commandText, action);
-    //     InvokePropertyChangedEvent(nameof(IsExecuting));
-    //     _isExecuting = true;
-    //     _executing?.Invoke(this, eventArgs);
-    //     if (eventArgs.Token == Guid.Empty)
-    //     {
-    //         action(null);
-    //     }
-    // }
 
     #region ITerminal
 

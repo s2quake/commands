@@ -74,23 +74,10 @@ public sealed class PseudoTerminal
         };
 
         _pty = await PtyProvider.SpawnAsync(options, cancellationToken);
-        // await WriteAsync("abca");
         _cancellationTokenSource = new();
-        // _terminalControl.Executing += TerminalControl_Executing;
-        _terminalControl.TextProcessed += TerminalControl_TextProcessed;
         _terminalControl.CancellationRequested += TerminalControl_CancellationRequested;
+        ReadInput(_pty, _terminalControl, _cancellationTokenSource.Token);
         ReadStream(_pty, Append, _cancellationTokenSource.Token);
-    }
-
-    private void TerminalControl_TextProcessed(object? sender, TerminalTextRoutedEventArgs e)
-    {
-        if (_pty is null)
-            throw new InvalidOperationException();
-
-        var text = e.Text;
-        var commandBuffer = Encoding.UTF8.GetBytes(text);
-        _pty.WriterStream.Write(commandBuffer);
-        _pty.WriterStream.Flush();
     }
 
     public async Task CloseAsync(CancellationToken cancellationToken)
@@ -98,16 +85,37 @@ public sealed class PseudoTerminal
         if (_pty is null || _cancellationTokenSource is null)
             throw new InvalidOperationException();
 
-        _terminalControl.TextProcessed -= TerminalControl_TextProcessed;
-        // _terminalControl.Executing -= TerminalControl_Executing;
+        _terminalControl.CancellationRequested -= TerminalControl_CancellationRequested;
         _cancellationTokenSource.Cancel();
-        // _pty.Kill();
-        // _pty.WaitForExit(milliseconds: 1000);
         // _pty.Dispose();
         _cancellationTokenSource.Dispose();
+        await Task.CompletedTask;
     }
 
     public bool IsOpen { get; private set; }
+
+    private static async void ReadInput(IPtyConnection pty, TerminalControl control, CancellationToken cancellationToken)
+    {
+        var buffer = new char[4096];
+        try
+        {
+            while (cancellationToken.IsCancellationRequested != true)
+            {
+                var count = await control.In.ReadAsync(buffer, cancellationToken);
+                if (count == 0)
+                {
+                    await Task.Delay(1, cancellationToken);
+                    continue;
+                }
+                var bytes = Encoding.UTF8.GetBytes(buffer);
+                await pty.WriterStream.WriteAsync(bytes.AsMemory(0, count), cancellationToken);
+                await pty.WriterStream.FlushAsync(cancellationToken);
+            }
+        }
+        catch (TaskCanceledException)
+        {
+        }
+    }
 
     private static async void ReadStream(IPtyConnection pty, Action<string> action, CancellationToken cancellationToken)
     {
@@ -138,29 +146,8 @@ public sealed class PseudoTerminal
 
     private void Append(string text)
     {
-        Dispatcher.UIThread.Invoke(() => _terminalControl.Append(text));
+        Dispatcher.UIThread.Invoke(() => _terminalControl.Out.Write(text));
     }
-
-    private async Task WriteAsync(string text)
-    {
-        if (_pty is null)
-            throw new InvalidOperationException();
-
-        var commandBuffer = Encoding.UTF8.GetBytes(text);
-        await _pty.WriterStream.WriteAsync(commandBuffer, cancellationToken: default);
-        await _pty.WriterStream.FlushAsync();
-    }
-
-
-    // private async void TerminalControl_Executing(object? sender, TerminalExecutingRoutedEventArgs e)
-    // {
-    //     var token = e.GetToken();
-    //     await WriteAsync(e.Command + "\n");
-    //     // var commandBuffer = Encoding.UTF8.GetBytes(e.Command + "\n");
-    //     // await _pty.WriterStream.WriteAsync(commandBuffer, cancellationToken: default);
-    //     // await _pty.WriterStream.FlushAsync();
-    //     e.Success(token);
-    // }
 
     private void TerminalControl_CancellationRequested(object? sender, RoutedEventArgs e)
     {

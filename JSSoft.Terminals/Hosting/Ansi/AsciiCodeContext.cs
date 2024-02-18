@@ -20,13 +20,14 @@ namespace JSSoft.Terminals.Hosting.Ansi;
 
 sealed class AsciiCodeContext(string text, ITerminal terminal)
 {
+    private readonly ITerminal _terminal = terminal;
     private TerminalIndex _index;
 
     public string Text { get; } = text;
 
     public int TextIndex { get; set; }
 
-    public ITerminalFont Font { get; } = terminal.ActualStyle.Font;
+    public ITerminalFont Font => _terminal.ActualStyle.Font;
 
     public TerminalIndex BeginIndex { get; set; }
 
@@ -46,15 +47,43 @@ sealed class AsciiCodeContext(string text, ITerminal terminal)
 
     public TerminalCoord OriginCoordinate
     {
-        get => terminal.OriginCoordinate;
-        set => terminal.OriginCoordinate = value;
+        get => _terminal.OriginCoordinate;
+        set => _terminal.OriginCoordinate = value;
     }
 
     public TerminalCoord ViewCoordinate
     {
-        get => terminal.ViewCoordinate;
-        set => terminal.ViewCoordinate = value;
+        get => _terminal.ViewCoordinate;
+        set => _terminal.ViewCoordinate = value;
     }
 
-    public TerminalRect View { get; } = new TerminalRect(0, terminal.Scroll.Value, terminal.BufferSize.Width, terminal.BufferSize.Height);
+    public TerminalRect View => new(0, _terminal.Scroll.Value, _terminal.BufferSize.Width, _terminal.BufferSize.Height);
+
+    public TerminalCoord GetCoordinate(TerminalLineCollection lines, TerminalIndex index)
+    {
+        if (lines.GetCharacterInfo(index) is { } characterInfo)
+        {
+            if (characterInfo.Span < 0)
+                return GetCoordinate(lines, index + characterInfo.Span);
+            var bufferWidth = _terminal.BufferSize.Width;
+            var x = index.Value % bufferWidth;
+            var y = index.Value / bufferWidth;
+            return new TerminalCoord(x, 0 + y);
+        }
+        else
+        {
+            var bufferWidth = _terminal.BufferSize.Width;
+            var x = index.Value % bufferWidth;
+            var y = index.Value / bufferWidth;
+            return new TerminalCoord(x, 0 + y);
+        }
+        // return TerminalCoord.Empty;
+    }
+
+    public void SendSequence(string sequence)
+    {
+        _terminal.WriteInput(sequence);
+        // terminal.StandardInput.Write(sequence);
+        // terminal.StandardInput.Flush();
+    }
 }

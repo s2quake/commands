@@ -17,22 +17,14 @@
 // 
 
 using System.ComponentModel;
+using System.IO;
 using JSSoft.Terminals.Input;
-using JSSoft.Terminals.Serializations;
 
 namespace JSSoft.Terminals;
 
 public interface ITerminal : INotifyPropertyChanged
 {
-    string Command { get; set; }
-
-    // string Prompt { get; set; }
-
-    int CursorPosition { get; set; }
-
     bool IsReadOnly { get; set; }
-
-    bool IsExecuting { get; }
 
     TerminalCompletor Completor { get; set; }
 
@@ -49,8 +41,6 @@ public interface ITerminal : INotifyPropertyChanged
     IInputHandler? InputHandler { get; set; }
 
     bool IsFocused { get; set; }
-
-    string CompositionString { get; set; }
 
     int MaximumBufferHeight { get; set; }
 
@@ -70,6 +60,10 @@ public interface ITerminal : INotifyPropertyChanged
 
     TerminalSelection Selecting { get; set; }
 
+    TextWriter Out { get; }
+
+    TextReader In { get; }
+
     TerminalPoint ViewToWorld(TerminalPoint position);
 
     TerminalCoord ViewToWorld(TerminalCoord viewCoord);
@@ -86,39 +80,15 @@ public interface ITerminal : INotifyPropertyChanged
 
     void Update(params ITerminalRow[] rows);
 
-    void Append(string value);
-
     void Reset(TerminalCoord coord);
 
     void ResetColor();
 
-    // void Delete();
-
-    // void Backspace();
-
-    void NextCompletion();
-
-    void PrevCompletion();
-
-    // void NextHistory();
-
-    // void PrevHistory();
-
-    void ProcessText(string text);
-
-    // void Execute();
-
     void Cancel();
 
-    TerminalDataInfo Save();
-
-    void Load(TerminalDataInfo data);
+    void WriteInput(string text);
 
     event EventHandler? CancellationRequested;
-
-    // event EventHandler<TerminalExecutingEventArgs>? Executing;
-
-    // event EventHandler<TerminalExecutedEventArgs>? Executed;
 
     event EventHandler<TerminalUpdateEventArgs>? Updated;
 }

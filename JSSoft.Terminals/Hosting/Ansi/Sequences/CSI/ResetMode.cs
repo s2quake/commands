@@ -35,6 +35,5 @@ sealed class ResetMode : CSISequenceBase
 // Ps = 1 2  ⇒  Send/receive (SRM).
 // Ps = 2 0  ⇒  Normal Linefeed (LNM).
         var option = context.Option;
-        int qwre = 0;
     }
 }

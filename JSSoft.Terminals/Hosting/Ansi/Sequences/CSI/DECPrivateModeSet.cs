@@ -33,6 +33,5 @@ sealed class DECPrivateModeSet : CSISequenceBase
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
         var option = context.Option;
-        int qwre = 0;
     }
 }

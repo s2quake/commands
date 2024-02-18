@@ -22,49 +22,49 @@ public static class ITerminalExtensions
 {
     public static void MoveToFirst(this ITerminal @this)
     {
-        @this.ProcessText("\x01");
+        @this.WriteInput("\x01");
         @this.BringIntoView();
     }
 
     public static void MoveToLast(this ITerminal @this)
     {
-        @this.ProcessText("\x1b[F");
+        @this.WriteInput("\x1b[F");
         @this.BringIntoView();
     }
 
     public static void MoveLeft(this ITerminal @this)
     {
-        @this.ProcessText($"\x1b[D");
+        @this.WriteInput($"\x1b[D");
         @this.BringIntoView();
     }
 
     public static void MoveRight(this ITerminal @this)
     {
-        @this.ProcessText($"\x1b[C");
+        @this.WriteInput($"\x1b[C");
         @this.BringIntoView();
     }
 
     public static void NextHistory(this ITerminal @this)
     {
-        @this.ProcessText($"\x1b[B");
+        @this.WriteInput($"\x1b[B");
         @this.BringIntoView();
     }
 
     public static void PrevHistory(this ITerminal @this)
     {
-        @this.ProcessText($"\x1b[A");
+        @this.WriteInput($"\x1b[A");
         @this.BringIntoView();
     }
 
     public static void Backspace(this ITerminal @this)
     {
-        @this.ProcessText($"\b");
+        @this.WriteInput($"\b");
         @this.BringIntoView();
     }
 
     public static void Delete(this ITerminal @this)
     {
-        @this.ProcessText($"\x1b[3~");
+        @this.WriteInput($"\x1b[3~");
         @this.BringIntoView();
     }
 
@@ -151,9 +151,11 @@ public static class ITerminalExtensions
         return new TerminalPoint(0, rowIndex * height);
     }
 
-    public static void AppendLine(this ITerminal @this, string value) => @this.Append(value + Environment.NewLine);
+    public static void Append(this ITerminal @this, string value) => @this.Out.Write(value);
 
-    public static void AppendLine(this ITerminal @this) => @this.Append(Environment.NewLine);
+    public static void AppendLine(this ITerminal @this, string value) => @this.Out.WriteLine(value + Environment.NewLine);
+
+    public static void AppendLine(this ITerminal @this) => @this.Out.WriteLine();
 
     public static TerminalColor GetForegroundColor(this ITerminal terminal, TerminalCoord coord)
     {

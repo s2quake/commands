@@ -30,5 +30,17 @@ sealed class DeviceStatusReport : CSISequenceBase
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
+        var ps = context.GetParameters(0);
+        switch (ps)
+        {
+            case 5:
+                context.SendSequence("\x1b[0n");
+                break;
+            case 6:
+                var cursor = context.GetCoordinate(lines, context.Index);
+                cursor.Y = Math.Min(cursor.Y - context.View.Y, context.View.Height - 1);
+                context.SendSequence($"\x1b[{cursor.Y + 1};{cursor.X + 1}R");
+                break;
+        }
     }
 }

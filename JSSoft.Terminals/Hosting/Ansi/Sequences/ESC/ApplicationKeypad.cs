@@ -19,11 +19,12 @@
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.ESC;
 
 /// <summary>
+/// DECKPAM
 /// ESC =
 /// </summary>
-sealed class EnterAlternateKeypadMode : ESCSequenceBase
+sealed class ApplicationKeypad : ESCSequenceBase
 {
-    public EnterAlternateKeypadMode()
+    public ApplicationKeypad()
         : base('=')
     {
     }

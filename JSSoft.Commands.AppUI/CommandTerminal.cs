@@ -28,19 +28,19 @@ namespace JSSoft.Commands.AppUI;
 sealed class CommandTerminal : IDisposable
 {
     private readonly CommandContext _commandContext;
-    private readonly TerminalControl _terminal;
+    private readonly TerminalControl _terminalControl;
     private string _prompt = "terminal $ ";
 
     public CommandTerminal(CommandContext commandContext, TerminalControl terminalControl)
     {
         _commandContext = commandContext;
-        _terminal = terminalControl;
-        _commandContext.Out = new TerminalControlTextWriter(_terminal);
-        _commandContext.Error = new TerminalControlTextWriter(_terminal);
-        _terminal.Completor = _commandContext.GetCompletion;
+        _terminalControl = terminalControl;
+        _commandContext.Out = new TerminalControlTextWriter(_terminalControl);
+        _commandContext.Error = new TerminalControlTextWriter(_terminalControl);
+        _terminalControl.Completor = _commandContext.GetCompletion;
         // _terminal.PropertyChanged += Terminal_PropertyChanged;
         // _terminal.Executing += Terminal_Executing;
-        _terminal.Append(_prompt);
+        _terminalControl.Out.Write(_prompt);
     }
 
     public void Dispose()
@@ -52,13 +52,13 @@ sealed class CommandTerminal : IDisposable
     {
         var token = e.GetToken();
         var cancellationTokenSource = new CancellationTokenSource();
-        var progress = new TerminalProgress(_terminal);
+        var progress = new TerminalProgress(_terminalControl);
         try
         {
-            _terminal.AppendLine(e.Command);
+            _terminalControl.Out.WriteLine(e.Command);
             await _commandContext.ExecuteAsync(e.Command, cancellationTokenSource.Token, progress);
             e.Success(token);
-            _terminal.Append(_prompt);
+            _terminalControl.Out.Write(_prompt);
         }
         catch (Exception exception)
         {
@@ -71,7 +71,7 @@ sealed class CommandTerminal : IDisposable
             tsb.AppendEnd();
             _commandContext.Error.WriteLine(tsb.ToString());
             e.Fail(token, exception);
-            _terminal.Append(_prompt);
+            _terminalControl.Out.Write(_prompt);
         }
     }
 

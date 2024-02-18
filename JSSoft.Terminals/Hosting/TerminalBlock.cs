@@ -37,7 +37,6 @@ sealed class TerminalBlock(Terminal terminal)
     private readonly Terminal _terminal = terminal;
     public TerminalIndex _index = new(terminal, TerminalCoord.Empty);
     private TerminalIndex _beginIndex = new(terminal, TerminalCoord.Empty);
-    private string _command = string.Empty;
 
     public int Height
     {
@@ -61,51 +60,9 @@ sealed class TerminalBlock(Terminal terminal)
 
     public TerminalLineCollection Lines { get; } = new(terminal);
 
-    public string Command
-    {
-        get => _command;
-        set
-        {
-            _command = value;
-            UpdateCommand();
-            InvokeTextChangedEvent();
-        }
-    }
-
     public void Append(string text, TerminalDisplayInfo displayInfo)
     {
         AppendText(text, displayInfo);
-    }
-
-    private void UpdateCommand()
-    {
-        return;
-        // if (_command == string.Empty)
-        //     return;
-
-        var command = _command + char.MinValue;
-        var index = _index;
-        var beginIndex = _beginIndex;
-        var lines = Lines;
-        // lines.Take(_index);
-        for (var i = 0; i < command.Length; i++)
-        {
-            var character = command[i];
-            var font = _terminal.ActualStyle.Font;
-            var span = TerminalFontUtility.GetGlyphSpan(font, character);
-            var index1 = index;
-            var characterInfo = new TerminalCharacterInfo
-            {
-                Character = character,
-                DisplayInfo = TerminalDisplayInfo.Empty,
-                Span = span,
-            };
-            var index2 = index1.Expect(span);
-            var line = lines.Prepare(beginIndex, index2);
-            line.SetCharacterInfo(index2, characterInfo);
-            index = index2 + span;
-        }
-        lines.Update();
     }
 
     public TerminalCoord GetCoordinate(TerminalIndex index)
@@ -181,7 +138,6 @@ sealed class TerminalBlock(Terminal terminal)
         }
         _index = index;
         _beginIndex = beginIndex;
-        UpdateCommand();
         // lines.Take(_index.Linefeed());
     }
 
@@ -215,9 +171,7 @@ sealed class TerminalBlock(Terminal terminal)
         }
         _index = context.Index;
         _beginIndex = context.BeginIndex;
-
-        // UpdateCommand();
-
+        lines.Prepare(_beginIndex, _index);
         lines.Update();
         InvokeTextChangedEvent();
     }

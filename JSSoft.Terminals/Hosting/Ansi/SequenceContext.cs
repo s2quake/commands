@@ -28,6 +28,21 @@ sealed class SequenceContext(string option, AsciiCodeContext asciiCodeContext)
 
     public int[] Options { get; } = option == string.Empty ? [] : option.Split(';').Select(Parse).ToArray();
 
+    public int GetParameters(int index)
+    {
+        return index < Options.Length ? Options[index] : 0;
+    }
+
+    public int GetParameters(int index, int defaultValue)
+    {
+        return index < Options.Length ? Options[index] : defaultValue;
+    }
+
+    public void SendSequence(string sequence)
+    {
+        _asciiCodeContext.SendSequence(sequence);
+    }
+
     public ITerminalFont Font => _asciiCodeContext.Font;
 
     public TerminalIndex Index
@@ -62,6 +77,9 @@ sealed class SequenceContext(string option, AsciiCodeContext asciiCodeContext)
 
     public TerminalRect View => _asciiCodeContext.View;
 
+    public TerminalCoord GetCoordinate(TerminalLineCollection lines, TerminalIndex index)
+        => _asciiCodeContext.GetCoordinate(lines, index);
+    
     public int GetNumericValue(int index, int defaultValue)
     {
         return index < Options.Length ? Options[index] : defaultValue;

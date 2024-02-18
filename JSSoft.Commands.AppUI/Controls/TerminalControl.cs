@@ -31,7 +31,7 @@ using JSSoft.Terminals;
 using JSSoft.Terminals.Input;
 using JSSoft.Terminals.Extensions;
 using Avalonia.Utilities;
-using JSSoft.Terminals.Serializations;
+using System.IO;
 
 namespace JSSoft.Commands.AppUI.Controls;
 
@@ -53,18 +53,6 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
 
     public static readonly DirectProperty<TerminalControl, Size> BufferSizeProperty =
         AvaloniaProperty.RegisterDirect<TerminalControl, Size>(nameof(BufferSize), o => o.BufferSize);
-
-    // public static readonly RoutedEvent<TerminalExecutingRoutedEventArgs> ExecutingEvent =
-    //     RoutedEvent.Register<TerminalControl, TerminalExecutingRoutedEventArgs>(
-    //         nameof(Executing), RoutingStrategies.Bubble);
-
-    // public static readonly RoutedEvent<TerminalExecutedRoutedEventArgs> ExecutedEvent =
-    //     RoutedEvent.Register<TerminalControl, TerminalExecutedRoutedEventArgs>(
-    //         nameof(Executed), RoutingStrategies.Bubble);
-
-    public static readonly RoutedEvent<TerminalTextRoutedEventArgs> TextProcessedEvent =
-        RoutedEvent.Register<TerminalControl, TerminalTextRoutedEventArgs>(
-            nameof(TextProcessedEvent), RoutingStrategies.Bubble);
 
     public static readonly RoutedEvent<RoutedEventArgs> CancellationRequestedEvent =
         RoutedEvent.Register<TerminalControl, RoutedEventArgs>(
@@ -94,7 +82,6 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         _terminal.PropertyChanged += Terminal_PropertyChanged;
         _inputHandler = _terminal.InputHandler;
         _terminal.Completor = GetCompletion;
-        _terminal.TextProcessed += Terminal_TextProcessed;
         _terminal.CancellationRequested += Terminal_CancellationRequested;
         _terminalScroll.PropertyChanged += TerminalScroll_PropertyChanged;
         _inputVisual = this;
@@ -124,9 +111,9 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         private set => SetAndRaise(BufferSizeProperty, ref _bufferWidth, value);
     }
 
-    public void Append(string text) => _terminal.Append(text);
+    public TextWriter Out => _terminal.Out;
 
-    public void AppendLine(string text) => _terminal.AppendLine(text);
+    public TextReader In => _terminal.In;
 
     public void Reset() => _terminal.Reset(TerminalCoord.Empty);
 
@@ -149,34 +136,6 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
     }
 
     public void SelectAll() => _terminal.Selections.SelectAll();
-
-    public object Save() => _terminal.Save();
-
-    public void Load(object obj)
-    {
-        if (obj is TerminalDataInfo data)
-        {
-            _terminal.Load(data);
-        }
-    }
-
-    // public event EventHandler<TerminalExecutingRoutedEventArgs>? Executing
-    // {
-    //     add => AddHandler(ExecutingEvent, value);
-    //     remove => RemoveHandler(ExecutingEvent, value);
-    // }
-
-    // public event EventHandler<TerminalExecutedRoutedEventArgs>? Executed
-    // {
-    //     add => AddHandler(ExecutedEvent, value);
-    //     remove => RemoveHandler(ExecutedEvent, value);
-    // }
-
-    public event EventHandler<TerminalTextRoutedEventArgs>? TextProcessed
-    {
-        add => AddHandler(TextProcessedEvent, value);
-        remove => RemoveHandler(TextProcessedEvent, value);
-    }
 
     public event EventHandler<RoutedEventArgs>? CancellationRequested
     {
@@ -285,9 +244,9 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         base.OnKeyDown(e);
         var modifiers = TerminalMarshal.Convert(e.KeyModifiers);
         var key = TerminalMarshal.Convert(e.Key);
-        if (_keyBindings.Process(_terminal, modifiers, key) != true)
+        if (_keyBindings.Process(_terminal, modifiers, key) != true && e.KeySymbol is { } keySymbol)
         {
-            _terminal.ProcessText($"{e.KeySymbol}");
+            _terminal.WriteInput(keySymbol);
         }
         e.Handled = true;
         // if (e.Handled == false && e.Key == Key.Enter && e.KeyModifiers == KeyModifiers.None)
@@ -371,24 +330,6 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
             BufferSize = new Size(_terminal.BufferSize.Width, _terminal.BufferSize.Height);
             // _pty.Resize(_terminal.BufferSize.Width, _terminal.BufferSize.Height);
         }
-    }
-
-    // private void Terminal_Executing(object? sender, TerminalExecutingEventArgs e)
-    // {
-    //     var args = new TerminalExecutingRoutedEventArgs(e, ExecutingEvent);
-    //     RaiseEvent(args);
-    // }
-
-    // private void Terminal_Executed(object? sender, TerminalExecutedEventArgs e)
-    // {
-    //     var args = new TerminalExecutedRoutedEventArgs(e, ExecutedEvent);
-    //     RaiseEvent(args);
-    // }
-
-    private void Terminal_TextProcessed(object? sender, TerminalTextEventArgs e)
-    {
-        var args = new TerminalTextRoutedEventArgs(e, TextProcessedEvent);
-        RaiseEvent(args);
     }
 
     private void Terminal_CancellationRequested(object? sender, EventArgs e)

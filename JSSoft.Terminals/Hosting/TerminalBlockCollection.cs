@@ -93,8 +93,8 @@ sealed class TerminalBlockCollection : IEnumerable<TerminalBlock>
         var block = _indexes[y];
         var x1 = x;
         var y1 = y - block.Top;
-        if (y1 < block.Lines.Count)
-            return block.Lines[y1][x1];
+        if (y1 < block.Lines.Count && block.Lines[y1] is {} line && line.Length > 0)
+            return line[x1];
         return null;
     }
 
