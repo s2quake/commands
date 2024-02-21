@@ -21,7 +21,7 @@ internal static class NativeMethods
     internal const uint TIOCSWINSZ = 0x80087467;
     internal const int SIGHUP = 1;
 
-    private const string LibSystem = "libSystem.dylib";
+    private const string LibSystem = "libc.dylib";
 
     private static readonly int SizeOfIntPtr = Marshal.SizeOf(typeof(IntPtr));
 
@@ -200,6 +200,9 @@ internal static class NativeMethods
 
     [DllImport(LibSystem, SetLastError = true)]
     internal static extern int ioctl(int fd, uint request, ref WinSize winSize);
+
+    [DllImport(LibSystem, SetLastError = true)]
+    internal static extern int close(int fd);
 
     [DllImport(LibSystem, SetLastError = true)]
     internal static extern int kill(int pid, int signal);

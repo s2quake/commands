@@ -44,8 +44,6 @@ sealed class TerminalBlock(Terminal terminal)
         {
             if (Lines.Count > 0)
             {
-                // if (Lines.Last().Length == 0)
-                //     return Lines.Count - 1;
                 return Lines.Count;
             }
             return 0;
@@ -83,7 +81,6 @@ sealed class TerminalBlock(Terminal terminal)
             var y = index.Value / bufferWidth;
             return new TerminalCoord(x, Top + y);
         }
-        // return TerminalCoord.Empty;
     }
 
     public void Clear()
@@ -138,7 +135,6 @@ sealed class TerminalBlock(Terminal terminal)
         }
         _index = index;
         _beginIndex = beginIndex;
-        // lines.Take(_index.Linefeed());
     }
 
     public void Take()
@@ -171,38 +167,9 @@ sealed class TerminalBlock(Terminal terminal)
         }
         _index = context.Index;
         _beginIndex = context.BeginIndex;
-        lines.Prepare(_beginIndex, _index);
         lines.Update();
         InvokeTextChangedEvent();
     }
-
-    // private void SetText(string text, TerminalDisplayInfo displayInfo)
-    // {
-    //     var lines = Lines;
-    //     var index = new TerminalIndex(_terminal, TerminalCoord.Empty);
-    //     var context = new AsciiCodeContext(text, _terminal)
-    //     {
-    //         Index = new TerminalIndex(0, lines.Count, _terminal.BufferSize.Width),
-    //         BeginIndex = new TerminalIndex(0, lines.Count, _terminal.BufferSize.Width),
-    //         DisplayInfo = displayInfo,
-    //     };
-    //     lines.Clear();
-    //     while (context.TextIndex < text.Length)
-    //     {
-    //         var character = text[context.TextIndex];
-    //         if (AsciiCodeByCharacter.ContainsKey(character) == true)
-    //         {
-    //             AsciiCodeByCharacter[character].Process(lines, context);
-    //         }
-    //         else
-    //         {
-    //             Process(lines, context);
-    //         }
-    //     }
-    //     _index = context.Index;
-    //     _beginIndex = context.BeginIndex;
-    //     InvokeTextChangedEvent();
-    // }
 
     private static void Process(TerminalLineCollection lines, AsciiCodeContext context)
     {

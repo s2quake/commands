@@ -7,21 +7,8 @@ using Microsoft.Win32.SafeHandles;
 
 namespace JSSoft.Terminals.Pty.Unix;
 
-/// <summary>
-/// A stream connected to a pty.
-/// </summary>
-internal sealed class PtyStream : FileStream
+internal sealed class PtyStream(int fd, FileAccess fileAccess)
+    : FileStream(new SafeFileHandle((IntPtr)fd, ownsHandle: false), fileAccess, bufferSize: 1024, isAsync: false)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PtyStream"/> class.
-    /// </summary>
-    /// <param name="fd">The fd to connect the stream to.</param>
-    /// <param name="fileAccess">The access permissions to set on the fd.</param>
-    public PtyStream(int fd, FileAccess fileAccess)
-        : base(new SafeFileHandle((IntPtr)fd, ownsHandle: false), fileAccess, bufferSize: 1024, isAsync: false)
-    {
-    }
-
-    /// <inheritdoc/>
     public override bool CanSeek => false;
 }

@@ -3,27 +3,15 @@
 
 using System;
 using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace JSSoft.Terminals.Pty.Unix;
 
-/// <summary>
-/// Abstract class that provides a pty connection for unix-like machines.
-/// </summary>
 internal abstract class PtyProvider : IPtyProvider
 {
-    /// <inheritdoc/>
-    public abstract Task<IPtyConnection> StartTerminalAsync(PtyOptions options, TraceSource trace, CancellationToken cancellationToken);
+    public abstract IPtyConnection StartTerminal(PtyOptions options, TraceSource trace);
 
-    /// <summary>
-    /// Gets the arguments to pass to execvp.
-    /// </summary>
-    /// <param name="options">The options for spawning the pty.</param>
-    /// <returns>An array of arguments to pass to execvp.</returns>
     protected static string?[] GetExecvpArgs(PtyOptions options)
     {
-        // execvp(2) args array must end with null. The first arg is the app itself.
         if (options.CommandLine.Length == 0)
         {
             return [options.App, null];

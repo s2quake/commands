@@ -37,7 +37,7 @@ public sealed class PseudoTerminal
     private readonly TerminalControl _terminalControl;
     private IPtyConnection? _pty;
     private CancellationTokenSource? _cancellationTokenSource;
-    private string _app = TerminalEnvironment.IsWindows() == true ? Path.Combine(Environment.SystemDirectory, "cmd.exe") : "sh";
+    private string _app = TerminalEnvironment.IsWindows() == true ? Path.Combine(Environment.SystemDirectory, "cmd.exe") : "zsh";
     private Size _size = new(80, 24);
 
     public PseudoTerminal(TerminalControl terminalControl)
@@ -57,7 +57,7 @@ public sealed class PseudoTerminal
         set => _size = value;
     }
 
-    public async Task OpenAsync(CancellationToken cancellationToken)
+    public void Open()
     {
         var app = _app;
         var size = _size;
@@ -73,23 +73,22 @@ public sealed class PseudoTerminal
             },
         };
 
-        _pty = await PtyProvider.SpawnAsync(options, cancellationToken);
+        _pty = PtyProvider.Spawn(options);
         _cancellationTokenSource = new();
         _terminalControl.CancellationRequested += TerminalControl_CancellationRequested;
         ReadInput(_pty, _terminalControl, _cancellationTokenSource.Token);
         ReadStream(_pty, Append, _cancellationTokenSource.Token);
     }
 
-    public async Task CloseAsync(CancellationToken cancellationToken)
+    public void Close()
     {
         if (_pty is null || _cancellationTokenSource is null)
             throw new InvalidOperationException();
 
         _terminalControl.CancellationRequested -= TerminalControl_CancellationRequested;
         _cancellationTokenSource.Cancel();
-        // _pty.Dispose();
+        _pty.Dispose();
         _cancellationTokenSource.Dispose();
-        await Task.CompletedTask;
     }
 
     public bool IsOpen { get; private set; }

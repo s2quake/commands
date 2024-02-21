@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using static JSSoft.Terminals.Pty.Windows.NativeMethods;
 
 /// <summary>

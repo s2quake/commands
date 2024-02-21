@@ -23,19 +23,14 @@ using static JSSoft.Terminals.Pty.Windows.WinptyNativeInterop;
 internal class PtyProvider : IPtyProvider
 {
     /// <inheritdoc/>
-    public Task<IPtyConnection> StartTerminalAsync(
+    public IPtyConnection StartTerminal(
         PtyOptions options,
-        TraceSource trace,
-        CancellationToken cancellationToken)
+        TraceSource trace)
     {
-        if (NativeMethods.IsPseudoConsoleSupported && !options.ForceWinPty)
-        {
-            return StartPseudoConsoleAsync(options, trace, cancellationToken);
-        }
-        else
-        {
-            return StartWinPtyTerminalAsync(options, trace, cancellationToken);
-        }
+        if (IsPseudoConsoleSupported != true)
+            throw new NotSupportedException();
+
+        return StartPseudoConsole(options, trace);
     }
 
     private static void ThrowIfErrorOrNull(string message, IntPtr err, IntPtr ptr)
@@ -138,8 +133,7 @@ internal class PtyProvider : IPtyProvider
             throw new ArgumentException($"Terminal app path '{app}' is too long");
         }
 
-        string pathEnvironment = (env != null && env.TryGetValue("PATH", out string p) ? p : null)
-            ?? Environment.GetEnvironmentVariable("PATH");
+        var pathEnvironment = env.TryGetValue("PATH", out var p) ? p : Environment.GetEnvironmentVariable("PATH");
 
         if (string.IsNullOrWhiteSpace(pathEnvironment))
         {
@@ -234,82 +228,9 @@ internal class PtyProvider : IPtyProvider
         return result.ToString();
     }
 
-    private async Task<IPtyConnection> StartWinPtyTerminalAsync(
+    private IPtyConnection StartPseudoConsole(
        PtyOptions options,
-       TraceSource trace,
-       CancellationToken cancellationToken)
-    {
-        IntPtr error;
-
-        IntPtr config = winpty_config_new(WINPTY_FLAG_COLOR_ESCAPES, out error);
-        ThrowIfErrorOrNull("Error creating WinPTY config", error, config);
-
-        winpty_config_set_initial_size(config, options.Cols, options.Rows);
-
-        IntPtr handle = winpty_open(config, out error);
-        winpty_config_free(config);
-
-        ThrowIfErrorOrNull("Error launching WinPTY agent", error, handle);
-
-        string commandLine = options.VerbatimCommandLine ?
-            WindowsArguments.FormatVerbatim(options.CommandLine) :
-            WindowsArguments.Format(options.CommandLine);
-
-        string env = GetEnvironmentString(options.Environment);
-        string app = GetAppOnPath(options.App, options.Cwd, options.Environment);
-
-        trace.TraceInformation($"Starting terminal process '{app}' with command line {commandLine}");
-
-        IntPtr spawnConfig = winpty_spawn_config_new(
-            WINPTY_SPAWN_FLAG_AUTO_SHUTDOWN,
-            app,
-            commandLine,
-            options.Cwd,
-            env,
-            out error);
-
-        ThrowIfErrorOrNull("Error creating WinPTY spawn config", error, spawnConfig);
-
-        bool spawnSuccess = winpty_spawn(handle, spawnConfig, out SafeProcessHandle hProcess, out IntPtr thread, out int procError, out error);
-        winpty_spawn_config_free(spawnConfig);
-
-        if (!spawnSuccess)
-        {
-            if (procError != 0)
-            {
-                if (error != IntPtr.Zero)
-                {
-                    winpty_error_free(error);
-                }
-
-                throw new InvalidOperationException($"Unable to start WinPTY terminal '{app}': {new Win32Exception(procError).Message} ({procError})");
-            }
-
-            ThrowIfError("Unable to start WinPTY terminal process", error, alwaysThrow: true);
-        }
-
-        Stream? writeToStream = null;
-        Stream? readFromStream = null;
-        try
-        {
-            writeToStream = await CreatePipeAsync(winpty_conin_name(handle), PipeDirection.Out, cancellationToken);
-            readFromStream = await CreatePipeAsync(winpty_conout_name(handle), PipeDirection.In, cancellationToken);
-        }
-        catch
-        {
-            writeToStream?.Dispose();
-            hProcess.Close();
-            winpty_free(handle);
-            throw;
-        }
-
-        return new WinPtyConnection(readFromStream, writeToStream, handle, hProcess);
-    }
-
-    private Task<IPtyConnection> StartPseudoConsoleAsync(
-       PtyOptions options,
-       TraceSource trace,
-       CancellationToken cancellationToken)
+       TraceSource trace)
     {
         // Create the in/out pipes
         if (!CreatePipe(out SafePipeHandle inPipePseudoConsoleSide, out SafePipeHandle inPipeOurSide, null, 0))
@@ -435,8 +356,7 @@ internal class PtyProvider : IPtyProvider
                 processInfo.dwProcessId,
                 mainThreadHandle);
 
-            var result = new PseudoConsoleConnection(connectionOptions);
-            return Task.FromResult<IPtyConnection>(result);
+            return new PseudoConsoleConnection(connectionOptions);
         }
         finally
         {

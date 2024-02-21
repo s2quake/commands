@@ -25,6 +25,7 @@ using Avalonia.Interactivity;
 using JSSoft.Commands.AppUI.Controls;
 using JSSoft.Commands.Extensions;
 using JSSoft.Terminals;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace JSSoft.Commands.AppUI;
 
@@ -51,22 +52,22 @@ public partial class MainWindow : Window
         // _terminal.Append(_prompt);
     }
 
-    protected override async void OnLoaded(RoutedEventArgs e)
+    protected override void OnLoaded(RoutedEventArgs e)
     {
         base.OnLoaded(e);
         _terminal.IsReadOnly = true;
         _pseudoTerminal.Size = _terminal.BufferSize;
-        await _pseudoTerminal.OpenAsync(cancellationToken: default);
+        _pseudoTerminal.Open();
         _terminal.IsReadOnly = false;
         _terminal.Focus();
         // _terminal.Executing += Terminal_Executing;
     }
 
-    protected override async void OnUnloaded(RoutedEventArgs e)
+    protected override void OnUnloaded(RoutedEventArgs e)
     {
         // _terminal.Executing -= Terminal_Executing;
+        _pseudoTerminal.Close();
         base.OnUnloaded(e);
-        await _pseudoTerminal.CloseAsync(cancellationToken: default);
     }
 
     private void Terminal_PropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)

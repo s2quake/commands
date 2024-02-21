@@ -21,13 +21,13 @@ internal static class NativeMethods
     internal const int EXTENDED_STARTUPINFO_PRESENT = 0x00080000;
     internal const int STARTF_USESTDHANDLES = 0x00000100;
 
-    internal static readonly IntPtr PROC_THREAD_ATTRIBUTE_PSEUDOCONSOLE = new IntPtr(
+    internal static readonly IntPtr PROC_THREAD_ATTRIBUTE_PSEUDOCONSOLE = new(
         22 // ProcThreadAttributePseudoConsole
         | 0x20000); // PROC_THREAD_ATTRIBUTE_INPUT - Attribute is input only
 
-    internal static readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
+    internal static readonly IntPtr INVALID_HANDLE_VALUE = new(-1);
 
-    private static readonly Lazy<bool> IsPseudoConsoleSupportedLazy = new Lazy<bool>(
+    private static readonly Lazy<bool> IsPseudoConsoleSupportedLazy = new(
         () =>
         {
             IntPtr hLibrary = LoadLibraryW("kernel32.dll");
@@ -74,42 +74,6 @@ internal static class NativeMethods
         ref STARTUPINFOEX lpStartupInfo,                // LPSTARTUPINFO
         out PROCESS_INFORMATION lpProcessInformation);  // LPPROCESS_INFORMATION
 
-    internal static int CreatePseudoConsole(Coord coord, IntPtr input, IntPtr output, uint flags, out IntPtr consoleHandle)
-    {
-        if (Environment.Is64BitOperatingSystem)
-        {
-            return CreatePseudoConsole64(coord, input, output, flags, out consoleHandle);
-        }
-        else
-        {
-            return CreatePseudoConsole86(coord, input, output, flags, out consoleHandle);
-        }
-    }
-
-    internal static int ResizePseudoConsole(SafePseudoConsoleHandle consoleHandle, Coord coord)
-    {
-        if (Environment.Is64BitOperatingSystem)
-        {
-            return ResizePseudoConsole64(consoleHandle, coord);
-        }
-        else
-        {
-            return ResizePseudoConsole86(consoleHandle, coord);
-        }
-    }
-
-    internal static void ClosePseudoConsole(IntPtr consoleHandle)
-    {
-        if (Environment.Is64BitOperatingSystem)
-        {
-            ClosePseudoConsole64(consoleHandle);
-        }
-        else
-        {
-            ClosePseudoConsole86(consoleHandle);
-        }
-    }
-
     [DllImport("kernel32.dll", SetLastError = true)]
     [SecurityCritical]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -125,23 +89,14 @@ internal static class NativeMethods
     [DllImport("kernel32.dll")]
     internal static extern IntPtr GetProcAddress(IntPtr hModule, [MarshalAs(UnmanagedType.LPStr)] string procName);
 
-    [DllImport("os64\\conpty.dll", EntryPoint = "CreatePseudoConsole")]
-    private static extern int CreatePseudoConsole64(Coord coord, IntPtr input, IntPtr output, uint flags, out IntPtr consoleHandle);
+    [DllImport("kernel32.dll")]
+    internal static extern int CreatePseudoConsole(Coord coord, IntPtr input, IntPtr output, uint flags, out IntPtr consoleHandle);
 
-    [DllImport("os64\\conpty.dll", EntryPoint = "ResizePseudoConsole")]
-    private static extern int ResizePseudoConsole64(SafePseudoConsoleHandle consoleHandle, Coord coord);
+    [DllImport("kernel32.dll")]
+    internal static extern int ResizePseudoConsole(SafePseudoConsoleHandle consoleHandle, Coord coord);
 
-    [DllImport("os64\\conpty.dll", EntryPoint = "ClosePseudoConsole")]
-    private static extern void ClosePseudoConsole64(IntPtr consoleHandle);
-
-    [DllImport("os86\\conpty.dll", EntryPoint = "CreatePseudoConsole")]
-    private static extern int CreatePseudoConsole86(Coord coord, IntPtr input, IntPtr output, uint flags, out IntPtr consoleHandle);
-
-    [DllImport("os86\\conpty.dll", EntryPoint = "ResizePseudoConsole")]
-    private static extern int ResizePseudoConsole86(SafePseudoConsoleHandle consoleHandle, Coord coord);
-
-    [DllImport("os86\\conpty.dll", EntryPoint = "ClosePseudoConsole")]
-    private static extern void ClosePseudoConsole86(IntPtr consoleHandle);
+    [DllImport("kernel32.dll")]
+    internal static extern void ClosePseudoConsole(IntPtr consoleHandle);
 
     [StructLayout(LayoutKind.Sequential, Pack = 8, CharSet = CharSet.Unicode)]
     internal struct STARTUPINFO

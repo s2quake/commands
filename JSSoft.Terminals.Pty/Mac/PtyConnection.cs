@@ -1,41 +1,25 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using static JSSoft.Terminals.Pty.Mac.NativeMethods;
 
 namespace JSSoft.Terminals.Pty.Mac;
 
-/// <summary>
-/// A connection to a pseudoterminal on MacOS machines.
-/// </summary>
-internal class PtyConnection : Unix.PtyConnection
+internal class PtyConnection(int controller, int pid)
+    : Unix.PtyConnection(controller, pid)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PtyConnection"/> class.
-    /// </summary>
-    /// <param name="controller">The fd of the pty controller.</param>
-    /// <param name="pid">The id of the spawned process.</param>
-    public PtyConnection(int controller, int pid)
-        : base(controller, pid)
-    {
-    }
-
-    /// <inheritdoc/>
     protected override bool Kill(int fd)
     {
-        return ioctl(fd, TIOCSIG, SIGHUP) != -1;
+        return NativeMethods.close(fd) != -1;
     }
 
-    /// <inheritdoc/>
     protected override bool Resize(int fd, int cols, int rows)
     {
-        var size = new WinSize((ushort)rows, (ushort)cols);
-        return ioctl(fd, TIOCSWINSZ, ref size) != -1;
+        var size = new NativeMethods.WinSize((ushort)rows, (ushort)cols);
+        return NativeMethods.ioctl(fd, NativeMethods.TIOCSWINSZ, ref size) != -1;
     }
 
-    /// <inheritdoc/>
     protected override bool WaitPid(int pid, ref int status)
     {
-        return waitpid(pid, ref status, 0) != -1;
+        return NativeMethods.waitpid(pid, ref status, 0) != -1;
     }
 }

@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 using static JSSoft.Terminals.Pty.Mac.NativeMethods;
 
 namespace JSSoft.Terminals.Pty.Mac;
@@ -17,7 +15,7 @@ namespace JSSoft.Terminals.Pty.Mac;
 internal class PtyProvider : Unix.PtyProvider
 {
     /// <inheritdoc/>
-    public override Task<IPtyConnection> StartTerminalAsync(PtyOptions options, TraceSource trace, CancellationToken cancellationToken)
+    public override IPtyConnection StartTerminal(PtyOptions options, TraceSource trace)
     {
         var winSize = new WinSize((ushort)options.Rows, (ushort)options.Cols);
         var terminalArgs = GetExecvpArgs(options);
@@ -54,7 +52,6 @@ internal class PtyProvider : Unix.PtyProvider
 
         var controller = 0;
         var pid = forkpty(ref controller, null, ref term, ref winSize);
-
         if (pid == -1)
         {
             throw new InvalidOperationException($"forkpty(4) failed with error {Marshal.GetLastWin32Error()}");
@@ -71,6 +68,6 @@ internal class PtyProvider : Unix.PtyProvider
         }
 
         // We have forked the terminal
-        return Task.FromResult<IPtyConnection>(new PtyConnection(controller, pid));
+        return new PtyConnection(controller, pid);
     }
 }

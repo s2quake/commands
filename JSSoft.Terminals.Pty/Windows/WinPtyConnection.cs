@@ -6,6 +6,7 @@ namespace JSSoft.Terminals.Pty.Windows
     using System;
     using System.Diagnostics;
     using System.IO;
+    using System.Threading.Tasks;
     using static JSSoft.Terminals.Pty.Windows.NativeMethods;
     using static JSSoft.Terminals.Pty.Windows.WinptyNativeInterop;
 

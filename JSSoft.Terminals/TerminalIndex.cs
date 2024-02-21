@@ -294,7 +294,7 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
         var x = Value % Width;
         if (x + span > Width)
         {
-            return this.Linefeed();
+            // return this.Linefeed();
         }
         return this;
     }

@@ -49,11 +49,6 @@ namespace JSSoft.Terminals.Pty
         public bool VerbatimCommandLine { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether WinPty should be forced as the windows backend even on systems where ConPty is available.
-        /// </summary>
-        public bool ForceWinPty { get; set; }
-
-        /// <summary>
         /// Gets or sets the process' environment variables.
         /// </summary>
         public IDictionary<string, string> Environment { get; set; } = new Dictionary<string, string>();

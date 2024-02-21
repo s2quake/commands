@@ -16,7 +16,7 @@ namespace JSSoft.Terminals.Pty
     /// </summary>
     public static class PtyProvider
     {
-        private static readonly TraceSource Trace = new TraceSource(nameof(PtyProvider));
+        private static readonly TraceSource Trace = new(nameof(PtyProvider));
 
         /// <summary>
         /// Spawn a new process connected to a pseudoterminal.
@@ -24,9 +24,8 @@ namespace JSSoft.Terminals.Pty
         /// <param name="options">The set of options for creating the pseudoterminal.</param>
         /// <param name="cancellationToken">The token to cancel process creation early.</param>
         /// <returns>A <see cref="Task{IPtyConnection}"/> that completes once the process has spawned.</returns>
-        public static Task<IPtyConnection> SpawnAsync(
-            PtyOptions options,
-            CancellationToken cancellationToken)
+        public static IPtyConnection Spawn(
+            PtyOptions options)
         {
             if (string.IsNullOrEmpty(options.App))
             {
@@ -53,7 +52,7 @@ namespace JSSoft.Terminals.Pty
 
             options.Environment = environment;
 
-            return PlatformServices.PtyProvider.StartTerminalAsync(options, Trace, cancellationToken);
+            return PlatformServices.PtyProvider.StartTerminal(options, Trace);
         }
 
         private static IDictionary<string, string> MergeEnvironment(IDictionary<string, string> enviromentToMerge, IDictionary<string, string>? environment)

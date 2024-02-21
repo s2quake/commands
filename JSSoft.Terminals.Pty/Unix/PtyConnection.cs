@@ -4,12 +4,12 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace JSSoft.Terminals.Pty.Unix;
-/// <summary>
-/// A connection to a Unix-style pseudoterminal.
-/// </summary>
+
 internal abstract class PtyConnection : IPtyConnection
 {
     private const int EINTR = 4;
@@ -21,11 +21,6 @@ internal abstract class PtyConnection : IPtyConnection
     private int _exitCode;
     private int _exitSignal;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PtyConnection"/> class.
-    /// </summary>
-    /// <param name="controller">The fd of the pty controller.</param>
-    /// <param name="pid">The id of the spawned process.</param>
     public PtyConnection(int controller, int pid)
     {
         ReaderStream = new PtyStream(controller, FileAccess.Read);
@@ -43,30 +38,25 @@ internal abstract class PtyConnection : IPtyConnection
         childWatcherThread.Start();
     }
 
-    /// <inheritdoc/>
     public event EventHandler<PtyExitedEventArgs>? ProcessExited;
 
-    /// <inheritdoc/>
     public Stream ReaderStream { get; }
 
-    /// <inheritdoc/>
     public Stream WriterStream { get; }
 
-    /// <inheritdoc/>
     public int Pid => _pid;
 
-    /// <inheritdoc/>
     public int ExitCode => _exitCode;
 
-    /// <inheritdoc/>
     public void Dispose()
     {
-        ReaderStream?.Dispose();
-        WriterStream?.Dispose();
+        WriterStream.Write(Encoding.UTF8.GetBytes("exit\n"));
+        WriterStream.Flush();
+        ReaderStream.Dispose();
+        WriterStream.Dispose();
         Kill();
     }
 
-    /// <inheritdoc/>
     public void Kill()
     {
         if (!Kill(_controller))
@@ -75,7 +65,6 @@ internal abstract class PtyConnection : IPtyConnection
         }
     }
 
-    /// <inheritdoc/>
     public void Resize(int cols, int rows)
     {
         if (!Resize(_controller, cols, rows))
@@ -84,34 +73,15 @@ internal abstract class PtyConnection : IPtyConnection
         }
     }
 
-    /// <inheritdoc/>
     public bool WaitForExit(int milliseconds)
     {
         return _terminalProcessTerminatedEvent.WaitOne(milliseconds);
     }
 
-    /// <summary>
-    /// OS-specific implementation of the pty-resize function.
-    /// </summary>
-    /// <param name="controller">The fd of the pty controller.</param>
-    /// <param name="cols">The number of columns to resize to.</param>
-    /// <param name="rows">The number of rows to resize to.</param>
-    /// <returns>True if the function suceeded to resize the pty, false otherwise.</returns>
     protected abstract bool Resize(int controller, int cols, int rows);
 
-    /// <summary>
-    /// Kills the terminal process.
-    /// </summary>
-    /// <param name="controller">The fd of the pty controller.</param>
-    /// <returns>True if the function succeeded in killing the process, false otherwise.</returns>
     protected abstract bool Kill(int controller);
 
-    /// <summary>
-    /// OS-specific implementation of waiting on the given process id.
-    /// </summary>
-    /// <param name="pid">The process id to wait on.</param>
-    /// <param name="status">The status of the process.</param>
-    /// <returns>True if the function succeeded to get the status of the process, false otherwise.</returns>
     protected abstract bool WaitPid(int pid, ref int status);
 
     private void ChildWatcherThreadProc()
