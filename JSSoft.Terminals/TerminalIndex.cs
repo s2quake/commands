@@ -207,6 +207,15 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
         return index;
     }
 
+    public readonly TerminalIndex CarriageReturn(TerminalIndex beginIndex)
+    {
+        if (X == 0 && Y > beginIndex.Y)
+        {
+            return this - Width;
+        }
+        return CarriageReturn();
+    }
+
     public readonly TerminalIndex CarriageReturn()
     {
         var index = this;

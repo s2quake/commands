@@ -27,6 +27,7 @@ sealed class CursorBackward : CSISequenceBase
         : base('D')
     {
     }
+
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
         var index = context.Index;

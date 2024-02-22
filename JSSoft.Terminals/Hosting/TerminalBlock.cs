@@ -167,6 +167,7 @@ sealed class TerminalBlock(Terminal terminal)
         }
         _index = context.Index;
         _beginIndex = context.BeginIndex;
+        lines.Prepare(_beginIndex, _index);
         lines.Update();
         InvokeTextChangedEvent();
     }
