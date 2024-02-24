@@ -1,90 +1,99 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace JSSoft.Terminals.Pty.Windows
+using System;
+using System.Diagnostics;
+using System.IO;
+using static JSSoft.Terminals.Pty.Windows.NativeMethods;
+using static JSSoft.Terminals.Pty.Windows.WinptyNativeInterop;
+
+namespace JSSoft.Terminals.Pty.Windows;
+
+/// <summary>
+/// A connection to a pseudoterminal spawned via winpty.
+/// </summary>
+internal class WinPtyConnection : IPtyConnection
 {
-    using System;
-    using System.Diagnostics;
-    using System.IO;
-    using System.Threading.Tasks;
-    using static JSSoft.Terminals.Pty.Windows.NativeMethods;
-    using static JSSoft.Terminals.Pty.Windows.WinptyNativeInterop;
+    private readonly IntPtr _handle;
+    private readonly SafeProcessHandle _processHandle;
+    private readonly Process _process;
+    private readonly Stream _readerStream;
+    private readonly Stream _writerStream;
 
     /// <summary>
-    /// A connection to a pseudoterminal spawned via winpty.
+    /// Initializes a new instance of the <see cref="WinPtyConnection"/> class.
     /// </summary>
-    internal class WinPtyConnection : IPtyConnection
+    /// <param name="readerStream">The reading side of the pty connection.</param>
+    /// <param name="writerStream">The writing side of the pty connection.</param>
+    /// <param name="handle">A handle to the winpty instance.</param>
+    /// <param name="processHandle">A handle to the spawned process.</param>
+    public WinPtyConnection(Stream readerStream, Stream writerStream, IntPtr handle, SafeProcessHandle processHandle)
     {
-        private readonly IntPtr handle;
-        private readonly SafeProcessHandle processHandle;
-        private readonly Process process;
+        _readerStream = readerStream;
+        _writerStream = writerStream;
+        Pid = GetProcessId(processHandle);
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WinPtyConnection"/> class.
-        /// </summary>
-        /// <param name="readerStream">The reading side of the pty connection.</param>
-        /// <param name="writerStream">The writing side of the pty connection.</param>
-        /// <param name="handle">A handle to the winpty instance.</param>
-        /// <param name="processHandle">A handle to the spawned process.</param>
-        public WinPtyConnection(Stream readerStream, Stream writerStream, IntPtr handle, SafeProcessHandle processHandle)
-        {
-            ReaderStream = readerStream;
-            WriterStream = writerStream;
-            Pid = NativeMethods.GetProcessId(processHandle);
-
-            this.handle = handle;
-            this.processHandle = processHandle;
-            process = Process.GetProcessById(Pid);
-            process.Exited += Process_Exited;
-            process.EnableRaisingEvents = true;
-        }
-
-        /// <inheritdoc/>
-        public event EventHandler<PtyExitedEventArgs>? ProcessExited;
-
-        /// <inheritdoc/>
-        public Stream ReaderStream { get; }
-
-        /// <inheritdoc/>
-        public Stream WriterStream { get; }
-
-        /// <inheritdoc/>
-        public int Pid { get; }
-
-        /// <inheritdoc/>
-        public int ExitCode => process.ExitCode;
-
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            ReaderStream?.Dispose();
-            WriterStream?.Dispose();
-
-            processHandle.Close();
-            winpty_free(handle);
-        }
-
-        /// <inheritdoc/>
-        public void Kill()
-        {
-            process.Kill();
-        }
-
-        /// <inheritdoc/>
-        public void Resize(int cols, int rows)
-        {
-            winpty_set_size(handle, cols, rows, out var err);
-        }
-
-        /// <inheritdoc/>
-        public bool WaitForExit(int milliseconds)
-        {
-            return process.WaitForExit(milliseconds);
-        }
-
-        private void Process_Exited(object? sender, EventArgs e)
-        {
-            ProcessExited?.Invoke(this, new PtyExitedEventArgs(process.ExitCode));
-        }
+        _handle = handle;
+        _processHandle = processHandle;
+        _process = Process.GetProcessById(Pid);
+        _process.Exited += Process_Exited;
+        _process.EnableRaisingEvents = true;
     }
+
+    /// <inheritdoc/>
+    public event EventHandler<PtyExitedEventArgs>? ProcessExited;
+
+    /// <inheritdoc/>
+    public int Pid { get; }
+
+    /// <inheritdoc/>
+    public int ExitCode => _process.ExitCode;
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        _readerStream?.Dispose();
+        _writerStream?.Dispose();
+
+        _processHandle.Close();
+        winpty_free(_handle);
+    }
+
+    /// <inheritdoc/>
+    public void Kill()
+    {
+        _process.Kill();
+    }
+
+    /// <inheritdoc/>
+    public void Resize(int cols, int rows)
+    {
+        winpty_set_size(_handle, cols, rows, out var err);
+    }
+
+    /// <inheritdoc/>
+    public bool WaitForExit(int milliseconds)
+    {
+        return _process.WaitForExit(milliseconds);
+    }
+
+    private void Process_Exited(object? sender, EventArgs e)
+    {
+        ProcessExited?.Invoke(this, new PtyExitedEventArgs(_process.ExitCode));
+    }
+
+    #region IPtyConnection
+
+    int IPtyConnection.Read(byte[] buffer, int count)
+    {
+        return _readerStream.Read(buffer, 0, count);
+    }
+
+    void IPtyConnection.Write(byte[] buffer, int count)
+    {
+        _writerStream.Write(buffer, 0, count);
+        _writerStream.Flush();
+    }
+
+    #endregion
 }

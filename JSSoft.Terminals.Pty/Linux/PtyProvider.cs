@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 using static JSSoft.Terminals.Pty.Linux.NativeMethods;
 
 namespace JSSoft.Terminals.Pty.Linux;

@@ -2,20 +2,21 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using JSSoft.Terminals.Pty.Extensions;
 
 namespace JSSoft.Terminals.Pty.Unix;
 
-internal abstract class PtyConnection : IPtyConnection
+internal abstract partial class PtyConnection : IPtyConnection
 {
     private const int EINTR = 4;
     private const int ECHILD = 10;
 
-    private readonly int _controller;
+    private readonly int _fd;
     private readonly int _pid;
     private readonly ManualResetEvent _terminalProcessTerminatedEvent = new(initialState: false);
     private int _exitCode;
@@ -23,10 +24,7 @@ internal abstract class PtyConnection : IPtyConnection
 
     public PtyConnection(int controller, int pid)
     {
-        ReaderStream = new PtyStream(controller, FileAccess.Read);
-        WriterStream = new PtyStream(controller, FileAccess.Write);
-
-        _controller = controller;
+        _fd = controller;
         _pid = pid;
         var childWatcherThread = new Thread(ChildWatcherThreadProc)
         {
@@ -40,26 +38,19 @@ internal abstract class PtyConnection : IPtyConnection
 
     public event EventHandler<PtyExitedEventArgs>? ProcessExited;
 
-    public Stream ReaderStream { get; }
-
-    public Stream WriterStream { get; }
-
     public int Pid => _pid;
 
     public int ExitCode => _exitCode;
 
     public void Dispose()
     {
-        WriterStream.Write(Encoding.UTF8.GetBytes("exit\n"));
-        WriterStream.Flush();
-        ReaderStream.Dispose();
-        WriterStream.Dispose();
+        IPtyConnectionExtensions.Write(this, "exit\n");
         Kill();
     }
 
     public void Kill()
     {
-        if (!Kill(_controller))
+        if (!Kill(_fd))
         {
             throw new InvalidOperationException($"Killing terminal failed with error {Marshal.GetLastWin32Error()}");
         }
@@ -67,7 +58,7 @@ internal abstract class PtyConnection : IPtyConnection
 
     public void Resize(int cols, int rows)
     {
-        if (!Resize(_controller, cols, rows))
+        if (!Resize(_fd, cols, rows))
         {
             throw new InvalidOperationException($"Resizing terminal failed with error {Marshal.GetLastWin32Error()}");
         }
@@ -78,9 +69,13 @@ internal abstract class PtyConnection : IPtyConnection
         return _terminalProcessTerminatedEvent.WaitOne(milliseconds);
     }
 
-    protected abstract bool Resize(int controller, int cols, int rows);
+    protected abstract int Read(int fd, byte[] buffer, int count);
 
-    protected abstract bool Kill(int controller);
+    protected abstract void Write(int fd, byte[] buffer, int count);
+
+    protected abstract bool Resize(int fd, int cols, int rows);
+
+    protected abstract bool Kill(int fd);
 
     protected abstract bool WaitPid(int pid, ref int status);
 
@@ -118,4 +113,12 @@ internal abstract class PtyConnection : IPtyConnection
         _terminalProcessTerminatedEvent.Set();
         ProcessExited?.Invoke(this, new PtyExitedEventArgs(_exitCode));
     }
+
+    #region IPtyConnection
+
+    int IPtyConnection.Read(byte[] buffer, int count) => Read(_fd, buffer, count);
+
+    void IPtyConnection.Write(byte[] buffer, int count) => Write(_fd, buffer, count);
+
+    #endregion
 }

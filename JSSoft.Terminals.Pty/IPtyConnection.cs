@@ -16,15 +16,9 @@ public interface IPtyConnection : IDisposable
     /// </summary>
     event EventHandler<PtyExitedEventArgs>? ProcessExited;
 
-    /// <summary>
-    /// Gets the stream for reading data from the pty.
-    /// </summary>
-    Stream ReaderStream { get; }
+    int Read(byte[] buffer, int count);
 
-    /// <summary>
-    /// Gets the stream for writing data to the pty.
-    /// </summary>
-    Stream WriterStream { get; }
+    void Write(byte[] buffer, int count);
 
     /// <summary>
     /// Gets the pty process ID.

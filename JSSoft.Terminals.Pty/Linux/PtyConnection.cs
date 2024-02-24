@@ -2,29 +2,28 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace JSSoft.Terminals.Pty.Linux;
-
 using static JSSoft.Terminals.Pty.Linux.NativeMethods;
 
 /// <summary>
 /// A connection to a pseudoterminal on linux machines.
 /// </summary>
-internal class PtyConnection : Unix.PtyConnection
+/// <remarks>
+/// Initializes a new instance of the <see cref="PtyConnection"/> class.
+/// </remarks>
+/// <param name="controller">The fd of the pty controller.</param>
+/// <param name="pid">The id of the spawned process.</param>
+internal class PtyConnection(int controller, int pid)
+    : Unix.PtyConnection(controller, pid)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PtyConnection"/> class.
-    /// </summary>
-    /// <param name="controller">The fd of the pty controller.</param>
-    /// <param name="pid">The id of the spawned process.</param>
-    public PtyConnection(int controller, int pid)
-        : base(controller, pid)
-    {
-    }
+    protected override int Read(int fd, byte[] buffer, int count)
+        => read(fd, buffer, count);
+
+    protected override void Write(int fd, byte[] buffer, int count)
+        => write(fd, buffer, count);
 
     /// <inheritdoc/>
     protected override bool Kill(int controller)
-    {
-        return kill(Pid, SIGHUP) != -1;
-    }
+        => kill(Pid, SIGHUP) != -1;
 
     /// <inheritdoc/>
     protected override bool Resize(int fd, int cols, int rows)
@@ -35,7 +34,5 @@ internal class PtyConnection : Unix.PtyConnection
 
     /// <inheritdoc/>
     protected override bool WaitPid(int pid, ref int status)
-    {
-        return waitpid(pid, ref status, 0) != -1;
-    }
+        => waitpid(pid, ref status, 0) != -1;
 }

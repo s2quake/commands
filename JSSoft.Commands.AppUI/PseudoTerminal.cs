@@ -32,18 +32,13 @@ using Avalonia;
 
 namespace JSSoft.Commands.AppUI;
 
-public sealed class PseudoTerminal
+public sealed class PseudoTerminal(TerminalControl terminalControl)
 {
-    private readonly TerminalControl _terminalControl;
+    private readonly TerminalControl _terminalControl = terminalControl;
     private IPtyConnection? _pty;
     private CancellationTokenSource? _cancellationTokenSource;
-    private string _app = TerminalEnvironment.IsWindows() == true ? Path.Combine(Environment.SystemDirectory, "cmd.exe") : "zsh";
+    private string _app = GetApp();
     private Size _size = new(80, 24);
-
-    public PseudoTerminal(TerminalControl terminalControl)
-    {
-        _terminalControl = terminalControl;
-    }
 
     public string App
     {
@@ -93,6 +88,15 @@ public sealed class PseudoTerminal
 
     public bool IsOpen { get; private set; }
 
+    private static string GetApp()
+    {
+        if (TerminalEnvironment.IsWindows() == true)
+            return Path.Combine(Environment.SystemDirectory, "cmd.exe");
+        if (TerminalEnvironment.IsMacOS() == true)
+            return "zsh";
+        return "sh";
+    }
+
     private static async void ReadInput(IPtyConnection pty, TerminalControl control, CancellationToken cancellationToken)
     {
         var buffer = new char[4096];
@@ -107,8 +111,8 @@ public sealed class PseudoTerminal
                     continue;
                 }
                 var bytes = Encoding.UTF8.GetBytes(buffer);
-                await pty.WriterStream.WriteAsync(bytes.AsMemory(0, count), cancellationToken);
-                await pty.WriterStream.FlushAsync(cancellationToken);
+                await Task.Run(() => pty.Write(bytes, count), cancellationToken);
+                // await pty.WriterStream.FlushAsync(cancellationToken);
             }
         }
         catch (TaskCanceledException)
@@ -123,7 +127,7 @@ public sealed class PseudoTerminal
         {
             while (cancellationToken.IsCancellationRequested != true)
             {
-                var count = await pty.ReaderStream.ReadAsync(buffer, cancellationToken);
+                var count = await Task.Run(() => pty.Read(buffer, buffer.Length));
                 if (count == 0)
                 {
                     break;

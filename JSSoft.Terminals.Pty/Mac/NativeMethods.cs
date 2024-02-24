@@ -1,10 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+#pragma warning disable SYSLIB1054 // Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
+using static JSSoft.Terminals.Pty.Mac.NativeMethods;
 
 namespace JSSoft.Terminals.Pty.Mac;
 
@@ -13,13 +16,13 @@ namespace JSSoft.Terminals.Pty.Mac;
 /// </summary>
 internal static class NativeMethods
 {
-    internal const int STDIN_FILENO = 0;
-    internal const int TCSANOW = 0;
+    public const int STDIN_FILENO = 0;
+    public const int TCSANOW = 0;
 
-    internal const uint TIOCSIG = 0x2000_745F;
-    internal const uint TIOCGWINSZ = 0x40087468;
-    internal const uint TIOCSWINSZ = 0x80087467;
-    internal const int SIGHUP = 1;
+    public const uint TIOCSIG = 0x2000_745F;
+    public const uint TIOCGWINSZ = 0x40087468;
+    public const uint TIOCSWINSZ = 0x80087467;
+    public const int SIGHUP = 1;
 
     private const string LibSystem = "libc.dylib";
 
@@ -178,36 +181,42 @@ internal static class NativeMethods
         VSTATUS = 18,
     }
 
+    [DllImport(LibSystem, SetLastError = true)]
+    public static extern int read(int fd, byte[] buf, int count);
+
+    [DllImport(LibSystem, SetLastError = true)]
+    public static extern int write(int fd, [In] byte[] buf, int count);
+
     // int cfsetispeed(struct termios *, speed_t);
     [DllImport(LibSystem)]
-    internal static extern int cfsetispeed(ref Termios termios, IntPtr speed);
+    public static extern int cfsetispeed(ref Termios termios, IntPtr speed);
 
     // int cfsetospeed(struct termios *, speed_t);
     [DllImport(LibSystem)]
-    internal static extern int cfsetospeed(ref Termios termios, IntPtr speed);
+    public static extern int cfsetospeed(ref Termios termios, IntPtr speed);
 
     // pid_t forkpty(int * master, char * aworker, struct termios *, struct winsize *);
     [DllImport(LibSystem, SetLastError = true)]
-    internal static extern int forkpty(ref int master, StringBuilder? name, ref Termios termp, ref WinSize winsize);
+    public static extern int forkpty(ref int master, StringBuilder? name, ref Termios termp, ref WinSize winsize);
 
     // pid_t waitpid(pid_t, int *, int)
     [DllImport(LibSystem, SetLastError = true)]
-    internal static extern int waitpid(int pid, ref int status, int options);
+    public static extern int waitpid(int pid, ref int status, int options);
 
     // int ioctl(int fd, unsigned long request, ...)
     [DllImport(LibSystem, SetLastError = true)]
-    internal static extern int ioctl(int fd, uint request, int data);
+    public static extern int ioctl(int fd, uint request, int data);
 
     [DllImport(LibSystem, SetLastError = true)]
-    internal static extern int ioctl(int fd, uint request, ref WinSize winSize);
+    public static extern int ioctl(int fd, uint request, ref WinSize winSize);
 
     [DllImport(LibSystem, SetLastError = true)]
-    internal static extern int close(int fd);
+    public static extern int close(int fd);
 
     [DllImport(LibSystem, SetLastError = true)]
-    internal static extern int kill(int pid, int signal);
+    public static extern int kill(int pid, int signal);
 
-    internal static void execvpe(string file, string?[] args, IDictionary<string, string> environment)
+    public static void execvpe(string file, string?[] args, IDictionary<string, string> environment)
     {
         if (environment != null)
         {

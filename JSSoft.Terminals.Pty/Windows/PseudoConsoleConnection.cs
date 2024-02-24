@@ -16,8 +16,10 @@ using static JSSoft.Terminals.Pty.Windows.NativeMethods;
 /// </summary>
 internal sealed class PseudoConsoleConnection : IPtyConnection
 {
-    private readonly Process process;
-    private PseudoConsoleConnectionHandles handles;
+    private readonly Process _process;
+    private PseudoConsoleConnectionHandles _handles;
+    private readonly Stream _readerStream;
+    private readonly Stream _writerStream;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PseudoConsoleConnection"/> class.
@@ -25,58 +27,52 @@ internal sealed class PseudoConsoleConnection : IPtyConnection
     /// <param name="handles">The set of handles associated with the pseudoconsole.</param>
     public PseudoConsoleConnection(PseudoConsoleConnectionHandles handles)
     {
-        ReaderStream = new AnonymousPipeClientStream(PipeDirection.In, new Microsoft.Win32.SafeHandles.SafePipeHandle(handles.OutPipeOurSide.Handle, ownsHandle: false));
-        WriterStream = new AnonymousPipeClientStream(PipeDirection.Out, new Microsoft.Win32.SafeHandles.SafePipeHandle(handles.InPipeOurSide.Handle, ownsHandle: false));
+        _readerStream = new AnonymousPipeClientStream(PipeDirection.In, new Microsoft.Win32.SafeHandles.SafePipeHandle(handles.OutPipeOurSide.Handle, ownsHandle: false));
+        _writerStream = new AnonymousPipeClientStream(PipeDirection.Out, new Microsoft.Win32.SafeHandles.SafePipeHandle(handles.InPipeOurSide.Handle, ownsHandle: false));
 
-        this.handles = handles;
-        process = Process.GetProcessById(Pid);
-        process.Exited += Process_Exited;
-        process.EnableRaisingEvents = true;
+        _handles = handles;
+        _process = Process.GetProcessById(Pid);
+        _process.Exited += Process_Exited;
+        _process.EnableRaisingEvents = true;
     }
 
     /// <inheritdoc/>
     public event EventHandler<PtyExitedEventArgs>? ProcessExited;
 
     /// <inheritdoc/>
-    public Stream ReaderStream { get; }
+    public int Pid => _handles.Pid;
 
     /// <inheritdoc/>
-    public Stream WriterStream { get; }
-
-    /// <inheritdoc/>
-    public int Pid => handles.Pid;
-
-    /// <inheritdoc/>
-    public int ExitCode => process.ExitCode;
+    public int ExitCode => _process.ExitCode;
 
     /// <inheritdoc/>
     public void Dispose()
     {
-        ReaderStream?.Dispose();
-        WriterStream?.Dispose();
+        _readerStream?.Dispose();
+        _writerStream?.Dispose();
 
-        if (handles != null)
+        if (_handles != null)
         {
-            handles.PseudoConsoleHandle.Close();
-            handles.MainThreadHandle.Close();
-            handles.ProcessHandle.Close();
-            handles.InPipeOurSide.Close();
-            handles.InPipePseudoConsoleSide.Close();
-            handles.OutPipePseudoConsoleSide.Close();
-            handles.OutPipeOurSide.Close();
+            _handles.PseudoConsoleHandle.Close();
+            _handles.MainThreadHandle.Close();
+            _handles.ProcessHandle.Close();
+            _handles.InPipeOurSide.Close();
+            _handles.InPipePseudoConsoleSide.Close();
+            _handles.OutPipePseudoConsoleSide.Close();
+            _handles.OutPipeOurSide.Close();
         }
     }
 
     /// <inheritdoc/>
     public void Kill()
     {
-        process.Kill();
+        _process.Kill();
     }
 
     /// <inheritdoc/>
     public void Resize(int cols, int rows)
     {
-        int hr = ResizePseudoConsole(handles.PseudoConsoleHandle, new Coord(cols, rows));
+        int hr = ResizePseudoConsole(_handles.PseudoConsoleHandle, new Coord(cols, rows));
         if (hr != S_OK)
         {
             Marshal.ThrowExceptionForHR(hr);
@@ -86,12 +82,12 @@ internal sealed class PseudoConsoleConnection : IPtyConnection
     /// <inheritdoc/>
     public bool WaitForExit(int milliseconds)
     {
-        return process.WaitForExit(milliseconds);
+        return _process.WaitForExit(milliseconds);
     }
 
     private void Process_Exited(object? sender, EventArgs e)
     {
-        ProcessExited?.Invoke(this, new PtyExitedEventArgs(process.ExitCode));
+        ProcessExited?.Invoke(this, new PtyExitedEventArgs(_process.ExitCode));
     }
 
     /// <summary>
@@ -182,4 +178,19 @@ internal sealed class PseudoConsoleConnection : IPtyConnection
         /// </summary>
         internal SafeThreadHandle MainThreadHandle { get; }
     }
+
+    #region IPtyConnection
+
+    int IPtyConnection.Read(byte[] buffer, int count)
+    {
+        return _readerStream.Read(buffer, 0, count);
+    }
+
+    void IPtyConnection.Write(byte[] buffer, int count)
+    {
+        _writerStream.Write(buffer, 0, count);
+        _writerStream.Flush();
+    }
+
+    #endregion
 }

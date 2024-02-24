@@ -65,8 +65,8 @@
         BrightWhite="#FFFFFF" />
     
     <ctrl:TerminalStyle x:Key="ubuntu"
-        FontFamily="Menlo, Monaco, 'Courier New', monospace"
-        FontSize="12"
+        FontFamily="{StaticResource UbuntuMono_FontFamily}"
+        FontSize="15"
         ForegroundColor="#FFFFFF"
         BackgroundColor="#380C2A"
         SelectionForegroundColor="#FFFFFF"
