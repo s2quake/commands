@@ -93,7 +93,7 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
         if (TerminalEnvironment.IsWindows() == true)
             return Path.Combine(Environment.SystemDirectory, "cmd.exe");
         if (TerminalEnvironment.IsMacOS() == true)
-            return "fish";
+            return "zsh";
         return "sh";
     }
 

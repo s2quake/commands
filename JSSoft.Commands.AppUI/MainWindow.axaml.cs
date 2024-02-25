@@ -17,15 +17,10 @@
 // 
 
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using JSSoft.Commands.AppUI.Controls;
-using JSSoft.Commands.Extensions;
-using JSSoft.Terminals;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace JSSoft.Commands.AppUI;
 
@@ -33,7 +28,6 @@ public partial class MainWindow : Window
 {
     private readonly CommandContext _commandContext;
     private readonly string _originTitle;
-    // private string _prompt = "terminal $ ";
 
     private readonly PseudoTerminal _pseudoTerminal;
 
@@ -44,12 +38,8 @@ public partial class MainWindow : Window
         _commandContext = App.Current.GetService<CommandContext>()!;
         _commandContext.Owner = this;
         _pseudoTerminal = new PseudoTerminal(_terminal);
-        // _commandContext.Out = new TerminalControlTextWriter(_terminal);
-        // _commandContext.Error = new TerminalControlTextWriter(_terminal);
-        // _terminal.Completor = _commandContext.GetCompletion;
         _terminal.PropertyChanged += Terminal_PropertyChanged;
         _originTitle = $"{Title}";
-        // _terminal.Append(_prompt);
     }
 
     protected override void OnLoaded(RoutedEventArgs e)
@@ -60,12 +50,10 @@ public partial class MainWindow : Window
         _pseudoTerminal.Open();
         _terminal.IsReadOnly = false;
         _terminal.Focus();
-        // _terminal.Executing += Terminal_Executing;
     }
 
     protected override void OnUnloaded(RoutedEventArgs e)
     {
-        // _terminal.Executing -= Terminal_Executing;
         _pseudoTerminal.Close();
         base.OnUnloaded(e);
     }
@@ -78,32 +66,4 @@ public partial class MainWindow : Window
             Console.WriteLine(Title);
         }
     }
-
-    // private async void Terminal_Executing(object? sender, TerminalExecutingRoutedEventArgs e)
-    // {
-    //     var token = e.GetToken();
-    //     var cancellationTokenSource = new CancellationTokenSource();
-    //     var progress = new TerminalProgress(_terminal);
-    //     try
-    //     {
-    //         _terminal.AppendLine(e.Command);
-    //         await _commandContext.ExecuteAsync(e.Command, cancellationTokenSource.Token, progress);
-    //         e.Success(token);
-    //         _terminal.Append(_prompt);
-    //     }
-    //     catch (Exception exception)
-    //     {
-    //         var message = exception.Message;
-    //         var tsb = new TerminalStringBuilder
-    //         {
-    //             Foreground = TerminalColorType.BrightRed
-    //         };
-    //         tsb.Append(message);
-    //         tsb.AppendEnd();
-    //         _commandContext.Error.WriteLine(tsb.ToString());
-    //         e.Fail(token, exception);
-    //         _terminal.Append(_prompt);
-    //     }
-    // }
-
 }

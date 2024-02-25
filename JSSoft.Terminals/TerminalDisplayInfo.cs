@@ -26,9 +26,9 @@ public partial struct TerminalDisplayInfo
 
     public bool IsNegative { get; set; }
 
-    public TerminalColorType? Foreground { get; set; }
+    public object? Foreground { get; set; }
 
-    public TerminalColorType? Background { get; set; }
+    public object? Background { get; set; }
 
     public static TerminalDisplayInfo Empty { get; } = new TerminalDisplayInfo();
 }

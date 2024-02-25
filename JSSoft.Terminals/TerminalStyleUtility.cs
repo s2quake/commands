@@ -55,6 +55,26 @@ public static class TerminalStyleUtility
     public static readonly TerminalColor DefaultBrightCyan = TerminalColor.FromArgb(255, 0, 255, 255);
     public static readonly TerminalColor DefaultBrightWhite = TerminalColor.FromArgb(255, 255, 255, 255);
 
+    public static TerminalColor? GetColor(ITerminalStyle style, object? color)
+    {
+        if (color is TerminalColor terminalColor)
+        {
+            return terminalColor;
+        }
+        else if (color is TerminalColorType terminalColorType)
+        {
+            return GetColor(style, terminalColorType);
+        }
+        else if (color is null)
+        {
+            return null;
+        }
+        else
+        {
+            throw new NotSupportedException($"Not supported color type: {color}");
+        }
+    }
+
     public static TerminalColor? GetColor(ITerminalStyle style, TerminalColorType? color)
     {
         return color is { } value ? GetColor(style, value) : null;
