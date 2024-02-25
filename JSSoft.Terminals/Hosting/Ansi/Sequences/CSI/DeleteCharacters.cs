@@ -18,20 +18,19 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-/// <summary>
-/// CSI Ps P
-/// </summary>
 sealed class DeleteCharacters : CSISequenceBase
 {
     public DeleteCharacters()
         : base('P')
     {
     }
+
+    public override string DisplayName => "CSI Ps P";
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
         var index = context.Index;
         var line = lines[index.Y];
-        var length = context.GetNumericValue(index: 0, defaultValue: 1);
+        var length = context.GetParametersAsInteger(index: 0, defaultValue: 1);
         line.Delete(index.X, length);
     }
 }

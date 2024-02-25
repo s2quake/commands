@@ -18,15 +18,14 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-/// <summary>
-/// CSI Ps ; Ps r
-/// </summary>
 sealed class SetScrollingRegion : CSISequenceBase
 {
     public SetScrollingRegion()
         : base('r')
     {
     }
+
+    public override string DisplayName => "CSI Ps ; Ps r";
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {

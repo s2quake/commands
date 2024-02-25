@@ -18,16 +18,14 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.ESC;
 
-/// <summary>
-/// DECKPAM
-/// ESC =
-/// </summary>
 sealed class ApplicationKeypad : ESCSequenceBase
 {
     public ApplicationKeypad()
         : base('=')
     {
     }
+
+    public override string DisplayName => "ESC =";
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {

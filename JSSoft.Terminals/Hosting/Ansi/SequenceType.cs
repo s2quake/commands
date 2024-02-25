@@ -20,11 +20,15 @@ namespace JSSoft.Terminals.Hosting.Ansi;
 
 enum SequenceType
 {
+    // \u001b
     ESC,
 
+    // \u001b [
     CSI,
 
+    // \u001b P ... \u001b \\
     DCS,
 
+    // \u001b ]
     OSC
 }

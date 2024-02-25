@@ -18,9 +18,6 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-/// <summary>
-/// CSI Pm m
-/// </summary>
 sealed class CharacterAttributes : CSISequenceBase
 {
     public CharacterAttributes()
@@ -28,10 +25,12 @@ sealed class CharacterAttributes : CSISequenceBase
     {
     }
 
+    public override string DisplayName => "CSI Pm m";
+
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
         var displayInfo = context.DisplayInfo;
-        var codes = context.Options;
+        var codes = context.Parameters.Select(SequenceContext.Parse).ToArray();
         displayInfo.SetGraphicRendition(codes);
         context.DisplayInfo = displayInfo;
     }

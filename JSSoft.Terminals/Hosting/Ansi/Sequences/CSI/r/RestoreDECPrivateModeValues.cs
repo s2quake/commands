@@ -18,15 +18,14 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-/// <summary>
-/// CSI ? Pm r
-/// </summary>
 sealed class RestoreDECPrivateModeValues : CSISequenceBase
 {
     public RestoreDECPrivateModeValues()
         : base('r')
     {
     }
+
+    public override string DisplayName => "CSI ? Pm r";
 
     public override string Prefix => "?";
 

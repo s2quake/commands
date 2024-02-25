@@ -18,15 +18,14 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.ESC;
 
-/// <summary>
-/// ESC c
-/// </summary>
 sealed class FullReset : ESCSequenceBase
 {
     public FullReset()
         : base('c')
     {
     }
+
+    public override string DisplayName => "ESC c";
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {

@@ -46,7 +46,7 @@ static class ModeUtility
 
     public static void Process(TerminalLineCollection lines, SequenceContext context)
     {
-        var options = context.Option.Split(';', options: StringSplitOptions.RemoveEmptyEntries);
+        var options = context.Parameter.Split(';', options: StringSplitOptions.RemoveEmptyEntries);
         foreach (var item in options)
         {
             if (TryGetMode(item, out var mode) == true)

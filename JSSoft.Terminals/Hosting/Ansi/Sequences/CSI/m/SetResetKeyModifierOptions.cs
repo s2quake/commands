@@ -18,16 +18,14 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-/// <summary>
-/// CSI > Pp ; Pv m
-/// CSI > Pp m
-/// </summary>
 sealed class SetResetKeyModifierOptions : CSISequenceBase
 {
     public SetResetKeyModifierOptions()
         : base('m')
     {
     }
+
+    public override string DisplayName => "CSI > Pp ; Pv m\nCSI > Pp m";
 
     public override string Prefix => ">";
 

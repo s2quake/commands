@@ -28,6 +28,8 @@ sealed class TabClear : CSISequenceBase
     {
     }
 
+    public override string DisplayName => "CSI Ps g";
+
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
     }

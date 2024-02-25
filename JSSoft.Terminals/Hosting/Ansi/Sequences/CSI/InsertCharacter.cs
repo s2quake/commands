@@ -18,10 +18,6 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-/// <summary>
-/// CSI Ps @
-/// CSI Ps SP @
-/// </summary>
 sealed class InsertCharacter : CSISequenceBase
 {
     private const char SpaceCharacter = ' ';
@@ -30,6 +26,8 @@ sealed class InsertCharacter : CSISequenceBase
         : base('@')
     {
     }
+
+    public override string DisplayName => "CSI Ps @\nCSI Ps SP @";
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {

@@ -42,6 +42,9 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
     public const string PART_TerminalPresenter = nameof(PART_TerminalPresenter);
     public const string PART_VerticalScrollBar = nameof(PART_VerticalScrollBar);
 
+    public static readonly StyledProperty<string> TitleProperty =
+        AvaloniaProperty.Register<TerminalControl, string>(nameof(Title));
+
     public static readonly StyledProperty<bool> IsReadOnlyProperty =
         AvaloniaProperty.Register<TerminalControl, bool>(nameof(IsReadOnly));
 
@@ -85,6 +88,12 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         _terminal.CancellationRequested += Terminal_CancellationRequested;
         _terminalScroll.PropertyChanged += TerminalScroll_PropertyChanged;
         _inputVisual = this;
+    }
+
+    public string Title
+    {
+        get => GetValue(TitleProperty);
+        set => SetValue(TitleProperty, value);
     }
 
     public bool IsReadOnly
@@ -289,6 +298,15 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         {
             _terminal.Style = TerminalStyle;
         }
+        else if (change.Property == TitleProperty)
+        {
+            if (_terminal.Title != Title)
+            {
+                _terminal.PropertyChanged -= Terminal_PropertyChanged;
+                _terminal.Title = Title;
+                _terminal.PropertyChanged += Terminal_PropertyChanged;
+            }
+        }
     }
 
     private bool ProcessHotKey(KeyEventArgs e)
@@ -329,6 +347,10 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         {
             BufferSize = new Size(_terminal.BufferSize.Width, _terminal.BufferSize.Height);
             // _pty.Resize(_terminal.BufferSize.Width, _terminal.BufferSize.Height);
+        }
+        else if (e.PropertyName == nameof(ITerminal.Title))
+        {
+            SetCurrentValue(TitleProperty, _terminal.Title);
         }
     }
 

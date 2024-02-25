@@ -20,9 +20,6 @@ using JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 namespace JSSoft.Terminals.Hosting.Ansi.EraseFunctions;
 
-/// <summary>
-/// CSI Ps K
-/// </summary>
 sealed class EraseInLine : CSISequenceBase
 {
     private static readonly Action<TerminalLineCollection, SequenceContext> EmptyAction = (items, context) => { };
@@ -32,9 +29,11 @@ sealed class EraseInLine : CSISequenceBase
     {
     }
 
+    public override string DisplayName => "CSI Ps K";
+
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
-        var option = context.GetNumericValue(index: 0, defaultValue: 0);
+        var option = context.GetParametersAsInteger(index: 0, defaultValue: 0);
         var action = GetAction(option);
         action.Invoke(lines, context);
     }

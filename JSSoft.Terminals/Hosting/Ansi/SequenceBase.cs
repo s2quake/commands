@@ -18,7 +18,8 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-abstract class SequenceBase(SequenceType type, char character) : ISequence
+abstract class SequenceBase(SequenceType type, char character)
+    : ISequence
 {
     public SequenceType Type { get; } = type;
 
@@ -28,12 +29,90 @@ abstract class SequenceBase(SequenceType type, char character) : ISequence
 
     public char Character { get; } = character;
 
+    public virtual string DisplayName => string.Empty;
+
+    public override string? ToString() => DisplayName == string.Empty ? base.ToString() : DisplayName;
+
     protected abstract void OnProcess(TerminalLineCollection lines, SequenceContext context);
+
+    protected virtual bool Match(string text, Range parameterRange, out Range actualParameterRange)
+    {
+        var parameter = text[parameterRange];
+        if (Prefix != string.Empty && parameter.StartsWith(Prefix) != true)
+        {
+            actualParameterRange = parameterRange;
+            return false;
+        }
+        if (Suffix != string.Empty && parameter.EndsWith(Suffix) != true)
+        {
+            actualParameterRange = parameterRange;
+            return false;
+        }
+
+        actualParameterRange = new Range(parameterRange.Start.Value - Prefix.Length, parameterRange.End.Value + Suffix.Length);
+        return true;
+    }
+
+    private static int GetLength(string text, char character)
+    {
+        for (var i = 0; i < text.Length; i++)
+        {
+            if (text[i] == character)
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
 
     #region ISequence
 
     void ISequence.Process(TerminalLineCollection lines, SequenceContext context)
         => OnProcess(lines, context);
+
+    bool ISequence.Match(string text, Range parameterRange, out Range actualParameterRange)
+        => Match(text, parameterRange, out actualParameterRange);
+
+    #endregion
+
+    #region IComparable
+
+    int IComparable<ISequence>.CompareTo(ISequence? other)
+    {
+        if (other is SequenceBase sequence)
+        {
+            if (Type == sequence.Type)
+            {
+                var r = StringComparer.Ordinal.Compare(Prefix, sequence.Prefix);
+                if (r == 0)
+                {
+                    return StringComparer.Ordinal.Compare(Suffix, sequence.Suffix);
+                }
+                return r;
+            }
+            return Type.CompareTo(sequence.Type);
+        }
+        else if (other is not null)
+        {
+            return Character.CompareTo(other.Character);
+        }
+        return 1;
+    }
+
+    #endregion
+
+    #region IEquatable 
+
+    bool IEquatable<ISequence>.Equals(ISequence? other)
+    {
+        if (other is SequenceBase sequence)
+        {
+            return Type == sequence.Type && Prefix == sequence.Prefix && Suffix == sequence.Suffix;
+        }
+
+        return false;
+    }
 
     #endregion
 }

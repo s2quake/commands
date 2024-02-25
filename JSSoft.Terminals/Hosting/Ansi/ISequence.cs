@@ -18,15 +18,13 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-interface ISequence
+interface ISequence : IComparable<ISequence>, IEquatable<ISequence>
 {
-    void Process(TerminalLineCollection lines, SequenceContext context);
-
     SequenceType Type { get; }
 
-    string Prefix { get; }
-
-    string Suffix { get; }
-
     char Character { get; }
+
+    void Process(TerminalLineCollection lines, SequenceContext context);
+
+    bool Match(string text, Range parameterRange, out Range actualParameterRange);
 }

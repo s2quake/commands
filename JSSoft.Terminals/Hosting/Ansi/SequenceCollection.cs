@@ -17,59 +17,66 @@
 // 
 
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-sealed class SequenceCollection : IEnumerable<ISequence>
+sealed class SequenceCollection(string sequenceString) : IEnumerable<ISequence>
 {
-    private static readonly Comparer KeyComparer = new();
+    private readonly Dictionary<char, SortedSet<ISequence>> _sequencesByCharacter = [];
 
-    private readonly Dictionary<char, SortedDictionary<SequenceKey, ISequence>> _sequencesByCharacter = [];
+    public string SequenceString { get; } = sequenceString;
+
+    public override string ToString()
+        => SequenceString;
 
     public void Add(ISequence item)
     {
         if (_sequencesByCharacter.ContainsKey(item.Character) == false)
         {
-            _sequencesByCharacter.Add(item.Character, new SortedDictionary<SequenceKey, ISequence>(KeyComparer));
+            _sequencesByCharacter.Add(item.Character, []);
         }
-        _sequencesByCharacter[item.Character].Add(new(item.Prefix, item.Suffix), item);
+        _sequencesByCharacter[item.Character].Add(item);
     }
 
-    public bool Contains(char character)
-        => _sequencesByCharacter.ContainsKey(character) == true && _sequencesByCharacter.Count > 0;
-
-    public ISequence this[char character, string etc]
+    public bool TryGetValue(string text, [MaybeNullWhen(false)] out ISequence value, out string parameter, out int endIndex)
     {
-        get
+        if (text.StartsWith(SequenceString) == true)
         {
-            var sequences = _sequencesByCharacter[character];
-            foreach (var item in sequences.Keys)
+            return TryGetSequence(text, out value, out parameter, out endIndex);
+        }
+        value = default;
+        parameter = string.Empty;
+        endIndex = 0;
+        return false;
+
+    }
+
+    private bool TryGetSequence(string text, [MaybeNullWhen(false)] out ISequence value, out string parameter, out int endIndex)
+    {
+        for (var i = SequenceString.Length; i < text.Length; i++)
+        {
+            var character = text[i];
+            if (_sequencesByCharacter.TryGetValue(character, out var sequences) == true)
             {
-                if (item.Equals(etc) == true)
+                var range = new Range(SequenceString.Length, i);
+                foreach (var sequence in sequences)
                 {
-                    return sequences[item];
+                    if (sequence.Match(text, range, out var actualRange) == true)
+                    {
+                        value = sequence;
+                        parameter = text[actualRange];
+                        endIndex = Math.Max(actualRange.End.Value, i + 1);
+                        return true;
+                    }
                 }
             }
-            throw new NotImplementedException();
         }
+        value = default;
+        parameter = string.Empty;
+        endIndex = default;
+        return false;
     }
-
-    #region Comparer
-
-    sealed class Comparer : IComparer<SequenceKey>
-    {
-        public int Compare(SequenceKey x, SequenceKey y)
-        {
-            var r = StringComparer.Ordinal.Compare(y.Prefix, x.Prefix);
-            if (r == 0)
-            {
-                return StringComparer.Ordinal.Compare(y.Suffix, x.Suffix);
-            }
-            return r;
-        }
-    }
-
-    #endregion
 
     #region IEnumerable
 
@@ -77,7 +84,7 @@ sealed class SequenceCollection : IEnumerable<ISequence>
     {
         foreach (var values in _sequencesByCharacter.Values)
         {
-            foreach (var value in values.Values)
+            foreach (var value in values)
             {
                 yield return value;
             }
@@ -88,7 +95,7 @@ sealed class SequenceCollection : IEnumerable<ISequence>
     {
         foreach (var values in _sequencesByCharacter.Values)
         {
-            foreach (var value in values.Values)
+            foreach (var value in values)
             {
                 yield return value;
             }

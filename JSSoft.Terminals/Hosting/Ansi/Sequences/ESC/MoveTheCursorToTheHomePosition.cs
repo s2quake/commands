@@ -18,15 +18,14 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.ESC;
 
-/// <summary>
-/// ESC H
-/// </summary>
 sealed class MoveTheCursorToTheHomePosition : ESCSequenceBase
 {
     public MoveTheCursorToTheHomePosition()
         : base('H')
     {
     }
+
+    public override string DisplayName => "ESC H";
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {

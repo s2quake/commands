@@ -25,6 +25,8 @@ sealed class SoftTerminalReset : CSISequenceBase
     {
     }
 
+    public override string DisplayName => "CSI ! p";
+
     public override string Prefix => "!";
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)

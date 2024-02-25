@@ -23,6 +23,12 @@ sealed class AsciiCodeContext(string text, ITerminal terminal)
     private readonly ITerminal _terminal = terminal;
     private TerminalIndex _index;
 
+    public string Title
+    {
+        get => _terminal.Title;
+        set => _terminal.Title = value;
+    }
+
     public string Text { get; } = text;
 
     public int TextIndex { get; set; }

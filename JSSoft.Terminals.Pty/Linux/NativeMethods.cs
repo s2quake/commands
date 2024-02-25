@@ -87,7 +87,7 @@ internal static class NativeMethods
     public static extern int read(int fd, byte[] buf, int count);
 
     [DllImport(LibSystem, SetLastError = true)]
-    public static extern int write(int fd, [In] byte[] buf, int count);
+    public static extern int write(int fd, byte[] buf, int count);
 
     // int cfsetispeed(struct termios *, speed_t);
     [DllImport(LibSystem)]

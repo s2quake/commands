@@ -18,15 +18,14 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-/// <summary>
-/// CSI > Ps c
-/// </summary>
 sealed class SendDeviceAttributes_Secondary : CSISequenceBase
 {
     public SendDeviceAttributes_Secondary()
         : base('c')
     {
     }
+
+    public override string DisplayName => "CSI > Ps c";
 
     public override string Prefix => ">";
 

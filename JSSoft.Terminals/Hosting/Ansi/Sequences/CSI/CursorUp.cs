@@ -18,9 +18,6 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-/// <summary>
-/// CSI Ps A
-/// </summary>
 sealed class CursorUp : CSISequenceBase
 {
     public CursorUp()
@@ -28,11 +25,13 @@ sealed class CursorUp : CSISequenceBase
     {
     }
 
+    public override string DisplayName => "CSI Ps A";
+
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
         var view = context.View;
         var index1 = context.Index;
-        var value = context.GetNumericValue(index: 0, defaultValue: 1);
+        var value = context.GetParametersAsInteger(index: 0, defaultValue: 1);
         var count = Math.Max(1, value);
         var index2 = index1.CursorUp(count, view.Top);
         context.Index = index2;

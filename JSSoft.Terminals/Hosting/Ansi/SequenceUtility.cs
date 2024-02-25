@@ -16,23 +16,19 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using System.Text.RegularExpressions;
-using JSSoft.Terminals.Hosting.Ansi.Sequences.ESC;
-
 namespace JSSoft.Terminals.Hosting.Ansi;
 
 static class SequenceUtility
 {
-    private static readonly Dictionary<SequenceType, SequenceCollection> SequencesByType = new()
+    private static readonly SortedDictionary<SequenceType, SequenceCollection> SequenceCollectionByType = new()
     {
-        { SequenceType.ESC, new SequenceCollection() },
-        { SequenceType.CSI, new SequenceCollection() },
-        { SequenceType.DCS, new SequenceCollection() },
-        { SequenceType.OSC, new SequenceCollection() },
+        { SequenceType.ESC, new("\x001b") },
+        { SequenceType.CSI, new("\x001b[") },
+        { SequenceType.DCS, new("\x001bP") },
+        { SequenceType.OSC, new("\x001b]") },
     };
-    private static readonly SequenceCollection CSISequenceByCharacter = SequencesByType[SequenceType.CSI];
-    private static readonly SequenceCollection ESCSequenceByCharacter = SequencesByType[SequenceType.ESC];
-    private static readonly SequenceCollection OSCSequenceByCharacter = SequencesByType[SequenceType.OSC];
+    private static readonly SequenceCollection[] SequenceCollections
+        = SequenceCollectionByType.OrderByDescending(item => item.Key).Select(item => item.Value).ToArray();
 
     static SequenceUtility()
     {
@@ -45,90 +41,36 @@ static class SequenceUtility
         foreach (var item in items)
         {
             var obj = (ISequence)Activator.CreateInstance(item)!;
-            SequencesByType[obj.Type].Add(obj);
+            SequenceCollectionByType[obj.Type].Add(obj);
         }
     }
 
     public static void Process(TerminalLineCollection lines, AsciiCodeContext context)
     {
-        var c = context.Text[context.TextIndex + 1];
-        if (c == '[')
+        var textIndex = context.TextIndex;
+        var text = context.Text.Substring(context.TextIndex);
+        for (var i = 0; i < SequenceCollections.Length; i++)
         {
-            var s1 = context.TextIndex + 2;
-            for (var i = s1; i < context.Text.Length; i++)
+            var sequenceCollection = SequenceCollections[i];
+            if (sequenceCollection.TryGetValue(text, out var sequence, out var parameter, out var endIndex) == true)
             {
-                var character = context.Text[i];
-                if (CSISequenceByCharacter.Contains(character) == true)
-                {
-                    var etc = context.Text[s1..i];
-                    var sequence = CSISequenceByCharacter[character, etc];
-                    var option = etc.Substring(sequence.Prefix.Length, etc.Length - (sequence.Prefix.Length + sequence.Suffix.Length));
-                    var sequenceContext = new SequenceContext(option, context);
-                    Console.WriteLine($"ESC [ {string.Join(" ", [etc, GetDisplayName(character)])} => {sequence.GetType()}");
-                    sequence.Process(lines, sequenceContext);
-                    context.TextIndex = i + 1;
-                    return;
-                }
-                if (character == '\x1b')
-                {
-                    var l = Math.Min(10, context.Text.Length - context.TextIndex);
-                    var s = context.Text.Substring(context.TextIndex, l);
-                    throw new NotSupportedException(Regex.Escape(s));
-                }
+#if DEBUG && NET8_0
+                Console.WriteLine($"{sequence} => {ToLiteral(text[..endIndex])}");
+#endif
+                sequence.Process(lines, new SequenceContext(parameter, context));
+                context.TextIndex = textIndex + endIndex;
+                return;
             }
         }
-        else if (c == ']')
-        {
-            var s1 = context.TextIndex + 2;
-            for (var i = s1; i < context.Text.Length; i++)
-            {
-                var character = context.Text[i];
-                if (OSCSequenceByCharacter.Contains(character) == true)
-                {
-                    var etc = context.Text.Substring(s1, i - s1);
-                    var sequence = OSCSequenceByCharacter[character, etc];
-                    var option = etc.Substring(sequence.Prefix.Length, etc.Length - (sequence.Prefix.Length + sequence.Suffix.Length));
-                    var sequenceContext = new SequenceContext(option, context);
-                    Console.WriteLine($"ESC ] {string.Join(" ", [etc, GetDisplayName(character)])} => {sequence.GetType()}");
-                    sequence.Process(lines, sequenceContext);
-                    context.TextIndex = i + 1;
-                    return;
-                }
-                if (character == '\x1b')
-                {
-                    var l = Math.Min(10, context.Text.Length - context.TextIndex);
-                    var s = context.Text.Substring(context.TextIndex, l);
-                    throw new NotSupportedException(Regex.Escape(s));
-                }
-            }
-        }
-        else
-        {
-            var s1 = context.TextIndex + 1;
-            for (var i = s1; i < context.Text.Length; i++)
-            {
-                var character = context.Text[i];
-                if (ESCSequenceByCharacter.Contains(character) == true)
-                {
-                    var etc = context.Text.Substring(s1, i - s1);
-                    var sequence = ESCSequenceByCharacter[character, etc];
-                    var option = etc.Substring(sequence.Prefix.Length, etc.Length - (sequence.Prefix.Length + sequence.Suffix.Length));
-                    var sequenceContext = new SequenceContext(option, context);
-                    Console.WriteLine($"ESC {string.Join(" ", [etc, GetDisplayName(character)])} => {sequence.GetType()}");
-                    sequence.Process(lines, sequenceContext);
-                    context.TextIndex = i + 1;
-                    return;
-                }
-                // if (character == '\x1b')
-                // {
-                //     var l = Math.Min(10, context.Text.Length - context.TextIndex);
-                //     var s = context.Text.Substring(context.TextIndex, l);
-                //     throw new NotSupportedException(Regex.Escape(s));
-                // }
-            }
-        }
-        context.TextIndex = context.Text.Length;
+        throw new NotImplementedException();
     }
+
+#if DEBUG && NET8_0
+    private static string ToLiteral(string valueTextForCompiler)
+    {
+        return Microsoft.CodeAnalysis.CSharp.SymbolDisplay.FormatLiteral(valueTextForCompiler, false);
+    }
+#endif
 
     public static string GetDisplayName(char character) => character switch
     {

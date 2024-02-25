@@ -18,15 +18,14 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-/// <summary>
-/// CSI Ps ; Ps ; Ps t
-/// </summary>
 sealed class WindowManipulation : CSISequenceBase
 {
     public WindowManipulation()
         : base('t')
     {
     }
+
+    public override string DisplayName => "CSI Ps ; Ps ; Ps t";
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {

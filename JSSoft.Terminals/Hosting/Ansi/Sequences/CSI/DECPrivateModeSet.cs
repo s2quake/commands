@@ -18,9 +18,6 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-/// <summary>
-/// CSI ? Pm h
-/// </summary>
 sealed class DECPrivateModeSet : CSISequenceBase
 {
     public DECPrivateModeSet()
@@ -28,10 +25,12 @@ sealed class DECPrivateModeSet : CSISequenceBase
     {
     }
 
+    public override string DisplayName => "CSI ? Pm h";
+
     public override string Prefix => "?";
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
-        var option = context.Option;
+        var option = context.Parameter;
     }
 }

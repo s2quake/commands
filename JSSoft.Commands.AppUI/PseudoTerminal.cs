@@ -93,7 +93,7 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
         if (TerminalEnvironment.IsWindows() == true)
             return Path.Combine(Environment.SystemDirectory, "cmd.exe");
         if (TerminalEnvironment.IsMacOS() == true)
-            return "zsh";
+            return "fish";
         return "sh";
     }
 
@@ -122,7 +122,7 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
 
     private static async void ReadStream(IPtyConnection pty, Action<string> action, CancellationToken cancellationToken)
     {
-        var buffer = new byte[4096];
+        var buffer = new byte[4096 * 10];
         try
         {
             while (cancellationToken.IsCancellationRequested != true)

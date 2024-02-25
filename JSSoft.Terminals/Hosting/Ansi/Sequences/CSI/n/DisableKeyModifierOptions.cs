@@ -18,15 +18,14 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-/// <summary>
-/// CSI > Ps n
-/// </summary>
 sealed class DisableKeyModifierOptions : CSISequenceBase
 {
     public DisableKeyModifierOptions()
         : base('n')
     {
     }
+
+    public override string DisplayName => "CSI > Ps n";
 
     public override string Prefix => ">";
 

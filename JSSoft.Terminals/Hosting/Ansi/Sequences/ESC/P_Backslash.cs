@@ -29,5 +29,6 @@ sealed class P_Backslash : ESCSequenceBase
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
+        int qwer = 0;
     }
 }

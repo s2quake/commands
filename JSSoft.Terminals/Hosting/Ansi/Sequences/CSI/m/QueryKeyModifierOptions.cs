@@ -18,15 +18,14 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-/// <summary>
-/// CSI ? Pp m
-/// </summary>
 sealed class QueryKeyModifierOptions : CSISequenceBase
 {
     public QueryKeyModifierOptions()
         : base('m')
     {
     }
+
+    public override string DisplayName => "CSI ? Pp m";
 
     public override string Prefix => "?";
 

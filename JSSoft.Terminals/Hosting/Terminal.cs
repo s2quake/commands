@@ -39,6 +39,7 @@ public class Terminal : ITerminal
 
     private TerminalBlock _outputBlock;
     private bool _isReadOnly;
+    private string _title = string.Empty;
     private TerminalCompletor _completor = (items, find) => [];
     private TerminalColorType? _foregroundColor;
     private TerminalColorType? _backgroundColor;
@@ -99,6 +100,12 @@ public class Terminal : ITerminal
     {
         get => _backgroundColor;
         set => _setter.SetField(ref _backgroundColor, value, nameof(BackgroundColor));
+    }
+
+    public string Title
+    {
+        get => _title;
+        set => _setter.SetField(ref _title, value, nameof(Title));
     }
 
     public bool IsReadOnly

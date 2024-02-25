@@ -18,9 +18,6 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-/// <summary>
-/// CSI Ps ; Ps H
-/// </summary>
 sealed class CursorPosition : CSISequenceBase
 {
     public CursorPosition()
@@ -28,11 +25,13 @@ sealed class CursorPosition : CSISequenceBase
     {
     }
 
+    public override string DisplayName => "CSI Ps ; Ps H";
+
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
         var view = context.View;
-        var r1 = context.GetNumericValue(index: 0, defaultValue: 1) - 1;
-        var c1 = context.GetNumericValue(index: 1, defaultValue: 1) - 1;
+        var r1 = context.GetParametersAsInteger(index: 0, defaultValue: 1) - 1;
+        var c1 = context.GetParametersAsInteger(index: 1, defaultValue: 1) - 1;
         var r2 = TerminalMathUtility.Clamp(r1, 0, view.Height - 1) + view.Y;
         var c2 = TerminalMathUtility.Clamp(c1, 0, view.Width - 1);
         var index = new TerminalIndex(new TerminalCoord(c2, r2), view.Width);

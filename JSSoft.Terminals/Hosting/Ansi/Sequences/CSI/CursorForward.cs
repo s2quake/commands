@@ -18,9 +18,6 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-/// <summary>
-/// CSI Ps C
-/// </summary>
 sealed class CursorForward : CSISequenceBase
 {
     public CursorForward()
@@ -28,10 +25,12 @@ sealed class CursorForward : CSISequenceBase
     {
     }
 
+    public override string DisplayName => "CSI Ps C";
+
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
         var index = context.Index;
-        var value = context.GetNumericValue(index: 0, defaultValue: 1);
+        var value = context.GetParametersAsInteger(index: 0, defaultValue: 1);
         var count = Math.Max(1, value);
         context.Index = index.CursorRight(count);
     }

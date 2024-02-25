@@ -18,15 +18,14 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-/// <summary>
-/// CSI > Pm t
-/// </summary>
 sealed class SetTitleMode : CSISequenceBase
 {
     public SetTitleMode()
         : base('t')
     {
     }
+
+    public override string DisplayName => "CSI > Pm t";
 
     public override string Prefix => ">";
 

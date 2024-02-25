@@ -18,9 +18,6 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-/// <summary>
-/// CSI Ps n
-/// </summary>
 sealed class DeviceStatusReport : CSISequenceBase
 {
     public DeviceStatusReport()
@@ -28,9 +25,11 @@ sealed class DeviceStatusReport : CSISequenceBase
     {
     }
 
+    public override string DisplayName => "CSI Ps n";
+
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
-        var ps = context.GetParameters(0);
+        var ps = context.GetParametersAsInteger(0);
         switch (ps)
         {
             case 5:

@@ -18,15 +18,14 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-/// <summary>
-/// https://terminalguide.namepad.de/seq/csi_su/
-/// </summary>
 sealed class RestoreCursor : CSISequenceBase
 {
     public RestoreCursor()
         : base('u')
     {
     }
+
+    public override string DisplayName => "CSI u";
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {

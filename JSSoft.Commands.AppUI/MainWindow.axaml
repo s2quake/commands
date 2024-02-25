@@ -6,8 +6,8 @@
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="300"
         Width="680" Height="380"
         x:Class="JSSoft.Commands.AppUI.MainWindow"
-        Title="JSSoft.Commands.AppUI">
+        Title="{Binding Title, ElementName=_terminal}">
     <Window.Resources>
     </Window.Resources>
-    <ctrl:TerminalControl x:Name="_terminal" TerminalStyle="{StaticResource ubuntu}" />
+    <ctrl:TerminalControl x:Name="_terminal" TerminalStyle="{StaticResource ubuntu}" Title="JSSoft.Commands.AppUI" />
 </Window>

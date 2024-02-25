@@ -18,15 +18,14 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-/// <summary>
-/// CSI Pm h
-/// </summary>
 sealed class SetMode : CSISequenceBase
 {
     public SetMode()
         : base('h')
     {
     }
+
+    public override string DisplayName => "CSI Pm h";
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
         => ModeUtility.Process(lines, context);

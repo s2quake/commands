@@ -18,9 +18,6 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-/// <summary>
-/// CSI s
-/// </summary>
 sealed class SaveCursor : CSISequenceBase
 {
     public SaveCursor()
@@ -28,11 +25,13 @@ sealed class SaveCursor : CSISequenceBase
     {
     }
 
+    public override string DisplayName => "CSI s";
+
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
         var view = context.View;
         var index = context.Index;
-        var value = context.GetNumericValue(index: 0, defaultValue: 1);
+        var value = context.GetParametersAsInteger(index: 0, defaultValue: 1);
         var count = Math.Max(1, value);
         context.ViewCoordinate = (TerminalCoord)(index - index.Width * view.Y);
     }

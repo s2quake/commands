@@ -16,16 +16,34 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi;
+namespace JSSoft.Terminals.Hosting.Ansi.Sequences.ESC;
 
-record struct SequenceKey(string Prefix, string Suffix) : IEquatable<string>
+sealed class DesignateG0CharacterSet : ESCSequenceBase
 {
-    public readonly bool Equals(string? other)
+    public DesignateG0CharacterSet()
+        : base('(')
     {
-        if (other is not null)
+    }
+
+    public override string DisplayName => "ESC ( C";
+
+    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    {
+        // var rest = context.Text.Substring(context.TextIndex + 2);
+        // if (rest[0] == 'B')
+        // {
+        //     context.TextIndex++;
+        // }
+    }
+
+    protected override bool Match(string text, Range parameterRange, out Range actualParameterRange)
+    {
+        var s = parameterRange.Start.Value + 1;
+        if (text[s] == 'B')
         {
-            return other.StartsWith(Prefix) == true && other.EndsWith(Suffix) == true;
+            actualParameterRange = new Range(s, s + 1);
+            return true;
         }
-        return false;
+        return base.Match(text, parameterRange, out actualParameterRange);
     }
 }

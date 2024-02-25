@@ -18,15 +18,14 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-/// <summary>
-/// CSI Ps SP t
-/// </summary>
 sealed class SetWarningBellVolume : CSISequenceBase
 {
     public SetWarningBellVolume()
         : base('t')
     {
     }
+
+    public override string DisplayName => "CSI Ps SP t";
 
     public override string Suffix => " ";
 

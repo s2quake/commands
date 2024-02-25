@@ -20,28 +20,47 @@ using System.Text;
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-sealed class SequenceContext(string option, AsciiCodeContext asciiCodeContext)
+sealed class SequenceContext(string parameter, AsciiCodeContext asciiCodeContext)
 {
     private readonly AsciiCodeContext _asciiCodeContext = asciiCodeContext;
 
-    public string Option { get; } = option;
-
-    public int[] Options { get; } = option == string.Empty ? [] : option.Split(';').Select(Parse).ToArray();
-
-    public int GetParameters(int index)
+    public string Title
     {
-        return index < Options.Length ? Options[index] : 0;
+        get => _asciiCodeContext.Title;
+        set => _asciiCodeContext.Title = value;
     }
 
-    public int GetParameters(int index, int defaultValue)
+    public string Parameter { get; } = parameter;
+
+    public string[] Parameters { get; } = parameter == string.Empty ? [] : parameter.Split(';').ToArray();
+
+    public int GetParametersAsInteger(int index)
     {
-        return index < Options.Length ? Options[index] : defaultValue;
+        return Parse(Parameters[index]);
+    }
+
+    public int GetParametersAsInteger(int index, int defaultValue)
+    {
+        return index < Parameters.Length ? Parse(Parameters[index]) : defaultValue;
+    }
+
+    public string GetParametersAsString(int index)
+    {
+        return Parameters[index];
     }
 
     public void SendSequence(string sequence)
     {
         _asciiCodeContext.SendSequence(sequence);
     }
+
+    // public string Text => _asciiCodeContext.Text;
+
+    // public int TextIndex
+    // {
+    //     get => _asciiCodeContext.TextIndex;
+    //     set => _asciiCodeContext.TextIndex = value;
+    // }
 
     public ITerminalFont Font => _asciiCodeContext.Font;
 
@@ -79,11 +98,6 @@ sealed class SequenceContext(string option, AsciiCodeContext asciiCodeContext)
 
     public TerminalCoord GetCoordinate(TerminalLineCollection lines, TerminalIndex index)
         => _asciiCodeContext.GetCoordinate(lines, index);
-    
-    public int GetNumericValue(int index, int defaultValue)
-    {
-        return index < Options.Length ? Options[index] : defaultValue;
-    }
 
     public static int Parse(string s)
     {

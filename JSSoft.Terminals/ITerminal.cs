@@ -24,6 +24,8 @@ namespace JSSoft.Terminals;
 
 public interface ITerminal : INotifyPropertyChanged
 {
+    string Title { get; set; }
+
     bool IsReadOnly { get; set; }
 
     TerminalCompletor Completor { get; set; }

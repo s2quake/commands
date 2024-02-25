@@ -28,14 +28,16 @@ sealed class PrivateResetMode : CSISequenceBase
     {
     }
 
+    public override string DisplayName => "CSI ? Pm l";
+
     public override string Prefix => "?";
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
-// Ps = 2  ⇒  Keyboard Action Mode (KAM).
-// Ps = 4  ⇒  Replace Mode (IRM).
-// Ps = 1 2  ⇒  Send/receive (SRM).
-// Ps = 2 0  ⇒  Normal Linefeed (LNM).
-        var option = context.Option;
+        // Ps = 2  ⇒  Keyboard Action Mode (KAM).
+        // Ps = 4  ⇒  Replace Mode (IRM).
+        // Ps = 1 2  ⇒  Send/receive (SRM).
+        // Ps = 2 0  ⇒  Normal Linefeed (LNM).
+        var option = context.Parameter;
     }
 }

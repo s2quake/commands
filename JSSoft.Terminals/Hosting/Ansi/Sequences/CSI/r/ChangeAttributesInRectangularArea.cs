@@ -18,15 +18,14 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-/// <summary>
-/// CSI Pt ; Pl ; Pb ; Pr ; Pm $ r
-/// </summary>
 sealed class ChangeAttributesInRectangularArea : CSISequenceBase
 {
     public ChangeAttributesInRectangularArea()
         : base('r')
     {
     }
+
+    public override string DisplayName => "CSI Pt ; Pl ; Pb ; Pr ; Pm $ r";
 
     public override string Suffix => "$";
 
