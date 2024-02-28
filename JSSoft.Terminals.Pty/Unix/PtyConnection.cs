@@ -69,6 +69,8 @@ internal abstract partial class PtyConnection : IPtyConnection
         return _terminalProcessTerminatedEvent.WaitOne(milliseconds);
     }
 
+    protected abstract bool Peek(int fd);
+
     protected abstract int Read(int fd, byte[] buffer, int count);
 
     protected abstract void Write(int fd, byte[] buffer, int count);
@@ -119,6 +121,8 @@ internal abstract partial class PtyConnection : IPtyConnection
     int IPtyConnection.Read(byte[] buffer, int count) => Read(_fd, buffer, count);
 
     void IPtyConnection.Write(byte[] buffer, int count) => Write(_fd, buffer, count);
+
+    bool IPtyConnection.CanRead => Peek(_fd);
 
     #endregion
 }

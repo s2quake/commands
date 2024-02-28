@@ -49,7 +49,14 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
     public Size Size
     {
         get => _size;
-        set => _size = value;
+        set
+        {
+            if (_size != value)
+            {
+                _size = value;
+                _pty?.Resize((int)value.Width, (int)value.Height);
+            }
+        }
     }
 
     public void Open()
@@ -65,6 +72,7 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
             App = app,
             Environment = new Dictionary<string, string>()
             {
+                { "WOW", "1" }
             },
         };
 
@@ -122,9 +130,10 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
 
     private static async void ReadStream(IPtyConnection pty, Action<string> action, CancellationToken cancellationToken)
     {
-        var buffer = new byte[4096 * 10];
+        var buffer = new byte[1024];
         try
         {
+            var sb = new StringBuilder();
             while (cancellationToken.IsCancellationRequested != true)
             {
                 var count = await Task.Run(() => pty.Read(buffer, buffer.Length));
@@ -132,9 +141,17 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
                 {
                     break;
                 }
-                var t = Encoding.UTF8.GetString(buffer, 0, count);
-                Trace.WriteLine($"Read: {ToLiteral(t)}");
-                action(t);
+                sb.Append(Encoding.UTF8.GetString(buffer, 0, count));
+                if (count == buffer.Length && await Task.Run(() => pty.CanRead == true))
+                {
+                    continue;
+                }
+                else
+                {
+                    Trace.WriteLine($"Read: {ToLiteral(sb.ToString())}");
+                    action(sb.ToString());
+                    sb.Clear();
+                }
             }
         }
         catch (TaskCanceledException)

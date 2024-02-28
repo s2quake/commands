@@ -144,26 +144,36 @@ sealed class TerminalBlock(Terminal terminal)
 
     public event EventHandler? TextChanged;
 
+    private string _rest = string.Empty;
+
     private void AppendText(string text, TerminalDisplayInfo displayInfo)
     {
         var lines = Lines;
-        var context = new AsciiCodeContext(text, _terminal)
+        var contextText = _rest + text;
+        var context = new AsciiCodeContext(contextText, _terminal)
         {
             Index = _index,
             BeginIndex = _beginIndex,
             DisplayInfo = displayInfo,
         };
-        while (context.TextIndex < text.Length)
+        try
         {
-            var character = text[context.TextIndex];
-            if (AsciiCodeByCharacter.ContainsKey(character) == true)
+            while (context.TextIndex < contextText.Length)
             {
-                AsciiCodeByCharacter[character].Process(lines, context);
+                var character = contextText[context.TextIndex];
+                if (AsciiCodeByCharacter.ContainsKey(character) == true)
+                {
+                    AsciiCodeByCharacter[character].Process(lines, context);
+                }
+                else
+                {
+                    Process(lines, context);
+                }
             }
-            else
-            {
-                Process(lines, context);
-            }
+        }
+        catch (NotSupportedException)
+        {
+            _rest = contextText.Substring(context.TextIndex);
         }
         _index = context.Index;
         _beginIndex = context.BeginIndex;

@@ -15,6 +15,11 @@ using static JSSoft.Terminals.Pty.Linux.NativeMethods;
 internal class PtyConnection(int controller, int pid)
     : Unix.PtyConnection(controller, pid)
 {
+    protected override bool Peek(int fd)
+    {
+        return false;
+    }
+
     protected override int Read(int fd, byte[] buffer, int count)
         => read(fd, buffer, count);
 

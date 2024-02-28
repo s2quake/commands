@@ -16,29 +16,11 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
+using System.Diagnostics.CodeAnalysis;
 
-sealed class CharacterAttributes : CSISequenceBase
+namespace JSSoft.Terminals.Hosting.Ansi;
+
+interface ISequenceCollection : IEnumerable<ISequence>
 {
-    public CharacterAttributes()
-        : base('m')
-    {
-    }
-
-    public override string DisplayName => "CSI Pm m";
-
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
-    {
-        var displayInfo = context.DisplayInfo;
-        var codes = context.Parameters.Select(SequenceContext.Parse).ToArray();
-        if (codes.Length > 0)
-        {
-            displayInfo.SetGraphicRendition(codes);
-        }
-        else
-        {
-            displayInfo.Reset();
-        }
-        context.DisplayInfo = displayInfo;
-    }
+    string SequenceString { get; }
 }

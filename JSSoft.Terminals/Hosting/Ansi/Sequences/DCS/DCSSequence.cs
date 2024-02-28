@@ -16,29 +16,25 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class CharacterAttributes : CSISequenceBase
+namespace JSSoft.Terminals.Hosting.Ansi.Sequences.DCS;
+
+sealed class DCSSequence : SequenceBase
 {
-    public CharacterAttributes()
-        : base('m')
+    public DCSSequence()
+        : base(SequenceType.DCS, '\\')
     {
     }
 
-    public override string DisplayName => "CSI Pm m";
+    public override string Suffix => "\x1b";
+
+    protected override bool Match(string text, Range parameterRange, out Range actualParameterRange)
+    {
+        return base.Match(text, parameterRange, out actualParameterRange);
+    }
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
-        var displayInfo = context.DisplayInfo;
-        var codes = context.Parameters.Select(SequenceContext.Parse).ToArray();
-        if (codes.Length > 0)
-        {
-            displayInfo.SetGraphicRendition(codes);
-        }
-        else
-        {
-            displayInfo.Reset();
-        }
-        context.DisplayInfo = displayInfo;
+
     }
 }

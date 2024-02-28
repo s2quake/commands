@@ -17,46 +17,14 @@ internal class PtyProvider : Unix.PtyProvider
     /// <inheritdoc/>
     public override IPtyConnection StartTerminal(PtyOptions options, TraceSource trace)
     {
-        var winSize = new WinSize((ushort)options.Rows, (ushort)options.Cols);
         var terminalArgs = GetExecvpArgs(options);
-
-        var controlCharacters = new Dictionary<TermSpecialControlCharacter, sbyte>
-        {
-            { TermSpecialControlCharacter.VEOF, 4 },
-            { TermSpecialControlCharacter.VEOL, -1 },
-            { TermSpecialControlCharacter.VEOL2, -1 },
-            { TermSpecialControlCharacter.VERASE, 0x7f },
-            { TermSpecialControlCharacter.VWERASE, 23 },
-            { TermSpecialControlCharacter.VKILL, 21 },
-            { TermSpecialControlCharacter.VREPRINT, 18 },
-            { TermSpecialControlCharacter.VINTR, 3 },
-            { TermSpecialControlCharacter.VQUIT, 0x1c },
-            { TermSpecialControlCharacter.VSUSP, 26 },
-            { TermSpecialControlCharacter.VSTART, 17 },
-            { TermSpecialControlCharacter.VSTOP, 19 },
-            { TermSpecialControlCharacter.VLNEXT, 22 },
-            { TermSpecialControlCharacter.VDISCARD, 15 },
-            { TermSpecialControlCharacter.VMIN, 1 },
-            { TermSpecialControlCharacter.VTIME, 0 },
-            { TermSpecialControlCharacter.VDSUSP, 25 },
-            { TermSpecialControlCharacter.VSTATUS, 20 },
-        };
-
-        var term = new Termios(
-            inputFlag: TermInputFlag.ICRNL | TermInputFlag.IXON | TermInputFlag.IXANY | TermInputFlag.IMAXBEL | TermInputFlag.BRKINT | TermInputFlag.IUTF8,
-            outputFlag: TermOuptutFlag.OPOST | TermOuptutFlag.ONLCR,
-            controlFlag: TermConrolFlag.CREAD | TermConrolFlag.CS8 | TermConrolFlag.HUPCL,
-            localFlag: TermLocalFlag.ICANON | TermLocalFlag.ISIG | TermLocalFlag.IEXTEN | TermLocalFlag.ECHO | TermLocalFlag.ECHOE | TermLocalFlag.ECHOK | TermLocalFlag.ECHOKE | TermLocalFlag.ECHOCTL,
-            speed: TermSpeed.B38400,
-            controlCharacters: controlCharacters);
-
         var controller = 0;
-        var pid = forkpty(ref controller, null, ref term, ref winSize);
+        var pid = init(ref controller, (ushort)options.Cols, (ushort)options.Rows);
         if (pid == -1)
         {
             throw new InvalidOperationException($"forkpty(4) failed with error {Marshal.GetLastWin32Error()}");
         }
-
+        // Console.WriteLine($"pid: {pid} {new StackTrace()}");
         if (pid == 0)
         {
             // We are in a forked process! See http://man7.org/linux/man-pages/man2/fork.2.html for details.

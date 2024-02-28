@@ -49,21 +49,8 @@ abstract class SequenceBase(SequenceType type, char character)
             return false;
         }
 
-        actualParameterRange = new Range(parameterRange.Start.Value - Prefix.Length, parameterRange.End.Value + Suffix.Length);
+        actualParameterRange = new Range(parameterRange.Start.Value + Prefix.Length, parameterRange.End.Value - Suffix.Length);
         return true;
-    }
-
-    private static int GetLength(string text, char character)
-    {
-        for (var i = 0; i < text.Length; i++)
-        {
-            if (text[i] == character)
-            {
-                return i;
-            }
-        }
-
-        return -1;
     }
 
     #region ISequence

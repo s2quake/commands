@@ -64,6 +64,7 @@ public partial class MainWindow : Window
         {
             Title = $"{_originTitle} — {(int)_terminal.BufferSize.Width}x{(int)_terminal.BufferSize.Height}";
             Console.WriteLine(Title);
+            _pseudoTerminal.Size = _terminal.BufferSize;
         }
     }
 }

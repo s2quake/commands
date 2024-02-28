@@ -17,18 +17,16 @@
 // 
 
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-sealed class SequenceCollection(string sequenceString) : IEnumerable<ISequence>
+class SequenceCollection(string sequenceString) : ISequenceCollection
 {
     private readonly Dictionary<char, SortedSet<ISequence>> _sequencesByCharacter = [];
 
     public string SequenceString { get; } = sequenceString;
 
-    public override string ToString()
-        => SequenceString;
+    public override string ToString() => SequenceString;
 
     public void Add(ISequence item)
     {
@@ -39,21 +37,11 @@ sealed class SequenceCollection(string sequenceString) : IEnumerable<ISequence>
         _sequencesByCharacter[item.Character].Add(item);
     }
 
-    public bool TryGetValue(string text, [MaybeNullWhen(false)] out ISequence value, out string parameter, out int endIndex)
+    public (ISequence value, string parameter, int endIndex) GetValue(string text)
     {
-        if (text.StartsWith(SequenceString) == true)
-        {
-            return TryGetSequence(text, out value, out parameter, out endIndex);
-        }
-        value = default;
-        parameter = string.Empty;
-        endIndex = 0;
-        return false;
+        if (text.StartsWith(SequenceString) != true)
+            throw new ArgumentException($"text does not start with: '{SequenceString}'", nameof(text));
 
-    }
-
-    private bool TryGetSequence(string text, [MaybeNullWhen(false)] out ISequence value, out string parameter, out int endIndex)
-    {
         for (var i = SequenceString.Length; i < text.Length; i++)
         {
             var character = text[i];
@@ -64,19 +52,33 @@ sealed class SequenceCollection(string sequenceString) : IEnumerable<ISequence>
                 {
                     if (sequence.Match(text, range, out var actualRange) == true)
                     {
-                        value = sequence;
-                        parameter = text[actualRange];
-                        endIndex = Math.Max(actualRange.End.Value, i + 1);
-                        return true;
+                        var parameter = text[actualRange];
+                        var endIndex = Math.Max(actualRange.End.Value, i + 1);
+                        return (sequence, parameter, endIndex);
                     }
                 }
+                throw new NotFoundSequenceException(text[0..i]);
+            }
+            else if (Test(character) != true)
+            {
+                throw new NotFoundSequenceException(text[0..i]);
             }
         }
-        value = default;
-        parameter = string.Empty;
-        endIndex = default;
-        return false;
+        throw new NotSupportedException();
     }
+
+    protected virtual bool Test(char character) => character switch
+    {
+        '\a' => false,
+        '\b' => false,
+        '\t' => false,
+        '\n' => false,
+        '\v' => false,
+        '\f' => false,
+        '\r' => false,
+        '\x1b' => false,
+        _ => true,
+    };
 
     #region IEnumerable
 

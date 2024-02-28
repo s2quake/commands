@@ -1,4 +1,4 @@
-// Released under the MIT License.
+﻿// Released under the MIT License.
 // 
 // Copyright (c) 2024 Jeesu Choi
 // 
@@ -16,9 +16,14 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals;
+namespace JSSoft.Terminals.Hosting.Ansi;
 
-public sealed class TerminalTextEventArgs(string text) : EventArgs
+sealed class NotFoundSequenceException : InvalidOperationException
 {
-    public string Text { get; } = text;
+    public NotFoundSequenceException(string sequence)
+    {
+        Sequence = sequence;
+    }
+
+    public string Sequence { get; }
 }

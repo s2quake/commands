@@ -24,7 +24,7 @@ static class SequenceUtility
     {
         { SequenceType.ESC, new("\x001b") },
         { SequenceType.CSI, new("\x001b[") },
-        { SequenceType.DCS, new("\x001bP") },
+        { SequenceType.DCS, new DCSSequenceCollection() },
         { SequenceType.OSC, new("\x001b]") },
     };
     private static readonly SequenceCollection[] SequenceCollections
@@ -48,21 +48,35 @@ static class SequenceUtility
     public static void Process(TerminalLineCollection lines, AsciiCodeContext context)
     {
         var textIndex = context.TextIndex;
-        var text = context.Text.Substring(context.TextIndex);
+        var text = context.Text[context.TextIndex..];
+        var sequenceCollection = GetSequenceCollection(text);
+        try
+        {
+            var (sequence, parameter, endIndex) = sequenceCollection.GetValue(text);
+#if DEBUG && NET8_0
+            Console.WriteLine($"{sequence} => {ToLiteral(text[..endIndex])}");
+#endif
+            sequence.Process(lines, new SequenceContext(parameter, context));
+            context.TextIndex = textIndex + endIndex;
+        }
+        catch (NotFoundSequenceException e)
+        {
+            Console.WriteLine("unknown sequence: " + e.Sequence);
+            context.TextIndex += e.Sequence.Length;
+        }
+    }
+
+    private static SequenceCollection GetSequenceCollection(string text)
+    {
         for (var i = 0; i < SequenceCollections.Length; i++)
         {
             var sequenceCollection = SequenceCollections[i];
-            if (sequenceCollection.TryGetValue(text, out var sequence, out var parameter, out var endIndex) == true)
+            if (text.StartsWith(sequenceCollection.SequenceString) == true)
             {
-#if DEBUG && NET8_0
-                Console.WriteLine($"{sequence} => {ToLiteral(text[..endIndex])}");
-#endif
-                sequence.Process(lines, new SequenceContext(parameter, context));
-                context.TextIndex = textIndex + endIndex;
-                return;
+                return sequenceCollection;
             }
         }
-        throw new NotImplementedException();
+        throw new NotSupportedException("not supported sequence");
     }
 
 #if DEBUG && NET8_0

@@ -16,6 +16,8 @@ public interface IPtyConnection : IDisposable
     /// </summary>
     event EventHandler<PtyExitedEventArgs>? ProcessExited;
 
+    bool CanRead => false;
+
     int Read(byte[] buffer, int count);
 
     void Write(byte[] buffer, int count);
