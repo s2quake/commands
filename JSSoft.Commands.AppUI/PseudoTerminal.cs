@@ -120,7 +120,7 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
 
     private static async void ReadStream(IPtyConnection pty, Action<string> action, CancellationToken cancellationToken)
     {
-        var buffer = new byte[1024];
+        var buffer = new byte[2048];
         try
         {
             var sb = new StringBuilder();

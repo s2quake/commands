@@ -16,24 +16,18 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
+namespace JSSoft.Terminals.Hosting.Ansi.Sequences.ESC;
 
-/// <summary>
-/// CSI Ps g
-/// </summary>
-sealed class TabClear : CSISequenceBase
+sealed class NormalKeypad : ESCSequenceBase
 {
-    public TabClear()
-        : base('g')
+    public NormalKeypad()
+        : base('>')
     {
     }
 
-    public override string DisplayName => "CSI Ps g";
+    public override string DisplayName => "ESC >";
 
     protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
     {
-        var option = context.GetParametersAsInteger(index: 0);
-        // Ps = 0  ⇒  Clear Current Column (default).
-        // Ps = 3  ⇒  Clear All.
     }
 }

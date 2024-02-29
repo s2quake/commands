@@ -158,6 +158,7 @@ sealed class TerminalBlock(Terminal terminal)
         };
         try
         {
+            _rest = string.Empty;
             while (context.TextIndex < contextText.Length)
             {
                 var character = contextText[context.TextIndex];
@@ -174,6 +175,9 @@ sealed class TerminalBlock(Terminal terminal)
         catch (NotSupportedException)
         {
             _rest = contextText.Substring(context.TextIndex);
+#if DEBUG && NET8_0
+            Console.WriteLine($"rest: {SequenceUtility.ToLiteral(_rest)}");
+#endif
         }
         _index = context.Index;
         _beginIndex = context.BeginIndex;

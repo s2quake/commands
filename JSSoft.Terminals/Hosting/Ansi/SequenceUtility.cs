@@ -80,7 +80,7 @@ static class SequenceUtility
     }
 
 #if DEBUG && NET8_0
-    private static string ToLiteral(string valueTextForCompiler)
+    public static string ToLiteral(string valueTextForCompiler)
     {
         return Microsoft.CodeAnalysis.CSharp.SymbolDisplay.FormatLiteral(valueTextForCompiler, false);
     }
