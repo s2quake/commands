@@ -24,7 +24,7 @@ public partial struct TerminalDisplayInfo
 
     public bool IsUnderline { get; set; }
 
-    public bool IsNegative { get; set; }
+    public bool IsInverse { get; set; }
 
     public object? Foreground { get; set; }
 

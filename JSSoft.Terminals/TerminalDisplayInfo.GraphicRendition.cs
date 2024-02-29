@@ -31,8 +31,8 @@ partial struct TerminalDisplayInfo
         { 22, (ref TerminalDisplayInfo o, ref Span<int> codes) => o.IsBold = false },
         { 4, (ref TerminalDisplayInfo o, ref Span<int> codes) => o.IsUnderline = true },
         { 24, (ref TerminalDisplayInfo o, ref Span<int> codes) => o.IsUnderline = false },
-        { 7, (ref TerminalDisplayInfo o, ref Span<int> codes) => o.IsNegative = true },
-        { 27, (ref TerminalDisplayInfo o, ref Span<int> codes) => o.IsNegative = false },
+        { 7, (ref TerminalDisplayInfo o, ref Span<int> codes) => o.IsInverse = true },
+        { 27, (ref TerminalDisplayInfo o, ref Span<int> codes) => o.IsInverse = false },
         { 30, (ref TerminalDisplayInfo o, ref Span<int> codes) => o.Foreground = TerminalColorType.Black },
         { 31, (ref TerminalDisplayInfo o, ref Span<int> codes) => o.Foreground = TerminalColorType.Red },
         { 32, (ref TerminalDisplayInfo o, ref Span<int> codes) => o.Foreground = TerminalColorType.Green },
@@ -77,7 +77,7 @@ partial struct TerminalDisplayInfo
         Background = null;
         IsBold = false;
         IsUnderline = false;
-        IsNegative = false;
+        IsInverse = false;
     }
 
     public void SetGraphicRendition(int[] codes)

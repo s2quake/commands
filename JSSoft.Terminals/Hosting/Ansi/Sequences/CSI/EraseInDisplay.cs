@@ -43,7 +43,7 @@ sealed class EraseInDisplay : CSISequenceBase
         var view = context.View;
         var index0 = context.Index;
         var index1 = new TerminalIndex(x: view.Right - 1, y: view.Bottom - 1, view.Width);
-        var length = Math.Min(lines.Count, index1.Value) - index0.X;
+        var length = Math.Min(lines.Count * view.Width, index1.Value) - index0.X;
         lines.Erase(index0, length);
     }
 

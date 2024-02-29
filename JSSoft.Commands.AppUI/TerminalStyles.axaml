@@ -39,7 +39,7 @@
 
     <ctrl:TerminalStyle x:Key="macos"
         FontFamily="{StaticResource UbuntuMono_FontFamily}"
-        FontSize="12"
+        FontSize="15"
         ForegroundColor="#FFFFFF"
         BackgroundColor="#171717"
         SelectionForegroundColor="#FFFFFF"

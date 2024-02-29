@@ -11,8 +11,8 @@ sealed class PtyConnection(int controller, int pid)
     protected override bool Peek(int fd)
     {
         if (IsArm64 == true)
-            return NativeMethods.peek(fd) == 0;
-        return NativeMethodsAmd64.peek(fd) == 0;
+            return NativeMethods.peek(fd) == 1;
+        return NativeMethodsAmd64.peek(fd) == 1;
     }
 
     protected override int Read(int fd, byte[] buffer, int count)

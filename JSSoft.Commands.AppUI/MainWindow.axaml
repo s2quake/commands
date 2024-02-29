@@ -9,5 +9,5 @@
         Title="{Binding Title, ElementName=_terminal}">
     <Window.Resources>
     </Window.Resources>
-    <ctrl:TerminalControl x:Name="_terminal" TerminalStyle="{StaticResource ubuntu}" Title="JSSoft.Commands.AppUI" />
+    <ctrl:TerminalControl x:Name="_terminal" TerminalStyle="{StaticResource macos}" Title="JSSoft.Commands.AppUI" />
 </Window>

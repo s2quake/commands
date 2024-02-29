@@ -162,16 +162,20 @@ public static class ITerminalExtensions
         var style = terminal.ActualStyle;
         var characterInfo = terminal.GetInfo(coord);
         var displayInfo = characterInfo?.DisplayInfo ?? TerminalDisplayInfo.Empty;
+        var f1 = displayInfo.IsInverse != true ? displayInfo.Foreground : displayInfo.Background;
+        var f2 = displayInfo.IsInverse != true ? style.ForegroundColor : style.BackgroundColor;
+        var b1 = displayInfo.IsInverse != true ? displayInfo.Background : displayInfo.Foreground;
+        var b2 = displayInfo.IsInverse != true ? style.BackgroundColor : style.ForegroundColor;
         if (terminal.IsSelecting(coord) == true || terminal.Selections.IsSelected(coord) == true)
-            return GetSelectionColor(style, displayInfo);
-        return TerminalStyleUtility.GetColor(style, displayInfo.Foreground) ?? style.ForegroundColor;
+            return GetSelectionColor(style);
+        return TerminalStyleUtility.GetColor(style, f1) ?? f2;
 
-        static TerminalColor GetSelectionColor(ITerminalStyle style, TerminalDisplayInfo displayInfo) => style.SelectionForegroundColorSource switch
+        TerminalColor GetSelectionColor(ITerminalStyle style) => style.SelectionForegroundColorSource switch
         {
             TerminalColorSource.Origin => style.SelectionForegroundColor,
-            TerminalColorSource.NotUsed => TerminalStyleUtility.GetColor(style, displayInfo.Foreground) ?? style.ForegroundColor,
-            TerminalColorSource.Invert => TerminalStyleUtility.GetColor(style, displayInfo.Background) ?? style.BackgroundColor,
-            TerminalColorSource.Complementary => (TerminalStyleUtility.GetColor(style, displayInfo.Foreground) ?? style.ForegroundColor).ToComplementary(),
+            TerminalColorSource.NotUsed => TerminalStyleUtility.GetColor(style, f1) ?? f2,
+            TerminalColorSource.Invert => TerminalStyleUtility.GetColor(style, b1) ?? b2,
+            TerminalColorSource.Complementary => (TerminalStyleUtility.GetColor(style, f1) ?? style.ForegroundColor).ToComplementary(),
             _ => throw new ArgumentOutOfRangeException(nameof(style)),
         };
     }
@@ -181,16 +185,20 @@ public static class ITerminalExtensions
         var style = terminal.ActualStyle;
         var characterInfo = terminal.GetInfo(coord);
         var displayInfo = characterInfo?.DisplayInfo ?? TerminalDisplayInfo.Empty;
+        var f1 = displayInfo.IsInverse != true ? displayInfo.Foreground : displayInfo.Background;
+        var f2 = displayInfo.IsInverse != true ? style.ForegroundColor : style.BackgroundColor;
+        var b1 = displayInfo.IsInverse != true ? displayInfo.Background : displayInfo.Foreground;
+        var b2 = displayInfo.IsInverse != true ? style.BackgroundColor : style.ForegroundColor;
         if (terminal.IsSelecting(coord) == true || terminal.Selections.IsSelected(coord) == true)
-            return GetSelectionColor(style, displayInfo);
-        return TerminalStyleUtility.GetColor(style, displayInfo.Background) ?? style.BackgroundColor;
+            return GetSelectionColor(style);
+        return TerminalStyleUtility.GetColor(style, b1) ?? b2;
 
-        static TerminalColor GetSelectionColor(ITerminalStyle style, TerminalDisplayInfo displayInfo) => style.SelectionBackgroundColorSource switch
+        TerminalColor GetSelectionColor(ITerminalStyle style) => style.SelectionBackgroundColorSource switch
         {
             TerminalColorSource.Origin => style.SelectionBackgroundColor,
-            TerminalColorSource.NotUsed => TerminalStyleUtility.GetColor(style, displayInfo.Background) ?? style.BackgroundColor,
-            TerminalColorSource.Invert => TerminalStyleUtility.GetColor(style, displayInfo.Foreground) ?? style.ForegroundColor,
-            TerminalColorSource.Complementary => (TerminalStyleUtility.GetColor(style, displayInfo.Background) ?? style.BackgroundColor).ToComplementary(),
+            TerminalColorSource.NotUsed => TerminalStyleUtility.GetColor(style, b1) ?? b2,
+            TerminalColorSource.Invert => TerminalStyleUtility.GetColor(style, f1) ?? f2,
+            TerminalColorSource.Complementary => (TerminalStyleUtility.GetColor(style, b1) ?? style.BackgroundColor).ToComplementary(),
             _ => throw new ArgumentOutOfRangeException(nameof(style)),
         };
     }

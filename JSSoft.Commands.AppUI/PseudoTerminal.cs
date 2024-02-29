@@ -133,7 +133,7 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
                     break;
                 }
                 sb.Append(Encoding.UTF8.GetString(buffer, 0, count));
-                if (count == buffer.Length && await Task.Run(() => pty.CanRead == true))
+                if (await Task.Run(() => pty.CanRead == true))
                 {
                     continue;
                 }
