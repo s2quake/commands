@@ -35,5 +35,6 @@ sealed class CursorUp : CSISequenceBase
         var count = Math.Max(1, value);
         var index2 = index1.CursorUp(count, view.Top);
         context.Index = index2;
+        context.BeginIndex = index2;
     }
 }

@@ -35,5 +35,6 @@ sealed class CursorDown : CSISequenceBase
         var count = Math.Max(1, value);
         index = index.CursorDown(count, view.Bottom);
         context.Index = index;
+        context.BeginIndex = index;
     }
 }

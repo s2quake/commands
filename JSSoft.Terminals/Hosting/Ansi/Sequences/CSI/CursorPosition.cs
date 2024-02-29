@@ -36,6 +36,6 @@ sealed class CursorPosition : CSISequenceBase
         var c2 = TerminalMathUtility.Clamp(c1, 0, view.Width - 1);
         var index = new TerminalIndex(new TerminalCoord(c2, r2), view.Width);
         context.Index = index;
-        context.BeginIndex = index.CarriageReturn();
+        context.BeginIndex = index;
     }
 }

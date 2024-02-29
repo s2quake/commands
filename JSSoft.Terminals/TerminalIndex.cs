@@ -213,16 +213,19 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
         {
             return this - Width;
         }
-        return CarriageReturn();
-    }
-
-    public readonly TerminalIndex CarriageReturn()
-    {
         var index = this;
         var value = index.Value % index.Width;
         index -= value;
         return index;
     }
+
+    // public readonly TerminalIndex CarriageReturn()
+    // {
+    //     var index = this;
+    //     var value = index.Value % index.Width;
+    //     index -= value;
+    //     return index;
+    // }
 
     public readonly TerminalIndex Backspace()
     {
