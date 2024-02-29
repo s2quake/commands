@@ -27,7 +27,7 @@ sealed class RestoreCursor : CSISequenceBase
 
     public override string DisplayName => "CSI u";
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
         var view = context.View;
         var index = context.Index;

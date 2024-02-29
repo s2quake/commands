@@ -27,7 +27,7 @@ sealed class CursorDown : CSISequenceBase
 
     public override string DisplayName => "CSI Ps B";
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
         var view = context.View;
         var index = context.Index;

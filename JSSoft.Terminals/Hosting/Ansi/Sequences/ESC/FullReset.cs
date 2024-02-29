@@ -27,8 +27,9 @@ sealed class FullReset : ESCSequenceBase
 
     public override string DisplayName => "ESC c";
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
+        var lines = context.Lines;
         lines.Take(context.Index);
         context.OriginCoordinate = new (context.Index.X, context.Index.Y);
     }

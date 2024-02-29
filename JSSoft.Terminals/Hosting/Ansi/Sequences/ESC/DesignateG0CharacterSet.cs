@@ -27,7 +27,7 @@ sealed class DesignateG0CharacterSet : ESCSequenceBase
 
     public override string DisplayName => "ESC ( C";
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
         // var rest = context.Text.Substring(context.TextIndex + 2);
         // if (rest[0] == 'B')

@@ -27,7 +27,7 @@ sealed class CursorPosition : CSISequenceBase
 
     public override string DisplayName => "CSI Ps ; Ps H";
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
         var view = context.View;
         var r1 = context.GetParametersAsInteger(index: 0, defaultValue: 1) - 1;

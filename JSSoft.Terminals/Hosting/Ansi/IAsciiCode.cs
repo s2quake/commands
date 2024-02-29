@@ -20,5 +20,5 @@ namespace JSSoft.Terminals.Hosting.Ansi;
 
 interface IAsciiCode
 {
-    void Process(TerminalLineCollection lines, AsciiCodeContext context);
+    void Process(AsciiCodeContext context);
 }

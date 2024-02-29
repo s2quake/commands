@@ -29,7 +29,7 @@ sealed class SendDeviceAttributes_Secondary : CSISequenceBase
 
     public override string Prefix => ">";
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
     }
 }

@@ -22,7 +22,7 @@ namespace JSSoft.Terminals.Hosting.Ansi.EraseFunctions;
 
 sealed class EraseInLine : CSISequenceBase
 {
-    private static readonly Action<TerminalLineCollection, SequenceContext> EmptyAction = (items, context) => { };
+    private static readonly Action<SequenceContext> EmptyAction = (context) => { };
 
     public EraseInLine()
         : base('K')
@@ -31,16 +31,17 @@ sealed class EraseInLine : CSISequenceBase
 
     public override string DisplayName => "CSI Ps K";
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
         var option = context.GetParametersAsInteger(index: 0, defaultValue: 0);
         var action = GetAction(option);
-        action.Invoke(lines, context);
+        action.Invoke(context);
     }
 
     // erase from cursor to end of line
-    private void Action0(TerminalLineCollection lines, SequenceContext context)
+    private void Action0(SequenceContext context)
     {
+        var lines = context.Lines;
         var index = context.Index;
         if (lines.TryGetLine(index, out var line) == true)
         {
@@ -49,8 +50,9 @@ sealed class EraseInLine : CSISequenceBase
     }
 
     // erase start of line to the cursor
-    private void Action1(TerminalLineCollection lines, SequenceContext context)
+    private void Action1(SequenceContext context)
     {
+        var lines = context.Lines;
         var index = context.Index;
         var index1 = index.MoveToFirstOfLine();
         var index2 = index;
@@ -60,15 +62,16 @@ sealed class EraseInLine : CSISequenceBase
     }
 
     // erase the entire line
-    private void Action2(TerminalLineCollection lines, SequenceContext context)
+    private void Action2(SequenceContext context)
     {
+        var lines = context.Lines;
         var view = context.View;
         var index = context.Index;
         var line = lines[index];
         line.Erase(0, line.Length);
     }
 
-    private Action<TerminalLineCollection, SequenceContext> GetAction(int option) => option switch
+    private Action<SequenceContext> GetAction(int option) => option switch
     {
         0 => Action0,
         1 => Action1,

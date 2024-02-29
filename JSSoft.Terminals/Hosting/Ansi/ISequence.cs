@@ -24,7 +24,7 @@ interface ISequence : IComparable<ISequence>, IEquatable<ISequence>
 
     char Character { get; }
 
-    void Process(TerminalLineCollection lines, SequenceContext context);
+    void Process(SequenceContext context);
 
     bool Match(string text, Range parameterRange, out Range actualParameterRange);
 }

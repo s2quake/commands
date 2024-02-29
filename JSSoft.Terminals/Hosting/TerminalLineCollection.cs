@@ -20,7 +20,7 @@ using System.Collections;
 
 namespace JSSoft.Terminals.Hosting;
 
-sealed class TerminalLineCollection(Terminal terminal) : IEnumerable<TerminalLine>
+sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<TerminalLine>
 {
     private readonly TerminalArray<TerminalCharacterInfo?> _items = new();
     private readonly List<TerminalLine> _lineList = [];
@@ -101,8 +101,6 @@ sealed class TerminalLineCollection(Terminal terminal) : IEnumerable<TerminalLin
 
     public void Erase(TerminalIndex index, int length)
     {
-        // if (index.Width != _terminal.BufferSize.Width)
-        //     throw new ArgumentException($"'{nameof(index)}' and '{nameof(index2)}' do not have the same width value.", nameof(index));
         if (length < 0)
             throw new ArgumentOutOfRangeException(nameof(length));
 
@@ -123,9 +121,11 @@ sealed class TerminalLineCollection(Terminal terminal) : IEnumerable<TerminalLin
 
     #region IEnumerable
 
-    IEnumerator<TerminalLine> IEnumerable<TerminalLine>.GetEnumerator() => _lineList.GetEnumerator();
+    IEnumerator<TerminalLine> IEnumerable<TerminalLine>.GetEnumerator()
+        => _lineList.GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator() => _lineList.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator()
+        => _lineList.GetEnumerator();
 
     #endregion
 }

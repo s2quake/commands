@@ -27,7 +27,7 @@ sealed class CursorBackward : CSISequenceBase
 
     public override string DisplayName => "CSI Ps D";
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
         var index = context.Index;
         var value = context.GetParametersAsInteger(index: 0, defaultValue: 1);

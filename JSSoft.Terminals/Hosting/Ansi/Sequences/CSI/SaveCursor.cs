@@ -27,7 +27,7 @@ sealed class SaveCursor : CSISequenceBase
 
     public override string DisplayName => "CSI s";
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
         var view = context.View;
         var index = context.Index;

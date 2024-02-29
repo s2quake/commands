@@ -30,7 +30,7 @@ sealed class TabClear : CSISequenceBase
 
     public override string DisplayName => "CSI Ps g";
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
         var option = context.GetParametersAsInteger(index: 0);
         // Ps = 0  ⇒  Clear Current Column (default).

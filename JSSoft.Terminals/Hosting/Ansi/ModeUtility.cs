@@ -44,14 +44,14 @@ static class ModeUtility
     public static bool TryGetMode(string name, out IMode value)
         => ModeByName.TryGetValue(name, out value!);
 
-    public static void Process(TerminalLineCollection lines, SequenceContext context)
+    public static void Process(SequenceContext context)
     {
         var options = context.Parameter.Split(';', options: StringSplitOptions.RemoveEmptyEntries);
         foreach (var item in options)
         {
             if (TryGetMode(item, out var mode) == true)
             {
-                mode.Process(lines, context);
+                mode.Process(context);
             }
             else
             {

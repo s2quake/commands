@@ -28,7 +28,7 @@ sealed class Mode_AltPlusKeySendsCharacterWithHighBitSet : ModeBase
     {
     }
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
     }
 }

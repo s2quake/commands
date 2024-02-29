@@ -33,7 +33,7 @@ sealed class DCSSequence : SequenceBase
         return base.Match(text, parameterRange, out actualParameterRange);
     }
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
 
     }

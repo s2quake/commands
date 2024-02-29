@@ -33,7 +33,7 @@ abstract class SequenceBase(SequenceType type, char character)
 
     public override string? ToString() => DisplayName == string.Empty ? base.ToString() : DisplayName;
 
-    protected abstract void OnProcess(TerminalLineCollection lines, SequenceContext context);
+    protected abstract void OnProcess(SequenceContext context);
 
     protected virtual bool Match(string text, Range parameterRange, out Range actualParameterRange)
     {
@@ -55,8 +55,8 @@ abstract class SequenceBase(SequenceType type, char character)
 
     #region ISequence
 
-    void ISequence.Process(TerminalLineCollection lines, SequenceContext context)
-        => OnProcess(lines, context);
+    void ISequence.Process(SequenceContext context)
+        => OnProcess(context);
 
     bool ISequence.Match(string text, Range parameterRange, out Range actualParameterRange)
         => Match(text, parameterRange, out actualParameterRange);

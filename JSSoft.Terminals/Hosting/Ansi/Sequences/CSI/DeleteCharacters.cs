@@ -26,8 +26,9 @@ sealed class DeleteCharacters : CSISequenceBase
     }
 
     public override string DisplayName => "CSI Ps P";
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
+        var lines = context.Lines;
         var index = context.Index;
         var line = lines[index.Y];
         var length = context.GetParametersAsInteger(index: 0, defaultValue: 1);

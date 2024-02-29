@@ -27,8 +27,7 @@ sealed class P_Backslash : ESCSequenceBase
 
     public override string Prefix => "P";
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
-        int qwer = 0;
     }
 }

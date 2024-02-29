@@ -27,7 +27,7 @@ sealed class CharacterAttributes : CSISequenceBase
 
     public override string DisplayName => "CSI Pm m";
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
         var displayInfo = context.DisplayInfo;
         var codes = context.Parameters.Select(SequenceContext.Parse).ToArray();

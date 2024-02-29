@@ -30,7 +30,7 @@ sealed class OperatingSystemCommandsBell : OperatingSystemCommandsBase
 
     public override string DisplayName => "OSC Ps ; Pt BEL";
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
         var ps = context.GetParametersAsInteger(index: 0);
         var pt = context.GetParametersAsString(index: 1);

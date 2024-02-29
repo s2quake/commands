@@ -38,17 +38,7 @@ sealed class TerminalBlock(Terminal terminal)
     public TerminalIndex _index = new(terminal, TerminalCoord.Empty);
     private TerminalIndex _beginIndex = new(terminal, TerminalCoord.Empty);
 
-    public int Height
-    {
-        get
-        {
-            if (Lines.Count > 0)
-            {
-                return Lines.Count;
-            }
-            return 0;
-        }
-    }
+    public int Height => Lines.Count;
 
     public int Top { get; private set; }
 
@@ -150,7 +140,7 @@ sealed class TerminalBlock(Terminal terminal)
     {
         var lines = Lines;
         var contextText = _rest + text;
-        var context = new AsciiCodeContext(contextText, _terminal)
+        var context = new AsciiCodeContext(lines, contextText, _terminal)
         {
             Index = _index,
             BeginIndex = _beginIndex,
@@ -164,7 +154,7 @@ sealed class TerminalBlock(Terminal terminal)
                 var character = contextText[context.TextIndex];
                 if (AsciiCodeByCharacter.ContainsKey(character) == true)
                 {
-                    AsciiCodeByCharacter[character].Process(lines, context);
+                    AsciiCodeByCharacter[character].Process(context);
                 }
                 else
                 {

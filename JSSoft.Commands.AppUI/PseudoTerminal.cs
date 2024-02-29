@@ -67,11 +67,12 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
         {
             Width = (int)size.Width,
             Height = (int)size.Height,
-            WorkingDirectory = Environment.CurrentDirectory,
+            // WorkingDirectory = Environment.CurrentDirectory,
+            WorkingDirectory = "/Users/s2quake-mac/Pictures",
             App = app,
             EnvironmentVariables = new Dictionary<string, string>()
             {
-                { "WOW", "1" }
+                { "LANG", "en_US.UTF-8" }
             },
         };
 
@@ -132,7 +133,8 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
                     Console.WriteLine("ReadStream ended");
                     break;
                 }
-                sb.Append(Encoding.UTF8.GetString(buffer, 0, count));
+                var s = Encoding.UTF8.GetString(buffer, 0, count);
+                sb.Append(s.Normalize());
                 if (await Task.Run(() => pty.CanRead == true))
                 {
                     continue;

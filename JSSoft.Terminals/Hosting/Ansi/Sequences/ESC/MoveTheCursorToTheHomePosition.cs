@@ -27,7 +27,7 @@ sealed class MoveTheCursorToTheHomePosition : ESCSequenceBase
 
     public override string DisplayName => "ESC H";
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
         var view = context.View;
         var x = 0;

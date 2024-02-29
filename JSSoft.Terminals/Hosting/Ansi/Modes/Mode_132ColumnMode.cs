@@ -28,7 +28,7 @@ sealed class Mode_132ColumnMode : ModeBase
     {
     }
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
     }
 }

@@ -20,8 +20,9 @@ namespace JSSoft.Terminals.Hosting.Ansi;
 
 sealed class HorizontalTAB : IAsciiCode
 {
-    public void Process(TerminalLineCollection lines, AsciiCodeContext context)
+    public void Process(AsciiCodeContext context)
     {
+        var lines = context.Lines;
         var beginIndex = context.BeginIndex;
         var index1 = context.Index;
         var span = 8 - (index1.X % 8);

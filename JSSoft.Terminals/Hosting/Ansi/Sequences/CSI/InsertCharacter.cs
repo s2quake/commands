@@ -29,8 +29,9 @@ sealed class InsertCharacter : CSISequenceBase
 
     public override string DisplayName => "CSI Ps @\nCSI Ps SP @";
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
+        var lines = context.Lines;
         var index1 = context.Index;
         var beginIndex = context.BeginIndex;
         var font = context.Font;

@@ -27,7 +27,7 @@ sealed class CursorForward : CSISequenceBase
 
     public override string DisplayName => "CSI Ps C";
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
         var index = context.Index;
         var value = context.GetParametersAsInteger(index: 0, defaultValue: 1);

@@ -18,10 +18,11 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-sealed class AsciiCodeContext(string text, ITerminal terminal)
+sealed class AsciiCodeContext(TerminalLineCollection lines, string text, ITerminal terminal)
 {
     private readonly ITerminal _terminal = terminal;
     private TerminalIndex _index;
+    private TerminalRect _view = new(0, terminal.Scroll.Value, terminal.BufferSize.Width, terminal.BufferSize.Height);
 
     public string Title
     {
@@ -32,6 +33,8 @@ sealed class AsciiCodeContext(string text, ITerminal terminal)
     public string Text { get; } = text;
 
     public int TextIndex { get; set; }
+
+    public TerminalLineCollection Lines { get; } = lines;
 
     public ITerminalFont Font => _terminal.ActualStyle.Font;
 
@@ -63,7 +66,7 @@ sealed class AsciiCodeContext(string text, ITerminal terminal)
         set => _terminal.ViewCoordinate = value;
     }
 
-    public TerminalRect View => new(0, _terminal.Scroll.Value, _terminal.BufferSize.Width, _terminal.BufferSize.Height);
+    public TerminalRect View => _view;
 
     public TerminalCoord GetCoordinate(TerminalLineCollection lines, TerminalIndex index)
     {
@@ -83,13 +86,8 @@ sealed class AsciiCodeContext(string text, ITerminal terminal)
             var y = index.Value / bufferWidth;
             return new TerminalCoord(x, 0 + y);
         }
-        // return TerminalCoord.Empty;
     }
 
     public void SendSequence(string sequence)
-    {
-        _terminal.WriteInput(sequence);
-        // terminal.StandardInput.Write(sequence);
-        // terminal.StandardInput.Flush();
-    }
+        => _terminal.WriteInput(sequence);
 }

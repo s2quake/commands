@@ -22,12 +22,12 @@ abstract class ModeBase(string name) : IMode
 {
     public string Name { get; } = name;
 
-    protected abstract void OnProcess(TerminalLineCollection lines, SequenceContext context);
+    protected abstract void OnProcess(SequenceContext context);
 
     #region IMode
 
-    void IMode.Process(TerminalLineCollection lines, SequenceContext context)
-        => OnProcess(lines, context);
+    void IMode.Process(SequenceContext context)
+        => OnProcess(context);
 
     #endregion
 }

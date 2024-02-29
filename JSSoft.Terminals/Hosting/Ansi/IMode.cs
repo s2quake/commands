@@ -20,7 +20,7 @@ namespace JSSoft.Terminals.Hosting.Ansi;
 
 interface IMode
 {
-    void Process(TerminalLineCollection lines, SequenceContext context);
+    void Process(SequenceContext context);
 
     string Name { get; }
 }

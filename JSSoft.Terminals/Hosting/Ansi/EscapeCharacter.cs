@@ -20,6 +20,6 @@ namespace JSSoft.Terminals.Hosting.Ansi;
 
 sealed class EscapeCharacter : IAsciiCode
 {
-    public void Process(TerminalLineCollection lines, AsciiCodeContext context)
-        => SequenceUtility.Process(lines, context);
+    public void Process(AsciiCodeContext context)
+        => SequenceUtility.Process(context);
 }

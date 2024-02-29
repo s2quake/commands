@@ -27,7 +27,7 @@ sealed class WindowManipulation : CSISequenceBase
 
     public override string DisplayName => "CSI Ps ; Ps ; Ps t";
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
     }
 }

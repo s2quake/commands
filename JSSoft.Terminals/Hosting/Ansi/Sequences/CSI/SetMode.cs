@@ -27,6 +27,6 @@ sealed class SetMode : CSISequenceBase
 
     public override string DisplayName => "CSI Pm h";
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
-        => ModeUtility.Process(lines, context);
+    protected override void OnProcess(SequenceContext context)
+        => ModeUtility.Process(context);
 }

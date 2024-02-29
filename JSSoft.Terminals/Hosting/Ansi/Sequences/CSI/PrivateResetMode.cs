@@ -32,7 +32,7 @@ sealed class PrivateResetMode : CSISequenceBase
 
     public override string Prefix => "?";
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
         // Ps = 2  ⇒  Keyboard Action Mode (KAM).
         // Ps = 4  ⇒  Replace Mode (IRM).

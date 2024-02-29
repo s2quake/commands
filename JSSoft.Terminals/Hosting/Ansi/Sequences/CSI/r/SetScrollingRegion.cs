@@ -27,7 +27,7 @@ sealed class SetScrollingRegion : CSISequenceBase
 
     public override string DisplayName => "CSI Ps ; Ps r";
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
     }
 }

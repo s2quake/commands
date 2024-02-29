@@ -27,7 +27,7 @@ sealed class ApplicationKeypad : ESCSequenceBase
 
     public override string DisplayName => "ESC =";
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
     }
 }

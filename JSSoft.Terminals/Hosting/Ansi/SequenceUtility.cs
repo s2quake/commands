@@ -45,7 +45,7 @@ static class SequenceUtility
         }
     }
 
-    public static void Process(TerminalLineCollection lines, AsciiCodeContext context)
+    public static void Process(AsciiCodeContext context)
     {
         var textIndex = context.TextIndex;
         var text = context.Text[context.TextIndex..];
@@ -56,7 +56,7 @@ static class SequenceUtility
 #if DEBUG && NET8_0
             Console.WriteLine($"{sequence} => {ToLiteral(text[..endIndex])}");
 #endif
-            sequence.Process(lines, new SequenceContext(parameter, context));
+            sequence.Process(new SequenceContext(parameter, context));
             context.TextIndex = textIndex + endIndex;
         }
         catch (NotFoundSequenceException e)

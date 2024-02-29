@@ -27,7 +27,7 @@ sealed class CursorUp : CSISequenceBase
 
     public override string DisplayName => "CSI Ps A";
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
         var view = context.View;
         var index1 = context.Index;

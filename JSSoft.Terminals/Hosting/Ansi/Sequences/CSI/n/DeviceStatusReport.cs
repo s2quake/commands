@@ -27,8 +27,9 @@ sealed class DeviceStatusReport : CSISequenceBase
 
     public override string DisplayName => "CSI Ps n";
 
-    protected override void OnProcess(TerminalLineCollection lines, SequenceContext context)
+    protected override void OnProcess(SequenceContext context)
     {
+        var lines = context.Lines;
         var ps = context.GetParametersAsInteger(0);
         switch (ps)
         {

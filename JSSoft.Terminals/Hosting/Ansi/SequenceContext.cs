@@ -30,37 +30,11 @@ sealed class SequenceContext(string parameter, AsciiCodeContext asciiCodeContext
         set => _asciiCodeContext.Title = value;
     }
 
+    public TerminalLineCollection Lines => _asciiCodeContext.Lines;
+
     public string Parameter { get; } = parameter;
 
     public string[] Parameters { get; } = parameter == string.Empty ? [] : parameter.Split(';').ToArray();
-
-    public int GetParametersAsInteger(int index)
-    {
-        return Parse(Parameters[index]);
-    }
-
-    public int GetParametersAsInteger(int index, int defaultValue)
-    {
-        return index < Parameters.Length ? Parse(Parameters[index]) : defaultValue;
-    }
-
-    public string GetParametersAsString(int index)
-    {
-        return Parameters[index];
-    }
-
-    public void SendSequence(string sequence)
-    {
-        _asciiCodeContext.SendSequence(sequence);
-    }
-
-    // public string Text => _asciiCodeContext.Text;
-
-    // public int TextIndex
-    // {
-    //     get => _asciiCodeContext.TextIndex;
-    //     set => _asciiCodeContext.TextIndex = value;
-    // }
 
     public ITerminalFont Font => _asciiCodeContext.Font;
 
@@ -96,9 +70,6 @@ sealed class SequenceContext(string parameter, AsciiCodeContext asciiCodeContext
 
     public TerminalRect View => _asciiCodeContext.View;
 
-    public TerminalCoord GetCoordinate(TerminalLineCollection lines, TerminalIndex index)
-        => _asciiCodeContext.GetCoordinate(lines, index);
-
     public static int Parse(string s)
     {
         var sb = new StringBuilder(s.Length);
@@ -111,4 +82,19 @@ sealed class SequenceContext(string parameter, AsciiCodeContext asciiCodeContext
         }
         return int.TryParse(sb.ToString(), out var i) == true ? i : 0;
     }
+
+    public TerminalCoord GetCoordinate(TerminalLineCollection lines, TerminalIndex index)
+        => _asciiCodeContext.GetCoordinate(lines, index);
+
+    public int GetParametersAsInteger(int index)
+        => Parse(Parameters[index]);
+
+    public int GetParametersAsInteger(int index, int defaultValue)
+        => index < Parameters.Length ? Parse(Parameters[index]) : defaultValue;
+
+    public string GetParametersAsString(int index)
+        => Parameters[index];
+
+    public void SendSequence(string sequence)
+        => _asciiCodeContext.SendSequence(sequence);
 }
