@@ -37,7 +37,7 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
     private readonly TerminalControl _terminalControl = terminalControl;
     private IPtyConnection? _pty;
     private CancellationTokenSource? _cancellationTokenSource;
-    private string _app = GetApp();
+    private string _app = string.Empty;
     private Size _size = new(80, 24);
 
     public string App
@@ -65,12 +65,11 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
         var size = _size;
         var options = new PtyOptions
         {
-            Name = "Custom terminal",
-            Cols = (int)size.Width,
-            Rows = (int)size.Height,
-            Cwd = Environment.CurrentDirectory,
+            Width = (int)size.Width,
+            Height = (int)size.Height,
+            WorkingDirectory = Environment.CurrentDirectory,
             App = app,
-            Environment = new Dictionary<string, string>()
+            EnvironmentVariables = new Dictionary<string, string>()
             {
                 { "WOW", "1" }
             },
@@ -95,15 +94,6 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
     }
 
     public bool IsOpen { get; private set; }
-
-    private static string GetApp()
-    {
-        if (TerminalEnvironment.IsWindows() == true)
-            return Path.Combine(Environment.SystemDirectory, "cmd.exe");
-        if (TerminalEnvironment.IsMacOS() == true)
-            return "zsh";
-        return "sh";
-    }
 
     private static async void ReadInput(IPtyConnection pty, TerminalControl control, CancellationToken cancellationToken)
     {
@@ -139,6 +129,7 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
                 var count = await Task.Run(() => pty.Read(buffer, buffer.Length));
                 if (count == 0)
                 {
+                    Console.WriteLine("ReadStream ended");
                     break;
                 }
                 sb.Append(Encoding.UTF8.GetString(buffer, 0, count));

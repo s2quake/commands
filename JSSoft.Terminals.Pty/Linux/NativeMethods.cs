@@ -115,12 +115,12 @@ internal static class NativeMethods
     [DllImport(LibSystem, SetLastError = true)]
     internal static extern int kill(int pid, int signal);
 
-    internal static void execvpe(string file, string?[] args, IDictionary<string, string> environment)
+    internal static void execvpe(string file, string?[] args, IReadOnlyDictionary<string, string> environmentVariables)
     {
         // Set environment
-        foreach (var environmentVariable in environment)
+        foreach (var item in environmentVariables)
         {
-            setenv(environmentVariable.Key, environmentVariable.Value, 1);
+            setenv(item.Key, item.Value, 1);
         }
 
         if (execvp(file, args) == -1)

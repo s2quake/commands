@@ -73,7 +73,7 @@ internal abstract partial class PtyConnection : IPtyConnection
 
     protected abstract int Read(int fd, byte[] buffer, int count);
 
-    protected abstract void Write(int fd, byte[] buffer, int count);
+    protected abstract int Write(int fd, byte[] buffer, int count);
 
     protected abstract bool Resize(int fd, int cols, int rows);
 
@@ -120,7 +120,7 @@ internal abstract partial class PtyConnection : IPtyConnection
 
     int IPtyConnection.Read(byte[] buffer, int count) => Read(_fd, buffer, count);
 
-    void IPtyConnection.Write(byte[] buffer, int count) => Write(_fd, buffer, count);
+    int IPtyConnection.Write(byte[] buffer, int count) => Write(_fd, buffer, count);
 
     bool IPtyConnection.CanRead => Peek(_fd);
 

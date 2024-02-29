@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -80,7 +81,7 @@ internal class PtyProvider : IPtyProvider
         return pipe;
     }
 
-    private static string GetAppOnPath(string app, string cwd, IDictionary<string, string> env)
+    private static string GetAppOnPath(string app, string cwd, IReadOnlyDictionary<string, string> env)
     {
         bool isWow64 = Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432") != null;
         var windir = Environment.GetEnvironmentVariable("WINDIR")!;
@@ -200,13 +201,10 @@ internal class PtyProvider : IPtyProvider
         return Path.Combine(cwd, app);
     }
 
-    private static string GetEnvironmentString(IDictionary<string, string> environment)
+    private static string GetEnvironmentString(IReadOnlyDictionary<string, string> environment)
     {
-        string[] keys = new string[environment.Count];
-        environment.Keys.CopyTo(keys, 0);
-
-        string[] values = new string[environment.Count];
-        environment.Values.CopyTo(values, 0);
+        var keys = environment.Keys.ToArray();
+        var values = environment.Values.ToArray();
 
         // Sort both by the keys
         // Windows 2000 requires the environment block to be sorted by the key.
@@ -243,7 +241,7 @@ internal class PtyProvider : IPtyProvider
             throw new InvalidOperationException("Could not create an anonymous pipe", new Win32Exception());
         }
 
-        var coord = new Coord(options.Cols, options.Rows);
+        var coord = new Coord(options.Width, options.Height);
         var pseudoConsoleHandle = new SafePseudoConsoleHandle();
         int hr;
         // RuntimeHelpers.PrepareConstrainedRegions();
@@ -273,13 +271,11 @@ internal class PtyProvider : IPtyProvider
         // Prepare the StartupInfoEx structure attached to the ConPTY.
         var startupInfo = default(STARTUPINFOEX);
         startupInfo.InitAttributeListAttachedToConPTY(pseudoConsoleHandle);
-        IntPtr lpEnvironment = Marshal.StringToHGlobalUni(GetEnvironmentString(options.Environment));
+        IntPtr lpEnvironment = Marshal.StringToHGlobalUni(GetEnvironmentString(options.EnvironmentVariables));
         try
         {
-            string app = GetAppOnPath(options.App, options.Cwd, options.Environment);
-            string arguments = options.VerbatimCommandLine ?
-                WindowsArguments.FormatVerbatim(options.CommandLine) :
-                WindowsArguments.Format(options.CommandLine);
+            string app = GetAppOnPath(options.App, options.WorkingDirectory, options.EnvironmentVariables);
+            string arguments = WindowsArguments.Format(options.CommandLine);
 
             var commandLine = new StringBuilder(app.Length + arguments.Length + 4);
             bool quoteApp = app.Contains(" ") && !app.StartsWith("\"") && !app.EndsWith("\"");
@@ -319,7 +315,7 @@ internal class PtyProvider : IPtyProvider
                     false,  // bInheritHandles VERY IMPORTANT that this is false
                     EXTENDED_STARTUPINFO_PRESENT | CREATE_UNICODE_ENVIRONMENT, // dwCreationFlags
                     lpEnvironment,
-                    options.Cwd,
+                    options.WorkingDirectory,
                     ref startupInfo,
                     out processInfo);
 

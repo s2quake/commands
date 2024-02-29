@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using static JSSoft.Terminals.Pty.Mac.NativeMethods;
 
 namespace JSSoft.Terminals.Pty.Mac;
 
@@ -19,18 +18,26 @@ internal class PtyProvider : Unix.PtyProvider
     {
         var terminalArgs = GetExecvpArgs(options);
         var controller = 0;
-        var pid = init(ref controller, (ushort)options.Cols, (ushort)options.Rows);
+        var isArm64 = RuntimeInformation.ProcessArchitecture == Architecture.Arm64;
+        Console.WriteLine($"init");
+        var pid = isArm64 == true ?
+            NativeMethods.init(ref controller, (ushort)options.Width, (ushort)options.Height) :
+            NativeMethodsAmd64.init(ref controller, (ushort)options.Width, (ushort)options.Height);
         if (pid == -1)
         {
             throw new InvalidOperationException($"forkpty(4) failed with error {Marshal.GetLastWin32Error()}");
         }
-        // Console.WriteLine($"pid: {pid} {new StackTrace()}");
+        Console.WriteLine($"pid: {pid}");
         if (pid == 0)
         {
             // We are in a forked process! See http://man7.org/linux/man-pages/man2/fork.2.html for details.
             // Only our thread is running. We inherited open file descriptors and get a copy of the parent process memory.
-            Environment.CurrentDirectory = options.Cwd;
-            execvpe(options.App, terminalArgs, options.Environment);
+            Environment.CurrentDirectory = options.WorkingDirectory;
+            Console.WriteLine(terminalArgs.Length);
+            if (isArm64 == true)
+                NativeMethods.execvpe(options.App, terminalArgs, options.EnvironmentVariables);
+            else
+                NativeMethodsAmd64.execvpe(options.App, terminalArgs, options.EnvironmentVariables);
 
             // Unreachable code after execvpe()
         }

@@ -5,6 +5,7 @@ namespace JSSoft.Terminals.Pty;
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 
 /// <summary>
@@ -16,8 +17,8 @@ internal static class PlatformServices
     private static readonly Lazy<IPtyProvider> LinuxProviderLazy = new(() => new Linux.PtyProvider());
     private static readonly Lazy<IPtyProvider> MacProviderLazy = new(() => new Mac.PtyProvider());
     private static readonly Lazy<IPtyProvider> PtyProviderLazy;
-    private static readonly IDictionary<string, string> WindowsPtyEnvironment = new Dictionary<string, string>();
-    private static readonly IDictionary<string, string> UnixPtyEnvironment = new Dictionary<string, string>(StringComparer.Ordinal)
+    private static readonly Dictionary<string, string> WindowsPtyEnvironment = [];
+    private static readonly Dictionary<string, string> UnixPtyEnvironment = new(StringComparer.Ordinal)
     {
         { "TERM", "xterm-256color" },
 
@@ -43,19 +44,19 @@ internal static class PlatformServices
         {
             PtyProviderLazy = WindowsProviderLazy;
             EnvironmentVariableComparer = StringComparer.OrdinalIgnoreCase;
-            PtyEnvironment = WindowsPtyEnvironment;
+            EnvironmentVariables = WindowsPtyEnvironment;
         }
         else if (IsMac)
         {
             PtyProviderLazy = MacProviderLazy;
             EnvironmentVariableComparer = StringComparer.Ordinal;
-            PtyEnvironment = UnixPtyEnvironment;
+            EnvironmentVariables = UnixPtyEnvironment;
         }
         else if (IsLinux)
         {
             PtyProviderLazy = LinuxProviderLazy;
             EnvironmentVariableComparer = StringComparer.Ordinal;
-            PtyEnvironment = UnixPtyEnvironment;
+            EnvironmentVariables = UnixPtyEnvironment;
         }
         else
         {
@@ -76,7 +77,23 @@ internal static class PlatformServices
     /// <summary>
     /// Gets specific environment variables that are needed when spawning the PTY.
     /// </summary>
-    public static IDictionary<string, string> PtyEnvironment { get; }
+    public static IReadOnlyDictionary<string, string> EnvironmentVariables { get; }
+
+    public static string DefaultApp
+    {
+        get
+        {
+            if (IsWindows == true)
+                return Path.Combine(Environment.SystemDirectory, "cmd.exe");
+            if (IsMac == true)
+                return "zsh";
+            return "sh";
+        }
+    }
+
+    public static int DefaultWidth => 80;
+
+    public static int DefaultHeight => 22;
 
     private static bool IsLinux => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
 

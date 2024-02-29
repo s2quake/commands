@@ -186,10 +186,11 @@ internal sealed class PseudoConsoleConnection : IPtyConnection
         return _readerStream.Read(buffer, 0, count);
     }
 
-    void IPtyConnection.Write(byte[] buffer, int count)
+    int IPtyConnection.Write(byte[] buffer, int count)
     {
         _writerStream.Write(buffer, 0, count);
         _writerStream.Flush();
+        return count;
     }
 
     #endregion

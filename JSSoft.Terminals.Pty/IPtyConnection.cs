@@ -20,7 +20,7 @@ public interface IPtyConnection : IDisposable
 
     int Read(byte[] buffer, int count);
 
-    void Write(byte[] buffer, int count);
+    int Write(byte[] buffer, int count);
 
     /// <summary>
     /// Gets the pty process ID.

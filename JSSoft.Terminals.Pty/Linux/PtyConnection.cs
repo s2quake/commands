@@ -23,7 +23,7 @@ internal class PtyConnection(int controller, int pid)
     protected override int Read(int fd, byte[] buffer, int count)
         => read(fd, buffer, count);
 
-    protected override void Write(int fd, byte[] buffer, int count)
+    protected override int Write(int fd, byte[] buffer, int count)
         => write(fd, buffer, count);
 
     /// <inheritdoc/>

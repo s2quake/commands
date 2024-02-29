@@ -17,7 +17,7 @@ internal class PtyProvider : Unix.PtyProvider
     /// <inheritdoc/>
     public override IPtyConnection StartTerminal(PtyOptions options, TraceSource trace)
     {
-        var winSize = new WinSize((ushort)options.Rows, (ushort)options.Cols);
+        var winSize = new WinSize((ushort)options.Height, (ushort)options.Width);
 
         string?[] terminalArgs = GetExecvpArgs(options);
 
@@ -61,8 +61,8 @@ internal class PtyProvider : Unix.PtyProvider
         {
             // We are in a forked process! See http://man7.org/linux/man-pages/man2/fork.2.html for details.
             // Only our thread is running. We inherited open file descriptors and get a copy of the parent process memory.
-            Environment.CurrentDirectory = options.Cwd;
-            execvpe(options.App, terminalArgs, options.Environment);
+            Environment.CurrentDirectory = options.WorkingDirectory;
+            execvpe(options.App, terminalArgs, options.EnvironmentVariables);
 
             // Unreachable code after execvpe()
         }

@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 
 namespace JSSoft.Terminals.Pty.Mac;
 
-static class NativeMethods
+static class NativeMethodsAmd64
 {
-    private const string PtyLibSystem = "runtimes/osx/jspty.dylib";
+    private const string PtyLibSystem = "runtimes/osx-amd64/jspty.dylib";
 
     [DllImport(PtyLibSystem, SetLastError = true, EntryPoint = "pty_read")]
     public static extern int read(int fd, byte[] buf, int count);

@@ -98,7 +98,6 @@ int pty_close(int fd)
 
 int pty_execvp(const char *file, char *const argv[])
 {
-    printf("123");
     return execvp(file, argv);
 }
 
