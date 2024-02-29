@@ -1,12 +1,17 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:col="clr-namespace:System.Collections;assembly=System.Runtime"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
                     x:Class="JSSoft.Commands.AppUI.TerminalStyles"
                     xmlns:ctrl="using:JSSoft.Commands.AppUI.Controls">
 
-    <FontFamily x:Key="UbuntuMono_FontFamily">avares://app-ui/Assets/Fonts#Ubuntu Mono</FontFamily>
-
+    <ctrl:FontFamilyList x:Key="UbuntuMonoFontFamilyList">
+        <FontFamily>avares://app-ui/Assets/Fonts/Ubuntu_Mono#Ubuntu Mono</FontFamily>
+        <FontFamily>avares://app-ui/Assets/Fonts/Nanum_Gothic_Coding#NanumGothicCoding</FontFamily>
+    </ctrl:FontFamilyList>
+    
     <ctrl:TerminalStyle x:Key="windows"
-        FontFamily="{StaticResource UbuntuMono_FontFamily}"
+        FontFamilyList="{StaticResource UbuntuMonoFontFamilyList}"
         FontSize="12"
         ForegroundColor="#EEEDF0"
         BackgroundColor="#012456"
@@ -35,10 +40,11 @@
         BrightBlue="#0000FF"
         BrightMagenta="#FF00FF"
         BrightCyan="#00FFFF"
-        BrightWhite="#FFFFFF" />
+        BrightWhite="#FFFFFF">
+    </ctrl:TerminalStyle>
 
     <ctrl:TerminalStyle x:Key="macos"
-        FontFamily="{StaticResource UbuntuMono_FontFamily}"
+        FontFamilyList="{StaticResource UbuntuMonoFontFamilyList}"
         FontSize="15"
         ForegroundColor="#FFFFFF"
         BackgroundColor="#171717"
@@ -65,7 +71,7 @@
         BrightWhite="#E5E5E5" />
     
     <ctrl:TerminalStyle x:Key="ubuntu"
-        FontFamily="{StaticResource UbuntuMono_FontFamily}"
+        FontFamilyList="{StaticResource UbuntuMonoFontFamilyList}"
         FontSize="15"
         ForegroundColor="#FFFFFF"
         BackgroundColor="#380C2A"

@@ -33,14 +33,14 @@ sealed class TerminalFont : ITerminalFont
     private readonly Typeface[] _typefacesN;
     private readonly Typeface[] _typefacesB;
 
-    public TerminalFont(FontFamily fontFamily)
-        : this(fontFamily, 12)
+    public TerminalFont(FontFamily[] fontFamilies)
+        : this(fontFamilies, 12)
     {
     }
 
-    public TerminalFont(FontFamily fontFamily, int size)
+    public TerminalFont(FontFamily[] fontFamilies, int size)
     {
-        _fontFamilies = new FontFamily[] { fontFamily, FontFamily.Parse(FontManager.Current.DefaultFontFamily.Name) }.Distinct().ToArray();
+        _fontFamilies = fontFamilies.Distinct().ToArray();
         _typefacesN = [.. _fontFamilies.Select(item => new Typeface(item))];
         _typefacesB = [.. _fontFamilies.Select(item => new Typeface(item, FontStyle.Normal, FontWeight.UltraBold))];
         _size = size;

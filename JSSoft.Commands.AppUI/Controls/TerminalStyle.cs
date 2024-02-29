@@ -17,6 +17,7 @@
 // 
 
 using System.ComponentModel;
+using System.Linq;
 using Avalonia.Media;
 using JSSoft.Terminals;
 
@@ -26,7 +27,7 @@ public sealed class TerminalStyle : ITerminalStyle
 {
     private readonly TerminalFieldSetter _setter;
 
-    private FontFamily _fontFamily = FontManager.Current.DefaultFontFamily;
+    private FontFamilyList _fontFamilyList = [];
     private double _fontSize = 12;
     private TerminalFont? _font;
 
@@ -69,19 +70,31 @@ public sealed class TerminalStyle : ITerminalStyle
     public TerminalStyle()
     {
         _setter = new(this, InvokePropertyChangedEvent);
+        _fontFamilyList.CollectionChanged += (s, e) =>
+        {
+            _font = null;
+            InvokePropertyChangedEvent(new PropertyChangedEventArgs(nameof(ITerminalStyle.Font)));
+        };
     }
 
     public FontFamily FontFamily
     {
-        get => _fontFamily;
+        get => _fontFamilyList.Count > 0 ? _fontFamilyList[0] : FontManager.Current.DefaultFontFamily;
         set
         {
-            if (_fontFamily != value)
-            {
-                _fontFamily = value;
-                _font = null;
-                InvokePropertyChangedEvent(new PropertyChangedEventArgs(nameof(ITerminalStyle.Font)));
-            }
+            _fontFamilyList.Clear();
+            _fontFamilyList.Add(value);
+        }
+    }
+
+    public FontFamilyList FontFamilyList
+    {
+        get => _fontFamilyList;
+        set
+        {
+            _fontFamilyList = value;
+            _font = null;
+            InvokePropertyChangedEvent(new PropertyChangedEventArgs(nameof(ITerminalStyle.Font)));
         }
     }
 
@@ -305,9 +318,12 @@ public sealed class TerminalStyle : ITerminalStyle
 
     private static TerminalColor Convert(Color color) => TerminalMarshal.Convert(color);
 
+    private FontFamily[] GetActualFontFamilies()
+        => _fontFamilyList.Count > 0 ? _fontFamilyList.ToArray() : [FontManager.Current.DefaultFontFamily];
+
     #region ITerminalStyle
 
-    ITerminalFont ITerminalStyle.Font => _font ??= new TerminalFont(_fontFamily, (int)_fontSize);
+    ITerminalFont ITerminalStyle.Font => _font ??= new TerminalFont(GetActualFontFamilies(), (int)_fontSize);
 
     TerminalColor ITerminalStyle.ForegroundColor => Convert(ForegroundColor);
 
