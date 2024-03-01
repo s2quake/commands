@@ -7,8 +7,10 @@
     <DelaySign>false</DelaySign>
   </PropertyGroup>
   <Target Name="test" AfterTargets="CoreBuild">
-    <!-- <Exec Command="gcc -dynamiclib -o '$(MSBuildThisFileDirectory)runtimes\osx-amd64\jspty.dylib' '$(MSBuildThisFileDirectory)runtimes/pty.c'" /> -->
+    <!-- <Exec Command="gcc -dynamiclib -o '$(MSBuildThisFileDirectory)runtimes\linux-arm64\jspty.so' '$(MSBuildThisFileDirectory)runtimes/pty.c'" /> -->
+    <Exec Command="gcc -shared -o '$(MSBuildThisFileDirectory)runtimes\linux-arm64\native\jspty.so' '$(MSBuildThisFileDirectory)runtimes/pty.c'" />
     <!-- <Exec Command="echo '$(TargetDir)jspty.dylib'" /> -->
+    <!-- <Message Text="gcc -shared -o '$(MSBuildThisFileDirectory)runtimes\linux-arm64\jspty.so' '$(MSBuildThisFileDirectory)runtimes/pty.c'" Importance="High" /> -->
   </Target>
   <!-- <Target Name="test" BeforeTargets="Build">
     <Message Text="Tes111t123" Importance="High" />
@@ -18,6 +20,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="runtimes\osx-amd64\jspty.dylib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="runtimes\linux-arm64\native\jspty.so">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

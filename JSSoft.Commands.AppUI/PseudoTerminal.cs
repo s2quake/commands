@@ -67,8 +67,7 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
         {
             Width = (int)size.Width,
             Height = (int)size.Height,
-            // WorkingDirectory = Environment.CurrentDirectory,
-            WorkingDirectory = "/Users/s2quake-mac/Pictures",
+            WorkingDirectory = Environment.CurrentDirectory,
             App = app,
             EnvironmentVariables = new Dictionary<string, string>()
             {
@@ -132,6 +131,11 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
                 {
                     Console.WriteLine("ReadStream ended");
                     break;
+                }
+                // Console.WriteLine($"count: {count}");
+                if (count == -1)
+                {
+                    continue;
                 }
                 var s = Encoding.UTF8.GetString(buffer, 0, count);
                 sb.Append(s.Normalize());

@@ -17,52 +17,28 @@ internal class PtyProvider : Unix.PtyProvider
     /// <inheritdoc/>
     public override IPtyConnection StartTerminal(PtyOptions options, TraceSource trace)
     {
-        var winSize = new WinSize((ushort)options.Height, (ushort)options.Width);
-
-        string?[] terminalArgs = GetExecvpArgs(options);
-
-        var controlCharacters = new Dictionary<TermSpecialControlCharacter, sbyte>
-        {
-            { TermSpecialControlCharacter.VEOF, 4 },
-            { TermSpecialControlCharacter.VEOL, -1 },
-            { TermSpecialControlCharacter.VEOL2, -1 },
-            { TermSpecialControlCharacter.VERASE, 0x7f },
-            { TermSpecialControlCharacter.VWERASE, 23 },
-            { TermSpecialControlCharacter.VKILL, 21 },
-            { TermSpecialControlCharacter.VREPRINT, 18 },
-            { TermSpecialControlCharacter.VINTR, 3 },
-            { TermSpecialControlCharacter.VQUIT, 0x1c },
-            { TermSpecialControlCharacter.VSUSP, 26 },
-            { TermSpecialControlCharacter.VSTART, 17 },
-            { TermSpecialControlCharacter.VSTOP, 19 },
-            { TermSpecialControlCharacter.VLNEXT, 22 },
-            { TermSpecialControlCharacter.VDISCARD, 15 },
-            { TermSpecialControlCharacter.VMIN, 1 },
-            { TermSpecialControlCharacter.VTIME, 0 },
-        };
-
-        var term = new Termios(
-            inputFlag: TermInputFlag.ICRNL | TermInputFlag.IXON | TermInputFlag.IXANY | TermInputFlag.IMAXBEL | TermInputFlag.BRKINT | TermInputFlag.IUTF8,
-            outputFlag: TermOuptutFlag.OPOST | TermOuptutFlag.ONLCR,
-            controlFlag: TermConrolFlag.CREAD | TermConrolFlag.CS8 | TermConrolFlag.HUPCL,
-            localFlag: TermLocalFlag.ICANON | TermLocalFlag.ISIG | TermLocalFlag.IEXTEN | TermLocalFlag.ECHO | TermLocalFlag.ECHOE | TermLocalFlag.ECHOK | TermLocalFlag.ECHOKE | TermLocalFlag.ECHOCTL,
-            speed: TermSpeed.B38400,
-            controlCharacters: controlCharacters);
-
-        int controller = 0;
-        int pid = forkpty(ref controller, null, ref term, ref winSize);
-
+        var terminalArgs = GetExecvpArgs(options);
+        var controller = 0;
+        var isArm64 = RuntimeInformation.ProcessArchitecture == Architecture.Arm64;
+        Console.WriteLine($"init");
+        var pid = isArm64 == true ?
+            NativeMethods.init(ref controller, (ushort)options.Width, (ushort)options.Height) :
+            NativeMethodsAmd64.init(ref controller, (ushort)options.Width, (ushort)options.Height);
         if (pid == -1)
         {
             throw new InvalidOperationException($"forkpty(4) failed with error {Marshal.GetLastWin32Error()}");
         }
-
+        Console.WriteLine($"pid: {pid}");
         if (pid == 0)
         {
             // We are in a forked process! See http://man7.org/linux/man-pages/man2/fork.2.html for details.
             // Only our thread is running. We inherited open file descriptors and get a copy of the parent process memory.
             Environment.CurrentDirectory = options.WorkingDirectory;
-            execvpe(options.App, terminalArgs, options.EnvironmentVariables);
+            Console.WriteLine(terminalArgs.Length);
+            if (isArm64 == true)
+                NativeMethods.execvpe(options.App, terminalArgs, options.EnvironmentVariables);
+            else
+                NativeMethodsAmd64.execvpe(options.App, terminalArgs, options.EnvironmentVariables);
 
             // Unreachable code after execvpe()
         }

@@ -87,7 +87,7 @@ internal static class PlatformServices
                 return Path.Combine(Environment.SystemDirectory, "cmd.exe");
             if (IsMac == true)
                 return "zsh";
-            return "sh";
+            return "bash";
         }
     }
 

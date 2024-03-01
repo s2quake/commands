@@ -1,6 +1,11 @@
 #include <stdarg.h>
 #include <stdio.h>
+#ifdef __APPLE__
 #include <util.h>
+#else // __APPLE__
+#include <pty.h>
+#include <termios.h>
+#endif // __APPLE__
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/uio.h>
@@ -41,8 +46,10 @@ int pty_init(int *master_fd, unsigned short column, unsigned short row)
     term.c_cc[VDISCARD] = 15;
     term.c_cc[VMIN] = 1;
     term.c_cc[VTIME] = 0;
+#ifdef __APPLE__
     term.c_cc[VDSUSP] = 25;
     term.c_cc[VSTATUS] = 20;
+#endif // __APPLE__
 
     pid = forkpty(master_fd, NULL, &term, &ws);
 

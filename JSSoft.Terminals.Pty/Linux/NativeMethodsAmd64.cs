@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 
 namespace JSSoft.Terminals.Pty.Linux;
 
-static class NativeMethods
+static class NativeMethodsAmd64
 {
-    private const string PtyLibSystem = "runtimes/linux-arm64/native/jspty.so";
+    private const string PtyLibSystem = "runtimes/linux-x64/native/jspty.so";
 
     [DllImport(PtyLibSystem, SetLastError = true, EntryPoint = "pty_read")]
     public static extern int read(int fd, byte[] buf, int count);
