@@ -108,9 +108,8 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
                     await Task.Delay(1, cancellationToken);
                     continue;
                 }
-                var bytes = Encoding.UTF8.GetBytes(buffer);
-                await Task.Run(() => pty.Write(bytes, count), cancellationToken);
-                // await pty.WriterStream.FlushAsync(cancellationToken);
+                var bytes = Encoding.UTF8.GetBytes(buffer, 0, count);
+                await Task.Run(() => pty.Write(bytes, bytes.Length), cancellationToken);
             }
         }
         catch (TaskCanceledException)
