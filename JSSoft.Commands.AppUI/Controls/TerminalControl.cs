@@ -32,6 +32,7 @@ using JSSoft.Terminals.Input;
 using JSSoft.Terminals.Extensions;
 using Avalonia.Utilities;
 using System.IO;
+using Avalonia.Input.TextInput;
 
 namespace JSSoft.Commands.AppUI.Controls;
 
@@ -66,6 +67,7 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
     private readonly Terminals.Hosting.Terminal _terminal;
     private readonly TerminalStyle _terminalStyle = new();
     private readonly TerminalScroll _terminalScroll = new();
+    private readonly TerminalControlTextInputMethodClient _imClient = new();
     private IInputHandler? _inputHandler;
     private TerminalPresenter? _terminalPresenter;
     private ScrollBar? _scrollBar;
@@ -77,6 +79,13 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
     static TerminalControl()
     {
         FocusableProperty.OverrideDefaultValue(typeof(TerminalControl), true);
+        TextInputMethodClientRequestedEvent.AddClassHandler<TerminalControl>((tc, e) =>
+        {
+            if (!tc.IsReadOnly)
+            {
+                e.Client = tc._imClient;
+            }
+        });
     }
 
     public TerminalControl()
@@ -168,6 +177,7 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
             _terminalScroll.ScrollBar = scrollBar;
             _scrollBar = scrollBar;
         }
+        _imClient.SetPresenter(_terminalPresenter, this);
     }
 
     protected override void OnLoaded(RoutedEventArgs e)
@@ -219,12 +229,14 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
     {
         base.OnGotFocus(e);
         _terminal.IsFocused = true;
+        _imClient.SetPresenter(_terminalPresenter, this);
     }
 
     protected override void OnLostFocus(RoutedEventArgs e)
     {
         base.OnLostFocus(e);
         _terminal.IsFocused = false;
+        _imClient.SetPresenter(null, null);
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -246,6 +258,7 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
             _window.Deactivated -= Window_Deactivated;
         }
         base.OnDetachedFromVisualTree(e);
+        _imClient.SetPresenter(null, null);
     }
 
     protected override void OnKeyDown(KeyEventArgs e)
@@ -253,34 +266,25 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         base.OnKeyDown(e);
         var modifiers = TerminalMarshal.Convert(e.KeyModifiers);
         var key = TerminalMarshal.Convert(e.Key);
-        if (_keyBindings.Process(_terminal, modifiers, key) != true && e.KeySymbol is { } keySymbol)
+        if (e.Handled != true && _keyBindings.Process(_terminal, modifiers, key) == true)
         {
-            _terminal.WriteInput(keySymbol);
+            e.Handled = true;
         }
-        e.Handled = true;
-        // if (e.Handled == false && e.Key == Key.Enter && e.KeyModifiers == KeyModifiers.None)
-        // {
-        //     _terminal.ProcessText("\n");
-        //     e.Handled = true;
-        // }
-        // if (e.Handled == false && _keyBindings.Process(_terminal, modifiers, key) == true)
-        // {
-        //     e.Handled = true;
-        // }
-        // if (e.Handled == false && ProcessHotKey(e) == true)
-        // {
-        //     e.Handled = true;
-        // }
+        if (e.Handled == false && e.Key == Key.Enter)
+        {
+            _terminal.WriteInput("\n");
+            e.Handled = true;
+        }
     }
 
     protected override void OnTextInput(TextInputEventArgs e)
     {
-        // if (e.Handled == false && e.Text is { } text)
-        // {
-        //     _terminal.ProcessText(text);
-        //     e.Handled = true;
-        // }
         base.OnTextInput(e);
+        if (e.Handled == false && e.Text is { } text)
+        {
+            _terminal.WriteInput(text);
+            e.Handled = true;
+        }
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -352,6 +356,7 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         {
             SetCurrentValue(TitleProperty, _terminal.Title);
         }
+
     }
 
     private void Terminal_CancellationRequested(object? sender, EventArgs e)

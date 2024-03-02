@@ -36,12 +36,12 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     <DelaySign>false</DelaySign>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.0.6" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.0.6" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.6" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.6" />
+    <PackageReference Include="Avalonia" Version="11.0.9" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.0.9" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.9" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.9" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)'=='Debug'" Include="Avalonia.Diagnostics" Version="11.0.6" />
+    <PackageReference Condition="'$(Configuration)'=='Debug'" Include="Avalonia.Diagnostics" Version="11.0.9" />
     <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
   </ItemGroup>
   <ItemGroup>
