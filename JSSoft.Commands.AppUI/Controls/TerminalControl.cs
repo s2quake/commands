@@ -269,13 +269,13 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         {
             e.Handled = true;
         }
-        if (e.Handled == false && e.Key == Key.Enter)
-        {
-            _terminal.WriteInput("\n");
-            e.Handled = true;
-        }
         if (e.Handled == false && ProcessHotKey(e) == true)
         {
+            e.Handled = true;
+        }
+        if (e.Handled == false && e.KeySymbol is { } keySymbol)
+        {
+            _terminal.WriteInput(keySymbol);
             e.Handled = true;
         }
     }
