@@ -27,8 +27,9 @@ partial struct TerminalDisplayInfo
     {
         { 0, (ref TerminalDisplayInfo o, ref Span<int> codes) => o.Reset() },
         { 1, (ref TerminalDisplayInfo o, ref Span<int> codes) => o.IsBold = true },
-        { 3, (ref TerminalDisplayInfo o, ref Span<int> codes) => {}}, // italic
+        { 3, (ref TerminalDisplayInfo o, ref Span<int> codes) => o.IsItalic = true}, // italic
         { 22, (ref TerminalDisplayInfo o, ref Span<int> codes) => o.IsBold = false },
+        { 23, (ref TerminalDisplayInfo o, ref Span<int> codes) => o.IsItalic = false },
         { 4, (ref TerminalDisplayInfo o, ref Span<int> codes) => o.IsUnderline = true },
         { 24, (ref TerminalDisplayInfo o, ref Span<int> codes) => o.IsUnderline = false },
         { 7, (ref TerminalDisplayInfo o, ref Span<int> codes) => o.IsInverse = true },
@@ -76,6 +77,7 @@ partial struct TerminalDisplayInfo
         Foreground = null;
         Background = null;
         IsBold = false;
+        IsItalic = false;
         IsUnderline = false;
         IsInverse = false;
     }

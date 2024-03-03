@@ -22,6 +22,8 @@ public partial struct TerminalDisplayInfo
 {
     public bool IsBold { get; set; }
 
+    public bool IsItalic { get; set; }
+
     public bool IsUnderline { get; set; }
 
     public bool IsInverse { get; set; }

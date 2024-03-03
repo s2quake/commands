@@ -31,6 +31,8 @@ public record TerminalGlyphRunInfo
 
     public bool IsBold { get; set; }
 
+    public bool IsItalic { get; set; }
+
     public int Group { get; set; }
 
     public TerminalGlyphInfo[] GlyphInfos { get; set; } = [];

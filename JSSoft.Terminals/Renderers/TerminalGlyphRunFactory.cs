@@ -31,6 +31,7 @@ sealed class TerminalGlyphRunFactory<T>(ITerminalFont font, int capacity, Func<T
 
     private TerminalColor _foregroundColor;
     private bool _isBold;
+    private bool _isItalic;
     private int _group;
     private int _x = int.MaxValue;
 
@@ -58,9 +59,10 @@ sealed class TerminalGlyphRunFactory<T>(ITerminalFont font, int capacity, Func<T
             var glyphInfo = GetGlyphInfo(font, characterInfo.Character);
             var foregroundColor = terminal.GetForegroundColor(coord);
             var isBold = characterInfo.DisplayInfo.IsBold;
+            var isItalic = characterInfo.DisplayInfo.IsItalic;
             var span = characterInfo.Span;
             var backgroundRect = terminal.GetBackgroundRect(coord, span);
-            glyphRunFactory.Add(glyphInfo, backgroundRect, foregroundColor, isBold, span);
+            glyphRunFactory.Add(glyphInfo, backgroundRect, foregroundColor, isBold, isItalic, span);
         }
         return glyphRunFactory.ToArray();
     }
@@ -74,6 +76,7 @@ sealed class TerminalGlyphRunFactory<T>(ITerminalFont font, int capacity, Func<T
         var characterInfo = (TerminalCharacterInfo)terminal.GetInfo(coord)!;
         var color = terminal.GetForegroundColor(coord);
         var isBold = characterInfo.DisplayInfo.IsBold;
+        var isItalic = characterInfo.DisplayInfo.IsItalic;
         var glyphInfo = GetGlyphInfo(font, characterInfo.Character);
         var span = characterInfo.Span;
         var backgroundRect = terminal.GetBackgroundRect(coord, span);
@@ -81,6 +84,7 @@ sealed class TerminalGlyphRunFactory<T>(ITerminalFont font, int capacity, Func<T
         {
             Color = color,
             IsBold = isBold,
+            IsItalic = isItalic,
             Group = glyphInfo.Group,
             GlyphInfos = [glyphInfo],
             Spans = [span],
@@ -89,9 +93,9 @@ sealed class TerminalGlyphRunFactory<T>(ITerminalFont font, int capacity, Func<T
         return creator(info);
     }
 
-    public void Add(TerminalGlyphInfo glyphInfo, TerminalRect backgroundRect, TerminalColor foregroundColor, bool isBold, int span)
+    public void Add(TerminalGlyphInfo glyphInfo, TerminalRect backgroundRect, TerminalColor foregroundColor, bool isBold, bool isItalic, int span)
     {
-        if (_foregroundColor != foregroundColor || _isBold != isBold || _group != glyphInfo.Group)
+        if (_foregroundColor != foregroundColor || _isBold != isBold || _isItalic != isItalic || _group != glyphInfo.Group)
         {
             Flush();
         }
@@ -100,6 +104,7 @@ sealed class TerminalGlyphRunFactory<T>(ITerminalFont font, int capacity, Func<T
         _characterList.Add(glyphInfo.Character);
         _foregroundColor = foregroundColor;
         _isBold = isBold;
+        _isItalic = isItalic;
         _group = glyphInfo.Group;
         _x = Math.Min(_x, backgroundRect.X);
     }
@@ -118,6 +123,7 @@ sealed class TerminalGlyphRunFactory<T>(ITerminalFont font, int capacity, Func<T
             {
                 Color = _foregroundColor,
                 IsBold = _isBold,
+                IsItalic = _isItalic,
                 Group = _group,
                 GlyphInfos = [.. _glyphInfoList],
                 Spans = [.. _spanList],

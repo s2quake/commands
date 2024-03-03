@@ -76,7 +76,7 @@ sealed class TerminalDrawingContext(DrawingContext context) : ITerminalDrawingCo
         if (obj.Font is not TerminalFont font)
             throw new ArgumentException($"Font '{obj.Font}' is unavailable.", nameof(obj));
 
-        var typeface = font.GetTypeface(obj.IsBold, obj.Group);
+        var typeface = font.GetTypeface(obj.IsBold, obj.IsItalic, obj.Group);
         var fontSize = font.Size;
         var characters = obj.GlyphInfos.Select(item => item.Character).ToArray();
         var glyphInfoList = new List<GlyphInfo>(obj.GlyphInfos.Length);
