@@ -30,8 +30,8 @@ sealed class CursorPosition : CSISequenceBase
     protected override void OnProcess(SequenceContext context)
     {
         var view = context.View;
-        var r1 = context.GetParametersAsInteger(index: 0, defaultValue: 1) - 1;
-        var c1 = context.GetParametersAsInteger(index: 1, defaultValue: 1) - 1;
+        var r1 = context.GetParameterAsInteger(index: 0, defaultValue: 1) - 1;
+        var c1 = context.GetParameterAsInteger(index: 1, defaultValue: 1) - 1;
         var r2 = TerminalMathUtility.Clamp(r1, 0, view.Height - 1) + view.Y;
         var c2 = TerminalMathUtility.Clamp(c1, 0, view.Width - 1);
         var index = new TerminalIndex(new TerminalCoord(c2, r2), view.Width);

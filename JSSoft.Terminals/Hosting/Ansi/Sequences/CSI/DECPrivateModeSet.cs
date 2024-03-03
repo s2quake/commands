@@ -18,6 +18,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
+// DECSET
 sealed class DECPrivateModeSet : CSISequenceBase
 {
     public DECPrivateModeSet()
@@ -25,12 +26,21 @@ sealed class DECPrivateModeSet : CSISequenceBase
     {
     }
 
-    public override string DisplayName => "CSI ? Pm h";
-
     public override string Prefix => "?";
+
+    public override string DisplayName => "CSI ? Pm h";
 
     protected override void OnProcess(SequenceContext context)
     {
-        var option = context.Parameter;
+        var mode = context.GetParameterAsInteger(index: 0);
+        var modeType = (TerminalModeType)mode;
+        try
+        {
+            context.Mode[modeType] = true;
+        }
+        catch (Exception)
+        {
+            Console.WriteLine($"Mode '{mode}' is not supported.");
+        }
     }
 }

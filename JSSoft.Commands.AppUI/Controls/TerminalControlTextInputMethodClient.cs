@@ -174,7 +174,7 @@ sealed class TerminalControlTextInputMethodClient : TextInputMethodClient
         {
             return;
         }
-        Console.WriteLine($"preeditText: {preeditText}");
+        // Console.WriteLine($"preeditText: {preeditText}");
         // _presenter.SetCurrentValue(TerminalPresenter.PreeditTextProperty, preeditText);
         // _presenter.SetCurrentValue(TerminalPresenter.PreeditTextCursorPositionProperty, cursorPos);
     }

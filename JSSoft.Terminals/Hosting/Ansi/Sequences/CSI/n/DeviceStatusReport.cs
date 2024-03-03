@@ -30,7 +30,7 @@ sealed class DeviceStatusReport : CSISequenceBase
     protected override void OnProcess(SequenceContext context)
     {
         var lines = context.Lines;
-        var ps = context.GetParametersAsInteger(0);
+        var ps = context.GetParameterAsInteger(0);
         switch (ps)
         {
             case 5:

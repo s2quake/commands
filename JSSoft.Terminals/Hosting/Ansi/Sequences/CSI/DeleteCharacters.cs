@@ -31,7 +31,7 @@ sealed class DeleteCharacters : CSISequenceBase
         var lines = context.Lines;
         var index = context.Index;
         var line = lines[index.Y];
-        var length = context.GetParametersAsInteger(index: 0, defaultValue: 1);
+        var length = context.GetParameterAsInteger(index: 0, defaultValue: 1);
         line.Delete(index.X, length);
     }
 }

@@ -33,7 +33,7 @@ sealed class EraseInLine : CSISequenceBase
 
     protected override void OnProcess(SequenceContext context)
     {
-        var option = context.GetParametersAsInteger(index: 0, defaultValue: 0);
+        var option = context.GetParameterAsInteger(index: 0, defaultValue: 0);
         var action = GetAction(option);
         action.Invoke(context);
     }

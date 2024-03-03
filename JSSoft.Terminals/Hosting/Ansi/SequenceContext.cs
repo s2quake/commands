@@ -50,6 +50,8 @@ sealed class SequenceContext(string parameter, AsciiCodeContext asciiCodeContext
         set => _asciiCodeContext.DisplayInfo = value;
     }
 
+    public TerminalMode Mode => _asciiCodeContext.Mode;
+
     public TerminalCoord OriginCoordinate
     {
         get => _asciiCodeContext.OriginCoordinate;
@@ -86,13 +88,13 @@ sealed class SequenceContext(string parameter, AsciiCodeContext asciiCodeContext
     public TerminalCoord GetCoordinate(TerminalLineCollection lines, TerminalIndex index)
         => _asciiCodeContext.GetCoordinate(lines, index);
 
-    public int GetParametersAsInteger(int index)
+    public int GetParameterAsInteger(int index)
         => Parse(Parameters[index]);
 
-    public int GetParametersAsInteger(int index, int defaultValue)
+    public int GetParameterAsInteger(int index, int defaultValue)
         => index < Parameters.Length ? Parse(Parameters[index]) : defaultValue;
 
-    public string GetParametersAsString(int index)
+    public string GetParameterAsString(int index)
         => Parameters[index];
 
     public void SendSequence(string sequence)

@@ -38,10 +38,10 @@ public static class TerminalKeyBindings
         new TerminalKeyBinding(TerminalKey.RightArrow, (t) => t.MoveRight()),
         new TerminalKeyBinding(TerminalKey.Backspace, (t) => t.Backspace()),
 #else
-        new TerminalKeyBinding(TerminalKey.UpArrow, (t) => t.PrevHistory()),
-        new TerminalKeyBinding(TerminalKey.DownArrow, (t) => t.NextHistory()),
-        new TerminalKeyBinding(TerminalKey.LeftArrow, (t) => t.MoveLeft()),
-        new TerminalKeyBinding(TerminalKey.RightArrow, (t) => t.MoveRight()),
+        new TerminalKeyBinding(TerminalKey.UpArrow, (t) => t.KeyUp()),
+        new TerminalKeyBinding(TerminalKey.DownArrow, (t) => t.KeyDown()),
+        new TerminalKeyBinding(TerminalKey.LeftArrow, (t) => t.KeyLeft()),
+        new TerminalKeyBinding(TerminalKey.RightArrow, (t) => t.KeyRight()),
         new TerminalKeyBinding(TerminalKey.Backspace, (t) => t.Backspace()),
 #endif
         new TerminalKeyBinding(TerminalModifiers.Shift, TerminalKey.LeftArrow, (t) => true),

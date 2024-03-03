@@ -32,28 +32,56 @@ public static class ITerminalExtensions
         @this.BringIntoView();
     }
 
-    public static void MoveLeft(this ITerminal @this)
+    public static void KeyLeft(this ITerminal @this)
     {
-        @this.WriteInput($"\x1b[D");
-        @this.BringIntoView();
+        if (@this.Mode[TerminalModeType.Mode1049] == true)
+        {
+            @this.WriteInput($"\x1bOD");
+        }
+        else
+        {
+            @this.WriteInput($"\x1b[D");
+            @this.BringIntoView();
+        }
     }
 
-    public static void MoveRight(this ITerminal @this)
+    public static void KeyRight(this ITerminal @this)
     {
-        @this.WriteInput($"\x1b[C");
-        @this.BringIntoView();
+        if (@this.Mode[TerminalModeType.Mode1049] == true)
+        {
+            @this.WriteInput($"\x1bOC");
+        }
+        else
+        {
+            @this.WriteInput($"\x1b[C");
+            @this.BringIntoView();
+        }
     }
 
-    public static void NextHistory(this ITerminal @this)
+    public static void KeyDown(this ITerminal @this)
     {
-        @this.WriteInput($"\x1b[B");
-        @this.BringIntoView();
+        if (@this.Mode[TerminalModeType.Mode1049] == true)
+        {
+            @this.WriteInput($"\x1bOB");
+        }
+        else
+        {
+            @this.WriteInput($"\x1b[B");
+            @this.BringIntoView();
+        }
     }
 
-    public static void PrevHistory(this ITerminal @this)
+    public static void KeyUp(this ITerminal @this)
     {
-        @this.WriteInput($"\x1b[A");
-        @this.BringIntoView();
+        if (@this.Mode[TerminalModeType.Mode1049] == true)
+        {
+            @this.WriteInput($"\x1bOA");
+        }
+        else
+        {
+            @this.WriteInput($"\x1b[A");
+            @this.BringIntoView();
+        }
     }
 
     public static void Backspace(this ITerminal @this)
@@ -66,6 +94,16 @@ public static class ITerminalExtensions
     {
         @this.WriteInput($"\x1b[3~");
         @this.BringIntoView();
+    }
+
+    public static void ScrollUp(this ITerminal @this)
+    {
+        @this.WriteInput($"\x1b[M0A");
+    }
+
+    public static void ScrollDown(this ITerminal @this)
+    {
+        @this.WriteInput($"\x1b[M0B");
     }
 
     public static bool BringIntoView(this ITerminal @this)

@@ -18,23 +18,29 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class CursorUp : CSISequenceBase
+// DECRST
+sealed class DECPrivateModeReset : CSISequenceBase
 {
-    public CursorUp()
-        : base('A')
+    public DECPrivateModeReset()
+        : base('h')
     {
     }
 
-    public override string DisplayName => "CSI Ps A";
+    public override string Prefix => "?";
+
+    public override string DisplayName => "CSI ? Pm h";
 
     protected override void OnProcess(SequenceContext context)
     {
-        var view = context.View;
-        var index1 = context.Index;
-        var value = context.GetParameterAsInteger(index: 0, defaultValue: 1);
-        var count = Math.Max(1, value);
-        var index2 = index1.CursorUp(count, view.Top);
-        context.Index = index2;
-        context.BeginIndex = index2;
+        var mode = context.GetParameterAsInteger(index: 0);
+        var modeType = (TerminalModeType)mode;
+        try
+        {
+            context.Mode[modeType] = true;
+        }
+        catch (Exception)
+        {
+            Console.WriteLine($"Mode '{mode}' is not supported.");
+        }
     }
 }

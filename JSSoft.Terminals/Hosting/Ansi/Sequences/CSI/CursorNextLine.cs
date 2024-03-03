@@ -31,7 +31,7 @@ sealed class CursorNextLine : CSISequenceBase
     {
         var view = context.View;
         var index = context.Index;
-        var value = context.GetParametersAsInteger(index: 0, defaultValue: 1);
+        var value = context.GetParameterAsInteger(index: 0, defaultValue: 1);
         var count = Math.Max(1, value);
         index = index.CursorDown(count, view.Bottom).MoveToFirstOfLine();
         context.Index = index;

@@ -69,16 +69,13 @@ abstract class SequenceBase(SequenceType type, char character)
     {
         if (other is SequenceBase sequence)
         {
-            if (Type == sequence.Type)
-            {
-                var r = StringComparer.Ordinal.Compare(Prefix, sequence.Prefix);
-                if (r == 0)
-                {
-                    return StringComparer.Ordinal.Compare(Suffix, sequence.Suffix);
-                }
-                return r;
-            }
-            return Type.CompareTo(sequence.Type);
+            if (Type != sequence.Type)
+                return Type.CompareTo(sequence.Type);
+            if (Character != sequence.Character)
+                return Character.CompareTo(sequence.Character);
+            if (sequence.Prefix != Prefix)
+                return StringComparer.Ordinal.Compare(sequence.Prefix, Prefix);
+            return StringComparer.Ordinal.Compare(sequence.Suffix, Suffix);
         }
         else if (other is not null)
         {

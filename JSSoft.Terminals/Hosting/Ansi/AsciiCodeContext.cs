@@ -16,6 +16,8 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using JSSoft.Terminals.Extensions;
+
 namespace JSSoft.Terminals.Hosting.Ansi;
 
 sealed class AsciiCodeContext(TerminalLineCollection lines, string text, ITerminal terminal)
@@ -53,6 +55,8 @@ sealed class AsciiCodeContext(TerminalLineCollection lines, string text, ITermin
     }
 
     public TerminalDisplayInfo DisplayInfo { get; set; }
+
+    public TerminalMode Mode => _terminal.Mode;
 
     public TerminalCoord OriginCoordinate
     {

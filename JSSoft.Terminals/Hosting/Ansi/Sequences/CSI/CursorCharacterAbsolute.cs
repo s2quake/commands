@@ -31,7 +31,7 @@ sealed class CursorCharacterAbsolute : CSISequenceBase
     {
         var view = context.View;
         var index = context.Index;
-        var c1 = context.GetParametersAsInteger(index: 0, defaultValue: 1) - 1;
+        var c1 = context.GetParameterAsInteger(index: 0, defaultValue: 1) - 1;
         var c2 = TerminalMathUtility.Clamp(c1, 0, view.Width - 1);
         context.Index = index.CursorToColumn(c2);
     }

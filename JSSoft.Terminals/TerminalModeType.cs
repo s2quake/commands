@@ -1,4 +1,4 @@
-﻿// Released under the MIT License.
+// Released under the MIT License.
 // 
 // Copyright (c) 2024 Jeesu Choi
 // 
@@ -16,25 +16,11 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
+namespace JSSoft.Terminals;
 
-sealed class CursorUp : CSISequenceBase
+public enum TerminalModeType
 {
-    public CursorUp()
-        : base('A')
-    {
-    }
+    Mode1049 = 1049,
 
-    public override string DisplayName => "CSI Ps A";
-
-    protected override void OnProcess(SequenceContext context)
-    {
-        var view = context.View;
-        var index1 = context.Index;
-        var value = context.GetParameterAsInteger(index: 0, defaultValue: 1);
-        var count = Math.Max(1, value);
-        var index2 = index1.CursorUp(count, view.Top);
-        context.Index = index2;
-        context.BeginIndex = index2;
-    }
+    Mode2004 = 2004,
 }

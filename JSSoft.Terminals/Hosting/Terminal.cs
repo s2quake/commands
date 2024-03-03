@@ -34,6 +34,7 @@ public class Terminal : ITerminal
     private readonly TerminalLineCollection _lines;
     private readonly TerminalTextWriter _writer;
     private readonly TerminalTextReader _reader = new();
+    private readonly TerminalMode _mode = new();
 
     private bool _isReadOnly;
     private string _title = string.Empty;
@@ -51,7 +52,7 @@ public class Terminal : ITerminal
     private ITerminalStyle? _style;
 
     private IInputHandler? _inputHandler;
-    private Terminals.TerminalSelection _selecting = Terminals.TerminalSelection.Empty;
+    private TerminalSelection _selecting = TerminalSelection.Empty;
     private TerminalSize _bufferSize = new(80, 25);
     private TerminalSize _size;
 
@@ -148,6 +149,8 @@ public class Terminal : ITerminal
     public TerminalSize BufferSize => _bufferSize;
 
     public TerminalSize Size => _size;
+
+    public TerminalMode Mode => _mode;
 
     public IReadOnlyList<ITerminalRow> View => _view;
 

@@ -30,7 +30,7 @@ sealed class CursorForward : CSISequenceBase
     protected override void OnProcess(SequenceContext context)
     {
         var index = context.Index;
-        var value = context.GetParametersAsInteger(index: 0, defaultValue: 1);
+        var value = context.GetParameterAsInteger(index: 0, defaultValue: 1);
         var count = Math.Max(1, value);
         context.Index = index.CursorRight(count);
     }

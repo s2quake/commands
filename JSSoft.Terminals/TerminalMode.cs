@@ -1,4 +1,4 @@
-﻿// Released under the MIT License.
+// Released under the MIT License.
 // 
 // Copyright (c) 2024 Jeesu Choi
 // 
@@ -16,25 +16,45 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
+using System.ComponentModel;
 
-sealed class CursorUp : CSISequenceBase
+namespace JSSoft.Terminals;
+
+public sealed class TerminalMode : INotifyPropertyChanged
 {
-    public CursorUp()
-        : base('A')
+    private readonly Dictionary<TerminalModeType, bool> _modes;
+
+    internal TerminalMode()
     {
+        var types = Enum.GetValues(typeof(TerminalModeType));
+        var modes = new Dictionary<TerminalModeType, bool>(types.Length);
+        foreach (TerminalModeType type in types)
+        {
+            modes.Add(type, false);
+        }
+        _modes = modes;
     }
 
-    public override string DisplayName => "CSI Ps A";
-
-    protected override void OnProcess(SequenceContext context)
+    public bool this[TerminalModeType mode]
     {
-        var view = context.View;
-        var index1 = context.Index;
-        var value = context.GetParameterAsInteger(index: 0, defaultValue: 1);
-        var count = Math.Max(1, value);
-        var index2 = index1.CursorUp(count, view.Top);
-        context.Index = index2;
-        context.BeginIndex = index2;
+        get => _modes[mode];
+        set
+        {
+            if (_modes[mode] != value)
+            {
+                _modes[mode] = value;
+                InvokePropertyChangedEvent(new PropertyChangedEventArgs($"{mode}"));
+            }
+        }
+    }
+
+    public bool TryGetValue(TerminalModeType mode, out bool value)
+        => _modes.TryGetValue(mode, out value);
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    private void InvokePropertyChangedEvent(PropertyChangedEventArgs e)
+    {
+        PropertyChanged?.Invoke(this, e);
     }
 }

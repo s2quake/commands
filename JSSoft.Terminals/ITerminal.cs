@@ -50,6 +50,8 @@ public interface ITerminal : INotifyPropertyChanged
 
     TerminalSize Size { get; }
 
+    TerminalMode Mode { get; }
+
     IReadOnlyList<ITerminalRow> View { get; }
 
     TerminalCoord CursorCoordinate { get; }

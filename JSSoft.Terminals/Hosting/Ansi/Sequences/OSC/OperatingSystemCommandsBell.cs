@@ -32,8 +32,8 @@ sealed class OperatingSystemCommandsBell : OperatingSystemCommandsBase
 
     protected override void OnProcess(SequenceContext context)
     {
-        var ps = context.GetParametersAsInteger(index: 0);
-        var pt = context.GetParametersAsString(index: 1);
+        var ps = context.GetParameterAsInteger(index: 0);
+        var pt = context.GetParameterAsString(index: 1);
         switch (ps)
         {
             case 0:

@@ -32,7 +32,7 @@ sealed class TabClear : CSISequenceBase
 
     protected override void OnProcess(SequenceContext context)
     {
-        var option = context.GetParametersAsInteger(index: 0);
+        var option = context.GetParameterAsInteger(index: 0);
         // Ps = 0  ⇒  Clear Current Column (default).
         // Ps = 3  ⇒  Clear All.
     }
