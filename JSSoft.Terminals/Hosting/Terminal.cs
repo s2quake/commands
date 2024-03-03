@@ -32,12 +32,10 @@ public class Terminal : ITerminal
     private readonly TerminalFieldSetter _setter;
     private readonly TerminalRowCollection _view;
     private readonly TerminalSelection _selections;
-    private readonly TerminalBlock _block;
-    private readonly TerminalBlockCollection _blocks;
+    private readonly TerminalLineCollection _lines;
     private readonly TerminalTextWriter _writer;
     private readonly TerminalTextReader _reader = new();
 
-    private TerminalBlock _outputBlock;
     private bool _isReadOnly;
     private string _title = string.Empty;
     private TerminalCompletor _completor = (items, find) => [];
@@ -70,15 +68,13 @@ public class Terminal : ITerminal
         _setter = new TerminalFieldSetter(this, OnPropertyChanged);
         _originStyle = _actualStyle = originStyle;
         Scroll = scroll;
-        _blocks = new(this);
+        _lines = new(this);
         _writer = new(this);
         _view = new(this);
-        _outputBlock = _blocks.CurrentBlock;
-        _block = _blocks.CurrentBlock;
         _selections = new(this, InvokeUpdatedEvent);
         _inputHandler = new TerminalInputHandler();
         _inputHandler.Attach(this);
-        _blocks.Updated += Blocks_Updated;
+        _lines.Updated += Lines_Updated;
         _view.Updated += View_Updated;
         _actualStyle.PropertyChanged += ActualStyle_PropertyChanged;
         Scroll.PropertyChanged += Scroll_PropertyChanged;
@@ -188,7 +184,6 @@ public class Terminal : ITerminal
             {
                 var index = new TerminalIndex(this, value).Linefeed();
                 _originCoordinate = value;
-                // _outputBlock.Take(index.Value);
                 InvokePropertyChangedEvent(nameof(OriginCoordinate));
             }
         }
@@ -240,7 +235,7 @@ public class Terminal : ITerminal
             if (_setter.SetField(ref _style, value, nameof(Style)) == true)
             {
                 ActualStyle = _style ?? _originStyle;
-                _view.Update(_blocks);
+                _view.Update(_lines);
             }
         }
     }
@@ -297,28 +292,22 @@ public class Terminal : ITerminal
         var font = ActualStyle.Font;
         var itemWidth = font.Width;
         var itemHeight = font.Height;
-        // if (position.X < 0 || position.Y < 0)
-        //     return TerminalCoord.Invalid;
-        var x = (int)(position.X / itemWidth);
-        var y = (int)(position.Y / itemHeight);
-        // if (x >= BufferSize.Width || y >= _blocks.Height)
-        //     return TerminalCoord.Invalid;
+        var x = position.X / itemWidth;
+        var y = position.Y / itemHeight;
         return new TerminalCoord(x, y);
     }
 
     public TerminalCharacterInfo? GetInfo(TerminalCoord coord)
-    {
-        return _blocks.GetInfo(coord.X, coord.Y);
-    }
+        => _lines.GetInfo(coord.X, coord.Y);
 
     public bool BringIntoView(int y)
     {
         var scroll = Scroll;
         var topIndex = _originCoordinate.Y;
         var bottomIndex = topIndex + BufferSize.Height;
-        if (scroll.Value < _blocks.Height - BufferSize.Height)
+        if (scroll.Value < _lines.Count - BufferSize.Height)
         {
-            var value = _blocks.Height - BufferSize.Height;
+            var value = _lines.Count - BufferSize.Height;
             scroll.PropertyChanged -= Scroll_PropertyChanged;
             scroll.Value = scroll.CoerceValue(value);
             scroll.PropertyChanged += Scroll_PropertyChanged;
@@ -371,7 +360,7 @@ public class Terminal : ITerminal
             _setter.SetField(ref _size, size, nameof(Size));
             if (_setter.SetField(ref _bufferSize, bufferSize, nameof(BufferSize)) == true)
             {
-                _blocks.Update();
+                _lines.Update();
                 Scroll.PropertyChanged -= Scroll_PropertyChanged;
                 Scroll.ViewportSize = _bufferSize.Height;
                 Scroll.SmallChange = 1;
@@ -383,7 +372,7 @@ public class Terminal : ITerminal
                 Scroll.PropertyChanged += Scroll_PropertyChanged;
             }
         }
-        _view.Update(_blocks);
+        _view.Update(_lines);
         UpdateCursorCoordinate();
     }
 
@@ -392,8 +381,7 @@ public class Terminal : ITerminal
     public void Clear()
     {
         using var _ = _setter.LockEvent();
-        _blocks.Clear();
-        _outputBlock = _blocks.CurrentBlock;
+        _lines.Clear();
     }
 
     public void Cancel()
@@ -404,8 +392,7 @@ public class Terminal : ITerminal
     public void Reset(TerminalCoord coord)
     {
         using var _ = _setter.LockEvent();
-        _blocks.Clear();
-        _outputBlock = _blocks.CurrentBlock;
+        _lines.Clear();
     }
 
     public void Append(string text)
@@ -415,82 +402,9 @@ public class Terminal : ITerminal
             Foreground = _foregroundColor,
             Background = _backgroundColor,
         };
-        _outputBlock.Append(text, displayInfo);
+        _lines.Append(text, displayInfo);
         UpdateCursorCoordinate();
         BringIntoView(_cursorCoordinate.Y);
-    }
-
-    public static Match[] MatchCompletion(string text)
-    {
-        var matches = Regex.Matches(text, "\\S+");
-        var argList = new List<Match>(matches.Count);
-        for (var i = 0; i < matches.Count; i++)
-        {
-            argList.Add(matches[i]);
-        }
-        return [.. argList];
-    }
-
-    public static string NextCompletion(string[] completions, string text)
-    {
-        completions = [.. completions];
-        if (completions.Contains(text) == true)
-        {
-            for (var i = 0; i < completions.Length; i++)
-            {
-                var r = string.Compare(text, completions[i], true);
-                if (r == 0)
-                {
-                    if (i + 1 < completions.Length)
-                        return completions[i + 1];
-                    else
-                        return completions.First();
-                }
-            }
-        }
-        else
-        {
-            for (var i = 0; i < completions.Length; i++)
-            {
-                var r = string.Compare(text, completions[i], true);
-                if (r < 0)
-                {
-                    return completions[i];
-                }
-            }
-        }
-        return text;
-    }
-
-    public static string PrevCompletion(string[] completions, string text)
-    {
-        completions = [.. completions];
-        if (completions.Contains(text) == true)
-        {
-            for (var i = completions.Length - 1; i >= 0; i--)
-            {
-                var r = string.Compare(text, completions[i], true);
-                if (r == 0)
-                {
-                    if (i - 1 >= 0)
-                        return completions[i - 1];
-                    else
-                        return completions.Last();
-                }
-            }
-        }
-        else
-        {
-            for (var i = completions.Length - 1; i >= 0; i--)
-            {
-                var r = string.Compare(text, completions[i], true);
-                if (r < 0)
-                {
-                    return completions[i];
-                }
-            }
-        }
-        return text;
     }
 
     public void ResetColor()
@@ -500,10 +414,7 @@ public class Terminal : ITerminal
         _setter.SetField(ref _backgroundColor, null, nameof(BackgroundColor));
     }
 
-    public void WriteInput(string text)
-    {
-        _reader.Write(text);
-    }
+    public void WriteInput(string text) => _reader.Write(text);
 
     public event EventHandler? CancellationRequested;
 
@@ -512,30 +423,22 @@ public class Terminal : ITerminal
     public event EventHandler<TerminalUpdateEventArgs>? Updated;
 
     protected virtual void OnCancellationRequested(EventArgs e)
-    {
-        CancellationRequested?.Invoke(this, e);
-    }
+        => CancellationRequested?.Invoke(this, e);
 
     protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
-    {
-        PropertyChanged?.Invoke(this, e);
-    }
+        => PropertyChanged?.Invoke(this, e);
 
     protected virtual void OnUpdated(TerminalUpdateEventArgs e)
-    {
-        Updated?.Invoke(this, e);
-    }
+        => Updated?.Invoke(this, e);
 
     private void UpdateCursorCoordinate()
     {
-        var index = _block._index;
-        _setter.SetField(ref _cursorCoordinate, _block.GetCoordinate(index), nameof(CursorCoordinate));
+        var index = _lines.Index;
+        _setter.SetField(ref _cursorCoordinate, _lines.GetCoordinate(index), nameof(CursorCoordinate));
     }
 
     private void InvokePropertyChangedEvent(string propertyName)
-    {
-        OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
-    }
+        => OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
 
     private void ActualStyle_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -548,26 +451,22 @@ public class Terminal : ITerminal
         }
     }
 
-    private void Blocks_Updated(object? sender, EventArgs e)
+    private void Lines_Updated(object? sender, EventArgs e)
     {
         Scroll.PropertyChanged -= Scroll_PropertyChanged;
         Scroll.Minimum = 0;
         Scroll.Maximum = GetScrollMaximum();
         Scroll.IsVisible = Scroll.Maximum > 0;
         Scroll.PropertyChanged += Scroll_PropertyChanged;
-        _view.Update(_blocks);
+        _view.Update(_lines);
         UpdateCursorCoordinate();
     }
 
     private void View_Updated(object? sender, TerminalRowUpdateEventArgs e)
-    {
-        InvokeUpdatedEvent(e.ChangedRows);
-    }
+        => InvokeUpdatedEvent(e.ChangedRows);
 
     private void Scroll_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        _view.Update(_blocks);
-    }
+        => _view.Update(_lines);
 
     private string GetString(Terminals.TerminalSelection selection)
     {
@@ -610,9 +509,9 @@ public class Terminal : ITerminal
     {
         if (ActualStyle.IsScrollForwardEnabled == false)
         {
-            return Math.Max(_originCoordinate.Y, _blocks.Height - BufferSize.Height);
+            return Math.Max(_originCoordinate.Y, _lines.Count - BufferSize.Height);
         }
-        return Math.Max(_blocks.Height, _maximumBufferHeight) - BufferSize.Height;
+        return Math.Max(_lines.Count, _maximumBufferHeight) - BufferSize.Height;
     }
 
     private void InvokeUpdatedEvent(ITerminalRow[] rows) => OnUpdated(new(rows));

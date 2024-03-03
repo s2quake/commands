@@ -140,37 +140,6 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
         }) + 1;
     }
 
-    internal readonly TerminalIndex MoveForward(TerminalBlock block, int characterCount)
-    {
-        var index = this;
-        for (var i = 0; i < characterCount; i++)
-        {
-            index = index.MoveForward(block);
-        }
-        return index;
-    }
-
-    internal readonly TerminalIndex MoveForward(TerminalBlock block)
-    {
-        var index = this;
-        if (index.Y >= 0 && index.Y < block.Lines.Count)
-        {
-            while (block.Lines.GetCharacterInfo(index) is { } c1 && c1.Span <= 0)
-            {
-                index++;
-            }
-            if (block.Lines.GetCharacterInfo(index) is { } characterInfo)
-            {
-                index += characterInfo.Span;
-            }
-            while (block.Lines.GetCharacterInfo(index) is { } c2 && c2.Span <= 0)
-            {
-                index++;
-            }
-        }
-        return index;
-    }
-
     public readonly TerminalIndex MoveForward(ITerminal terminal, Func<TerminalIndex, TerminalCharacterInfo?, bool> predicate)
     {
         var index = this;

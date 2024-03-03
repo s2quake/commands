@@ -32,14 +32,14 @@ sealed class TerminalRowCollection : List<TerminalRow>
         Resize(_terminal.BufferSize.Height);
     }
 
-    public void Update(TerminalBlockCollection blocks)
+    public void Update(TerminalLineCollection lines)
     {
         var scroll = _terminal.Scroll;
         for (var i = 0; i < Count; i++)
         {
             var y = scroll.Value + i;
             var row = this[i];
-            var line = blocks.GetLine(y);
+            var line = lines.TryGetLine(y, out var l) == true ? l : null;
             row.Sync(line);
         }
         Updated?.Invoke(this, new([.. this]));

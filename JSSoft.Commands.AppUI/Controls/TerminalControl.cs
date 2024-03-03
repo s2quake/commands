@@ -32,7 +32,6 @@ using JSSoft.Terminals.Input;
 using JSSoft.Terminals.Extensions;
 using Avalonia.Utilities;
 using System.IO;
-using Avalonia.Input.TextInput;
 
 namespace JSSoft.Commands.AppUI.Controls;
 
@@ -273,6 +272,10 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         if (e.Handled == false && e.Key == Key.Enter)
         {
             _terminal.WriteInput("\n");
+            e.Handled = true;
+        }
+        if (e.Handled == false && ProcessHotKey(e) == true)
+        {
             e.Handled = true;
         }
     }
