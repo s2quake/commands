@@ -8,7 +8,7 @@ namespace JSSoft.Terminals.Pty.Mac;
 
 static class NativeMethods
 {
-    private const string PtyLibSystem = "runtimes/osx/jspty.dylib";
+    private const string PtyLibSystem = "runtimes/osx/native/jspty.dylib";
 
     [DllImport(PtyLibSystem, SetLastError = true, EntryPoint = "pty_read")]
     public static extern int read(int fd, byte[] buf, int count);
