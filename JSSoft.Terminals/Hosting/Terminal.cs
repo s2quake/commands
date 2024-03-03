@@ -20,7 +20,6 @@ using System.ComponentModel;
 using JSSoft.Terminals.Input;
 using System.Diagnostics;
 using JSSoft.Terminals.Extensions;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.IO;
 
@@ -31,7 +30,7 @@ public class Terminal : ITerminal
     private readonly ITerminalStyle _originStyle;
     private readonly TerminalFieldSetter _setter;
     private readonly TerminalRowCollection _view;
-    private readonly TerminalSelection _selections;
+    private readonly TerminalSelectionCollection _selections;
     private readonly TerminalLineCollection _lines;
     private readonly TerminalTextWriter _writer;
     private readonly TerminalTextReader _reader = new();
@@ -256,7 +255,7 @@ public class Terminal : ITerminal
         }
     }
 
-    public ITerminalSelection Selections => _selections;
+    public ITerminalSelectionCollection Selections => _selections;
 
     public TextWriter Out => _writer;
 
@@ -325,23 +324,9 @@ public class Terminal : ITerminal
     }
 
     public string Copy()
-    {
-        if (Selections.Any() == true)
-        {
-            var range = Selections.First();
-            return GetString(range);
-        }
-        else
-        {
-            return string.Empty;
-        }
-    }
+        => Selections.Any() == true ? _lines.GetString([.. Selections]) : string.Empty;
 
-    public void Paste(string text)
-    {
-        // In.Write(text);
-        // In.Flush();
-    }
+    public void Paste(string text) => WriteInput(text);
 
     public void ResizeBuffer(double width, double height)
     {
@@ -467,43 +452,6 @@ public class Terminal : ITerminal
 
     private void Scroll_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         => _view.Update(_lines);
-
-    private string GetString(Terminals.TerminalSelection selection)
-    {
-        return string.Empty;
-        // var bufferWidth = BufferSize.Width;
-        // var c1 = selection.BeginCoord;
-        // var c2 = selection.EndCoord;
-        // var (s1, s2) = c1 < c2 ? (c1, c2) : (c2, c1);
-        // var capacity = (s2.Y - s1.Y + 1) * bufferWidth;
-        // var list = new List<char>(capacity);
-        // var sb = new StringBuilder();
-        // var x = s1.X;
-        // for (var y = s1.Y; y <= s2.Y; y++)
-        // {
-        //     var i = 0;
-        //     var count = y == s2.Y ? s2.X : bufferWidth;
-        //     for (; x < count; x++)
-        //     {
-        //         var coord = new TerminalCoord(x, y);
-        //         var index = CoordinateToIndex(coord);
-        //         if (index >= 0)
-        //         {
-        //             var glyphInfo = _characterInfos[index];
-        //             var character = glyphInfo.Character;
-        //             if (character != char.MinValue)
-        //             {
-        //                 sb.Append(character);
-        //                 i++;
-        //             }
-        //         }
-        //     }
-        //     x = 0;
-        //     if (i == 0 && y > s1.Y)
-        //         sb.AppendLine();
-        // }
-        // return sb.ToString();
-    }
 
     private int GetScrollMaximum()
     {

@@ -20,8 +20,8 @@ using System.Collections.ObjectModel;
 
 namespace JSSoft.Terminals.Hosting;
 
-sealed class TerminalSelection(Terminal terminal, Action<ITerminalRow[]> updator)
-    : ObservableCollection<Terminals.TerminalSelection>, ITerminalSelection
+sealed class TerminalSelectionCollection(Terminal terminal, Action<ITerminalRow[]> updator)
+    : ObservableCollection<Terminals.TerminalSelection>, ITerminalSelectionCollection
 {
     private readonly Terminal _terminal = terminal;
     private readonly Action<ITerminalRow[]> _updator = updator;

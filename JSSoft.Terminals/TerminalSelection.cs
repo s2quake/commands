@@ -56,8 +56,6 @@ public struct TerminalSelection(TerminalCoord c1, TerminalCoord c2)
     {
         var s1 = BeginCoord;
         var s2 = EndCoord;
-        // var x = s1.X;
-        // var y = s1.Y;
 
         while (s1 != s2)
         {
@@ -69,6 +67,25 @@ public struct TerminalSelection(TerminalCoord c1, TerminalCoord c2)
                 s1.Y++;
             }
         }
+    }
+
+    public readonly int GetLength(int width)
+    {
+        var s1 = BeginCoord;
+        var s2 = EndCoord;
+        var length = 0;
+
+        while (s1 != s2)
+        {
+            length++;
+            s1.X++;
+            if (s1.X >= width)
+            {
+                s1.X = 0;
+                s1.Y++;
+            }
+        }
+        return length;
     }
 
     public readonly TerminalCoord BeginCoord => _beginCoord;

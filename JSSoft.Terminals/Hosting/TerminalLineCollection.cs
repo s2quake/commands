@@ -18,6 +18,7 @@
 
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using JSSoft.Terminals.Hosting.Ansi;
 
 namespace JSSoft.Terminals.Hosting;
@@ -53,6 +54,17 @@ sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<TerminalL
     public TerminalLine this[TerminalIndex index] => _lineList[index.Y];
 
     public int IndexOf(TerminalLine item) => _lineList.IndexOf(item);
+
+    public string GetString(params TerminalSelection[] selections)
+    {
+        var sb = new StringBuilder();
+        var lines = new List<string>(selections.Length);
+        foreach (var item in selections)
+        {
+            lines.Add(GetString(item));
+        }
+        return string.Join(Environment.NewLine, lines);
+    }
 
     public bool TryGetLine(int index, [MaybeNullWhen(false)] out TerminalLine line)
     {
@@ -190,6 +202,9 @@ sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<TerminalL
         }
     }
 
+    public TerminalCharacterInfo? GetInfo(TerminalCoord coord)
+        => GetInfo(coord.X, coord.Y);
+
     public TerminalCharacterInfo? GetInfo(int x, int y)
     {
         if (y < 0 || y >= Count)
@@ -302,6 +317,27 @@ sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<TerminalL
         {
             item.Update();
         }
+    }
+
+    private string GetString(TerminalSelection selection)
+    {
+        var bufferWidth = _terminal.BufferSize.Width;
+        var capacity = selection.GetLength(bufferWidth);
+        var sb = new StringBuilder(capacity);
+        var g = 0;
+        foreach (var item in selection.GetEnumerator(bufferWidth))
+        {
+            if (GetInfo(item) is { } characterInfo)
+            {
+                if (g != 0 && characterInfo.Group != g)
+                {
+                    sb.AppendLine();
+                }
+                sb.Append(characterInfo.Character);
+                g = characterInfo.Group;
+            }
+        }
+        return sb.ToString();
     }
 
     #region IEnumerable

@@ -18,12 +18,10 @@
 
 using System;
 using System.Collections.Generic;
-using JSSoft.Terminals;
 using JSSoft.Terminals.Pty;
 using System.Threading;
 using System.Text;
 using System.Diagnostics;
-using System.IO;
 using Avalonia.Threading;
 using JSSoft.Commands.AppUI.Controls;
 using System.Threading.Tasks;
@@ -144,7 +142,9 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
                 }
                 else
                 {
+#if DEBUG && NET8_0
                     Trace.WriteLine($"Read: {ToLiteral(sb.ToString())}");
+#endif
                     action(sb.ToString());
                     sb.Clear();
                 }
@@ -153,11 +153,12 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
         catch (TaskCanceledException)
         {
         }
-
+#if DEBUG && NET8_0
         static string ToLiteral(string valueTextForCompiler)
         {
             return Microsoft.CodeAnalysis.CSharp.SymbolDisplay.FormatLiteral(valueTextForCompiler, false);
         }
+#endif
     }
 
     private void Append(string text)

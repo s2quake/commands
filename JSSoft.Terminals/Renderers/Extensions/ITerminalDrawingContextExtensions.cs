@@ -16,8 +16,6 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using JSSoft.Terminals.Extensions;
-
 namespace JSSoft.Terminals.Renderers.Extensions;
 
 public static class ITerminalDrawingContextExtensions

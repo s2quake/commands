@@ -58,7 +58,7 @@ public interface ITerminal : INotifyPropertyChanged
 
     TerminalCoord ViewCoordinate { get; set; }
 
-    ITerminalSelection Selections { get; }
+    ITerminalSelectionCollection Selections { get; }
 
     TerminalSelection Selecting { get; set; }
 

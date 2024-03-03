@@ -17,7 +17,6 @@
 // 
 
 using JSSoft.Terminals.Extensions;
-using JSSoft.Terminals.Hosting;
 
 namespace JSSoft.Terminals;
 

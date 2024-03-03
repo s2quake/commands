@@ -17,8 +17,6 @@
 // 
 
 using System.ComponentModel;
-using JSSoft.Terminals.Hosting;
-using JSSoft.Terminals.Renderers.Extensions;
 
 namespace JSSoft.Terminals.Renderers;
 

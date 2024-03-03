@@ -21,7 +21,7 @@ using System.ComponentModel;
 
 namespace JSSoft.Terminals;
 
-public interface ITerminalSelection : IList<TerminalSelection>, INotifyPropertyChanged, INotifyCollectionChanged
+public interface ITerminalSelectionCollection : IList<TerminalSelection>, INotifyPropertyChanged, INotifyCollectionChanged
 {    
     void SelectAll();
 }
