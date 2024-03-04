@@ -5,7 +5,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DelaySign>false</DelaySign>
-    <IsMacOS Condition="'$(NETCoreSdkRuntimeIdentifier)'=='osx-arm64' of '$(NETCoreSdkRuntimeIdentifier)'=='osx-x64'">true</IsMacOS>
+    <IsMacOS Condition="'$(NETCoreSdkPortableRuntimeIdentifier)'=='osx-arm64'">true</IsMacOS>
+    <IsLinux Condition="'$(NETCoreSdkPortableRuntimeIdentifier)'=='linux-arm64'">true</IsLinux>
     <NativeSourcePath>$(MSBuildThisFileDirectory)runtimes/pty.c</NativeSourcePath>
   </PropertyGroup>
   <Target Name="BuildBindingsInOSX" Condition="'$(IsMacOS)'=='true'" AfterTargets="BeforeBuild">
@@ -15,11 +16,22 @@
     <!-- <Exec Command="echo '$(TargetDir)jspty.dylib'" /> -->
     <!-- <Message Text="gcc -shared -o '$(MSBuildThisFileDirectory)runtimes\linux-arm64\jspty.so' '$(MSBuildThisFileDirectory)runtimes/pty.c'" Importance="High" /> -->
   </Target>
+  <Target Name="BuildBindingsInLinux" Condition="'$(IsLinux)'=='true'" AfterTargets="BeforeBuild">
+    <MakeDir Directories="$(MSBuildThisFileDirectory)runtimes\linux-arm\native" />
+    <Exec Command="gcc -shared -o '$(MSBuildThisFileDirectory)runtimes\linux-arm\native\jspty.so' '$(NativeSourcePath)'" />
+    <!-- <Exec Command="gcc -shared -o '$(MSBuildThisFileDirectory)runtimes\linux-arm64\native\jspty.so' '$(MSBuildThisFileDirectory)runtimes/pty.c'" /> -->
+    <!-- <Exec Command="echo '$(TargetDir)jspty.dylib'" /> -->
+    <!-- <Message Text="gcc -shared -o '$(MSBuildThisFileDirectory)runtimes\linux-arm64\jspty.so' '$(MSBuildThisFileDirectory)runtimes/pty.c'" Importance="High" /> -->
+  </Target>
   <Target Name="test" BeforeTargets="Build">
-    <Message Text="$(NETCoreSdkRuntimeIdentifier)" Importance="High" />
+    <Message Text="$(NETCoreSdkPortableRuntimeIdentifier)" Importance="High" />
+    <Message Text="$(OS)" Importance="High" />
   </Target>
   <ItemGroup>
     <None Condition="'$(IsMacOS)'=='true'" Include="$(MSBuildThisFileDirectory)runtimes\osx\native\jspty.dylib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Condition="'$(IsLinux)'=='true'" Include="$(MSBuildThisFileDirectory)runtimes\linux-arm\native\jspty.so">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

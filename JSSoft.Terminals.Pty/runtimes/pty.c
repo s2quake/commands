@@ -14,14 +14,23 @@
 #include <sys/wait.h>
 #include <stdlib.h>
 
-int pty_init(int *master_fd, unsigned short column, unsigned short row)
+struct ptyoption
+{
+    unsigned short column;
+    unsigned short row;
+    char *file;
+    char *const *argv;
+    char *const *envp;
+};
+
+int pty_init(int *master_fd, struct ptyoption* options)
 {
     pid_t pid;
     struct winsize ws;
     struct termios term;
 
-    ws.ws_col = column;
-    ws.ws_row = row;
+    ws.ws_col = options->column;
+    ws.ws_row = options->row;
     ws.ws_xpixel = 0;
     ws.ws_ypixel = 0;
 
@@ -52,6 +61,18 @@ int pty_init(int *master_fd, unsigned short column, unsigned short row)
 #endif // __APPLE__
 
     pid = forkpty(master_fd, NULL, &term, &ws);
+
+    if (pid == 0)
+    {
+        if (options->envp != NULL)
+        {
+            for (char *const *env = options->envp; *env != NULL; env++)
+            {
+                putenv(*env);
+            }
+        }
+        execvp(options->file, options->argv);
+    }
 
     return pid;
 }
@@ -101,14 +122,4 @@ int pty_waitpid(int pid, int *status, int options)
 int pty_close(int fd)
 {
     return close(fd);
-}
-
-int pty_execvp(const char *file, char *const argv[])
-{
-    return execvp(file, argv);
-}
-
-int pty_setenv(const char *name, const char *value, int overwrite)
-{
-    return setenv(name, value, overwrite);
 }

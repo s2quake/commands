@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace JSSoft.Terminals.Pty.Mac;
@@ -19,22 +20,30 @@ internal class PtyProvider : Unix.PtyProvider
         var terminalArgs = GetExecvpArgs(options);
         var controller = 0;
         Console.WriteLine($"init");
-        var pid = NativeMethods.init(ref controller, (ushort)options.Width, (ushort)options.Height);
+        var ops = new NativeMethods.Options
+        {
+            Width = (ushort)options.Width,
+            Height = (ushort)options.Height,
+            App = options.App,
+            CommandLine = NativeMethods.Options.Marshalling([options.App]),
+            EnvironmentVariables = NativeMethods.Options.Marshalling(options.EnvironmentVariables),
+        };
+        var pid = NativeMethods.init(ref controller, ref ops);
         if (pid == -1)
         {
             throw new InvalidOperationException($"forkpty(4) failed with error {Marshal.GetLastWin32Error()}");
         }
         Console.WriteLine($"pid: {pid}");
-        if (pid == 0)
-        {
-            // We are in a forked process! See http://man7.org/linux/man-pages/man2/fork.2.html for details.
-            // Only our thread is running. We inherited open file descriptors and get a copy of the parent process memory.
-            Environment.CurrentDirectory = options.WorkingDirectory;
-            Console.WriteLine(terminalArgs.Length);
-            NativeMethods.execvpe(options.App, terminalArgs, options.EnvironmentVariables);
+        // if (pid == 0)
+        // {
+        //     // We are in a forked process! See http://man7.org/linux/man-pages/man2/fork.2.html for details.
+        //     // Only our thread is running. We inherited open file descriptors and get a copy of the parent process memory.
+        //     // Environment.CurrentDirectory = options.WorkingDirectory;
+        //     // Console.WriteLine(terminalArgs.Length);
+        //     // NativeMethods.execvpe(options.App, terminalArgs, options.EnvironmentVariables);
 
-            // Unreachable code after execvpe()
-        }
+        //     // Unreachable code after execvpe()
+        // }
 
         // We have forked the terminal
         return new PtyConnection(controller, pid);

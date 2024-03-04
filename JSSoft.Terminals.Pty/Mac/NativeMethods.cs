@@ -2,59 +2,61 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace JSSoft.Terminals.Pty.Mac;
 
 static class NativeMethods
 {
-    private const string PtyLibSystem = "runtimes/osx/native/jspty.dylib";
+    private const string LibSystem = "runtimes/osx/native/jspty.dylib";
+    private static readonly int SizeOfIntPtr = Marshal.SizeOf(typeof(IntPtr));
 
-    [DllImport(PtyLibSystem, SetLastError = true, EntryPoint = "pty_read")]
+    [DllImport(LibSystem, SetLastError = true, EntryPoint = "pty_read")]
     public static extern int read(int fd, byte[] buf, int count);
 
-    [DllImport(PtyLibSystem, SetLastError = true, EntryPoint = "pty_write")]
+    [DllImport(LibSystem, SetLastError = true, EntryPoint = "pty_write")]
     public static extern int write(int fd, byte[] buf, int count);
 
-    [DllImport(PtyLibSystem, SetLastError = true, EntryPoint = "pty_waitpid")]
+    [DllImport(LibSystem, SetLastError = true, EntryPoint = "pty_waitpid")]
     public static extern int waitpid(int pid, ref int status, int options);
 
-    [DllImport(PtyLibSystem, SetLastError = true, EntryPoint = "pty_peek")]
+    [DllImport(LibSystem, SetLastError = true, EntryPoint = "pty_peek")]
     public static extern int peek(int pid);
 
-    [DllImport(PtyLibSystem, SetLastError = true, EntryPoint = "pty_resize")]
+    [DllImport(LibSystem, SetLastError = true, EntryPoint = "pty_resize")]
     public static extern int resize(int fd, ushort column, ushort row);
 
-    [DllImport(PtyLibSystem, SetLastError = true, EntryPoint = "pty_close")]
+    [DllImport(LibSystem, SetLastError = true, EntryPoint = "pty_close")]
     public static extern int close(int fd);
 
-    [DllImport(PtyLibSystem, EntryPoint = "pty_init")]
-    public static extern int init(ref int master, ushort column, ushort row);
+    [DllImport(LibSystem, EntryPoint = "pty_init")]
+    public static extern int init(ref int master, ref Options options);
 
-    [DllImport(PtyLibSystem, EntryPoint = "pty_setenv")]
-    public static extern int setenv(string name, string value, int overwrite);
-
-    public static void execvpe(string file, string?[] args, IReadOnlyDictionary<string, string> environmentVariables)
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Options
     {
-        foreach (var item in environmentVariables)
+        public ushort Width;
+        public ushort Height;
+        public string App;
+        public IntPtr CommandLine;
+        public IntPtr EnvironmentVariables;
+
+        public static IntPtr Marshalling(string[] items)
         {
-            Console.WriteLine($"{item.Key}: {item.Value}");
-            setenv(item.Key, item.Value, 1);
+            var ppEnv = Marshal.AllocHGlobal((items.Length + 1) * SizeOfIntPtr);
+            var offset = 0;
+            foreach (var item in items)
+            {
+                var pEnv = Marshal.StringToHGlobalAnsi(item);
+                Marshal.WriteIntPtr(ppEnv, offset, pEnv);
+                offset += SizeOfIntPtr;
+            }
+            Marshal.WriteIntPtr(ppEnv, offset, IntPtr.Zero);
+            return ppEnv;
         }
 
-        Console.WriteLine($"execvp: {file}: {args.Length}");
-        if (execvp(file, args) == -1)
-        {
-            Environment.Exit(Marshal.GetLastWin32Error());
-        }
-        else
-        {
-            Environment.Exit(-1);
-        }
+        public static IntPtr Marshalling(IEnumerable<KeyValuePair<string, string>> items)
+            => Marshalling(items.Select(item => $"{item.Key}={item.Value}").ToArray());
     }
-
-    [DllImport(PtyLibSystem, SetLastError = true, EntryPoint = "pty_execvp")]
-    private static extern int execvp(
-        [MarshalAs(UnmanagedType.LPStr)] string file,
-        [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)] string?[] args);
 }
