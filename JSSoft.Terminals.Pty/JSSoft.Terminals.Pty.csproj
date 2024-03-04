@@ -5,21 +5,21 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DelaySign>false</DelaySign>
+    <IsMacOS Condition="'$(NETCoreSdkRuntimeIdentifier)'=='osx-arm64' of '$(NETCoreSdkRuntimeIdentifier)'=='osx-x64'">true</IsMacOS>
+    <NativeSourcePath>$(MSBuildThisFileDirectory)runtimes/pty.c</NativeSourcePath>
   </PropertyGroup>
-  <Target Name="BuildBindings" AfterTargets="CoreBuild">
-    <Exec Condition="'$(OS)' == 'osx'" Command="gcc -dynamiclib -o '$(MSBuildThisFileDirectory)runtimes\osx\native\jspty.dylib' '$(MSBuildThisFileDirectory)runtimes/pty.c'" />
+  <Target Name="BuildBindingsInOSX" Condition="'$(IsMacOS)'=='true'" AfterTargets="BeforeBuild">
+    <MakeDir Directories="$(MSBuildThisFileDirectory)runtimes\osx\native" />
+    <Exec Command="gcc -dynamiclib -o '$(MSBuildThisFileDirectory)runtimes\osx\native\jspty.dylib' '$(NativeSourcePath)'" />
     <!-- <Exec Command="gcc -shared -o '$(MSBuildThisFileDirectory)runtimes\linux-arm64\native\jspty.so' '$(MSBuildThisFileDirectory)runtimes/pty.c'" /> -->
     <!-- <Exec Command="echo '$(TargetDir)jspty.dylib'" /> -->
     <!-- <Message Text="gcc -shared -o '$(MSBuildThisFileDirectory)runtimes\linux-arm64\jspty.so' '$(MSBuildThisFileDirectory)runtimes/pty.c'" Importance="High" /> -->
   </Target>
-  <!-- <Target Name="test" BeforeTargets="Build">
-    <Message Text="Tes111t123" Importance="High" />
-  </Target> -->
+  <Target Name="test" BeforeTargets="Build">
+    <Message Text="$(NETCoreSdkRuntimeIdentifier)" Importance="High" />
+  </Target>
   <ItemGroup>
-    <None Include="runtimes\osx\native\jspty.dylib">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="runtimes\linux-arm64\native\jspty.so">
+    <None Condition="'$(IsMacOS)'=='true'" Include="$(MSBuildThisFileDirectory)runtimes\osx\native\jspty.dylib">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
