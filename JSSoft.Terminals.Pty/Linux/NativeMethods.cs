@@ -1,8 +1,7 @@
 ﻿#pragma warning disable SYSLIB1054 // Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time
 
-using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using JSSoft.Terminals.Pty.Unix;
 
 namespace JSSoft.Terminals.Pty.Linux;
 
@@ -29,8 +28,8 @@ static class NativeMethods
     public static int close(int fd)
         => IsArm64 ? close_arm64(fd) : close_x64(fd);
 
-    public static int init(ref int master, ushort column, ushort row)
-        => IsArm64 ? ini_arm64(ref master, column, row) : ini_x64(ref master, column, row);
+    public static int init(ref int master, ref PtyNativeOptions options)
+        => IsArm64 ? ini_arm64(ref master, ref options) : ini_x64(ref master, ref options);
 
     public static int setenv(string name, string value, int overwrite)
         => IsArm64 ? setenv_arm64(name, value, overwrite) : setenv_x64(name, value, overwrite);
@@ -54,7 +53,7 @@ static class NativeMethods
     private static extern int close_arm64(int fd);
 
     [DllImport(LibSystem_arm64, EntryPoint = "pty_init")]
-    private static extern int ini_arm64(ref int master, ushort column, ushort row);
+    private static extern int ini_arm64(ref int master, ref PtyNativeOptions options);
 
     [DllImport(LibSystem_arm64, EntryPoint = "pty_setenv")]
     private static extern int setenv_arm64(string name, string value, int overwrite);
@@ -78,34 +77,10 @@ static class NativeMethods
     private static extern int close_x64(int fd);
 
     [DllImport(LibSystem_x64, EntryPoint = "pty_init")]
-    private static extern int ini_x64(ref int master, ushort column, ushort row);
+    private static extern int ini_x64(ref int master, ref PtyNativeOptions options);
 
     [DllImport(LibSystem_x64, EntryPoint = "pty_setenv")]
     private static extern int setenv_x64(string name, string value, int overwrite);
-
-    public static void execvpe(string file, string?[] args, IReadOnlyDictionary<string, string> environmentVariables)
-    {
-        foreach (var item in environmentVariables)
-        {
-            Console.WriteLine($"{item.Key}: {item.Value}");
-            setenv(item.Key, item.Value, 1);
-        }
-
-        Console.WriteLine($"execvp: {file}: {args.Length}");
-        if (execvp(file, args) == -1)
-        {
-            Environment.Exit(Marshal.GetLastWin32Error());
-        }
-        else
-        {
-            Environment.Exit(-1);
-        }
-    }
-
-    [DllImport(LibSystem_arm64, SetLastError = true, EntryPoint = "pty_execvp")]
-    private static extern int execvp(
-        [MarshalAs(UnmanagedType.LPStr)] string file,
-        [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)] string?[] args);
 
     private static bool IsArm64 => RuntimeInformation.ProcessArchitecture == Architecture.Arm64;
 }

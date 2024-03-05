@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace JSSoft.Terminals.Pty;
-
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+
+namespace JSSoft.Terminals.Pty;
 
 /// <summary>
 /// Provides platform specific functionality.

@@ -2,10 +2,9 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using System.Diagnostics;
-using System.IO;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using JSSoft.Terminals.Pty.Extensions;
 
@@ -115,6 +114,39 @@ internal abstract partial class PtyConnection : IPtyConnection
         _terminalProcessTerminatedEvent.Set();
         ProcessExited?.Invoke(this, new PtyExitedEventArgs(_exitCode));
     }
+
+    #region NativeOptions
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct NativeOptions
+    {
+        public ushort Width;
+        public ushort Height;
+        public string App;
+        public IntPtr CommandLine;
+        public IntPtr EnvironmentVariables;
+
+        private static readonly int SizeOfIntPtr = Marshal.SizeOf(typeof(IntPtr));
+
+        public static IntPtr Marshalling(params string[] items)
+        {
+            var ppEnv = Marshal.AllocHGlobal((items.Length + 1) * SizeOfIntPtr);
+            var offset = 0;
+            foreach (var item in items)
+            {
+                var pEnv = Marshal.StringToHGlobalAnsi(item);
+                Marshal.WriteIntPtr(ppEnv, offset, pEnv);
+                offset += SizeOfIntPtr;
+            }
+            Marshal.WriteIntPtr(ppEnv, offset, IntPtr.Zero);
+            return ppEnv;
+        }
+
+        public static IntPtr Marshalling(IEnumerable<KeyValuePair<string, string>> items)
+            => Marshalling(items.Select(item => $"{item.Key}={item.Value}").ToArray());
+    }
+
+    #endregion
 
     #region IPtyConnection
 

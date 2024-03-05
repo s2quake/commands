@@ -27,5 +27,4 @@ public static class IPtyConnectionExtensions
         var buffer = Encoding.UTF8.GetBytes(text);
         @this.Write(buffer, buffer.Length);
     }
-
 }

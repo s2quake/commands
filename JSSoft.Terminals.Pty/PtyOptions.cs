@@ -55,7 +55,7 @@ public sealed class PtyOptions
     /// <summary>
     /// Gets or sets the command line arguments to the process.
     /// </summary>
-    public string[] CommandLine { get; set; } = Array.Empty<string>();
+    public string[] CommandLine { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the process' environment variables.

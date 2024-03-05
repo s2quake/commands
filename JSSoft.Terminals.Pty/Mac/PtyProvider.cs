@@ -2,10 +2,9 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
+using JSSoft.Terminals.Pty.Unix;
 
 namespace JSSoft.Terminals.Pty.Mac;
 
@@ -17,35 +16,13 @@ internal class PtyProvider : Unix.PtyProvider
     /// <inheritdoc/>
     public override IPtyConnection StartTerminal(PtyOptions options, TraceSource trace)
     {
-        var terminalArgs = GetExecvpArgs(options);
         var controller = 0;
-        Console.WriteLine($"init");
-        var ops = new NativeMethods.Options
-        {
-            Width = (ushort)options.Width,
-            Height = (ushort)options.Height,
-            App = options.App,
-            CommandLine = NativeMethods.Options.Marshalling([options.App]),
-            EnvironmentVariables = NativeMethods.Options.Marshalling(options.EnvironmentVariables),
-        };
-        var pid = NativeMethods.init(ref controller, ref ops);
+        var nativeOptions = new PtyNativeOptions(options);
+        var pid = NativeMethods.init(ref controller, ref nativeOptions);
         if (pid == -1)
-        {
             throw new InvalidOperationException($"forkpty(4) failed with error {Marshal.GetLastWin32Error()}");
-        }
+
         Console.WriteLine($"pid: {pid}");
-        // if (pid == 0)
-        // {
-        //     // We are in a forked process! See http://man7.org/linux/man-pages/man2/fork.2.html for details.
-        //     // Only our thread is running. We inherited open file descriptors and get a copy of the parent process memory.
-        //     // Environment.CurrentDirectory = options.WorkingDirectory;
-        //     // Console.WriteLine(terminalArgs.Length);
-        //     // NativeMethods.execvpe(options.App, terminalArgs, options.EnvironmentVariables);
-
-        //     // Unreachable code after execvpe()
-        // }
-
-        // We have forked the terminal
         return new PtyConnection(controller, pid);
     }
 }
