@@ -68,7 +68,7 @@ public class TerminalRowsRenderer : TerminalRendererBase
         _terminal.Updated -= Terminal_Updated;
     }
 
-    protected virtual TerminalRowRenderer Create(ITerminalRow row) => new TerminalRowRenderer(row);
+    protected virtual TerminalRowRenderer Create(ITerminalRow row) => new(row);
 
     private void Terminal_Updated(object? sender, TerminalUpdateEventArgs e)
     {

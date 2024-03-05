@@ -64,14 +64,10 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
     public readonly int Y => Value / Width;
 
     public override readonly int GetHashCode()
-    {
-        return Value ^ Width;
-    }
+        => Value ^ Width;
 
     public override readonly string ToString()
-    {
-        return $"{Value} ({X}, {Y})";
-    }
+        => $"{Value} ({X}, {Y})";
 
     public override readonly bool Equals(object? obj)
     {
@@ -83,14 +79,10 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
     }
 
     public readonly TerminalIndex MoveToFirstOfLine()
-    {
-        return new TerminalIndex(Value - (Value % Width), Width);
-    }
+        => new(Value - (Value % Width), Width);
 
     public readonly TerminalIndex MoveToEndOfLine()
-    {
-        return new TerminalIndex(Value + Width - (Value % Width), Width);
-    }
+        => new(Value + Width - (Value % Width), Width);
 
     public readonly TerminalIndex MoveToFirstOfString(ITerminal terminal)
     {
@@ -187,14 +179,6 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
         return index;
     }
 
-    // public readonly TerminalIndex CarriageReturn()
-    // {
-    //     var index = this;
-    //     var value = index.Value % index.Width;
-    //     index -= value;
-    //     return index;
-    // }
-
     public readonly TerminalIndex Backspace()
     {
         var coord = (TerminalCoord)this;
@@ -243,17 +227,7 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
     }
 
     public readonly TerminalIndex VerticalTAB()
-    {
-        return this + Width;
-    }
-
-    // public readonly TerminalIndex CursorToBeginningOfNextLine()
-    // {
-    //     var coord = (TerminalCoord)this;
-    //     coord.X = 0;
-    //     coord.Y++;
-    //     return new TerminalIndex(coord, Width);
-    // }
+        => this + Width;
 
     public readonly TerminalIndex CursorToColumn(int column)
     {
@@ -265,9 +239,7 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
     }
 
     public readonly TerminalIndex Reset()
-    {
-        return new TerminalIndex(0, Width);
-    }
+        => new(0, Width);
 
     public readonly TerminalIndex Expect(int span)
     {
@@ -287,14 +259,10 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
     }
 
     public static TerminalIndex operator +(TerminalIndex index, int value)
-    {
-        return new TerminalIndex(index.Value + value, index.Width);
-    }
+        => new(index.Value + value, index.Width);
 
     public static TerminalIndex operator -(TerminalIndex index, int value)
-    {
-        return new TerminalIndex(index.Value - value, index.Width);
-    }
+        => new(index.Value - value, index.Width);
 
     public static TerminalIndex operator +(TerminalIndex index1, TerminalIndex index2)
     {
@@ -313,49 +281,31 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
     }
 
     public static TerminalIndex operator ++(TerminalIndex index)
-    {
-        return new TerminalIndex(index.Value + 1, index.Width);
-    }
+        => new(index.Value + 1, index.Width);
 
     public static TerminalIndex operator --(TerminalIndex index)
-    {
-        return new TerminalIndex(index.Value - 1, index.Width);
-    }
+        => new(index.Value - 1, index.Width);
 
     public static bool operator ==(TerminalIndex index1, TerminalIndex index2)
-    {
-        return index1.Value == index2.Value && index1.Width == index2.Width;
-    }
+        => index1.Value == index2.Value && index1.Width == index2.Width;
 
     public static bool operator !=(TerminalIndex index1, TerminalIndex index2)
-    {
-        return index1.Value != index2.Value || index1.Width != index2.Width;
-    }
+        => index1.Value != index2.Value || index1.Width != index2.Width;
 
     public static bool operator <(TerminalIndex index1, TerminalIndex index2)
-    {
-        return index1.Value < index2.Value;
-    }
+        => index1.Value < index2.Value;
 
     public static bool operator <=(TerminalIndex index1, TerminalIndex index2)
-    {
-        return index1.Value <= index2.Value;
-    }
+        => index1.Value <= index2.Value;
 
     public static bool operator >(TerminalIndex index1, TerminalIndex index2)
-    {
-        return index1.Value > index2.Value;
-    }
+        => index1.Value > index2.Value;
 
     public static bool operator >=(TerminalIndex index1, TerminalIndex index2)
-    {
-        return index1.Value >= index2.Value;
-    }
+        => index1.Value >= index2.Value;
 
     public static explicit operator TerminalCoord(TerminalIndex index)
-    {
-        return new TerminalCoord(index.Value % index.Width, index.Value / index.Width);
-    }
+        => new(index.Value % index.Width, index.Value / index.Width);
 
     public static implicit operator int(TerminalIndex index) => index.Value;
 

@@ -38,19 +38,13 @@ public struct TerminalSelection(TerminalCoord c1, TerminalCoord c2)
     }
 
     public override readonly int GetHashCode()
-    {
-        return _beginCoord.GetHashCode() ^ _endCoord.GetHashCode();
-    }
+        => _beginCoord.GetHashCode() ^ _endCoord.GetHashCode();
 
     public override readonly string ToString()
-    {
-        return $"{{{_beginCoord}}} - {{{_endCoord}}}";
-    }
+        => $"{{{_beginCoord}}} - {{{_endCoord}}}";
 
     public readonly bool Intersect(TerminalCoord coord)
-    {
-        return coord >= _beginCoord && coord < _endCoord;
-    }
+        => coord >= _beginCoord && coord < _endCoord;
 
     public readonly IEnumerable<TerminalCoord> GetEnumerator(int width)
     {
@@ -93,14 +87,10 @@ public struct TerminalSelection(TerminalCoord c1, TerminalCoord c2)
     public readonly TerminalCoord EndCoord => _endCoord;
 
     public static bool operator ==(TerminalSelection s1, TerminalSelection s2)
-    {
-        return s1.BeginCoord == s2.BeginCoord && s1.EndCoord == s2.EndCoord;
-    }
+        => s1.BeginCoord == s2.BeginCoord && s1.EndCoord == s2.EndCoord;
 
     public static bool operator !=(TerminalSelection s1, TerminalSelection s2)
-    {
-        return s1.BeginCoord != s2.BeginCoord || s1.EndCoord != s2.EndCoord;
-    }
+        => s1.BeginCoord != s2.BeginCoord || s1.EndCoord != s2.EndCoord;
 
     public static TerminalSelection Empty { get; } = new TerminalSelection(TerminalCoord.Invalid, TerminalCoord.Invalid);
 }

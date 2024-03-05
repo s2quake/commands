@@ -38,19 +38,13 @@ public struct TerminalRect(TerminalPoint location, TerminalSize size) : IEquatab
     }
 
     public override readonly int GetHashCode()
-    {
-        return _location.GetHashCode() ^ _size.GetHashCode();
-    }
+        => _location.GetHashCode() ^ _size.GetHashCode();
 
     public override readonly string ToString()
-    {
-        return $"{_location}, {_size}";
-    }
+        => $"{_location}, {_size}";
 
     public static TerminalRect FromLTRB(int left, int top, int right, int bottom)
-    {
-        return new TerminalRect(left, top, right - left, bottom - top);
-    }
+        => new(left, top, right - left, bottom - top);
 
     public static bool Contains(TerminalRect outerRect, TerminalRect innerRect, TerminalPoint point)
     {
@@ -66,24 +60,16 @@ public struct TerminalRect(TerminalPoint location, TerminalSize size) : IEquatab
     }
 
     public static bool Contains(TerminalRect rect, TerminalThickness margin, TerminalThickness padding, TerminalPoint point)
-    {
-        return Contains(rect + margin, rect - padding, point);
-    }
+        => Contains(rect + margin, rect - padding, point);
 
     public readonly bool Contains(TerminalPoint point)
-    {
-        return point.X >= Left && point.Y >= Top && point.X < Right && point.Y < Bottom;
-    }
+        => point.X >= Left && point.Y >= Top && point.X < Right && point.Y < Bottom;
 
     public readonly bool Contains(TerminalRect rect)
-    {
-        return rect.Left >= Left && rect.Top >= Top && rect.Right <= Right && rect.Bottom <= Bottom;
-    }
+        => rect.Left >= Left && rect.Top >= Top && rect.Right <= Right && rect.Bottom <= Bottom;
 
     public readonly bool IntersectsWith(TerminalRect rect)
-    {
-        return rect.Left < Right && rect.Right > Left && rect.Top < Bottom && rect.Bottom > Top;
-    }
+        => rect.Left < Right && rect.Right > Left && rect.Top < Bottom && rect.Bottom > Top;
 
     public readonly TerminalRect Intersect(TerminalRect rect)
     {
@@ -104,9 +90,7 @@ public struct TerminalRect(TerminalPoint location, TerminalSize size) : IEquatab
     }
 
     public readonly TerminalPoint GetCenter()
-    {
-        return new TerminalPoint(X + Width / 2, Y + Height / 2);
-    }
+        => new(X + Width / 2, Y + Height / 2);
 
     public readonly TerminalRect PutIn(TerminalRect targetRect)
     {
@@ -131,9 +115,7 @@ public struct TerminalRect(TerminalPoint location, TerminalSize size) : IEquatab
     }
 
     public readonly TerminalRect Transform(TerminalPoint point)
-    {
-        return new TerminalRect(Location + point, Size);
-    }
+        => new(Location + point, Size);
 
     public TerminalPoint Location
     {
@@ -182,46 +164,30 @@ public struct TerminalRect(TerminalPoint location, TerminalSize size) : IEquatab
     public static TerminalRect Empty { get; } = new TerminalRect();
 
     public static bool operator ==(TerminalRect rect1, TerminalRect rect2)
-    {
-        return rect1.Location == rect2.Location && rect1.Size == rect2.Size;
-    }
+        => rect1.Location == rect2.Location && rect1.Size == rect2.Size;
 
     public static bool operator !=(TerminalRect rect1, TerminalRect rect2)
-    {
-        return rect1.Location != rect2.Location || rect1.Size != rect2.Size;
-    }
+        => rect1.Location != rect2.Location || rect1.Size != rect2.Size;
 
     public static TerminalRect operator -(TerminalRect rect, TerminalSize size)
-    {
-        return new TerminalRect(rect.Location, rect.Size - size);
-    }
+        => new(rect.Location, rect.Size - size);
 
     public static TerminalRect operator +(TerminalRect rect, TerminalSize size)
-    {
-        return new TerminalRect(rect.Location, rect.Size + size);
-    }
+        => new(rect.Location, rect.Size + size);
 
     public static TerminalRect operator -(TerminalRect rect, TerminalPoint point)
-    {
-        return new TerminalRect(rect.Location - point, rect.Size);
-    }
+        => new(rect.Location - point, rect.Size);
 
     public static TerminalRect operator +(TerminalRect rect, TerminalPoint point)
-    {
-        return new TerminalRect(rect.Location + point, rect.Size);
-    }
+        => new(rect.Location + point, rect.Size);
 
     public static TerminalRect operator *(TerminalRect rect, int value)
-    {
-        return new TerminalRect(rect.Location.X * value, rect.Location.Y * value, rect.Size.Width * value, rect.Size.Height * value);
-    }
+        => new(rect.Location.X * value, rect.Location.Y * value, rect.Size.Width * value, rect.Size.Height * value);
 
     #region IEquatable
 
     readonly bool IEquatable<TerminalRect>.Equals(TerminalRect other)
-    {
-        return Location == other.Location && Size == other.Size;
-    }
+        => Location == other.Location && Size == other.Size;
 
     #endregion
 }

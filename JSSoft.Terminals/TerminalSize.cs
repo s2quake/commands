@@ -29,84 +29,46 @@ public struct TerminalSize(int width, int height) : IEquatable<TerminalSize>
         return base.Equals(obj);
     }
 
-    public override readonly int GetHashCode()
-    {
-        return Width.GetHashCode() ^ Height.GetHashCode();
-    }
-
-    public override readonly string ToString()
-    {
-        return $"{Width}, {Height}";
-    }
-
-    // public readonly TerminalSize Uniform(TerminalSize size)
-    // {
-    //     var outerLength = Math.Min(Width, Height);
-    //     var innerLength = Math.Max(size.Width, size.Height);
-    //     var ratio = outerLength / innerLength;
-    //     return new TerminalSize(size.Width * ratio, size.Height * ratio);
-    // }
-
-    // public readonly TerminalSize UniformToFill(TerminalSize size)
-    // {
-    //     var outerLength = Math.Max(Width, Height);
-    //     var innerLength = Math.Min(size.Width, size.Height);
-    //     var ratio = outerLength / innerLength;
-    //     return new TerminalSize(size.Width * ratio, size.Height * ratio);
-    // }
-
     public int Width { get; set; } = width;
 
     public int Height { get; set; } = height;
 
-    public static bool operator ==(TerminalSize size1, TerminalSize size2)
-    {
-        return size1.Width == size2.Width && size1.Height == size2.Height;
-    }
-
-    public static bool operator !=(TerminalSize size1, TerminalSize size2)
-    {
-        return size1.Width != size2.Width || size1.Height != size2.Height;
-    }
-
     public static TerminalSize Empty { get; } = new TerminalSize();
 
+    public override readonly int GetHashCode()
+        => Width.GetHashCode() ^ Height.GetHashCode();
+
+    public override readonly string ToString()
+        => $"{Width}, {Height}";
+
+    public static bool operator ==(TerminalSize size1, TerminalSize size2)
+        => size1.Width == size2.Width && size1.Height == size2.Height;
+
+    public static bool operator !=(TerminalSize size1, TerminalSize size2)
+        => size1.Width != size2.Width || size1.Height != size2.Height;
+
     public static TerminalSize operator -(TerminalSize size, TerminalThickness thickness)
-    {
-        return new TerminalSize(size.Width - thickness.Horizontal, size.Height - thickness.Vertical);
-    }
+        => new(size.Width - thickness.Horizontal, size.Height - thickness.Vertical);
 
     public static TerminalSize operator +(TerminalSize size, TerminalThickness thickness)
-    {
-        return new TerminalSize(size.Width + thickness.Horizontal, size.Height + thickness.Vertical);
-    }
+        => new(size.Width + thickness.Horizontal, size.Height + thickness.Vertical);
 
     public static TerminalSize operator -(TerminalSize size1, TerminalSize size2)
-    {
-        return new TerminalSize(size1.Width - size2.Width, size1.Height - size2.Height);
-    }
+        => new(size1.Width - size2.Width, size1.Height - size2.Height);
 
     public static TerminalSize operator +(TerminalSize size1, TerminalSize size2)
-    {
-        return new TerminalSize(size1.Width + size2.Width, size1.Height + size2.Height);
-    }
+        => new(size1.Width + size2.Width, size1.Height + size2.Height);
 
     public static TerminalSize operator *(TerminalSize size, int value)
-    {
-        return new TerminalSize(size.Width * value, size.Height * value);
-    }
+        => new(size.Width * value, size.Height * value);
 
     public static TerminalSize operator /(TerminalSize size, int value)
-    {
-        return new TerminalSize(size.Width / value, size.Height / value);
-    }
+        => new(size.Width / value, size.Height / value);
 
     #region IEquatable
 
     readonly bool IEquatable<TerminalSize>.Equals(TerminalSize other)
-    {
-        return Width == other.Width && Height == other.Height;
-    }
+        => Width == other.Width && Height == other.Height;
 
     #endregion
 }

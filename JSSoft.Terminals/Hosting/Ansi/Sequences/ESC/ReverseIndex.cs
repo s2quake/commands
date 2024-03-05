@@ -1,4 +1,4 @@
-// Released under the MIT License.
+﻿// Released under the MIT License.
 // 
 // Copyright (c) 2024 Jeesu Choi
 // 
@@ -16,25 +16,18 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals;
+namespace JSSoft.Terminals.Hosting.Ansi.Sequences.ESC;
 
-public interface ITerminalKeyboard
+sealed class ReverseIndex : ESCSequenceBase
 {
-    bool IsOpened { get; }
+    public ReverseIndex()
+        : base('M')
+    {
+    }
 
-    string Text { get; set; }
+    public override string DisplayName => "ESC M";
 
-    TerminalRange Selection { get; set; }
-
-    TerminalRect Area { get; }
-
-    ITerminal? Terminal { get; }
-
-    event EventHandler<TerminalKeyboardEventArgs>? Opened;
-
-    event EventHandler<TerminalKeyboardEventArgs>? Done;
-
-    event EventHandler? Canceled;
-
-    event EventHandler<TerminalKeyboardEventArgs>? Changed;
+    protected override void OnProcess(SequenceContext context)
+    {
+    }
 }

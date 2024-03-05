@@ -76,9 +76,7 @@ public sealed class TerminalFieldSetter
     }
 
     private void InvokePropertyChangedEvent(string propertyName)
-    {
-        _action.Invoke(new PropertyChangedEventArgs(propertyName));
-    }
+        => _action.Invoke(new PropertyChangedEventArgs(propertyName));
 
     #region EventScope
 
@@ -89,9 +87,7 @@ public sealed class TerminalFieldSetter
         private readonly Action<PropertyChangedEventArgs> _action = action;
 
         public void InvokePropertyChangedEvent(PropertyChangedEventArgs e)
-        {
-            _argList.Add(e);
-        }
+            => _argList.Add(e);
 
         public void Dispose()
         {

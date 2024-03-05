@@ -46,14 +46,10 @@ public struct TerminalThickness : IEquatable<TerminalThickness>
     }
 
     public override readonly int GetHashCode()
-    {
-        return Left.GetHashCode() ^ Top.GetHashCode() ^ Right.GetHashCode() ^ Bottom.GetHashCode();
-    }
+        => Left.GetHashCode() ^ Top.GetHashCode() ^ Right.GetHashCode() ^ Bottom.GetHashCode();
 
-    public override string ToString()
-    {
-        return $"{Left}, {Top}, {Right}, {Bottom}";
-    }
+    public override readonly string ToString()
+        => $"{Left}, {Top}, {Right}, {Bottom}";
 
     public int Left { readonly get; set; }
 
@@ -68,56 +64,36 @@ public struct TerminalThickness : IEquatable<TerminalThickness>
     public readonly int Horizontal => Left + Right;
 
     public static bool operator ==(TerminalThickness pt1, TerminalThickness pt2)
-    {
-        return pt1.Left == pt2.Left && pt1.Top == pt2.Top && pt1.Right == pt2.Right && pt1.Bottom == pt2.Bottom;
-    }
+        => pt1.Left == pt2.Left && pt1.Top == pt2.Top && pt1.Right == pt2.Right && pt1.Bottom == pt2.Bottom;
 
     public static bool operator !=(TerminalThickness pt1, TerminalThickness pt2)
-    {
-        return pt1.Left != pt2.Left || pt1.Top != pt2.Top || pt1.Right != pt2.Right || pt1.Bottom != pt2.Bottom;
-    }
+        => pt1.Left != pt2.Left || pt1.Top != pt2.Top || pt1.Right != pt2.Right || pt1.Bottom != pt2.Bottom;
 
     public static readonly TerminalThickness Empty = new(0);
 
     public static implicit operator TerminalSize(TerminalThickness thickness)
-    {
-        return new TerminalSize(thickness.Horizontal, thickness.Vertical);
-    }
+        => new(thickness.Horizontal, thickness.Vertical);
 
     public static TerminalRect operator -(TerminalRect rect, TerminalThickness thickness)
-    {
-        return new TerminalRect(rect.X + thickness.Left, rect.Y + thickness.Top, rect.Width - thickness.Horizontal, rect.Height - thickness.Vertical);
-    }
+        => new(rect.X + thickness.Left, rect.Y + thickness.Top, rect.Width - thickness.Horizontal, rect.Height - thickness.Vertical);
 
     public static TerminalRect operator +(TerminalRect rect, TerminalThickness thickness)
-    {
-        return new TerminalRect(rect.X - thickness.Left, rect.Y - thickness.Top, rect.Width + thickness.Horizontal, rect.Height + thickness.Vertical);
-    }
+        => new(rect.X - thickness.Left, rect.Y - thickness.Top, rect.Width + thickness.Horizontal, rect.Height + thickness.Vertical);
 
     public static TerminalThickness operator +(TerminalThickness thickness1, TerminalThickness thickness2)
-    {
-        return new TerminalThickness(thickness1.Left + thickness2.Left, thickness1.Top + thickness2.Top, thickness1.Right + thickness2.Right, thickness1.Bottom + thickness2.Bottom);
-    }
+        => new(thickness1.Left + thickness2.Left, thickness1.Top + thickness2.Top, thickness1.Right + thickness2.Right, thickness1.Bottom + thickness2.Bottom);
 
     public static TerminalThickness operator -(TerminalThickness thickness1, TerminalThickness thickness2)
-    {
-        return new TerminalThickness(thickness1.Left - thickness2.Left, thickness1.Top - thickness2.Top, thickness1.Right - thickness2.Right, thickness1.Bottom - thickness2.Bottom);
-    }
+        => new(thickness1.Left - thickness2.Left, thickness1.Top - thickness2.Top, thickness1.Right - thickness2.Right, thickness1.Bottom - thickness2.Bottom);
 
     public static TerminalThickness operator *(TerminalThickness thickness, int value)
-    {
-        return new TerminalThickness(thickness.Left * value, thickness.Top * value, thickness.Right * value, thickness.Bottom * value);
-    }
+        => new(thickness.Left * value, thickness.Top * value, thickness.Right * value, thickness.Bottom * value);
 
     public static TerminalThickness operator /(TerminalThickness thickness, int value)
-    {
-        return new TerminalThickness(thickness.Left / value, thickness.Top / value, thickness.Right / value, thickness.Bottom / value);
-    }
+        => new(thickness.Left / value, thickness.Top / value, thickness.Right / value, thickness.Bottom / value);
 
     public static explicit operator int[](TerminalThickness thickness)
-    {
-        return [thickness.Left, thickness.Top, thickness.Right, thickness.Bottom];
-    }
+        => [thickness.Left, thickness.Top, thickness.Right, thickness.Bottom];
 
     public static explicit operator TerminalThickness(int[] values)
     {
@@ -137,9 +113,7 @@ public struct TerminalThickness : IEquatable<TerminalThickness>
     #region IEquatable
 
     readonly bool IEquatable<TerminalThickness>.Equals(TerminalThickness other)
-    {
-        return Left == other.Left && Top == other.Top && Right == other.Right && Bottom == other.Bottom;
-    }
+        => Left == other.Left && Top == other.Top && Right == other.Right && Bottom == other.Bottom;
 
     #endregion
 }

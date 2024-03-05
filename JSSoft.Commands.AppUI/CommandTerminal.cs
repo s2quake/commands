@@ -46,33 +46,6 @@ sealed class CommandTerminal : IDisposable
         throw new NotImplementedException();
     }
 
-    private async void Terminal_Executing(object? sender, TerminalExecutingRoutedEventArgs e)
-    {
-        var token = e.GetToken();
-        var cancellationTokenSource = new CancellationTokenSource();
-        var progress = new TerminalProgress(_terminalControl);
-        try
-        {
-            _terminalControl.Out.WriteLine(e.Command);
-            await _commandContext.ExecuteAsync(e.Command, cancellationTokenSource.Token, progress);
-            e.Success(token);
-            _terminalControl.Out.Write(_prompt);
-        }
-        catch (Exception exception)
-        {
-            var message = exception.Message;
-            var tsb = new TerminalStringBuilder
-            {
-                Foreground = TerminalColorType.BrightRed
-            };
-            tsb.Append(message);
-            tsb.AppendEnd();
-            _commandContext.Error.WriteLine(tsb.ToString());
-            e.Fail(token, exception);
-            _terminalControl.Out.Write(_prompt);
-        }
-    }
-
     #region TerminalProgress
 
     sealed class TerminalProgress(TerminalControl terminal) : IProgress<ProgressInfo>

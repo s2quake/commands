@@ -54,7 +54,5 @@ public sealed class TerminalMode : INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private void InvokePropertyChangedEvent(PropertyChangedEventArgs e)
-    {
-        PropertyChanged?.Invoke(this, e);
-    }
+        => PropertyChanged?.Invoke(this, e);
 }
