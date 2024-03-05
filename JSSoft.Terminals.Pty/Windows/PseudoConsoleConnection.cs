@@ -37,7 +37,7 @@ internal sealed class PseudoConsoleConnection : IPtyConnection
     }
 
     /// <inheritdoc/>
-    public event EventHandler<PtyExitedEventArgs>? ProcessExited;
+    public event EventHandler<PtyExitedEventArgs>? Exited;
 
     /// <inheritdoc/>
     public int Pid => _handles.Pid;
@@ -87,7 +87,7 @@ internal sealed class PseudoConsoleConnection : IPtyConnection
 
     private void Process_Exited(object? sender, EventArgs e)
     {
-        ProcessExited?.Invoke(this, new PtyExitedEventArgs(_process.ExitCode));
+        Exited?.Invoke(this, new PtyExitedEventArgs(_process.ExitCode));
     }
 
     /// <summary>

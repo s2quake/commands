@@ -20,6 +20,7 @@ using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using JSSoft.Commands.AppUI.Controls;
 
 namespace JSSoft.Commands.AppUI;
@@ -48,12 +49,14 @@ public partial class MainWindow : Window
         _terminal.IsReadOnly = true;
         _pseudoTerminal.Size = _terminal.BufferSize;
         _pseudoTerminal.Open();
+        _pseudoTerminal.Exited += PseudoTerminal_Exited;
         _terminal.IsReadOnly = false;
         _terminal.Focus();
     }
 
     protected override void OnUnloaded(RoutedEventArgs e)
     {
+        _pseudoTerminal.Exited -= PseudoTerminal_Exited;
         _pseudoTerminal.Close();
         base.OnUnloaded(e);
     }
@@ -66,5 +69,10 @@ public partial class MainWindow : Window
             Console.WriteLine(Title);
             _pseudoTerminal.Size = _terminal.BufferSize;
         }
+    }
+    
+    private async void PseudoTerminal_Exited(object? sender, EventArgs e)
+    {
+        await Dispatcher.UIThread.InvokeAsync(Close);
     }
 }

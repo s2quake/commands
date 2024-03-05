@@ -12,16 +12,10 @@
   <Target Name="BuildBindingsInOSX" Condition="'$(IsMacOS)'=='true'" AfterTargets="BeforeBuild">
     <MakeDir Directories="$(MSBuildThisFileDirectory)runtimes\osx\native" />
     <Exec Command="gcc -dynamiclib -o '$(MSBuildThisFileDirectory)runtimes\osx\native\jspty.dylib' '$(NativeSourcePath)'" />
-    <!-- <Exec Command="gcc -shared -o '$(MSBuildThisFileDirectory)runtimes\linux-arm64\native\jspty.so' '$(MSBuildThisFileDirectory)runtimes/pty.c'" /> -->
-    <!-- <Exec Command="echo '$(TargetDir)jspty.dylib'" /> -->
-    <!-- <Message Text="gcc -shared -o '$(MSBuildThisFileDirectory)runtimes\linux-arm64\jspty.so' '$(MSBuildThisFileDirectory)runtimes/pty.c'" Importance="High" /> -->
   </Target>
   <Target Name="BuildBindingsInLinux" Condition="'$(IsLinux)'=='true'" AfterTargets="BeforeBuild">
     <MakeDir Directories="$(MSBuildThisFileDirectory)runtimes\linux-arm\native" />
     <Exec Command="gcc -shared -o '$(MSBuildThisFileDirectory)runtimes\linux-arm\native\jspty.so' '$(NativeSourcePath)'" />
-    <!-- <Exec Command="gcc -shared -o '$(MSBuildThisFileDirectory)runtimes\linux-arm64\native\jspty.so' '$(MSBuildThisFileDirectory)runtimes/pty.c'" /> -->
-    <!-- <Exec Command="echo '$(TargetDir)jspty.dylib'" /> -->
-    <!-- <Message Text="gcc -shared -o '$(MSBuildThisFileDirectory)runtimes\linux-arm64\jspty.so' '$(MSBuildThisFileDirectory)runtimes/pty.c'" Importance="High" /> -->
   </Target>
   <Target Name="test" BeforeTargets="Build">
     <Message Text="$(NETCoreSdkPortableRuntimeIdentifier)" Importance="High" />

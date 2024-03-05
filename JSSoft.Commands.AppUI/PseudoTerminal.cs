@@ -76,6 +76,7 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
         _pty = PtyProvider.Spawn(options);
         _cancellationTokenSource = new();
         _terminalControl.CancellationRequested += TerminalControl_CancellationRequested;
+        _pty.Exited += Pty_Exited;
         ReadInput(_pty, _terminalControl, _cancellationTokenSource.Token);
         ReadStream(_pty, Append, _cancellationTokenSource.Token);
     }
@@ -85,6 +86,7 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
         if (_pty is null || _cancellationTokenSource is null)
             throw new InvalidOperationException();
 
+        _pty.Exited -= Pty_Exited;
         _terminalControl.CancellationRequested -= TerminalControl_CancellationRequested;
         _cancellationTokenSource.Cancel();
         _pty.Dispose();
@@ -92,6 +94,8 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
     }
 
     public bool IsOpen { get; private set; }
+
+    public event EventHandler? Exited;
 
     private static async void ReadInput(IPtyConnection pty, TerminalControl control, CancellationToken cancellationToken)
     {
@@ -160,6 +164,9 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
         }
 #endif
     }
+
+    private void Pty_Exited(object? sender, PtyExitedEventArgs e)
+        => Exited?.Invoke(this, e);
 
     private void Append(string text)
     {
