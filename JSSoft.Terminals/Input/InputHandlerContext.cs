@@ -18,16 +18,11 @@
 
 namespace JSSoft.Terminals.Input;
 
-public abstract class InputHandlerContext : IDisposable
+public abstract class InputHandlerContext(ITerminal terminal) : IDisposable
 {
     private bool _isDragging;
 
-    protected InputHandlerContext(ITerminal terminal)
-    {
-        Terminal = terminal;
-    }
-
-    public ITerminal Terminal { get; }
+    public ITerminal Terminal { get; } = terminal;
 
     internal void Select() => OnSelect();
 
@@ -120,7 +115,11 @@ public abstract class InputHandlerContext : IDisposable
 
     #region IDisposable
 
-    void IDisposable.Dispose() => Dispose();
+    void IDisposable.Dispose()
+    {
+        Dispose();
+        GC.SuppressFinalize(this);
+    }
 
     #endregion
 }

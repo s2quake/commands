@@ -244,7 +244,7 @@ public class Terminal : ITerminal
 
     public ITerminalScroll Scroll { get; }
 
-    public Terminals.TerminalSelection Selecting
+    public TerminalSelection Selecting
     {
         get => _selecting;
         set
