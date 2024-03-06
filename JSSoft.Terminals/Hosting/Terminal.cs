@@ -372,11 +372,6 @@ public class Terminal : ITerminal
         _lines.Clear();
     }
 
-    public void Cancel()
-    {
-        OnCancellationRequested(EventArgs.Empty);
-    }
-
     public void Reset(TerminalCoord coord)
     {
         using var _ = _setter.LockEvent();
@@ -404,14 +399,9 @@ public class Terminal : ITerminal
 
     public void WriteInput(string text) => _reader.Write(text);
 
-    public event EventHandler? CancellationRequested;
-
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public event EventHandler<TerminalUpdateEventArgs>? Updated;
-
-    protected virtual void OnCancellationRequested(EventArgs e)
-        => CancellationRequested?.Invoke(this, e);
 
     protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
         => PropertyChanged?.Invoke(this, e);

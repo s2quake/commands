@@ -88,11 +88,7 @@ public interface ITerminal : INotifyPropertyChanged
 
     void ResetColor();
 
-    void Cancel();
-
     void WriteInput(string text);
-
-    event EventHandler? CancellationRequested;
 
     event EventHandler<TerminalUpdateEventArgs>? Updated;
 }

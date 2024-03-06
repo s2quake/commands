@@ -75,7 +75,6 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
 
         _pty = PtyProvider.Spawn(options);
         _cancellationTokenSource = new();
-        _terminalControl.CancellationRequested += TerminalControl_CancellationRequested;
         _pty.Exited += Pty_Exited;
         ReadInput(_pty, _terminalControl, _cancellationTokenSource.Token);
         ReadStream(_pty, Append, _cancellationTokenSource.Token);
@@ -87,7 +86,6 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
             throw new InvalidOperationException();
 
         _pty.Exited -= Pty_Exited;
-        _terminalControl.CancellationRequested -= TerminalControl_CancellationRequested;
         _cancellationTokenSource.Cancel();
         _pty.Dispose();
         _cancellationTokenSource.Dispose();
@@ -171,9 +169,5 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
     private void Append(string text)
     {
         Dispatcher.UIThread.Invoke(() => _terminalControl.Out.Write(text));
-    }
-
-    private void TerminalControl_CancellationRequested(object? sender, RoutedEventArgs e)
-    {
     }
 }

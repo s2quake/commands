@@ -57,10 +57,6 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
     public static readonly DirectProperty<TerminalControl, Size> BufferSizeProperty =
         AvaloniaProperty.RegisterDirect<TerminalControl, Size>(nameof(BufferSize), o => o.BufferSize);
 
-    public static readonly RoutedEvent<RoutedEventArgs> CancellationRequestedEvent =
-        RoutedEvent.Register<TerminalControl, RoutedEventArgs>(
-            nameof(CancellationRequested), RoutingStrategies.Bubble);
-
     private readonly TerminalKeyBindingCollection _keyBindings = new(TerminalKeyBindings.GetDefaultBindings());
 
     private readonly Terminals.Hosting.Terminal _terminal;
@@ -93,7 +89,6 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         _terminal.PropertyChanged += Terminal_PropertyChanged;
         _inputHandler = _terminal.InputHandler;
         _terminal.Completor = GetCompletion;
-        _terminal.CancellationRequested += Terminal_CancellationRequested;
         _terminalScroll.PropertyChanged += TerminalScroll_PropertyChanged;
         _inputVisual = this;
     }
@@ -153,12 +148,6 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
     }
 
     public void SelectAll() => _terminal.Selections.SelectAll();
-
-    public event EventHandler<RoutedEventArgs>? CancellationRequested
-    {
-        add => AddHandler(CancellationRequestedEvent, value);
-        remove => RemoveHandler(CancellationRequestedEvent, value);
-    }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
@@ -360,12 +349,6 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
             SetCurrentValue(TitleProperty, _terminal.Title);
         }
 
-    }
-
-    private void Terminal_CancellationRequested(object? sender, EventArgs e)
-    {
-        var args = new RoutedEventArgs(CancellationRequestedEvent);
-        RaiseEvent(args);
     }
 
     private void TerminalScroll_PropertyChanged(object? sender, PropertyChangedEventArgs e)

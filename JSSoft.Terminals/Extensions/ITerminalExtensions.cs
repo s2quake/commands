@@ -106,6 +106,11 @@ public static class ITerminalExtensions
         @this.WriteInput($"\x1b[M0B");
     }
 
+    public static void Cancel(this ITerminal @this)
+    {
+        @this.WriteInput("\x03");
+    }
+
     public static bool BringIntoView(this ITerminal @this)
     {
         return @this.BringIntoView(y: @this.CursorCoordinate.Y);

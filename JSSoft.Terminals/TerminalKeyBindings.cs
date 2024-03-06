@@ -43,6 +43,7 @@ public static class TerminalKeyBindings
         new TerminalKeyBinding(TerminalKey.LeftArrow, (t) => t.KeyLeft()),
         new TerminalKeyBinding(TerminalKey.RightArrow, (t) => t.KeyRight()),
         new TerminalKeyBinding(TerminalKey.Backspace, (t) => t.Backspace()),
+        new TerminalKeyBinding(TerminalModifiers.Control, TerminalKey.C, (t) => t.Cancel()),
 #endif
         new TerminalKeyBinding(TerminalModifiers.Shift, TerminalKey.LeftArrow, (t) => true),
         new TerminalKeyBinding(TerminalModifiers.Shift, TerminalKey.RightArrow, (t) => true),
