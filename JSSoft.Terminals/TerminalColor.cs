@@ -35,9 +35,7 @@ public struct TerminalColor : IEquatable<TerminalColor>
     }
 
     public override readonly int GetHashCode()
-    {
-        return _a.GetHashCode() ^ _r.GetHashCode() ^ _g.GetHashCode() ^ _b.GetHashCode();
-    }
+        => _a.GetHashCode() ^ _r.GetHashCode() ^ _g.GetHashCode() ^ _b.GetHashCode();
 
     public override readonly string ToString()
     {
@@ -53,9 +51,7 @@ public struct TerminalColor : IEquatable<TerminalColor>
     }
 
     public readonly uint ToUInt32()
-    {
-        return ((uint)A << 24) | ((uint)R << 16) | ((uint)G << 8) | (uint)B;
-    }
+        => ((uint)A << 24) | ((uint)R << 16) | ((uint)G << 8) | B;
 
     public readonly TerminalColor ToComplementary()
     {
@@ -64,59 +60,39 @@ public struct TerminalColor : IEquatable<TerminalColor>
     }
 
     public static TerminalColor FromLightness(byte value)
-    {
-        return new TerminalColor() { _a = 255, _r = value, _g = value, _b = value };
-    }
+        => new() { _a = 255, _r = value, _g = value, _b = value };
 
     public static TerminalColor FromRgb(byte r, byte g, byte b)
-    {
-        return new TerminalColor() { _a = 255, _r = r, _g = g, _b = b };
-    }
+        => new() { _a = 255, _r = r, _g = g, _b = b };
 
     public static TerminalColor FromArgb(byte a, byte r, byte g, byte b)
-    {
-        return new TerminalColor() { _a = a, _r = r, _g = g, _b = b };
-    }
+        => new() { _a = a, _r = r, _g = g, _b = b };
 
     public static TerminalColor FromAColor(byte a, TerminalColor color)
-    {
-        return FromArgb(a, color.R, color.G, color.B);
-    }
+        => FromArgb(a, color.R, color.G, color.B);
 
     public static TerminalColor FromScArgb(float a, float r, float g, float b)
-    {
-        return FromArgb((byte)(a * 255.0f), (byte)(r * 255.0f), (byte)(g * 255.0f), (byte)(b * 255.0f));
-    }
+        => FromArgb((byte)(a * 255.0f), (byte)(r * 255.0f), (byte)(g * 255.0f), (byte)(b * 255.0f));
 
     public static TerminalColor FromScAColor(float a, TerminalColor color)
-    {
-        return FromArgb((byte)(a * 255.0f), color.R, color.G, color.B);
-    }
+        => FromArgb((byte)(a * 255.0f), color.R, color.G, color.B);
 
     public static TerminalColor FromScRgb(float r, float g, float b)
-    {
-        return FromRgb((byte)(r * 255.0f), (byte)(g * 255.0f), (byte)(b * 255.0f));
-    }
+        => FromRgb((byte)(r * 255.0f), (byte)(g * 255.0f), (byte)(b * 255.0f));
 
     public static TerminalColor FromValues(float[] values)
-    {
-        return FromScArgb(values[0], values[1], values[2], values[3]);
-    }
+        => FromScArgb(values[0], values[1], values[2], values[3]);
 
     public static TerminalColor FromUInt32(uint value)
-    {
-        return FromArgb(
+        => FromArgb(
             (byte)((value >> 24) & 0xff),
             (byte)((value >> 16) & 0xff),
             (byte)((value >> 8) & 0xff),
             (byte)(value & 0xff)
         );
-    }
 
     internal static TerminalColor FromArgb(byte a, byte r, byte g, byte b, string name)
-    {
-        return new TerminalColor() { _a = a, _r = r, _g = g, _b = b, Name = name };
-    }
+        => new() { _a = a, _r = r, _g = g, _b = b, Name = name };
 
     public byte A
     {
@@ -213,23 +189,17 @@ public struct TerminalColor : IEquatable<TerminalColor>
     public static TerminalColor White { get; } = new TerminalColor();
 
     public static bool operator ==(TerminalColor color1, TerminalColor color2)
-    {
-        return color1._a == color2._a && color1._r == color2._r && color1._g == color2._g && color1._b == color2._b;
-    }
+        => color1._a == color2._a && color1._r == color2._r && color1._g == color2._g && color1._b == color2._b;
 
     public static bool operator !=(TerminalColor color1, TerminalColor color2)
-    {
-        return color1._a != color2._a || color1._r != color2._r || color1._g != color2._g || color1._b != color2._b;
-    }
+        => color1._a != color2._a || color1._r != color2._r || color1._g != color2._g || color1._b != color2._b;
 
     public static implicit operator uint(TerminalColor color) => color.ToUInt32();
 
     #region IEquatable
 
     readonly bool IEquatable<TerminalColor>.Equals(TerminalColor other)
-    {
-        return _a == other._a && _r == other._r && _g == other._g && _b == other._b;
-    }
+        => _a == other._a && _r == other._r && _g == other._g && _b == other._b;
 
     #endregion
 }

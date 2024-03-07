@@ -22,13 +22,15 @@ public partial struct TerminalDisplayInfo
 {
     public bool IsBold { get; set; }
 
+    public bool IsItalic { get; set; }
+
     public bool IsUnderline { get; set; }
 
-    public bool IsNegative { get; set; }
+    public bool IsInverse { get; set; }
 
-    public TerminalColorType? Foreground { get; set; }
+    public object? Foreground { get; set; }
 
-    public TerminalColorType? Background { get; set; }
+    public object? Background { get; set; }
 
     public static TerminalDisplayInfo Empty { get; } = new TerminalDisplayInfo();
 }

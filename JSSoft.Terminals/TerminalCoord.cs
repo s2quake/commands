@@ -37,21 +37,29 @@ public struct TerminalCoord(int x, int y) : IEquatable<TerminalCoord>, IComparab
 
     public int Y { readonly get; set; } = y;
 
-    public static bool operator >(TerminalCoord coord1, TerminalCoord coord2) => coord1.Y > coord2.Y || (coord1.Y == coord2.Y && coord1.X > coord2.X);
+    public static bool operator >(TerminalCoord coord1, TerminalCoord coord2)
+        => coord1.Y > coord2.Y || (coord1.Y == coord2.Y && coord1.X > coord2.X);
 
-    public static bool operator >=(TerminalCoord coord1, TerminalCoord coord2) => coord1 > coord2 || coord1 == coord2;
+    public static bool operator >=(TerminalCoord coord1, TerminalCoord coord2)
+        => coord1 > coord2 || coord1 == coord2;
 
-    public static bool operator <(TerminalCoord coord1, TerminalCoord coord2) => coord1.Y < coord2.Y || (coord1.Y == coord2.Y && coord1.X < coord2.X);
+    public static bool operator <(TerminalCoord coord1, TerminalCoord coord2)
+        => coord1.Y < coord2.Y || (coord1.Y == coord2.Y && coord1.X < coord2.X);
 
-    public static bool operator <=(TerminalCoord coord1, TerminalCoord coord2) => coord1 < coord2 || coord1 == coord2;
+    public static bool operator <=(TerminalCoord coord1, TerminalCoord coord2)
+        => coord1 < coord2 || coord1 == coord2;
 
-    public static bool operator ==(TerminalCoord coord1, TerminalCoord coord2) => coord1.Y == coord2.Y && coord1.X == coord2.X;
+    public static bool operator ==(TerminalCoord coord1, TerminalCoord coord2)
+        => coord1.Y == coord2.Y && coord1.X == coord2.X;
 
-    public static bool operator !=(TerminalCoord coord1, TerminalCoord coord2) => coord1.Y != coord2.Y || coord1.X != coord2.X;
+    public static bool operator !=(TerminalCoord coord1, TerminalCoord coord2)
+        => coord1.Y != coord2.Y || coord1.X != coord2.X;
 
-    public static TerminalCoord operator +(TerminalCoord coord1, TerminalCoord coord2) => new(coord1.X + coord2.X, coord1.Y + coord2.Y);
+    public static TerminalCoord operator +(TerminalCoord coord1, TerminalCoord coord2)
+        => new(coord1.X + coord2.X, coord1.Y + coord2.Y);
 
-    public static TerminalCoord operator -(TerminalCoord coord1, TerminalCoord coord2) => new(coord1.X - coord2.X, coord1.Y - coord2.Y);
+    public static TerminalCoord operator -(TerminalCoord coord1, TerminalCoord coord2)
+        => new(coord1.X - coord2.X, coord1.Y - coord2.Y);
 
     public static readonly TerminalCoord Empty = new(0, 0);
 

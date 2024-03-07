@@ -23,7 +23,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using JSSoft.Terminals.Extensions;
-using JSSoft.Terminals.Input;
 
 namespace JSSoft.Terminals;
 

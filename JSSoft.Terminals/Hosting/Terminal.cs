@@ -20,32 +20,24 @@ using System.ComponentModel;
 using JSSoft.Terminals.Input;
 using System.Diagnostics;
 using JSSoft.Terminals.Extensions;
-using JSSoft.Terminals.Serializations;
-using System.Text.RegularExpressions;
-using System.IO;
 using System.Threading;
+using System.IO;
 
 namespace JSSoft.Terminals.Hosting;
 
-public partial class Terminal : ITerminal
+public class Terminal : ITerminal
 {
     private readonly ITerminalStyle _originStyle;
     private readonly TerminalFieldSetter _setter;
     private readonly TerminalRowCollection _view;
-    private readonly TerminalSelection _selections;
-    private readonly List<string> _historyList = [];
-    private readonly TerminalPrompt _promptBlock;
-    private readonly TerminalBlockCollection _blocks;
+    private readonly TerminalSelectionCollection _selections;
+    private readonly TerminalLineCollection _lines;
+    private readonly TerminalTextWriter _writer;
+    private readonly TerminalTextReader _reader = new();
+    private readonly TerminalMode _mode = new();
 
-    private TerminalBlock _outputBlock;
-    private string _prompt = string.Empty;
-    private string _inputText = string.Empty;
-    private string _command = string.Empty;
-    private string _completion = string.Empty;
-    private int _historyIndex;
-    private bool _isExecuting;
     private bool _isReadOnly;
-    private int _cursorPosition;
+    private string _title = string.Empty;
     private TerminalCompletor _completor = (items, find) => [];
     private TerminalColorType? _foregroundColor;
     private TerminalColorType? _backgroundColor;
@@ -56,27 +48,15 @@ public partial class Terminal : ITerminal
     private TerminalCoord _originCoordinate = TerminalCoord.Empty;
     private TerminalCoord _viewCoordinate = TerminalCoord.Empty;
 
-    private string _compositionString = string.Empty;
     private ITerminalStyle _actualStyle;
     private ITerminalStyle? _style;
 
     private IInputHandler? _inputHandler;
-    private Terminals.TerminalSelection _selecting = Terminals.TerminalSelection.Empty;
+    private TerminalSelection _selecting = TerminalSelection.Empty;
     private TerminalSize _bufferSize = new(80, 25);
     private TerminalSize _size;
 
-    private TextWriter _out;
-    private TextWriter _error;
-    private TextReader _in;
-
-    private EventHandler<TerminalExecutingEventArgs>? _executing;
-    private EventHandler<TerminalExecutedEventArgs>? _executed;
-
     internal readonly SynchronizationContext SynchronizationContext;
-
-    static Terminal()
-    {
-    }
 
     public Terminal(ITerminalStyle originStyle, ITerminalScroll scroll)
     {
@@ -88,18 +68,13 @@ public partial class Terminal : ITerminal
         _setter = new TerminalFieldSetter(this, OnPropertyChanged);
         _originStyle = _actualStyle = originStyle;
         Scroll = scroll;
-        _blocks = new(this);
+        _lines = new(this);
+        _writer = new(this);
         _view = new(this);
-        _out = new TerminalTextWriter(this);
-        _error = new TerminalTextWriter(this);
-        _in = new TerminalTextReader(this);
-        _outputBlock = _blocks.OutputBlock;
-        _promptBlock = _blocks.PromptBlock;
-        _promptBlock.Set($"{char.MinValue}", TerminalDisplayInfo.Empty);
         _selections = new(this, InvokeUpdatedEvent);
         _inputHandler = new TerminalInputHandler();
         _inputHandler.Attach(this);
-        _blocks.Updated += Blocks_Updated;
+        _lines.Updated += Lines_Updated;
         _view.Updated += View_Updated;
         _actualStyle.PropertyChanged += ActualStyle_PropertyChanged;
         Scroll.PropertyChanged += Scroll_PropertyChanged;
@@ -123,64 +98,16 @@ public partial class Terminal : ITerminal
         set => _setter.SetField(ref _backgroundColor, value, nameof(BackgroundColor));
     }
 
-    public bool IsExecuting => _isExecuting;
+    public string Title
+    {
+        get => _title;
+        set => _setter.SetField(ref _title, value, nameof(Title));
+    }
 
     public bool IsReadOnly
     {
         get => _isReadOnly;
         set => _setter.SetField(ref _isReadOnly, value, nameof(IsReadOnly));
-    }
-
-    public int CursorPosition
-    {
-        get => _cursorPosition;
-        set
-        {
-            if (value < 0 || value > _command.Length)
-                throw new ArgumentOutOfRangeException(nameof(value));
-
-            if (_cursorPosition != value)
-            {
-                using var _ = _setter.LockEvent();
-                _setter.SetField(ref _cursorPosition, value, nameof(CursorPosition));
-                _inputText = _command.Substring(0, _cursorPosition);
-                UpdateCursorCoordinate();
-            }
-        }
-    }
-
-    public string Prompt
-    {
-        get => _prompt;
-        set
-        {
-            if (_prompt != value)
-            {
-                using var _ = _setter.LockEvent();
-                _setter.SetField(ref _prompt, value, nameof(Prompt));
-                _setter.SetField(ref _cursorPosition, _command.Length, nameof(CursorPosition));
-                _promptBlock.Set(_prompt + _command + char.MinValue, TerminalDisplayInfo.Empty);
-                UpdateCursorCoordinate();
-            }
-        }
-    }
-
-    public string Command
-    {
-        get => _command;
-        set
-        {
-            if (_command != value)
-            {
-                using var _ = _setter.LockEvent();
-                _setter.SetField(ref _command, value, nameof(Command));
-                _setter.SetField(ref _cursorPosition, _command.Length, nameof(CursorPosition));
-                _promptBlock.Set(_prompt + _command + char.MinValue, TerminalDisplayInfo.Empty);
-                _inputText = _command;
-                _completion = string.Empty;
-                UpdateCursorCoordinate();
-            }
-        }
     }
 
     public IInputHandler? InputHandler
@@ -223,6 +150,8 @@ public partial class Terminal : ITerminal
 
     public TerminalSize Size => _size;
 
+    public TerminalMode Mode => _mode;
+
     public IReadOnlyList<ITerminalRow> View => _view;
 
     public TerminalCoord CursorCoordinate
@@ -257,7 +186,6 @@ public partial class Terminal : ITerminal
             {
                 var index = new TerminalIndex(this, value).Linefeed();
                 _originCoordinate = value;
-                _outputBlock.Take(index.Value);
                 InvokePropertyChangedEvent(nameof(OriginCoordinate));
             }
         }
@@ -309,14 +237,14 @@ public partial class Terminal : ITerminal
             if (_setter.SetField(ref _style, value, nameof(Style)) == true)
             {
                 ActualStyle = _style ?? _originStyle;
-                _view.Update(_blocks);
+                _view.Update(_lines);
             }
         }
     }
 
     public ITerminalScroll Scroll { get; }
 
-    public Terminals.TerminalSelection Selecting
+    public TerminalSelection Selecting
     {
         get => _selecting;
         set
@@ -330,31 +258,11 @@ public partial class Terminal : ITerminal
         }
     }
 
-    public TextWriter Out
-    {
-        get => _out;
-        set => _out = value;
-    }
+    public ITerminalSelectionCollection Selections => _selections;
 
-    public TextWriter Error
-    {
-        get => _error;
-        set => _error = value;
-    }
+    public TextWriter Out => _writer;
 
-    public TextReader In
-    {
-        get => _in;
-        set => _in = value;
-    }
-
-    public string CompositionString
-    {
-        get => _compositionString;
-        set => _setter.SetField(ref _compositionString, value, nameof(CompositionString));
-    }
-
-    public ITerminalSelection Selections => _selections;
+    public TextReader In => _reader;
 
     public static TerminalSize GetBufferSize(Terminal terminal, TerminalSize size)
     {
@@ -362,8 +270,8 @@ public partial class Terminal : ITerminal
         var font = terminal.ActualStyle.Font;
         var itemWidth = font.Width;
         var itemHeight = font.Height;
-        bufferSize.Width = (int)size.Width / itemWidth;
-        bufferSize.Height = (int)size.Height / itemHeight;
+        bufferSize.Width = size.Width / itemWidth;
+        bufferSize.Height = size.Height / itemHeight;
         bufferSize.Height = Math.Min(terminal.MaximumBufferHeight, bufferSize.Height);
         return bufferSize;
     }
@@ -386,28 +294,22 @@ public partial class Terminal : ITerminal
         var font = ActualStyle.Font;
         var itemWidth = font.Width;
         var itemHeight = font.Height;
-        // if (position.X < 0 || position.Y < 0)
-        //     return TerminalCoord.Invalid;
-        var x = (int)(position.X / itemWidth);
-        var y = (int)(position.Y / itemHeight);
-        // if (x >= BufferSize.Width || y >= _blocks.Height)
-        //     return TerminalCoord.Invalid;
+        var x = position.X / itemWidth;
+        var y = position.Y / itemHeight;
         return new TerminalCoord(x, y);
     }
 
     public TerminalCharacterInfo? GetInfo(TerminalCoord coord)
-    {
-        return _blocks.GetInfo(coord.X, coord.Y);
-    }
+        => _lines.GetInfo(coord.X, coord.Y);
 
     public bool BringIntoView(int y)
     {
         var scroll = Scroll;
         var topIndex = _originCoordinate.Y;
         var bottomIndex = topIndex + BufferSize.Height;
-        if (scroll.Value < _blocks.Height - BufferSize.Height)
+        if (scroll.Value < _lines.Count - BufferSize.Height)
         {
-            var value = _blocks.Height - BufferSize.Height;
+            var value = _lines.Count - BufferSize.Height;
             scroll.PropertyChanged -= Scroll_PropertyChanged;
             scroll.Value = scroll.CoerceValue(value);
             scroll.PropertyChanged += Scroll_PropertyChanged;
@@ -425,56 +327,9 @@ public partial class Terminal : ITerminal
     }
 
     public string Copy()
-    {
-        if (Selections.Any() == true)
-        {
-            var range = Selections.First();
-            return GetString(range);
-        }
-        else
-        {
-            return string.Empty;
-        }
-    }
+        => Selections.Any() == true ? _lines.GetString([.. Selections]) : string.Empty;
 
-    public void Paste(string text) => ProcessText(text);
-
-    public void ProcessText(string text)
-    {
-        var itemList = new List<char>(text.Length);
-        var terminal = this;
-        foreach (var item in text)
-        {
-            if (item == 0 && itemList.Count > 0)
-            {
-                terminal.InsertCharacter([.. itemList]);
-                itemList.Clear();
-            }
-            if (terminal.IsReadOnly == false && terminal.IsExecuting == false && item != 0 && OnKeyPress(item) == false)
-            {
-                if (item == '\n')
-                {
-                    var items = itemList.ToArray();
-                    itemList.Clear();
-                    terminal.InsertCharacter(items);
-                    terminal.Execute();
-                }
-                else
-                {
-                    itemList.Add(item);
-                }
-            }
-        }
-        if (itemList.Count > 0)
-            terminal.InsertCharacter([.. itemList]);
-
-        static bool OnKeyPress(char character)
-        {
-            if (character == '\t' || character == 27 || character == 25)
-                return true;
-            return false;
-        }
-    }
+    public void Paste(string text) => WriteInput(text);
 
     public void ResizeBuffer(double width, double height)
     {
@@ -491,85 +346,36 @@ public partial class Terminal : ITerminal
         using (var _ = _setter.LockEvent())
         {
             _setter.SetField(ref _size, size, nameof(Size));
-            _setter.SetField(ref _bufferSize, bufferSize, nameof(BufferSize));
-            _blocks.Update();
-            Scroll.PropertyChanged -= Scroll_PropertyChanged;
-            Scroll.ViewportSize = _bufferSize.Height;
-            Scroll.SmallChange = 1;
-            Scroll.LargeChange = _bufferSize.Height;
-            Scroll.Minimum = 0;
-            Scroll.Maximum = GetScrollMaximum();
-            Scroll.IsVisible = Scroll.Maximum > 0;
-            Scroll.Value = Scroll.CoerceValue(Scroll.Value);
-            Scroll.PropertyChanged += Scroll_PropertyChanged;
+            if (_setter.SetField(ref _bufferSize, bufferSize, nameof(BufferSize)) == true)
+            {
+                _lines.Update();
+                Scroll.PropertyChanged -= Scroll_PropertyChanged;
+                Scroll.ViewportSize = _bufferSize.Height;
+                Scroll.SmallChange = 1;
+                Scroll.LargeChange = _bufferSize.Height;
+                Scroll.Minimum = 0;
+                Scroll.Maximum = GetScrollMaximum();
+                Scroll.IsVisible = Scroll.Maximum > 0;
+                Scroll.Value = Scroll.CoerceValue(Scroll.Value);
+                Scroll.PropertyChanged += Scroll_PropertyChanged;
+            }
         }
-        _view.Update(_blocks);
+        _view.Update(_lines);
         UpdateCursorCoordinate();
     }
 
     public void Update(params ITerminalRow[] rows) => InvokeUpdatedEvent(rows);
 
-    public void Execute()
-    {
-        if (_isReadOnly == true)
-            throw new InvalidOperationException("Terminal is readonly.");
-        if (_isExecuting == true)
-            throw new InvalidOperationException("Terminal is being executed.");
-
-        var commandText = _command;
-        var promptText = _prompt + _command;
-        var prompt = _prompt;
-        var length = _command.Length;
-        if (_historyList.Contains(commandText) == false)
-        {
-            _historyList.Add(commandText);
-            _historyIndex = _historyList.Count;
-        }
-        else
-        {
-            _historyIndex = _historyList.LastIndexOf(commandText) + 1;
-        }
-
-        using (var _ = _setter.LockEvent())
-        {
-            _setter.SetField(ref _prompt, string.Empty, nameof(Prompt));
-            _setter.SetField(ref _command, string.Empty, nameof(Command));
-            _setter.SetField(ref _cursorPosition, 0, nameof(CursorPosition));
-            _promptBlock.Set($"{char.MinValue}", TerminalDisplayInfo.Empty);
-            _inputText = string.Empty;
-            _completion = string.Empty;
-        }
-        Append(promptText + Environment.NewLine);
-        ExecuteEvent(commandText, prompt);
-    }
-
     public void Clear()
     {
         using var _ = _setter.LockEvent();
-        _setter.SetField(ref _command, string.Empty, nameof(Command));
-        _setter.SetField(ref _cursorPosition, 0, nameof(CursorPosition));
-        _promptBlock.Set($"{char.MinValue}", TerminalDisplayInfo.Empty);
-        _blocks.Clear();
-        _outputBlock = _blocks.OutputBlock;
-        _inputText = string.Empty;
-        _completion = string.Empty;
-    }
-
-    public void Cancel()
-    {
-        OnCancellationRequested(EventArgs.Empty);
+        _lines.Clear();
     }
 
     public void Reset(TerminalCoord coord)
     {
         using var _ = _setter.LockEvent();
-        _setter.SetField(ref _command, string.Empty, nameof(Command));
-        _setter.SetField(ref _cursorPosition, 0, nameof(CursorPosition));
-        _promptBlock.Set($"{char.MinValue}", TerminalDisplayInfo.Empty);
-        _blocks.Clear();
-        _outputBlock = _blocks.OutputBlock;
-        _inputText = string.Empty;
-        _completion = string.Empty;
+        _lines.Clear();
     }
 
     public void Append(string text)
@@ -579,140 +385,9 @@ public partial class Terminal : ITerminal
             Foreground = _foregroundColor,
             Background = _backgroundColor,
         };
-        _outputBlock.Append(text, displayInfo);
+        _lines.Append(text, displayInfo);
         UpdateCursorCoordinate();
         BringIntoView(_cursorCoordinate.Y);
-    }
-
-    public void NextCompletion()
-    {
-        CompletionImpl(NextCompletion);
-    }
-
-    public void PrevCompletion()
-    {
-        CompletionImpl(PrevCompletion);
-    }
-
-    public void Delete()
-    {
-        if (_cursorPosition < _command.Length)
-        {
-            using var _ = _setter.LockEvent();
-            _setter.SetField(ref _command, _command.Remove(_cursorPosition, 1), nameof(Command));
-            _promptBlock.Set(_prompt + _command + char.MinValue, TerminalDisplayInfo.Empty);
-            _inputText = _command;
-        }
-    }
-
-    public void Backspace()
-    {
-        if (_cursorPosition > 0)
-        {
-            var length = 1;
-            using var _ = _setter.LockEvent();
-            _setter.SetField(ref _command, _command.Remove(_cursorPosition - length, length), nameof(Command));
-            _setter.SetField(ref _cursorPosition, _cursorPosition - length, nameof(CursorPosition));
-            _promptBlock.Set(_prompt + _command + char.MinValue, TerminalDisplayInfo.Empty);
-            _inputText = _command;
-            UpdateCursorCoordinate();
-        }
-    }
-
-    public void NextHistory()
-    {
-        if (_historyIndex + 1 < _historyList.Count)
-        {
-            _historyIndex++;
-            Command = _historyList[_historyIndex];
-        }
-    }
-
-    public void PrevHistory()
-    {
-        if (_historyIndex > 0)
-        {
-            _historyIndex--;
-            Command = _historyList[_historyIndex];
-        }
-        else if (_historyList.Count == 1)
-        {
-            _historyIndex = 0;
-            Command = _historyList[_historyIndex];
-        }
-    }
-
-    public static Match[] MatchCompletion(string text)
-    {
-        var matches = Regex.Matches(text, "\\S+");
-        var argList = new List<Match>(matches.Count);
-        for (var i = 0; i < matches.Count; i++)
-        {
-            argList.Add(matches[i]);
-        }
-        return [.. argList];
-    }
-
-    public static string NextCompletion(string[] completions, string text)
-    {
-        completions = [.. completions];
-        if (completions.Contains(text) == true)
-        {
-            for (var i = 0; i < completions.Length; i++)
-            {
-                var r = string.Compare(text, completions[i], true);
-                if (r == 0)
-                {
-                    if (i + 1 < completions.Length)
-                        return completions[i + 1];
-                    else
-                        return completions.First();
-                }
-            }
-        }
-        else
-        {
-            for (var i = 0; i < completions.Length; i++)
-            {
-                var r = string.Compare(text, completions[i], true);
-                if (r < 0)
-                {
-                    return completions[i];
-                }
-            }
-        }
-        return text;
-    }
-
-    public static string PrevCompletion(string[] completions, string text)
-    {
-        completions = [.. completions];
-        if (completions.Contains(text) == true)
-        {
-            for (var i = completions.Length - 1; i >= 0; i--)
-            {
-                var r = string.Compare(text, completions[i], true);
-                if (r == 0)
-                {
-                    if (i - 1 >= 0)
-                        return completions[i - 1];
-                    else
-                        return completions.Last();
-                }
-            }
-        }
-        else
-        {
-            for (var i = completions.Length - 1; i >= 0; i--)
-            {
-                var r = string.Compare(text, completions[i], true);
-                if (r < 0)
-                {
-                    return completions[i];
-                }
-            }
-        }
-        return text;
     }
 
     public void ResetColor()
@@ -722,100 +397,26 @@ public partial class Terminal : ITerminal
         _setter.SetField(ref _backgroundColor, null, nameof(BackgroundColor));
     }
 
-    public TerminalDataInfo Save()
-    {
-        var data = new TerminalDataInfo
-        {
-            Prompt = _prompt,
-            Command = _command,
-            InputText = _inputText,
-            Completion = _completion,
-            CursorPosition = _cursorPosition,
-            Histories = [.. _historyList],
-            HistoryIndex = _historyIndex,
-            PromptDisplayInfo = new TerminalDisplayInfo[_prompt.Length],
-            CommandDisplayInfo = new TerminalDisplayInfo[_command.Length],
-        };
-
-        return data;
-    }
-
-    public void Load(TerminalDataInfo data)
-    {
-        using var _ = _setter.LockEvent();
-        _setter.SetField(ref _command, data.Command, nameof(Command));
-        _setter.SetField(ref _prompt, data.Prompt, nameof(Prompt));
-        _setter.SetField(ref _cursorPosition, data.CursorPosition, nameof(CursorPosition));
-        _inputText = data.InputText;
-        _completion = data.Completion;
-        _historyList.Clear();
-        _historyList.AddRange(data.Histories);
-        _historyIndex = data.HistoryIndex;
-    }
-
-    public void InsertCharacter(params char[] characters)
-    {
-        if (_isReadOnly == true)
-            throw new InvalidOperationException();
-
-        if (characters.Length != 0)
-        {
-            var text = new string(characters);
-            using var _ = _setter.LockEvent();
-            _setter.SetField(ref _command, _command.Insert(_cursorPosition, text), nameof(Command));
-            _setter.SetField(ref _cursorPosition, _cursorPosition + text.Length, nameof(CursorPosition));
-            _promptBlock.Set(_prompt + _command + char.MinValue, TerminalDisplayInfo.Empty);
-            _inputText = _command;
-            _completion = string.Empty;
-            UpdateCursorCoordinate();
-            BringIntoView(_cursorCoordinate.Y);
-        }
-    }
-
-    public event EventHandler<TerminalExecutingEventArgs>? Executing
-    {
-        add { _executing += value; }
-        remove { _executing -= value; }
-    }
-
-    public event EventHandler<TerminalExecutedEventArgs>? Executed
-    {
-        add { _executed += value; }
-        remove { _executed -= value; }
-    }
-
-    public event EventHandler? CancellationRequested;
+    public void WriteInput(string text) => _reader.Write(text);
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public event EventHandler<TerminalUpdateEventArgs>? Updated;
 
-    protected virtual void OnCancellationRequested(EventArgs e)
-    {
-        CancellationRequested?.Invoke(this, e);
-    }
-
     protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
-    {
-        PropertyChanged?.Invoke(this, e);
-    }
+        => PropertyChanged?.Invoke(this, e);
 
     protected virtual void OnUpdated(TerminalUpdateEventArgs e)
-    {
-        Updated?.Invoke(this, e);
-    }
+        => Updated?.Invoke(this, e);
 
     private void UpdateCursorCoordinate()
     {
-        var index1 = new TerminalIndex(this, TerminalCoord.Empty);
-        var index2 = index1.MoveForward(_promptBlock, _cursorPosition + _prompt.Length);
-        _setter.SetField(ref _cursorCoordinate, _promptBlock.GetCoordinate(index2), nameof(CursorCoordinate));
+        var index = _lines.Index;
+        _setter.SetField(ref _cursorCoordinate, _lines.GetCoordinate(index), nameof(CursorCoordinate));
     }
 
     private void InvokePropertyChangedEvent(string propertyName)
-    {
-        OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
-    }
+        => OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
 
     private void ActualStyle_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -828,166 +429,33 @@ public partial class Terminal : ITerminal
         }
     }
 
-    private void Blocks_Updated(object? sender, EventArgs e)
+    private void Lines_Updated(object? sender, EventArgs e)
     {
         Scroll.PropertyChanged -= Scroll_PropertyChanged;
         Scroll.Minimum = 0;
         Scroll.Maximum = GetScrollMaximum();
         Scroll.IsVisible = Scroll.Maximum > 0;
         Scroll.PropertyChanged += Scroll_PropertyChanged;
-        _view.Update(_blocks);
+        _view.Update(_lines);
         UpdateCursorCoordinate();
     }
 
     private void View_Updated(object? sender, TerminalRowUpdateEventArgs e)
-    {
-        InvokeUpdatedEvent(e.ChangedRows);
-    }
+        => InvokeUpdatedEvent(e.ChangedRows);
 
     private void Scroll_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        _view.Update(_blocks);
-    }
-
-    private string GetString(Terminals.TerminalSelection selection)
-    {
-        return string.Empty;
-        // var bufferWidth = BufferSize.Width;
-        // var c1 = selection.BeginCoord;
-        // var c2 = selection.EndCoord;
-        // var (s1, s2) = c1 < c2 ? (c1, c2) : (c2, c1);
-        // var capacity = (s2.Y - s1.Y + 1) * bufferWidth;
-        // var list = new List<char>(capacity);
-        // var sb = new StringBuilder();
-        // var x = s1.X;
-        // for (var y = s1.Y; y <= s2.Y; y++)
-        // {
-        //     var i = 0;
-        //     var count = y == s2.Y ? s2.X : bufferWidth;
-        //     for (; x < count; x++)
-        //     {
-        //         var coord = new TerminalCoord(x, y);
-        //         var index = CoordinateToIndex(coord);
-        //         if (index >= 0)
-        //         {
-        //             var glyphInfo = _characterInfos[index];
-        //             var character = glyphInfo.Character;
-        //             if (character != char.MinValue)
-        //             {
-        //                 sb.Append(character);
-        //                 i++;
-        //             }
-        //         }
-        //     }
-        //     x = 0;
-        //     if (i == 0 && y > s1.Y)
-        //         sb.AppendLine();
-        // }
-        // return sb.ToString();
-    }
+        => _view.Update(_lines);
 
     private int GetScrollMaximum()
     {
         if (ActualStyle.IsScrollForwardEnabled == false)
         {
-            return Math.Max(_originCoordinate.Y, _blocks.Height - BufferSize.Height);
+            return Math.Max(_originCoordinate.Y, _lines.Count - BufferSize.Height);
         }
-        return Math.Max(_blocks.Height, _maximumBufferHeight) - BufferSize.Height;
+        return Math.Max(_lines.Count, _maximumBufferHeight) - BufferSize.Height;
     }
 
     private void InvokeUpdatedEvent(ITerminalRow[] rows) => OnUpdated(new(rows));
-
-    private void CompletionImpl(Func<string[], string, string> func)
-    {
-#if NETFRAMEWORK
-        var matchCompletions = CommandUtility.MatchCompletion(_inputText);
-        var matches = new List<Match>(matchCompletions.Count);
-        foreach (Match item in matchCompletions)
-        {
-            matches.Add(item);
-        }
-#else
-        var matches = new List<Match>(CommandUtility.MatchCompletion(_inputText));
-#endif // NETFRAMEWORK
-        var find = string.Empty;
-        var prefix = false;
-        var postfix = false;
-        var leftText = _inputText;
-        if (matches.Count > 0)
-        {
-            var match = matches.Last();
-            var matchText = match.Value;
-            if (matchText.Length > 0 && matchText.First() == '\"')
-            {
-                prefix = true;
-                matchText = matchText.Substring(1);
-            }
-            if (matchText.Length > 1 && matchText.Last() == '\"')
-            {
-                postfix = true;
-                matchText = matchText.Remove(matchText.Length - 1);
-            }
-            if (matchText == matchText.Trim())
-            {
-                find = matchText;
-                matches.RemoveAt(matches.Count - 1);
-                leftText = _inputText.Remove(match.Index);
-            }
-        }
-
-        var argList = new List<string>();
-        for (var i = 0; i < matches.Count; i++)
-        {
-            var matchText = matches[i].Value.Trim();
-            if (matchText != string.Empty)
-                argList.Add(matchText);
-        }
-
-        var completions = Completor([.. argList], find);
-        if (completions != null && completions.Length != 0)
-        {
-            var completion = func(completions, _completion);
-            var inputText = _inputText;
-            var command = leftText + completion;
-            if (prefix == true || postfix == true)
-            {
-                command = leftText + "\"" + completion + "\"";
-            }
-            Command = command;
-            _inputText = inputText;
-            _completion = completion;
-        }
-    }
-
-    private void InsertPrompt(string prompt)
-    {
-        using var _ = _setter.LockEvent();
-        _setter.SetField(ref _isExecuting, false, nameof(IsExecuting));
-        _setter.SetField(ref _prompt, prompt, nameof(Prompt));
-        _setter.SetField(ref _cursorPosition, 0, nameof(CursorPosition));
-        _promptBlock.Set(_prompt + char.MinValue, TerminalDisplayInfo.Empty);
-        _inputText = string.Empty;
-        _completion = string.Empty;
-        UpdateCursorCoordinate();
-        BringIntoView(_cursorCoordinate.Y);
-    }
-
-    private void ExecuteEvent(string commandText, string prompt)
-    {
-        var action = new Action<Exception?>((e) =>
-        {
-            InsertPrompt(_prompt != string.Empty ? _prompt : prompt);
-            _executed?.Invoke(this, new TerminalExecutedEventArgs(commandText, e));
-        });
-        var eventArgs = new TerminalExecutingEventArgs(commandText, action);
-        InvokePropertyChangedEvent(nameof(IsExecuting));
-        _isExecuting = true;
-        _executing?.Invoke(this, eventArgs);
-        if (eventArgs.Token == Guid.Empty)
-        {
-            action(null);
-        }
-    }
 
     #region ITerminal
 

@@ -31,7 +31,6 @@ using JSSoft.Terminals;
 using JSSoft.Terminals.Input;
 using JSSoft.Terminals.Extensions;
 using Avalonia.Utilities;
-using JSSoft.Terminals.Serializations;
 using System.IO;
 
 namespace JSSoft.Commands.AppUI.Controls;
@@ -42,6 +41,9 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
 {
     public const string PART_TerminalPresenter = nameof(PART_TerminalPresenter);
     public const string PART_VerticalScrollBar = nameof(PART_VerticalScrollBar);
+
+    public static readonly StyledProperty<string> TitleProperty =
+        AvaloniaProperty.Register<TerminalControl, string>(nameof(Title));
 
     public static readonly StyledProperty<bool> IsReadOnlyProperty =
         AvaloniaProperty.Register<TerminalControl, bool>(nameof(IsReadOnly));
@@ -55,19 +57,12 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
     public static readonly DirectProperty<TerminalControl, Size> BufferSizeProperty =
         AvaloniaProperty.RegisterDirect<TerminalControl, Size>(nameof(BufferSize), o => o.BufferSize);
 
-    public static readonly RoutedEvent<TerminalExecutingRoutedEventArgs> ExecutingEvent =
-        RoutedEvent.Register<TerminalControl, TerminalExecutingRoutedEventArgs>(
-            nameof(Executing), RoutingStrategies.Bubble);
-
-    public static readonly RoutedEvent<TerminalExecutedRoutedEventArgs> ExecutedEvent =
-        RoutedEvent.Register<TerminalControl, TerminalExecutedRoutedEventArgs>(
-            nameof(Executed), RoutingStrategies.Bubble);
-
     private readonly TerminalKeyBindingCollection _keyBindings = new(TerminalKeyBindings.GetDefaultBindings());
 
     private readonly Terminals.Hosting.Terminal _terminal;
     private readonly TerminalStyle _terminalStyle = new();
     private readonly TerminalScroll _terminalScroll = new();
+    private readonly TerminalControlTextInputMethodClient _imClient = new();
     private IInputHandler? _inputHandler;
     private TerminalPresenter? _terminalPresenter;
     private ScrollBar? _scrollBar;
@@ -79,6 +74,13 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
     static TerminalControl()
     {
         FocusableProperty.OverrideDefaultValue(typeof(TerminalControl), true);
+        TextInputMethodClientRequestedEvent.AddClassHandler<TerminalControl>((tc, e) =>
+        {
+            if (!tc.IsReadOnly)
+            {
+                e.Client = tc._imClient;
+            }
+        });
     }
 
     public TerminalControl()
@@ -86,20 +88,15 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         _terminal = new(_terminalStyle, _terminalScroll);
         _terminal.PropertyChanged += Terminal_PropertyChanged;
         _inputHandler = _terminal.InputHandler;
-        _terminal.Prompt = "터미널 $ ";
         _terminal.Completor = GetCompletion;
-        _terminal.Executing += Terminal_Executing;
-        _terminal.Executed += Terminal_Executed;
         _terminalScroll.PropertyChanged += TerminalScroll_PropertyChanged;
         _inputVisual = this;
+    }
 
-        _terminal.AppendLine("Last login: Mon Dec 25 21:19:42 on ttys002");
-        // _terminal.AppendLine("1");
-        // _terminal.AppendLine("2");
-        // _terminal.AppendLine("3");
-        // _terminal.AppendLine("4");
-        // _terminal.AppendLine("5");
-        // _terminal.OriginCoordinate = new TerminalCoord(0, 6);
+    public string Title
+    {
+        get => GetValue(TitleProperty);
+        set => SetValue(TitleProperty, value);
     }
 
     public bool IsReadOnly
@@ -126,27 +123,9 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         private set => SetAndRaise(BufferSizeProperty, ref _bufferWidth, value);
     }
 
-    public TextWriter Out
-    {
-        get => _terminal.Out;
-        set => _terminal.Out = value;
-    }
+    public TextWriter Out => _terminal.Out;
 
-    public TextWriter Error
-    {
-        get => _terminal.Error;
-        set => _terminal.Error = value;
-    }
-
-    public TextReader In
-    {
-        get => _terminal.In;
-        set => _terminal.In = value;
-    }
-
-    public void Append(string text) => _terminal.Append(text);
-
-    public void AppendLine(string text) => _terminal.AppendLine(text);
+    public TextReader In => _terminal.In;
 
     public void Reset() => _terminal.Reset(TerminalCoord.Empty);
 
@@ -170,28 +149,6 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
 
     public void SelectAll() => _terminal.Selections.SelectAll();
 
-    public object Save() => _terminal.Save();
-
-    public void Load(object obj)
-    {
-        if (obj is TerminalDataInfo data)
-        {
-            _terminal.Load(data);
-        }
-    }
-
-    public event EventHandler<TerminalExecutingRoutedEventArgs>? Executing
-    {
-        add => AddHandler(ExecutingEvent, value);
-        remove => RemoveHandler(ExecutingEvent, value);
-    }
-
-    public event EventHandler<TerminalExecutedRoutedEventArgs>? Executed
-    {
-        add => AddHandler(ExecutedEvent, value);
-        remove => RemoveHandler(ExecutedEvent, value);
-    }
-
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
@@ -208,6 +165,12 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
             _terminalScroll.ScrollBar = scrollBar;
             _scrollBar = scrollBar;
         }
+        _imClient.SetPresenter(_terminalPresenter, this);
+    }
+
+    protected override void OnLoaded(RoutedEventArgs e)
+    {
+        base.OnLoaded(e);
     }
 
     protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
@@ -254,12 +217,14 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
     {
         base.OnGotFocus(e);
         _terminal.IsFocused = true;
+        _imClient.SetPresenter(_terminalPresenter, this);
     }
 
     protected override void OnLostFocus(RoutedEventArgs e)
     {
         base.OnLostFocus(e);
         _terminal.IsFocused = false;
+        _imClient.SetPresenter(null, null);
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -281,6 +246,7 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
             _window.Deactivated -= Window_Deactivated;
         }
         base.OnDetachedFromVisualTree(e);
+        _imClient.SetPresenter(null, null);
     }
 
     protected override void OnKeyDown(KeyEventArgs e)
@@ -288,12 +254,7 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         base.OnKeyDown(e);
         var modifiers = TerminalMarshal.Convert(e.KeyModifiers);
         var key = TerminalMarshal.Convert(e.Key);
-        if (e.Handled == false && e.Key == Key.Enter && e.KeyModifiers == KeyModifiers.None)
-        {
-            _terminal.ProcessText("\n");
-            e.Handled = true;
-        }
-        if (e.Handled == false && _keyBindings.Process(_terminal, modifiers, key) == true)
+        if (e.Handled != true && _keyBindings.Process(_terminal, modifiers, key) == true)
         {
             e.Handled = true;
         }
@@ -301,16 +262,21 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         {
             e.Handled = true;
         }
+        if (e.Handled == false && e.KeySymbol is { } keySymbol)
+        {
+            _terminal.WriteInput(keySymbol);
+            e.Handled = true;
+        }
     }
 
     protected override void OnTextInput(TextInputEventArgs e)
     {
+        base.OnTextInput(e);
         if (e.Handled == false && e.Text is { } text)
         {
-            _terminal.ProcessText(text);
+            _terminal.WriteInput(text);
             e.Handled = true;
         }
-        base.OnTextInput(e);
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -327,6 +293,15 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         else if (change.Property == TerminalStyleProperty)
         {
             _terminal.Style = TerminalStyle;
+        }
+        else if (change.Property == TitleProperty)
+        {
+            if (_terminal.Title != Title)
+            {
+                _terminal.PropertyChanged -= Terminal_PropertyChanged;
+                _terminal.Title = Title;
+                _terminal.PropertyChanged += Terminal_PropertyChanged;
+            }
         }
     }
 
@@ -367,19 +342,13 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         else if (e.PropertyName == nameof(ITerminal.BufferSize))
         {
             BufferSize = new Size(_terminal.BufferSize.Width, _terminal.BufferSize.Height);
+            // _pty.Resize(_terminal.BufferSize.Width, _terminal.BufferSize.Height);
         }
-    }
+        else if (e.PropertyName == nameof(ITerminal.Title))
+        {
+            SetCurrentValue(TitleProperty, _terminal.Title);
+        }
 
-    private void Terminal_Executing(object? sender, TerminalExecutingEventArgs e)
-    {
-        var args = new TerminalExecutingRoutedEventArgs(e, ExecutingEvent);
-        RaiseEvent(args);
-    }
-
-    private void Terminal_Executed(object? sender, TerminalExecutedEventArgs e)
-    {
-        var args = new TerminalExecutedRoutedEventArgs(e, ExecutedEvent);
-        RaiseEvent(args);
     }
 
     private void TerminalScroll_PropertyChanged(object? sender, PropertyChangedEventArgs e)

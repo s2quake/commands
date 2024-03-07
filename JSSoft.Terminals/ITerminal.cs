@@ -19,21 +19,14 @@
 using System.ComponentModel;
 using System.IO;
 using JSSoft.Terminals.Input;
-using JSSoft.Terminals.Serializations;
 
 namespace JSSoft.Terminals;
 
 public interface ITerminal : INotifyPropertyChanged
 {
-    string Command { get; set; }
-
-    string Prompt { get; set; }
-
-    int CursorPosition { get; set; }
+    string Title { get; set; }
 
     bool IsReadOnly { get; set; }
-
-    bool IsExecuting { get; }
 
     TerminalCompletor Completor { get; set; }
 
@@ -51,13 +44,13 @@ public interface ITerminal : INotifyPropertyChanged
 
     bool IsFocused { get; set; }
 
-    string CompositionString { get; set; }
-
     int MaximumBufferHeight { get; set; }
 
     TerminalSize BufferSize { get; }
 
     TerminalSize Size { get; }
+
+    TerminalMode Mode { get; }
 
     IReadOnlyList<ITerminalRow> View { get; }
 
@@ -67,15 +60,13 @@ public interface ITerminal : INotifyPropertyChanged
 
     TerminalCoord ViewCoordinate { get; set; }
 
-    ITerminalSelection Selections { get; }
+    ITerminalSelectionCollection Selections { get; }
 
     TerminalSelection Selecting { get; set; }
 
-    TextWriter Out { get; set; }
+    TextWriter Out { get; }
 
-    TextWriter Error { get; set; }
-
-    TextReader In { get; set; }
+    TextReader In { get; }
 
     TerminalPoint ViewToWorld(TerminalPoint position);
 
@@ -93,37 +84,11 @@ public interface ITerminal : INotifyPropertyChanged
 
     void Update(params ITerminalRow[] rows);
 
-    void Append(string value);
-
     void Reset(TerminalCoord coord);
 
     void ResetColor();
 
-    void Delete();
-
-    void Backspace();
-
-    void NextCompletion();
-
-    void PrevCompletion();
-
-    void NextHistory();
-
-    void PrevHistory();
-
-    void Execute();
-
-    void Cancel();
-
-    TerminalDataInfo Save();
-
-    void Load(TerminalDataInfo data);
-
-    event EventHandler? CancellationRequested;
-
-    event EventHandler<TerminalExecutingEventArgs>? Executing;
-
-    event EventHandler<TerminalExecutedEventArgs>? Executed;
+    void WriteInput(string text);
 
     event EventHandler<TerminalUpdateEventArgs>? Updated;
 }

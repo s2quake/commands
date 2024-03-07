@@ -16,33 +16,82 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using JSSoft.Terminals.Extensions;
+
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-sealed class AsciiCodeContext(string text, ITerminal terminal)
+sealed class AsciiCodeContext(TerminalLineCollection lines, string text, ITerminal terminal)
 {
+    private readonly ITerminal _terminal = terminal;
+    private TerminalIndex _index;
+    private TerminalRect _view = new(0, terminal.Scroll.Value, terminal.BufferSize.Width, terminal.BufferSize.Height);
+
+    public string Title
+    {
+        get => _terminal.Title;
+        set => _terminal.Title = value;
+    }
+
     public string Text { get; } = text;
 
     public int TextIndex { get; set; }
 
-    public ITerminalFont Font { get; } = terminal.ActualStyle.Font;
+    public TerminalLineCollection Lines { get; } = lines;
+
+    public ITerminalFont Font => _terminal.ActualStyle.Font;
 
     public TerminalIndex BeginIndex { get; set; }
 
-    public TerminalIndex Index { get; set; }
+    public TerminalIndex Index
+    {
+        get => _index;
+        set
+        {
+            if (value.X < 0 || value.Y < 0)
+                throw new ArgumentOutOfRangeException(nameof(value));
+
+            _index = value;
+        }
+    }
 
     public TerminalDisplayInfo DisplayInfo { get; set; }
 
+    public TerminalMode Mode => _terminal.Mode;
+
     public TerminalCoord OriginCoordinate
     {
-        get => terminal.OriginCoordinate;
-        set => terminal.OriginCoordinate = value;
+        get => _terminal.OriginCoordinate;
+        set => _terminal.OriginCoordinate = value;
     }
 
     public TerminalCoord ViewCoordinate
     {
-        get => terminal.ViewCoordinate;
-        set => terminal.ViewCoordinate = value;
+        get => _terminal.ViewCoordinate;
+        set => _terminal.ViewCoordinate = value;
     }
 
-    public TerminalRect View { get; } = new TerminalRect(0, terminal.Scroll.Value, terminal.BufferSize.Width, terminal.BufferSize.Height);
+    public TerminalRect View => _view;
+
+    public TerminalCoord GetCoordinate(TerminalLineCollection lines, TerminalIndex index)
+    {
+        if (lines.GetCharacterInfo(index) is { } characterInfo)
+        {
+            if (characterInfo.Span < 0)
+                return GetCoordinate(lines, index + characterInfo.Span);
+            var bufferWidth = _terminal.BufferSize.Width;
+            var x = index.Value % bufferWidth;
+            var y = index.Value / bufferWidth;
+            return new TerminalCoord(x, 0 + y);
+        }
+        else
+        {
+            var bufferWidth = _terminal.BufferSize.Width;
+            var x = index.Value % bufferWidth;
+            var y = index.Value / bufferWidth;
+            return new TerminalCoord(x, 0 + y);
+        }
+    }
+
+    public void SendSequence(string sequence)
+        => _terminal.WriteInput(sequence);
 }

@@ -30,5 +30,7 @@ packages/
 .vscode/
 *.user
 *.suo
+*.so
+*.dylib
 launchSettings.json
 build-temp.ps1

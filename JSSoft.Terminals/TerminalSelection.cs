@@ -38,26 +38,18 @@ public struct TerminalSelection(TerminalCoord c1, TerminalCoord c2)
     }
 
     public override readonly int GetHashCode()
-    {
-        return _beginCoord.GetHashCode() ^ _endCoord.GetHashCode();
-    }
+        => _beginCoord.GetHashCode() ^ _endCoord.GetHashCode();
 
     public override readonly string ToString()
-    {
-        return $"{{{_beginCoord}}} - {{{_endCoord}}}";
-    }
+        => $"{{{_beginCoord}}} - {{{_endCoord}}}";
 
     public readonly bool Intersect(TerminalCoord coord)
-    {
-        return coord >= _beginCoord && coord < _endCoord;
-    }
+        => coord >= _beginCoord && coord < _endCoord;
 
     public readonly IEnumerable<TerminalCoord> GetEnumerator(int width)
     {
         var s1 = BeginCoord;
         var s2 = EndCoord;
-        // var x = s1.X;
-        // var y = s1.Y;
 
         while (s1 != s2)
         {
@@ -71,19 +63,34 @@ public struct TerminalSelection(TerminalCoord c1, TerminalCoord c2)
         }
     }
 
+    public readonly int GetLength(int width)
+    {
+        var s1 = BeginCoord;
+        var s2 = EndCoord;
+        var length = 0;
+
+        while (s1 != s2)
+        {
+            length++;
+            s1.X++;
+            if (s1.X >= width)
+            {
+                s1.X = 0;
+                s1.Y++;
+            }
+        }
+        return length;
+    }
+
     public readonly TerminalCoord BeginCoord => _beginCoord;
 
     public readonly TerminalCoord EndCoord => _endCoord;
 
     public static bool operator ==(TerminalSelection s1, TerminalSelection s2)
-    {
-        return s1.BeginCoord == s2.BeginCoord && s1.EndCoord == s2.EndCoord;
-    }
+        => s1.BeginCoord == s2.BeginCoord && s1.EndCoord == s2.EndCoord;
 
     public static bool operator !=(TerminalSelection s1, TerminalSelection s2)
-    {
-        return s1.BeginCoord != s2.BeginCoord || s1.EndCoord != s2.EndCoord;
-    }
+        => s1.BeginCoord != s2.BeginCoord || s1.EndCoord != s2.EndCoord;
 
     public static TerminalSelection Empty { get; } = new TerminalSelection(TerminalCoord.Invalid, TerminalCoord.Invalid);
 }

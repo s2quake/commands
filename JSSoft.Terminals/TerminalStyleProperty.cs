@@ -85,7 +85,5 @@ public sealed class TerminalStyleProperty<T> : IDisposable
     }
 
     private void InvokeChangedEvent()
-    {
-        Changed?.Invoke(this, new TerminalStylePropertyChangedEventArgs<T>(Value));
-    }
+        => Changed?.Invoke(this, new TerminalStylePropertyChangedEventArgs<T>(Value));
 }

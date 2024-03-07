@@ -20,10 +20,11 @@ namespace JSSoft.Terminals.Hosting.Ansi;
 
 sealed class CarriageReturn : IAsciiCode
 {
-    public void Process(TerminalLineCollection lines, AsciiCodeContext context)
+    public void Process(AsciiCodeContext context)
     {
         var index = context.Index;
-        context.Index = index.CarriageReturn();
+        var beginIndex = context.BeginIndex;
+        context.Index =  index.CarriageReturn(beginIndex);
         context.TextIndex++;
     }
 }

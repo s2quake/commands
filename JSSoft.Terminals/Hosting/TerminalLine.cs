@@ -22,47 +22,25 @@ namespace JSSoft.Terminals.Hosting;
 
 sealed class TerminalLine : IDisposable
 {
-    private readonly TerminalArray<TerminalCharacterInfo?> _items;
+    private readonly TerminalArrayReference<TerminalCharacterInfo?> _items;
     private readonly List<TerminalLine> _children = [];
     private readonly int _y;
     private readonly int _width;
-    private readonly int _offset;
     private int _group;
     private TerminalLine? _parent;
+    private TerminalLine? _prev;
+    private TerminalLine? _next;
     private bool _isDisposed;
 
     public TerminalLine(TerminalArray<TerminalCharacterInfo?> items, int y, int width)
     {
-        _items = items;
+        _items = new(items, y * width, width);
         _y = y;
         _width = width;
-        _offset = y * width;
         _group = GetHashCode();
     }
 
-    public TerminalCharacterInfo? this[int index]
-    {
-        get => _items[index + _offset];
-        // private set
-        // {
-        //     if (value is { } characterInfo)
-        //     {
-        //         _items[index + _offset] = characterInfo;
-        //         for (var i = 1; i < characterInfo.Span; i++)
-        //         {
-        //             _items[index + i + _offset] = new TerminalCharacterInfo
-        //             {
-        //                 Span = -i,
-        //                 Offset = characterInfo.Offset + i,
-        //             };
-        //         }
-        //     }
-        //     else
-        //     {
-        //         _items[index] = null;
-        //     }
-        // }
-    }
+    public TerminalCharacterInfo? this[int index] => _items[index];
 
     public int Length { get; private set; }
 
@@ -82,12 +60,27 @@ sealed class TerminalLine : IDisposable
             {
                 if (_parent != null)
                 {
+                    _parent._next = _next;
+                    if (_next is not null)
+                    {
+                        _next._prev = _prev;
+                    }
                     _parent._children.Remove(this);
                     _group = GetHashCode();
                 }
                 _parent = value;
                 if (_parent != null)
                 {
+                    if (_parent.Children.Count == 0)
+                    {
+                        _parent._next = this;
+                        _prev = _parent;
+                    }
+                    else
+                    {
+                        _prev = _parent.Children[^1];
+                        _prev._next = this;
+                    }
                     _parent._children.Add(this);
                     _group = _parent.Group;
                 }
@@ -118,7 +111,7 @@ sealed class TerminalLine : IDisposable
 
         for (var i = Length - 1; i >= 0; i--)
         {
-            if (_items[i + _offset] is not null)
+            if (_items[i] is not null)
                 continue;
 
             if (i + 1 == Length)
@@ -127,7 +120,7 @@ sealed class TerminalLine : IDisposable
             }
             else
             {
-                _items[i + _offset] = new TerminalCharacterInfo
+                _items[i] = new TerminalCharacterInfo
                 {
                     Character = ' ',
                     Span = 1,
@@ -153,7 +146,7 @@ sealed class TerminalLine : IDisposable
         if (index >= _width)
             throw new ArgumentOutOfRangeException(nameof(index));
 
-        _items[index + _offset] = new TerminalCharacterInfo
+        _items[index] = new TerminalCharacterInfo
         {
             Character = ' ',
             Span = 1,
@@ -182,7 +175,7 @@ sealed class TerminalLine : IDisposable
         var end = index + length;
         for (var i = begin; i < end; i++)
         {
-            _items[i + _offset] = new TerminalCharacterInfo
+            _items[i] = new TerminalCharacterInfo
             {
                 Character = ' ',
                 Span = 1,
@@ -204,10 +197,11 @@ sealed class TerminalLine : IDisposable
 
         var i1 = index;
         var i2 = index + characterInfo.Span;
-        _items[i1++ + _offset] = characterInfo;
+        characterInfo.Group = _group;
+        _items[i1++] = characterInfo;
         for (; i1 < i2; i1++)
         {
-            _items[i1 + _offset] = new TerminalCharacterInfo
+            _items[i1] = new TerminalCharacterInfo
             {
                 Span = -i1,
                 Group = _group,
@@ -217,13 +211,49 @@ sealed class TerminalLine : IDisposable
         Length = Math.Max(Length, i1);
     }
 
+    public void InsertCharacter(int index, TerminalCharacterInfo characterInfo)
+    {
+        if (index < 0 || index >= _width)
+            throw new ArgumentOutOfRangeException(nameof(index));
+
+        ShiftRight(index, characterInfo.Span);
+        _items[index] = characterInfo;
+        Length++;
+    }
+
+    public void Delete(int index, int length)
+    {
+        if (index < 0 || index + length >= _width)
+            throw new ArgumentOutOfRangeException(nameof(index));
+
+        for (var i = index + length; i < Length; i++)
+        {
+            _items[i - length] = _items[i];
+        }
+        for (var i = Length - 1; i < Length; i++)
+        {
+            _items[i] = null;
+        }
+        Length -= length;
+    }
+
+    public TerminalIndex Backspace(TerminalIndex index)
+    {
+        if (index.Y != _y)
+            throw new ArgumentException("The Y of index is different from the Y of this.", nameof(index));
+        if (_parent is null && index.X <= 0)
+            throw new ArgumentOutOfRangeException(nameof(index));
+
+        return index.Backspace();
+    }
+
     public TerminalCharacterInfo[] GetCharacterInfos()
     {
         if (_parent != null)
             throw new InvalidOperationException("This is not the first line.");
 
         TerminalLine[] lines = [this, .. _children];
-        var capacity = GetCapacity(this);
+        var capacity = lines.Sum(item => item.Length);
         var itemList = new List<TerminalCharacterInfo>(capacity);
         foreach (var line in lines)
         {
@@ -257,13 +287,38 @@ sealed class TerminalLine : IDisposable
         var end = index + length;
         for (var i = end - 1; i >= begin; i--)
         {
-            _items[i + _offset] = null;
+            _items[i] = null;
             if (i + 1 == Length)
             {
                 Length = i;
             }
         }
         IsModified = true;
+    }
+
+    public void Take(int index)
+    {
+        for (var i = index; i < _width; i++)
+        {
+            _items[i] = null;
+        }
+        Length = index;
+        IsModified = true;
+    }
+
+    public void CopyTo(TerminalLine line)
+    {
+        if (line == this)
+            throw new ArgumentException("The line is same as this.", nameof(line));
+        if (line._width != _width)
+            throw new ArgumentException("The width of line is different from the width of this.", nameof(line));
+
+        for (var i = 0; i < _width; i++)
+        {
+            line._items[i] = _items[i];
+        }
+        line.Length = Length;
+        line.IsModified = true;
     }
 
     public void Dispose()
@@ -276,13 +331,16 @@ sealed class TerminalLine : IDisposable
         _isDisposed = true;
     }
 
-    private static int GetCapacity(TerminalLine line)
+    private void ShiftRight(int index, int length)
     {
-        var capacity = line.Length;
-        foreach (var item in line.Children)
+        if (index < 0)
+            throw new ArgumentOutOfRangeException(nameof(index));
+        if (length <= 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
+        for (var i = Length - length; i >= index; i--)
         {
-            capacity += item.Length;
+            _items[i + length] = _items[i];
         }
-        return capacity;
     }
 }

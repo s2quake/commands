@@ -28,6 +28,8 @@ public class TerminalGlyphRun(TerminalGlyphRunInfo info) : IDisposable
 
     public bool IsBold { get; } = info.IsBold;
 
+    public bool IsItalic { get; } = info.IsItalic;
+
     public int Group { get; } = info.Group;
 
     public TerminalGlyphInfo[] GlyphInfos { get; } = info.GlyphInfos;

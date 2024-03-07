@@ -20,6 +20,14 @@ namespace JSSoft.Terminals;
 
 public struct TerminalPoint(int x, int y) : IEquatable<TerminalPoint>
 {
+    public int X { get; set; } = x;
+
+    public int Y { get; set; } = y;
+
+    public readonly int Magnitude => (int)Math.Sqrt(X * X + Y * Y);
+
+    public static TerminalPoint Empty { get; } = new TerminalPoint();
+
     public override readonly bool Equals(object? obj)
     {
         if (obj is TerminalPoint point)
@@ -30,84 +38,48 @@ public struct TerminalPoint(int x, int y) : IEquatable<TerminalPoint>
     }
 
     public override readonly int GetHashCode()
-    {
-        return X.GetHashCode() ^ Y.GetHashCode();
-    }
+        => X.GetHashCode() ^ Y.GetHashCode();
 
     public override readonly string ToString()
-    {
-        return $"{X}, {Y}";
-    }
+        => $"{X}, {Y}";
 
     public readonly int Length()
-    {
-        return (int)Math.Sqrt(X * X + Y * Y);
-    }
-
-    public int X { get; set; } = x;
-
-    public int Y { get; set; } = y;
-
-    public readonly int Magnitude => (int)Math.Sqrt(X * X + Y * Y);
-
-    public static TerminalPoint Empty { get; } = new TerminalPoint();
+        => (int)Math.Sqrt(X * X + Y * Y);
 
     public static bool operator ==(TerminalPoint point1, TerminalPoint point2)
-    {
-        return point1.X == point2.X && point1.Y == point2.Y;
-    }
+        => point1.X == point2.X && point1.Y == point2.Y;
 
     public static bool operator !=(TerminalPoint point1, TerminalPoint point2)
-    {
-        return point1.X != point2.X || point1.Y != point2.Y;
-    }
+        => point1.X != point2.X || point1.Y != point2.Y;
 
     public static TerminalPoint operator -(TerminalPoint point, TerminalSize size)
-    {
-        return new TerminalPoint(point.X - size.Width, point.Y - size.Height);
-    }
+        => new(point.X - size.Width, point.Y - size.Height);
 
     public static TerminalPoint operator -(TerminalPoint point)
-    {
-        return new TerminalPoint(-point.X, -point.Y);
-    }
+        => new(-point.X, -point.Y);
 
     public static TerminalPoint operator +(TerminalPoint point)
-    {
-        return new TerminalPoint(+point.X, +point.Y);
-    }
+        => new(+point.X, +point.Y);
 
     public static TerminalPoint operator +(TerminalPoint point, TerminalSize size)
-    {
-        return new TerminalPoint(point.X + size.Width, point.Y + size.Height);
-    }
+        => new(point.X + size.Width, point.Y + size.Height);
 
     public static TerminalPoint operator -(TerminalPoint point1, TerminalPoint point2)
-    {
-        return new TerminalPoint(point1.X - point2.X, point1.Y - point2.Y);
-    }
+        => new(point1.X - point2.X, point1.Y - point2.Y);
 
     public static TerminalPoint operator +(TerminalPoint point1, TerminalPoint point2)
-    {
-        return new TerminalPoint(point1.X + point2.X, point1.Y + point2.Y);
-    }
+        => new(point1.X + point2.X, point1.Y + point2.Y);
 
     public static TerminalPoint operator *(TerminalPoint point, int value)
-    {
-        return new TerminalPoint(point.X * value, point.Y * value);
-    }
+        => new(point.X * value, point.Y * value);
 
     public static TerminalPoint operator /(TerminalPoint point, int value)
-    {
-        return new TerminalPoint(point.X / value, point.Y / value);
-    }
+        => new(point.X / value, point.Y / value);
 
     #region IEquatable
 
     readonly bool IEquatable<TerminalPoint>.Equals(TerminalPoint other)
-    {
-        return X == other.X && Y == other.Y;
-    }
+        => X == other.X && Y == other.Y;
 
     #endregion
 }

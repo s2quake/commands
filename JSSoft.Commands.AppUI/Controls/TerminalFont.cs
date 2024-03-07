@@ -32,17 +32,21 @@ sealed class TerminalFont : ITerminalFont
     private int _size;
     private readonly Typeface[] _typefacesN;
     private readonly Typeface[] _typefacesB;
+    private readonly Typeface[] _typefacesI;
+    private readonly Typeface[] _typefacesBI;
 
-    public TerminalFont(FontFamily fontFamily)
-        : this(fontFamily, 12)
+    public TerminalFont(FontFamily[] fontFamilies)
+        : this(fontFamilies, 12)
     {
     }
 
-    public TerminalFont(FontFamily fontFamily, int size)
+    public TerminalFont(FontFamily[] fontFamilies, int size)
     {
-        _fontFamilies = new FontFamily[] { fontFamily, FontFamily.Parse(FontManager.Current.DefaultFontFamily.Name) }.Distinct().ToArray();
+        _fontFamilies = fontFamilies.Distinct().ToArray();
         _typefacesN = [.. _fontFamilies.Select(item => new Typeface(item))];
-        _typefacesB = [.. _fontFamilies.Select(item => new Typeface(item, FontStyle.Normal, FontWeight.UltraBold))];
+        _typefacesB = [.. _fontFamilies.Select(item => new Typeface(item, FontStyle.Normal, FontWeight.Bold))];
+        _typefacesI = [.. _fontFamilies.Select(item => new Typeface(item, FontStyle.Italic))];
+        _typefacesBI = [.. _fontFamilies.Select(item => new Typeface(item, FontStyle.Italic, FontWeight.Bold))];
         _size = size;
         Update();
     }
@@ -66,7 +70,7 @@ sealed class TerminalFont : ITerminalFont
         }
     }
 
-    public Typeface GetTypeface(bool isBold, int group)
+    public Typeface GetTypeface(bool isBold, bool isItalic, int group)
     {
         var index = -1;
         for (var i = 0; i < _typefacesN.Length; i++)
@@ -79,8 +83,12 @@ sealed class TerminalFont : ITerminalFont
         }
         if (index == -1)
             return _typefacesN[0];
+        if (isBold == true && isItalic == true)
+            return _typefacesBI[index];
         if (isBold == true)
             return _typefacesB[index];
+        if (isItalic == true)
+            return _typefacesI[index];
         return _typefacesN[index];
     }
 

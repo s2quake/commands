@@ -20,8 +20,9 @@ namespace JSSoft.Terminals.Hosting.Ansi;
 
 sealed class Linefeed : IAsciiCode
 {
-    public void Process(TerminalLineCollection lines, AsciiCodeContext context)
+    public void Process(AsciiCodeContext context)
     {
+        var lines = context.Lines;
         var index = context.Index;
         lines.Prepare(context.BeginIndex, context.Index);
         context.Index = index.Linefeed();

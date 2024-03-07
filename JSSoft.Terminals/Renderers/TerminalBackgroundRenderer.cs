@@ -49,7 +49,6 @@ public class TerminalBackgroundRenderer : TerminalRendererBase
 
     protected override void OnRender(ITerminalDrawingContext drawingContext)
     {
-        // drawingContext.FillRectangle(BackgroundColor, BackgroundRect);
     }
 
     protected override void OnDispose()

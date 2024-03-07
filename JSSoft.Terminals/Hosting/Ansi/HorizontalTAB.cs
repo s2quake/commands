@@ -16,19 +16,17 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using System.Threading;
-
 namespace JSSoft.Terminals.Hosting.Ansi;
 
 sealed class HorizontalTAB : IAsciiCode
 {
-    public void Process(TerminalLineCollection lines, AsciiCodeContext context)
+    public void Process(AsciiCodeContext context)
     {
+        var lines = context.Lines;
         var beginIndex = context.BeginIndex;
         var index1 = context.Index;
         var span = 8 - (index1.X % 8);
         var index2 = index1.Expect(span);
-        var parent = index1.Y < lines.Count ? lines[index1.Y] : null;
         var line = lines.Prepare(beginIndex, index2);
         line.SetEmpty(index2, span);
         context.Index = index2 + span;

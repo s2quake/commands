@@ -25,21 +25,15 @@ public abstract class TerminalPropertyChangedBase : INotifyPropertyChanged
     private readonly TerminalFieldSetter _setter;
 
     protected TerminalPropertyChangedBase()
-    {
-        _setter = new TerminalFieldSetter(this, OnPropertyChanged);
-    }
+        => _setter = new TerminalFieldSetter(this, OnPropertyChanged);
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
-    {
-        PropertyChanged?.Invoke(this, e);
-    }
+        => PropertyChanged?.Invoke(this, e);
 
     protected void InvokePropertyChanged(string propertyName) => OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
 
     protected bool SetField<T>(ref T oldField, T newField, string propertyName)
-    {
-        return _setter.SetField(ref oldField, newField, propertyName);
-    }
+        => _setter.SetField(ref oldField, newField, propertyName);
 }

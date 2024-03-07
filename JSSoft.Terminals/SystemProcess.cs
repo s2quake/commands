@@ -70,12 +70,6 @@ public sealed class SystemProcess
     public List<string> ArgumentList { get; } = new();
 #endif
 
-    public TextWriter Out { get; set; } = new StringWriter();
-
-    public TextWriter Error { get; set; } = new StringWriter();
-
-    public TextReader In { get; set; } = new StringReader(string.Empty);
-
     public async Task<int> StartAsync(CancellationToken cancellationToken)
     {
 #if !NETCOREAPP2_1_OR_GREATER && !NETSTANDARD2_1_OR_GREATER
@@ -100,11 +94,11 @@ public sealed class SystemProcess
 
     private void OnErrorDataReceived(DataReceivedEventArgs e)
     {
-        Error.WriteLine(e.Data);
+        // Error.WriteLine(e.Data);
     }
 
     private void OnOutputDataReceived(DataReceivedEventArgs e)
     {
-        Out.WriteLine(e.Data);
+        // Out.WriteLine(e.Data);
     }
 }

@@ -39,21 +39,41 @@ public static class TerminalStyleUtility
     public static readonly bool DefaultIsScrollForwardEnabled = false;
 
     public static readonly TerminalColor DefaultBlack = TerminalColor.FromArgb(255, 0, 0, 0);
-    public static readonly TerminalColor DefaultRed = TerminalColor.FromArgb(255, 128, 0, 0);
-    public static readonly TerminalColor DefaultGreen = TerminalColor.FromArgb(255, 0, 128, 0);
-    public static readonly TerminalColor DefaultYellow = TerminalColor.FromArgb(255, 128, 128, 0);
-    public static readonly TerminalColor DefaultBlue = TerminalColor.FromArgb(255, 0, 0, 128);
-    public static readonly TerminalColor DefaultMagenta = TerminalColor.FromArgb(255, 128, 0, 128);
-    public static readonly TerminalColor DefaultCyan = TerminalColor.FromArgb(255, 0, 128, 128);
-    public static readonly TerminalColor DefaultWhite = TerminalColor.FromArgb(255, 128, 128, 128);
-    public static readonly TerminalColor DefaultBrightBlack = TerminalColor.FromArgb(255, 128, 128, 128);
-    public static readonly TerminalColor DefaultBrightRed = TerminalColor.FromArgb(255, 255, 0, 0);
-    public static readonly TerminalColor DefaultBrightGreen = TerminalColor.FromArgb(255, 0, 255, 0);
-    public static readonly TerminalColor DefaultBrightYellow = TerminalColor.FromArgb(255, 255, 255, 0);
+    public static readonly TerminalColor DefaultRed = TerminalColor.FromArgb(255, 153, 0, 0);
+    public static readonly TerminalColor DefaultGreen = TerminalColor.FromArgb(255, 0, 166, 0);
+    public static readonly TerminalColor DefaultYellow = TerminalColor.FromArgb(255, 153, 153, 0);
+    public static readonly TerminalColor DefaultBlue = TerminalColor.FromArgb(255, 0, 0, 178);
+    public static readonly TerminalColor DefaultMagenta = TerminalColor.FromArgb(255, 178, 0, 178);
+    public static readonly TerminalColor DefaultCyan = TerminalColor.FromArgb(255, 0, 166, 178);
+    public static readonly TerminalColor DefaultWhite = TerminalColor.FromArgb(255, 191, 191, 191);
+    public static readonly TerminalColor DefaultBrightBlack = TerminalColor.FromArgb(255, 102, 102, 102);
+    public static readonly TerminalColor DefaultBrightRed = TerminalColor.FromArgb(255, 229, 0, 0);
+    public static readonly TerminalColor DefaultBrightGreen = TerminalColor.FromArgb(255, 0, 217, 0);
+    public static readonly TerminalColor DefaultBrightYellow = TerminalColor.FromArgb(255, 229, 229, 0);
     public static readonly TerminalColor DefaultBrightBlue = TerminalColor.FromArgb(255, 0, 0, 255);
-    public static readonly TerminalColor DefaultBrightMagenta = TerminalColor.FromArgb(255, 255, 0, 255);
-    public static readonly TerminalColor DefaultBrightCyan = TerminalColor.FromArgb(255, 0, 255, 255);
-    public static readonly TerminalColor DefaultBrightWhite = TerminalColor.FromArgb(255, 255, 255, 255);
+    public static readonly TerminalColor DefaultBrightMagenta = TerminalColor.FromArgb(255, 229, 0, 229);
+    public static readonly TerminalColor DefaultBrightCyan = TerminalColor.FromArgb(255, 0, 229, 229);
+    public static readonly TerminalColor DefaultBrightWhite = TerminalColor.FromArgb(255, 229, 229, 229);
+
+    public static TerminalColor? GetColor(ITerminalStyle style, object? color)
+    {
+        if (color is TerminalColor terminalColor)
+        {
+            return terminalColor;
+        }
+        else if (color is TerminalColorType terminalColorType)
+        {
+            return GetColor(style, terminalColorType);
+        }
+        else if (color is null)
+        {
+            return null;
+        }
+        else
+        {
+            throw new NotSupportedException($"Not supported color type: {color}");
+        }
+    }
 
     public static TerminalColor? GetColor(ITerminalStyle style, TerminalColorType? color)
     {

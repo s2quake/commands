@@ -16,8 +16,6 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using JSSoft.Terminals.Extensions;
-
 namespace JSSoft.Terminals.Renderers.Extensions;
 
 public static class ITerminalDrawingContextExtensions
@@ -26,14 +24,4 @@ public static class ITerminalDrawingContextExtensions
     {
         return @this.PushTransform(new TerminalPoint(x, y));
     }
-
-    // internal static TerminalRenderRange PushTransform(this ITerminalDrawingContext @this, ITerminal terminal)
-    // {
-    //     var (_, bufferHeight) = terminal.BufferSize;
-    //     var topIndex = 0;
-    //     var bottomIndex = bufferHeight;
-    //     var transform = terminal.GetTransform(topIndex);
-    //     var transformScope = @this.PushTransform(0.0, -transform.Y);
-    //     return new TerminalRenderRange(topIndex, bottomIndex, transformScope);
-    // }
 }

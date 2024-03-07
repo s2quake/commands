@@ -20,7 +20,7 @@ namespace JSSoft.Terminals.Hosting.Ansi;
 
 sealed class DeleteCharacter : IAsciiCode
 {
-    public void Process(TerminalLineCollection lines, AsciiCodeContext context)
+    public void Process(AsciiCodeContext context)
     {
         Console.Beep();
         context.TextIndex++;

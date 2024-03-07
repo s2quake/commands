@@ -25,30 +25,6 @@ public readonly struct TerminalRange(int begin, int length) : IEquatable<Termina
     {
     }
 
-    public static TerminalRange FromBeginEnd(int begin, int end)
-    {
-        return new TerminalRange(begin, end - begin);
-    }
-
-    public override readonly bool Equals(object? obj)
-    {
-        if (obj is TerminalRange rangeInt)
-        {
-            return this.Begin == rangeInt.Begin && this.Length == rangeInt.Length;
-        }
-        return base.Equals(obj);
-    }
-
-    public override readonly int GetHashCode()
-    {
-        return this.Begin.GetHashCode() ^ this.Length.GetHashCode();
-    }
-
-    public override readonly string ToString()
-    {
-        return $"{this.Begin}, {this.Length}";
-    }
-
     public bool Contains(int value) => value >= Begin && value < End;
 
     public int Begin { get; } = begin;
@@ -57,30 +33,42 @@ public readonly struct TerminalRange(int begin, int length) : IEquatable<Termina
 
     public int End { get; } = checked((int)(begin + length));
 
-    public readonly int Min => Math.Min(this.Begin, this.End);
+    public readonly int Min => Math.Min(Begin, End);
 
-    public readonly int Max => Math.Max(this.Begin, this.End);
+    public readonly int Max => Math.Max(Begin, End);
 
-    public readonly int AbsoluteLength => Math.Abs(this.Length);
+    public readonly int AbsoluteLength => Math.Abs(Length);
 
     public static readonly TerminalRange Empty = new();
 
-    public static bool operator ==(TerminalRange rangeInt1, TerminalRange rangeInt2)
+    public static TerminalRange FromBeginEnd(int begin, int end)
+        => new(begin, end - begin);
+
+    public override readonly bool Equals(object? obj)
     {
-        return rangeInt1.Begin == rangeInt2.Begin && rangeInt1.Length == rangeInt2.Length;
+        if (obj is TerminalRange rangeInt)
+        {
+            return Begin == rangeInt.Begin && Length == rangeInt.Length;
+        }
+        return base.Equals(obj);
     }
 
+    public override readonly int GetHashCode()
+        => Begin.GetHashCode() ^ Length.GetHashCode();
+
+    public override readonly string ToString()
+        => $"{Begin}, {Length}";
+
+    public static bool operator ==(TerminalRange rangeInt1, TerminalRange rangeInt2)
+        => rangeInt1.Begin == rangeInt2.Begin && rangeInt1.Length == rangeInt2.Length;
+
     public static bool operator !=(TerminalRange rangeInt1, TerminalRange rangeInt2)
-    {
-        return rangeInt1.Begin != rangeInt2.Begin || rangeInt1.Length != rangeInt2.Length;
-    }
+        => rangeInt1.Begin != rangeInt2.Begin || rangeInt1.Length != rangeInt2.Length;
 
     #region IEquatable
 
     readonly bool IEquatable<TerminalRange>.Equals(TerminalRange other)
-    {
-        return this.Begin == other.Begin && this.Length == other.Length;
-    }
+        => Begin == other.Begin && Length == other.Length;
 
     #endregion
 }

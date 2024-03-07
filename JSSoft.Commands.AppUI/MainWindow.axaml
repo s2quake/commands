@@ -4,10 +4,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ctrl="using:JSSoft.Commands.AppUI.Controls"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="300"
-        Width="570" Height="340"
+        Width="680" Height="380"
         x:Class="JSSoft.Commands.AppUI.MainWindow"
-        Title="JSSoft.Commands.AppUI">
+        Title="{Binding Title, ElementName=_terminal}">
     <Window.Resources>
     </Window.Resources>
-    <ctrl:TerminalControl x:Name="_terminal" TerminalStyle="{StaticResource ubuntu}" />
+    <ctrl:TerminalControl x:Name="_terminal" TerminalStyle="{StaticResource macos}" Title="JSSoft.Commands.AppUI" />
 </Window>

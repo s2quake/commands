@@ -20,13 +20,13 @@ namespace JSSoft.Terminals.Extensions;
 
 public static class ITerminalSelectionExtensions
 {
-    public static void Select(this ITerminalSelection @this, TerminalSelection selection)
+    public static void Select(this ITerminalSelectionCollection @this, TerminalSelection selection)
     {
         @this.Clear();
         @this.Add(selection);
     }
 
-    public static bool TrySelect(this ITerminalSelection @this, TerminalSelection selection)
+    public static bool TrySelect(this ITerminalSelectionCollection @this, TerminalSelection selection)
     {
         if (selection != TerminalSelection.Empty)
         {
@@ -37,7 +37,7 @@ public static class ITerminalSelectionExtensions
         return false;
     }
 
-    public static bool TryClear(this ITerminalSelection @this)
+    public static bool TryClear(this ITerminalSelectionCollection @this)
     {
         if (@this.Count > 0)
         {
@@ -47,7 +47,7 @@ public static class ITerminalSelectionExtensions
         return false;
     }
 
-    public static bool IsSelected(this ITerminalSelection @this, TerminalCoord coord)
+    public static bool IsSelected(this ITerminalSelectionCollection @this, TerminalCoord coord)
     {
         if (@this.Any())
         {

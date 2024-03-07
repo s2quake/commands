@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PublishName>commands</PublishName>
+    <DefineConstants>JSSOFT_TERMINALS</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DelaySign>false</DelaySign>
+    <IsMacOS Condition="'$(NETCoreSdkPortableRuntimeIdentifier)'=='osx-arm64'">true</IsMacOS>
+    <IsLinux Condition="'$(NETCoreSdkPortableRuntimeIdentifier)'=='linux-arm64'">true</IsLinux>
+    <NativeSourcePath>$(MSBuildThisFileDirectory)runtimes/pty.c</NativeSourcePath>
+  </PropertyGroup>
+  <Target Name="BuildBindingsInOSX" Condition="'$(IsMacOS)'=='true'" AfterTargets="BeforeBuild">
+    <MakeDir Directories="$(MSBuildThisFileDirectory)runtimes\osx\native" />
+    <Exec Command="gcc -dynamiclib -o '$(MSBuildThisFileDirectory)runtimes\osx\native\jspty.dylib' '$(NativeSourcePath)'" />
+  </Target>
+  <Target Name="BuildBindingsInLinux" Condition="'$(IsLinux)'=='true'" AfterTargets="BeforeBuild">
+    <MakeDir Directories="$(MSBuildThisFileDirectory)runtimes\linux-arm\native" />
+    <Exec Command="gcc -shared -o '$(MSBuildThisFileDirectory)runtimes\linux-arm\native\jspty.so' '$(NativeSourcePath)'" />
+  </Target>
+  <Target Name="test" BeforeTargets="Build">
+    <Message Text="$(NETCoreSdkPortableRuntimeIdentifier)" Importance="High" />
+    <Message Text="$(OS)" Importance="High" />
+  </Target>
+  <ItemGroup>
+    <None Condition="'$(IsMacOS)'=='true'" Include="$(MSBuildThisFileDirectory)runtimes\osx\native\jspty.dylib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Condition="'$(IsLinux)'=='true'" Include="$(MSBuildThisFileDirectory)runtimes\linux-arm\native\jspty.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

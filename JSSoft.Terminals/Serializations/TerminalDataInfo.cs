@@ -22,8 +22,6 @@ public struct TerminalDataInfo
 {
     public string OutputText { get; set; }
 
-    public string Prompt { get; set; }
-
     public string Command { get; set; }
 
     public string InputText { get; set; }

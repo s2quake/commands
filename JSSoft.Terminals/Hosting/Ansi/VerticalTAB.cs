@@ -20,7 +20,7 @@ namespace JSSoft.Terminals.Hosting.Ansi;
 
 sealed class VerticalTAB : IAsciiCode
 {
-    public void Process(TerminalLineCollection items, AsciiCodeContext context)
+    public void Process(AsciiCodeContext context)
     {
         var index = context.Index;
         context.Index = index.VerticalTAB();

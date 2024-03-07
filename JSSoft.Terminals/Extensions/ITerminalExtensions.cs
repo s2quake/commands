@@ -22,28 +22,119 @@ public static class ITerminalExtensions
 {
     public static void MoveToFirst(this ITerminal @this)
     {
-        @this.CursorPosition = 0;
+        @this.WriteInput("\x01");
         @this.BringIntoView();
     }
 
     public static void MoveToLast(this ITerminal @this)
     {
-        @this.CursorPosition = @this.Command.Length;
+        @this.WriteInput("\x1b[F");
         @this.BringIntoView();
     }
 
-    public static void MoveLeft(this ITerminal @this)
+    public static void KeyLeft(this ITerminal @this)
     {
-        if (@this.CursorPosition > 0)
-            @this.CursorPosition--;
+        if (@this.Mode[TerminalModeType.DECCKM] == true)
+        {
+            @this.WriteInput($"\x1bOD");
+        }
+        else
+        {
+            @this.WriteInput($"\x1b[D");
+            @this.BringIntoView();
+        }
+    }
+
+    public static void KeyRight(this ITerminal @this)
+    {
+        if (@this.Mode[TerminalModeType.DECCKM] == true)
+        {
+            @this.WriteInput($"\x1bOC");
+        }
+        else
+        {
+            @this.WriteInput($"\x1b[C");
+            @this.BringIntoView();
+        }
+    }
+
+    public static void KeyDown(this ITerminal @this)
+    {
+        if (@this.Mode[TerminalModeType.DECCKM] == true)
+        {
+            @this.WriteInput($"\x1bOB");
+        }
+        else
+        {
+            @this.WriteInput($"\x1b[B");
+            @this.BringIntoView();
+        }
+    }
+
+    public static void KeyUp(this ITerminal @this)
+    {
+        if (@this.Mode[TerminalModeType.DECCKM] == true)
+        {
+            @this.WriteInput($"\x1bOA");
+        }
+        else
+        {
+            @this.WriteInput($"\x1b[A");
+            @this.BringIntoView();
+        }
+    }
+
+    public static void KeyHome(this ITerminal @this)
+    {
+        if (@this.Mode[TerminalModeType.DECCKM] == true)
+        {
+            @this.WriteInput($"\x1bOH");
+        }
+        else
+        {
+            @this.WriteInput($"\x1b[H");
+            @this.BringIntoView();
+        }
+    }
+
+    public static void KeyEnd(this ITerminal @this)
+    {
+        if (@this.Mode[TerminalModeType.DECCKM] == true)
+        {
+            @this.WriteInput($"\x1bOF");
+        }
+        else
+        {
+            @this.WriteInput($"\x1b[F");
+            @this.BringIntoView();
+        }
+    }
+
+    public static void Backspace(this ITerminal @this)
+    {
+        @this.WriteInput($"\b");
         @this.BringIntoView();
     }
 
-    public static void MoveRight(this ITerminal @this)
+    public static void Delete(this ITerminal @this)
     {
-        if (@this.CursorPosition < @this.Command.Length)
-            @this.CursorPosition++;
+        @this.WriteInput($"\x1b[3~");
         @this.BringIntoView();
+    }
+
+    public static void ScrollUp(this ITerminal @this)
+    {
+        @this.WriteInput($"\x1b[M0A");
+    }
+
+    public static void ScrollDown(this ITerminal @this)
+    {
+        @this.WriteInput($"\x1b[M0B");
+    }
+
+    public static void Cancel(this ITerminal @this)
+    {
+        @this.WriteInput("\x03");
     }
 
     public static bool BringIntoView(this ITerminal @this)
@@ -101,18 +192,6 @@ public static class ITerminalExtensions
         return @this.GetInfo((TerminalCoord)index);
     }
 
-    // public static TerminalCharacterInfo GetCell(this ITerminal @this, TerminalCoord coord)
-    //     => GetCell(@this, coord.X, coord.Y);
-
-    // public static TerminalCharacterInfo GetCell(this ITerminal @this, int x, int y)
-    // {
-    //     if (y >= @this.Rows.Count)
-    //         throw new ArgumentOutOfRangeException(nameof(y));
-    //     if (x >= @this.BufferSize.Width)
-    //         throw new ArgumentOutOfRangeException(nameof(x));
-    //     return @this.Rows[y].Cells[x];
-    // }
-
     public static TerminalRect GetBackgroundRect(this ITerminal @this, TerminalCoord coord, int span)
     {
         var font = @this.ActualStyle.Font;
@@ -129,25 +208,31 @@ public static class ITerminalExtensions
         return new TerminalPoint(0, rowIndex * height);
     }
 
-    public static void AppendLine(this ITerminal @this, string value) => @this.Append(value + Environment.NewLine);
+    public static void Append(this ITerminal @this, string value) => @this.Out.Write(value);
 
-    public static void AppendLine(this ITerminal @this) => @this.Append(Environment.NewLine);
+    public static void AppendLine(this ITerminal @this, string value) => @this.Out.WriteLine(value + Environment.NewLine);
+
+    public static void AppendLine(this ITerminal @this) => @this.Out.WriteLine();
 
     public static TerminalColor GetForegroundColor(this ITerminal terminal, TerminalCoord coord)
     {
         var style = terminal.ActualStyle;
         var characterInfo = terminal.GetInfo(coord);
         var displayInfo = characterInfo?.DisplayInfo ?? TerminalDisplayInfo.Empty;
+        var f1 = displayInfo.IsInverse != true ? displayInfo.Foreground : displayInfo.Background;
+        var f2 = displayInfo.IsInverse != true ? style.ForegroundColor : style.BackgroundColor;
+        var b1 = displayInfo.IsInverse != true ? displayInfo.Background : displayInfo.Foreground;
+        var b2 = displayInfo.IsInverse != true ? style.BackgroundColor : style.ForegroundColor;
         if (terminal.IsSelecting(coord) == true || terminal.Selections.IsSelected(coord) == true)
-            return GetSelectionColor(style, displayInfo);
-        return TerminalStyleUtility.GetColor(style, displayInfo.Foreground) ?? style.ForegroundColor;
+            return GetSelectionColor(style);
+        return TerminalStyleUtility.GetColor(style, f1) ?? f2;
 
-        static TerminalColor GetSelectionColor(ITerminalStyle style, TerminalDisplayInfo displayInfo) => style.SelectionForegroundColorSource switch
+        TerminalColor GetSelectionColor(ITerminalStyle style) => style.SelectionForegroundColorSource switch
         {
             TerminalColorSource.Origin => style.SelectionForegroundColor,
-            TerminalColorSource.NotUsed => TerminalStyleUtility.GetColor(style, displayInfo.Foreground) ?? style.ForegroundColor,
-            TerminalColorSource.Invert => TerminalStyleUtility.GetColor(style, displayInfo.Background) ?? style.BackgroundColor,
-            TerminalColorSource.Complementary => (TerminalStyleUtility.GetColor(style, displayInfo.Foreground) ?? style.ForegroundColor).ToComplementary(),
+            TerminalColorSource.NotUsed => TerminalStyleUtility.GetColor(style, f1) ?? f2,
+            TerminalColorSource.Invert => TerminalStyleUtility.GetColor(style, b1) ?? b2,
+            TerminalColorSource.Complementary => (TerminalStyleUtility.GetColor(style, f1) ?? style.ForegroundColor).ToComplementary(),
             _ => throw new ArgumentOutOfRangeException(nameof(style)),
         };
     }
@@ -157,16 +242,20 @@ public static class ITerminalExtensions
         var style = terminal.ActualStyle;
         var characterInfo = terminal.GetInfo(coord);
         var displayInfo = characterInfo?.DisplayInfo ?? TerminalDisplayInfo.Empty;
+        var f1 = displayInfo.IsInverse != true ? displayInfo.Foreground : displayInfo.Background;
+        var f2 = displayInfo.IsInverse != true ? style.ForegroundColor : style.BackgroundColor;
+        var b1 = displayInfo.IsInverse != true ? displayInfo.Background : displayInfo.Foreground;
+        var b2 = displayInfo.IsInverse != true ? style.BackgroundColor : style.ForegroundColor;
         if (terminal.IsSelecting(coord) == true || terminal.Selections.IsSelected(coord) == true)
-            return GetSelectionColor(style, displayInfo);
-        return TerminalStyleUtility.GetColor(style, displayInfo.Background) ?? style.BackgroundColor;
+            return GetSelectionColor(style);
+        return TerminalStyleUtility.GetColor(style, b1) ?? b2;
 
-        static TerminalColor GetSelectionColor(ITerminalStyle style, TerminalDisplayInfo displayInfo) => style.SelectionBackgroundColorSource switch
+        TerminalColor GetSelectionColor(ITerminalStyle style) => style.SelectionBackgroundColorSource switch
         {
             TerminalColorSource.Origin => style.SelectionBackgroundColor,
-            TerminalColorSource.NotUsed => TerminalStyleUtility.GetColor(style, displayInfo.Background) ?? style.BackgroundColor,
-            TerminalColorSource.Invert => TerminalStyleUtility.GetColor(style, displayInfo.Foreground) ?? style.ForegroundColor,
-            TerminalColorSource.Complementary => (TerminalStyleUtility.GetColor(style, displayInfo.Background) ?? style.BackgroundColor).ToComplementary(),
+            TerminalColorSource.NotUsed => TerminalStyleUtility.GetColor(style, b1) ?? b2,
+            TerminalColorSource.Invert => TerminalStyleUtility.GetColor(style, f1) ?? f2,
+            TerminalColorSource.Complementary => (TerminalStyleUtility.GetColor(style, b1) ?? style.BackgroundColor).ToComplementary(),
             _ => throw new ArgumentOutOfRangeException(nameof(style)),
         };
     }
