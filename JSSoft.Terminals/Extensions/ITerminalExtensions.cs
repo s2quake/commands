@@ -34,7 +34,7 @@ public static class ITerminalExtensions
 
     public static void KeyLeft(this ITerminal @this)
     {
-        if (@this.Mode[TerminalModeType.Mode1049] == true)
+        if (@this.Mode[TerminalModeType.DECCKM] == true)
         {
             @this.WriteInput($"\x1bOD");
         }
@@ -47,7 +47,7 @@ public static class ITerminalExtensions
 
     public static void KeyRight(this ITerminal @this)
     {
-        if (@this.Mode[TerminalModeType.Mode1049] == true)
+        if (@this.Mode[TerminalModeType.DECCKM] == true)
         {
             @this.WriteInput($"\x1bOC");
         }
@@ -60,7 +60,7 @@ public static class ITerminalExtensions
 
     public static void KeyDown(this ITerminal @this)
     {
-        if (@this.Mode[TerminalModeType.Mode1049] == true)
+        if (@this.Mode[TerminalModeType.DECCKM] == true)
         {
             @this.WriteInput($"\x1bOB");
         }
@@ -73,13 +73,39 @@ public static class ITerminalExtensions
 
     public static void KeyUp(this ITerminal @this)
     {
-        if (@this.Mode[TerminalModeType.Mode1049] == true)
+        if (@this.Mode[TerminalModeType.DECCKM] == true)
         {
             @this.WriteInput($"\x1bOA");
         }
         else
         {
             @this.WriteInput($"\x1b[A");
+            @this.BringIntoView();
+        }
+    }
+
+    public static void KeyHome(this ITerminal @this)
+    {
+        if (@this.Mode[TerminalModeType.DECCKM] == true)
+        {
+            @this.WriteInput($"\x1bOH");
+        }
+        else
+        {
+            @this.WriteInput($"\x1b[H");
+            @this.BringIntoView();
+        }
+    }
+
+    public static void KeyEnd(this ITerminal @this)
+    {
+        if (@this.Mode[TerminalModeType.DECCKM] == true)
+        {
+            @this.WriteInput($"\x1bOF");
+        }
+        else
+        {
+            @this.WriteInput($"\x1b[F");
             @this.BringIntoView();
         }
     }
@@ -165,18 +191,6 @@ public static class ITerminalExtensions
             throw new ArgumentException("The width of index and the buffer width of terminal are different.", nameof(index));
         return @this.GetInfo((TerminalCoord)index);
     }
-
-    // public static TerminalCharacterInfo GetCell(this ITerminal @this, TerminalCoord coord)
-    //     => GetCell(@this, coord.X, coord.Y);
-
-    // public static TerminalCharacterInfo GetCell(this ITerminal @this, int x, int y)
-    // {
-    //     if (y >= @this.Rows.Count)
-    //         throw new ArgumentOutOfRangeException(nameof(y));
-    //     if (x >= @this.BufferSize.Width)
-    //         throw new ArgumentOutOfRangeException(nameof(x));
-    //     return @this.Rows[y].Cells[x];
-    // }
 
     public static TerminalRect GetBackgroundRect(this ITerminal @this, TerminalCoord coord, int span)
     {

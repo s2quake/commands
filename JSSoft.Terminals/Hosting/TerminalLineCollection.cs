@@ -182,6 +182,16 @@ sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<TerminalL
         _beginIndex = beginIndex;
     }
 
+    public void ReverseLineFeed(int index)
+    {
+        for (var i = _lineList.Count - 1; i > index; i--)
+        {
+            var line1 = _lineList[i - 1];
+            var line2 = _lineList[i];
+            line1.CopyTo(line2);
+        }
+    }
+
     public TerminalCoord GetCoordinate(TerminalIndex index)
     {
         if (GetCharacterInfo(index) is { } characterInfo)

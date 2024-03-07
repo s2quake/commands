@@ -38,8 +38,7 @@ sealed class EraseInLine : CSISequenceBase
         action.Invoke(context);
     }
 
-    // erase from cursor to end of line
-    private void Action0(SequenceContext context)
+    private void EraseToRight(SequenceContext context)
     {
         var lines = context.Lines;
         var index = context.Index;
@@ -49,8 +48,7 @@ sealed class EraseInLine : CSISequenceBase
         }
     }
 
-    // erase start of line to the cursor
-    private void Action1(SequenceContext context)
+    private void EraseToLeft(SequenceContext context)
     {
         var lines = context.Lines;
         var index = context.Index;
@@ -61,8 +59,7 @@ sealed class EraseInLine : CSISequenceBase
         line.Erase(index1, length);
     }
 
-    // erase the entire line
-    private void Action2(SequenceContext context)
+    private void EraseAll(SequenceContext context)
     {
         var lines = context.Lines;
         var view = context.View;
@@ -73,9 +70,9 @@ sealed class EraseInLine : CSISequenceBase
 
     private Action<SequenceContext> GetAction(int option) => option switch
     {
-        0 => Action0,
-        1 => Action1,
-        2 => Action2,
+        0 => EraseToRight,
+        1 => EraseToLeft,
+        2 => EraseAll,
         _ => EmptyAction,
     };
 }

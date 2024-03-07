@@ -20,6 +20,8 @@ namespace JSSoft.Terminals;
 
 public enum TerminalModeType
 {
+    DECCKM = 1,
+    
     Mode1049 = 1049,
 
     Mode2004 = 2004,

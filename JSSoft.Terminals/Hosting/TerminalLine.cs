@@ -306,6 +306,21 @@ sealed class TerminalLine : IDisposable
         IsModified = true;
     }
 
+    public void CopyTo(TerminalLine line)
+    {
+        if (line == this)
+            throw new ArgumentException("The line is same as this.", nameof(line));
+        if (line._width != _width)
+            throw new ArgumentException("The width of line is different from the width of this.", nameof(line));
+
+        for (var i = 0; i < _width; i++)
+        {
+            line._items[i] = _items[i];
+        }
+        line.Length = Length;
+        line.IsModified = true;
+    }
+
     public void Dispose()
     {
         if (_parent != null)
