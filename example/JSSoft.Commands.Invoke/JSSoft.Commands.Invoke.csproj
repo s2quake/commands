@@ -29,6 +29,6 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     <DelaySign>false</DelaySign>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\JSSoft.Commands\JSSoft.Commands.csproj" />
+    <ProjectReference Include="..\..\src\JSSoft.Commands\JSSoft.Commands.csproj" />
   </ItemGroup>
 </Project>

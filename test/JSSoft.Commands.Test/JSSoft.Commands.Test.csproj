@@ -32,7 +32,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <ProjectReference Include="..\JSSoft.Commands\JSSoft.Commands.csproj" />
+    <ProjectReference Include="..\..\src\JSSoft.Commands\JSSoft.Commands.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Resources\words.txt" />

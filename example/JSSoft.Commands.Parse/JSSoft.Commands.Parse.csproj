@@ -30,6 +30,6 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
-    <ProjectReference Include="..\JSSoft.Commands\JSSoft.Commands.csproj" />
+    <ProjectReference Include="..\..\src\JSSoft.Commands\JSSoft.Commands.csproj" />
   </ItemGroup>
 </Project>
