@@ -88,7 +88,6 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         _terminal = new(_terminalStyle, _terminalScroll);
         _terminal.PropertyChanged += Terminal_PropertyChanged;
         _inputHandler = _terminal.InputHandler;
-        _terminal.Completor = GetCompletion;
         _terminalScroll.PropertyChanged += TerminalScroll_PropertyChanged;
         _inputVisual = this;
     }
@@ -126,8 +125,6 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
     public TextWriter Out => _terminal.Out;
 
     public TextReader In => _terminal.In;
-
-    public void Reset() => _terminal.Reset(TerminalCoord.Empty);
 
     public async void Copy()
     {

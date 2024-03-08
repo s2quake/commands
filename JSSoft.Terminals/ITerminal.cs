@@ -28,11 +28,7 @@ public interface ITerminal : INotifyPropertyChanged
 
     bool IsReadOnly { get; set; }
 
-    TerminalCompletor Completor { get; set; }
-
-    TerminalColorType? ForegroundColor { get; set; }
-
-    TerminalColorType? BackgroundColor { get; set; }
+    TerminalDisplayInfo DisplayInfo { get; set; }
 
     ITerminalStyle ActualStyle { get; }
 
@@ -48,7 +44,7 @@ public interface ITerminal : INotifyPropertyChanged
 
     TerminalSize BufferSize { get; }
 
-    TerminalSize Size { get; }
+    TerminalSize Size { get; set; }
 
     TerminalMode Mode { get; }
 
@@ -82,11 +78,8 @@ public interface ITerminal : INotifyPropertyChanged
 
     void Paste(string text);
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
     void Update(params ITerminalRow[] rows);
-
-    void Reset(TerminalCoord coord);
-
-    void ResetColor();
 
     void WriteInput(string text);
 

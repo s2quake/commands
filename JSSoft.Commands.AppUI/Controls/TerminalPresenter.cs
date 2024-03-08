@@ -58,7 +58,7 @@ public class TerminalPresenter : Control
     protected override void OnSizeChanged(SizeChangedEventArgs e)
     {
         base.OnSizeChanged(e);
-        _terminal?.ResizeBuffer((float)e.NewSize.Width, (float)e.NewSize.Height);
+        _terminal?.Resize((float)e.NewSize.Width, (float)e.NewSize.Height);
     }
 
     private void Terminal_PropertyChanged(object? sender, PropertyChangedEventArgs e)
