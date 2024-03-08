@@ -16,19 +16,19 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using System.ComponentModel.Composition;
-using JSSoft.Commands.AppUI.Controls;
+// using System.ComponentModel.Composition;
+// using JSSoft.Commands.AppUI.Controls;
 
-namespace JSSoft.Commands.AppUI.Commands;
+// namespace JSSoft.Commands.AppUI.Commands;
 
-[Export(typeof(ICommand))]
-[method: ImportingConstructor]
-sealed class ResetCommand(TerminalControl terminalControl) : CommandBase
-{
-    private readonly TerminalControl _terminalControl = terminalControl;
+// [Export(typeof(ICommand))]
+// [method: ImportingConstructor]
+// sealed class ResetCommand(TerminalControl terminalControl) : CommandBase
+// {
+//     private readonly TerminalControl _terminalControl = terminalControl;
 
-    protected override void OnExecute()
-    {
-        _terminalControl.Reset();
-    }
-}
+//     protected override void OnExecute()
+//     {
+//         _terminalControl.Reset();
+//     }
+// }

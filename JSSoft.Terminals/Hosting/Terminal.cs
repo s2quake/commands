@@ -38,15 +38,13 @@ public class Terminal : ITerminal
 
     private bool _isReadOnly;
     private string _title = string.Empty;
-    private TerminalCompletor _completor = (items, find) => [];
-    private TerminalColorType? _foregroundColor;
-    private TerminalColorType? _backgroundColor;
 
     private int _maximumBufferHeight = 500;
     private bool _isFocused;
     private TerminalCoord _cursorCoordinate = TerminalCoord.Empty;
     private TerminalCoord _originCoordinate = TerminalCoord.Empty;
     private TerminalCoord _viewCoordinate = TerminalCoord.Empty;
+    private TerminalDisplayInfo _displayInfo = TerminalDisplayInfo.Empty;
 
     private ITerminalStyle _actualStyle;
     private ITerminalStyle? _style;
@@ -80,22 +78,10 @@ public class Terminal : ITerminal
         Scroll.PropertyChanged += Scroll_PropertyChanged;
     }
 
-    public TerminalCompletor Completor
+    public TerminalDisplayInfo DisplayInfo
     {
-        get => _completor;
-        set => _setter.SetField(ref _completor, value, nameof(Completor));
-    }
-
-    public TerminalColorType? ForegroundColor
-    {
-        get => _foregroundColor;
-        set => _setter.SetField(ref _foregroundColor, value, nameof(ForegroundColor));
-    }
-
-    public TerminalColorType? BackgroundColor
-    {
-        get => _backgroundColor;
-        set => _setter.SetField(ref _backgroundColor, value, nameof(BackgroundColor));
+        get => _displayInfo;
+        set => _setter.SetField(ref _displayInfo, value, nameof(DisplayInfo));
     }
 
     public string Title
@@ -148,7 +134,17 @@ public class Terminal : ITerminal
 
     public TerminalSize BufferSize => _bufferSize;
 
-    public TerminalSize Size => _size;
+    public TerminalSize Size
+    {
+        get => _size;
+        set
+        {
+            if (_size != value)
+            {
+                Resize(value.Width, value.Height);
+            }
+        }
+    }
 
     public TerminalMode Mode => _mode;
 
@@ -331,7 +327,7 @@ public class Terminal : ITerminal
 
     public void Paste(string text) => WriteInput(text);
 
-    public void ResizeBuffer(double width, double height)
+    public void Resize(double width, double height)
     {
         if (width < 0)
             throw new ArgumentOutOfRangeException(nameof(width));
@@ -372,29 +368,11 @@ public class Terminal : ITerminal
         _lines.Clear();
     }
 
-    public void Reset(TerminalCoord coord)
-    {
-        using var _ = _setter.LockEvent();
-        _lines.Clear();
-    }
-
     public void Append(string text)
     {
-        var displayInfo = new TerminalDisplayInfo()
-        {
-            Foreground = _foregroundColor,
-            Background = _backgroundColor,
-        };
-        _lines.Append(text, displayInfo);
+        _lines.Append(text, _displayInfo);
         UpdateCursorCoordinate();
         BringIntoView(_cursorCoordinate.Y);
-    }
-
-    public void ResetColor()
-    {
-        using var _ = _setter.LockEvent();
-        _setter.SetField(ref _foregroundColor, null, nameof(ForegroundColor));
-        _setter.SetField(ref _backgroundColor, null, nameof(BackgroundColor));
     }
 
     public void WriteInput(string text) => _reader.Write(text);
