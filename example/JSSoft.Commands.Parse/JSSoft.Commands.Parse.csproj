@@ -21,14 +21,15 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
   <PropertyGroup>
     <PublishName>commands.examples</PublishName>
     <OutputType>Exe</OutputType>
-    <AssemblyName>invoke</AssemblyName>
-    <PublishSingleFile>True</PublishSingleFile>
+    <AssemblyName>parse</AssemblyName>
+    <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>False</SelfContained>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DelaySign>false</DelaySign>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\JSSoft.Commands\JSSoft.Commands.csproj" />
+    <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
+    <ProjectReference Include="..\..\src\JSSoft.Commands\JSSoft.Commands.csproj" />
   </ItemGroup>
 </Project>

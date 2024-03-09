@@ -18,10 +18,11 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 
 -->
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\JSSoft.Commands.Shared\JSSoft.Commands.Shared.projitems" Label="Shared" />
   <PropertyGroup>
     <PublishName>commands.examples</PublishName>
     <OutputType>Exe</OutputType>
-    <AssemblyName>parse</AssemblyName>
+    <AssemblyName>sets</AssemblyName>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>False</SelfContained>
   </PropertyGroup>
@@ -30,6 +31,8 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
-    <ProjectReference Include="..\JSSoft.Commands\JSSoft.Commands.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\JSSoft.Commands\JSSoft.Commands.csproj" />
   </ItemGroup>
 </Project>

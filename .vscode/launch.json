@@ -12,10 +12,10 @@
             "name": "launch-parse",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/JSSoft.Commands.Parse/bin/Debug/net8.0/parse.dll",
+            "program": "${workspaceFolder}/example/JSSoft.Commands.Parse/bin/Debug/net8.0/parse.dll",
             "args": "--version",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/JSSoft.Commands.Parse/bin/Debug/net8.0",
+            "cwd": "${workspaceFolder}/example/JSSoft.Commands.Parse/bin/Debug/net8.0",
             "stopAtEntry": false,
             "internalConsoleOptions": "neverOpen"
         },
@@ -23,10 +23,10 @@
             "name": "launch-invoke",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/JSSoft.Commands.Invoke/bin/Debug/net8.0/invoke.dll",
+            "program": "${workspaceFolder}/example/JSSoft.Commands.Invoke/bin/Debug/net8.0/invoke.dll",
             "args": "list --help",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/JSSoft.Commands.Invoke/bin/Debug/net8.0",
+            "cwd": "${workspaceFolder}/example/JSSoft.Commands.Invoke/bin/Debug/net8.0",
             "stopAtEntry": false,
             "internalConsoleOptions": "neverOpen"
         },
@@ -34,10 +34,10 @@
             "name": "launch-repl",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/JSSoft.Commands.Repl/bin/Debug/net8.0/repl.dll",
+            "program": "${workspaceFolder}/example/JSSoft.Commands.Repl/bin/Debug/net8.0/repl.dll",
             "args": "",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/JSSoft.Commands.Repl/bin/Debug/net8.0",
+            "cwd": "${workspaceFolder}/example/JSSoft.Commands.Repl/bin/Debug/net8.0",
             "stopAtEntry": false,
             "internalConsoleOptions": "neverOpen"
         },
@@ -45,10 +45,10 @@
             "name": "launch-sets",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/JSSoft.Commands.Sets/bin/Debug/net8.0/sets.dll",
+            "program": "${workspaceFolder}/example/JSSoft.Commands.Sets/bin/Debug/net8.0/sets.dll",
             "args": "--help",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/JSSoft.Commands.Sets/bin/Debug/net8.0",
+            "cwd": "${workspaceFolder}/example/JSSoft.Commands.Sets/bin/Debug/net8.0",
             "stopAtEntry": false,
             "internalConsoleOptions": "neverOpen"
         },
@@ -56,8 +56,8 @@
             "name": "launch-app-ui",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/JSSoft.Commands.AppUI/bin/Debug/net8.0/app-ui.dll",
-            "cwd": "${workspaceFolder}/JSSoft.Commands.AppUI/bin/Debug/net8.0",
+            "program": "${workspaceFolder}/example/JSSoft.Commands.AppUI/bin/Debug/net8.0/app-ui.dll",
+            "cwd": "${workspaceFolder}/example/JSSoft.Commands.AppUI/bin/Debug/net8.0",
             "stopAtEntry": false
         }
     ]

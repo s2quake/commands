@@ -22,7 +22,8 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
   <PropertyGroup>
     <PublishName>commands.examples</PublishName>
     <OutputType>Exe</OutputType>
-    <AssemblyName>sets</AssemblyName>
+    <AssemblyName>repl</AssemblyName>
+    <DefineConstants>JSSOFT_COMMANDS_REPL</DefineConstants>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>False</SelfContained>
   </PropertyGroup>
@@ -33,6 +34,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\JSSoft.Commands\JSSoft.Commands.csproj" />
+    <ProjectReference Include="..\..\src\JSSoft.Commands\JSSoft.Commands.csproj" />
+    <ProjectReference Include="..\..\src\JSSoft.Terminals\JSSoft.Terminals.csproj" />
   </ItemGroup>
 </Project>
