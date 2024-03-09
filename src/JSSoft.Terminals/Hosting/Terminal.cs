@@ -34,7 +34,7 @@ public class Terminal : ITerminal
     private readonly TerminalLineCollection _lines;
     private readonly TerminalTextWriter _writer;
     private readonly TerminalTextReader _reader = new();
-    private readonly TerminalMode _mode = new();
+    private readonly TerminalModes _modes = new();
 
     private bool _isReadOnly;
     private string _title = string.Empty;
@@ -145,8 +145,6 @@ public class Terminal : ITerminal
             }
         }
     }
-
-    public TerminalMode Mode => _mode;
 
     public IReadOnlyList<ITerminalRow> View => _view;
 
@@ -259,6 +257,8 @@ public class Terminal : ITerminal
     public TextWriter Out => _writer;
 
     public TextReader In => _reader;
+
+    public ITerminalModes Modes => _modes;
 
     public static TerminalSize GetBufferSize(Terminal terminal, TerminalSize size)
     {
@@ -380,6 +380,12 @@ public class Terminal : ITerminal
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public event EventHandler<TerminalUpdateEventArgs>? Updated;
+
+    public event EventHandler<TerminalModeChangedEventArgs>? ModeChanged
+    {
+        add => _modes.ModeChanged += value;
+        remove => _modes.ModeChanged -= value;
+    }
 
     protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
         => PropertyChanged?.Invoke(this, e);

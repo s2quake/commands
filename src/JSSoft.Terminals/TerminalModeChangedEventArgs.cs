@@ -18,11 +18,9 @@
 
 namespace JSSoft.Terminals;
 
-public enum TerminalMode
+public sealed class TerminalModeChangedEventArgs(TerminalMode mode, bool value) : EventArgs
 {
-    DECCKM = 1,
-    
-    Mode1049 = 1049,
+    public TerminalMode Mode { get; } = mode;
 
-    Mode2004 = 2004,
+    public bool Value { get; } = value;
 }

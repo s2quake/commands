@@ -36,6 +36,8 @@ public interface ITerminal : INotifyPropertyChanged
 
     ITerminalScroll Scroll { get; }
 
+    ITerminalModes Modes { get; }
+
     IInputHandler? InputHandler { get; set; }
 
     bool IsFocused { get; set; }
@@ -45,8 +47,6 @@ public interface ITerminal : INotifyPropertyChanged
     TerminalSize BufferSize { get; }
 
     TerminalSize Size { get; set; }
-
-    TerminalMode Mode { get; }
 
     IReadOnlyList<ITerminalRow> View { get; }
 
@@ -84,4 +84,6 @@ public interface ITerminal : INotifyPropertyChanged
     void WriteInput(string text);
 
     event EventHandler<TerminalUpdateEventArgs>? Updated;
+
+    event EventHandler<TerminalModeChangedEventArgs>? ModeChanged;
 }

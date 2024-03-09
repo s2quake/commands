@@ -16,13 +16,19 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals;
+namespace JSSoft.Terminals.Tests;
 
-public enum TerminalModeType
+sealed class TestTerminalFont : ITerminalFont
 {
-    DECCKM = 1,
-    
-    Mode1049 = 1049,
+    public bool Contains(char character) => true;
 
-    Mode2004 = 2004,
+    public TerminalGlyphInfo this[char character] => TerminalGlyphInfo.Empty;
+
+    public int Width { get; }
+
+    public int Height { get; }
+
+    public int Size { get; }
+
+    public static TestTerminalFont Default { get; } = new();
 }

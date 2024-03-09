@@ -33,7 +33,6 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     <PackageProjectUrl>https://github.com/s2quake/commands</PackageProjectUrl>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <LangVersion>preview</LangVersion>
-    <DefineConstants>JSSOFT_COMMANDS</DefineConstants>
     <RootPath Condition="'$(SolutionDir)' != ''">$(SolutionDir)</RootPath>
     <RootPath Condition="'$(SolutionDir)' == ''">$(MSBuildThisFileDirectory)\</RootPath>
     <DelaySign>true</DelaySign>

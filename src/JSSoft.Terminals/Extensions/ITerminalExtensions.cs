@@ -34,7 +34,7 @@ public static class ITerminalExtensions
 
     public static void KeyLeft(this ITerminal @this)
     {
-        if (@this.Mode[TerminalModeType.DECCKM] == true)
+        if (@this.Modes[TerminalMode.DECCKM] == true)
         {
             @this.WriteInput($"\x1bOD");
         }
@@ -47,7 +47,7 @@ public static class ITerminalExtensions
 
     public static void KeyRight(this ITerminal @this)
     {
-        if (@this.Mode[TerminalModeType.DECCKM] == true)
+        if (@this.Modes[TerminalMode.DECCKM] == true)
         {
             @this.WriteInput($"\x1bOC");
         }
@@ -60,7 +60,7 @@ public static class ITerminalExtensions
 
     public static void KeyDown(this ITerminal @this)
     {
-        if (@this.Mode[TerminalModeType.DECCKM] == true)
+        if (@this.Modes[TerminalMode.DECCKM] == true)
         {
             @this.WriteInput($"\x1bOB");
         }
@@ -73,7 +73,7 @@ public static class ITerminalExtensions
 
     public static void KeyUp(this ITerminal @this)
     {
-        if (@this.Mode[TerminalModeType.DECCKM] == true)
+        if (@this.Modes[TerminalMode.DECCKM] == true)
         {
             @this.WriteInput($"\x1bOA");
         }
@@ -86,7 +86,7 @@ public static class ITerminalExtensions
 
     public static void KeyHome(this ITerminal @this)
     {
-        if (@this.Mode[TerminalModeType.DECCKM] == true)
+        if (@this.Modes[TerminalMode.DECCKM] == true)
         {
             @this.WriteInput($"\x1bOH");
         }
@@ -99,7 +99,7 @@ public static class ITerminalExtensions
 
     public static void KeyEnd(this ITerminal @this)
     {
-        if (@this.Mode[TerminalModeType.DECCKM] == true)
+        if (@this.Modes[TerminalMode.DECCKM] == true)
         {
             @this.WriteInput($"\x1bOF");
         }

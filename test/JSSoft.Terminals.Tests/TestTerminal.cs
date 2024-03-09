@@ -16,13 +16,12 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals;
+namespace JSSoft.Terminals.Tests;
 
-public enum TerminalMode
+public sealed class TestTerminal : Terminal
 {
-    DECCKM = 1,
-    
-    Mode1049 = 1049,
-
-    Mode2004 = 2004,
+    public TestTerminal()
+        : base(TestTerminalStyle.Default, TestTerminalScroll.Default)
+    {
+    }
 }

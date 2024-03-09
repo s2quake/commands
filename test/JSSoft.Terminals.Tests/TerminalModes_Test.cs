@@ -16,13 +16,29 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals;
+namespace JSSoft.Terminals.Tests;
 
-public enum TerminalMode
+public class TerminalModes_Test
 {
-    DECCKM = 1,
-    
-    Mode1049 = 1049,
+    [Fact]
+    public void Set_Test()
+    {
+        var terminal = new TestTerminal();
+        var mode = RandomUtility.NextEnum<TerminalMode>();
 
-    Mode2004 = 2004,
+        terminal.Modes[mode] = true;
+        Assert.True(terminal.Modes[mode]);
+
+        terminal.Modes[mode] = false;
+        Assert.False(terminal.Modes[mode]);
+    }
+
+    [Fact]
+    public void SetUnspecified_FailTest()
+    {
+        var terminal = new TestTerminal();
+        var mode = RandomUtility.NextUnspecifiedEnum<TerminalMode>();
+
+        Assert.Throws<KeyNotFoundException>(() => terminal.Modes[mode] = true);
+    }
 }

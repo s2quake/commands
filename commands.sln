@@ -23,6 +23,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Terminals", "src\JSS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSSoft.Terminals.Pty", "src\JSSoft.Terminals.Pty\JSSoft.Terminals.Pty.csproj", "{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{48D566AB-4138-430E-983D-6B7BD452ECEF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSSoft.Terminals.Tests", "test\JSSoft.Terminals.Tests\JSSoft.Terminals.Tests.csproj", "{475CB056-8D2D-47E1-8E1C-A2665BFB3C4B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -141,6 +145,18 @@ Global
 		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Release|x64.Build.0 = Release|Any CPU
 		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Release|x86.ActiveCfg = Release|Any CPU
 		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Release|x86.Build.0 = Release|Any CPU
+		{475CB056-8D2D-47E1-8E1C-A2665BFB3C4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{475CB056-8D2D-47E1-8E1C-A2665BFB3C4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{475CB056-8D2D-47E1-8E1C-A2665BFB3C4B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{475CB056-8D2D-47E1-8E1C-A2665BFB3C4B}.Debug|x64.Build.0 = Debug|Any CPU
+		{475CB056-8D2D-47E1-8E1C-A2665BFB3C4B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{475CB056-8D2D-47E1-8E1C-A2665BFB3C4B}.Debug|x86.Build.0 = Debug|Any CPU
+		{475CB056-8D2D-47E1-8E1C-A2665BFB3C4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{475CB056-8D2D-47E1-8E1C-A2665BFB3C4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{475CB056-8D2D-47E1-8E1C-A2665BFB3C4B}.Release|x64.ActiveCfg = Release|Any CPU
+		{475CB056-8D2D-47E1-8E1C-A2665BFB3C4B}.Release|x64.Build.0 = Release|Any CPU
+		{475CB056-8D2D-47E1-8E1C-A2665BFB3C4B}.Release|x86.ActiveCfg = Release|Any CPU
+		{475CB056-8D2D-47E1-8E1C-A2665BFB3C4B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -153,5 +169,8 @@ Global
 		JSSoft.Commands\JSSoft.Commands.Shared\JSSoft.Commands.Shared.projitems*{d1daab6e-ba1d-4871-b3a0-baea55f03e08}*SharedItemsImports = 5
 		JSSoft.Commands\JSSoft.Commands.Shared\JSSoft.Commands.Shared.projitems*{e67b82a8-8ec2-43c1-a59e-39c916ab2ec3}*SharedItemsImports = 5
 		JSSoft.Commands\JSSoft.Commands.Shared\JSSoft.Commands.Shared.projitems*{f6427925-5255-4b00-be11-543b0539cc07}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{475CB056-8D2D-47E1-8E1C-A2665BFB3C4B} = {48D566AB-4138-430E-983D-6B7BD452ECEF}
 	EndGlobalSection
 EndGlobal

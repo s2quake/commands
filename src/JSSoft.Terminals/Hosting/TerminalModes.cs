@@ -16,13 +16,35 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-namespace JSSoft.Terminals;
+namespace JSSoft.Terminals.Hosting;
 
-public enum TerminalMode
+sealed class TerminalModes : ITerminalModes
 {
-    DECCKM = 1,
-    
-    Mode1049 = 1049,
+    private readonly Dictionary<TerminalMode, bool> _modes;
 
-    Mode2004 = 2004,
+    public TerminalModes()
+    {
+        var types = Enum.GetValues(typeof(TerminalMode));
+        var modes = new Dictionary<TerminalMode, bool>(types.Length);
+        foreach (TerminalMode type in types)
+        {
+            modes.Add(type, false);
+        }
+        _modes = modes;
+    }
+
+    public bool this[TerminalMode mode]
+    {
+        get => _modes[mode];
+        set
+        {
+            if (_modes[mode] != value)
+            {
+                _modes[mode] = value;
+                ModeChanged?.Invoke(this, new TerminalModeChangedEventArgs(mode, value));
+            }
+        }
+    }
+
+    public event EventHandler<TerminalModeChangedEventArgs>? ModeChanged;
 }

@@ -33,10 +33,10 @@ sealed class DECPrivateModeSet : CSISequenceBase
     protected override void OnProcess(SequenceContext context)
     {
         var mode = context.GetParameterAsInteger(index: 0);
-        var modeType = (TerminalModeType)mode;
+        var modeType = (TerminalMode)mode;
         try
         {
-            context.Mode[modeType] = true;
+            context.Modes[modeType] = true;
         }
         catch (Exception)
         {
