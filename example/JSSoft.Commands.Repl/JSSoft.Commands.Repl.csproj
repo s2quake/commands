@@ -23,9 +23,9 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     <PublishName>commands.examples</PublishName>
     <OutputType>Exe</OutputType>
     <AssemblyName>repl</AssemblyName>
-    <DefineConstants>JSSOFT_COMMANDS_REPL</DefineConstants>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>False</SelfContained>
+    <DefineConstants>$(DefineConstants);JSSOFT_COMMANDS;JSSOFT_COMMANDS_REPL</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DelaySign>false</DelaySign>
