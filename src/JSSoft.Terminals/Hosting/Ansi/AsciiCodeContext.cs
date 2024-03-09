@@ -56,7 +56,7 @@ sealed class AsciiCodeContext(TerminalLineCollection lines, string text, ITermin
 
     public TerminalDisplayInfo DisplayInfo { get; set; }
 
-    public TerminalMode Mode => _terminal.Mode;
+    public ITerminalModes Modes => _terminal.Modes;
 
     public TerminalCoord OriginCoordinate
     {

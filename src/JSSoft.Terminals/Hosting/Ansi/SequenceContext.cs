@@ -50,7 +50,7 @@ sealed class SequenceContext(string parameter, AsciiCodeContext asciiCodeContext
         set => _asciiCodeContext.DisplayInfo = value;
     }
 
-    public TerminalMode Mode => _asciiCodeContext.Mode;
+    public ITerminalModes Modes => _asciiCodeContext.Modes;
 
     public TerminalCoord OriginCoordinate
     {

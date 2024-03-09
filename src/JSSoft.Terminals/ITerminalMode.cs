@@ -1,4 +1,4 @@
-// Released under the MIT License.
+﻿// Released under the MIT License.
 // 
 // Copyright (c) 2024 Jeesu Choi
 // 
@@ -18,11 +18,7 @@
 
 namespace JSSoft.Terminals;
 
-public enum TerminalMode
+public interface ITerminalModes
 {
-    DECCKM = 1,
-    
-    Mode1049 = 1049,
-
-    Mode2004 = 2004,
+    bool this[TerminalMode mode] { get; set; }
 }
