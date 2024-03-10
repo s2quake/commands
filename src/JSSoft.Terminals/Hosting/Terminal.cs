@@ -29,7 +29,7 @@ public class Terminal : ITerminal
 {
     private readonly ITerminalStyle _originStyle;
     private readonly TerminalFieldSetter _setter;
-    private readonly TerminalRowCollection _view;
+    private readonly TerminalRowCollection _rows;
     private readonly TerminalSelectionCollection _selections;
     private readonly TerminalLineCollection _lines;
     private readonly TerminalTextWriter _writer;
@@ -53,6 +53,7 @@ public class Terminal : ITerminal
     private TerminalSelection _selecting = TerminalSelection.Empty;
     private TerminalSize _bufferSize = new(80, 25);
     private TerminalSize _size;
+    private TerminalRect _view;
 
     internal readonly SynchronizationContext SynchronizationContext;
 
@@ -68,12 +69,13 @@ public class Terminal : ITerminal
         Scroll = scroll;
         _lines = new(this);
         _writer = new(this);
-        _view = new(this);
+        _rows = new(this);
+        _view = new TerminalRect(_bufferSize);
         _selections = new(this, InvokeUpdatedEvent);
         _inputHandler = new TerminalInputHandler();
         _inputHandler.Attach(this);
         _lines.Updated += Lines_Updated;
-        _view.Updated += View_Updated;
+        _rows.Updated += Rows_Updated;
         _actualStyle.PropertyChanged += ActualStyle_PropertyChanged;
         Scroll.PropertyChanged += Scroll_PropertyChanged;
     }
@@ -146,7 +148,7 @@ public class Terminal : ITerminal
         }
     }
 
-    public IReadOnlyList<ITerminalRow> View => _view;
+    public IReadOnlyList<ITerminalRow> View => _rows;
 
     public TerminalCoord CursorCoordinate
     {
@@ -160,7 +162,7 @@ public class Terminal : ITerminal
                 var x = value.X;
                 var y = value.Y;
                 var (bufferWidth, bufferHeight) = (_bufferSize.Width, _bufferSize.Height);
-                var rowCount = _view.Count;
+                var rowCount = _rows.Count;
                 var maxBufferHeight = Math.Max(bufferHeight, rowCount);
                 x = Math.Min(x, bufferWidth - 1);
                 x = Math.Max(x, 0);
@@ -231,7 +233,7 @@ public class Terminal : ITerminal
             if (_setter.SetField(ref _style, value, nameof(Style)) == true)
             {
                 ActualStyle = _style ?? _originStyle;
-                _view.Update(_lines);
+                _rows.Update(_lines);
             }
         }
     }
@@ -247,7 +249,7 @@ public class Terminal : ITerminal
             {
                 _selecting = value;
                 OnPropertyChanged(new(nameof(Selecting)));
-                OnUpdated(new([.. _view]));
+                OnUpdated(new([.. _rows]));
             }
         }
     }
@@ -344,7 +346,9 @@ public class Terminal : ITerminal
             _setter.SetField(ref _size, size, nameof(Size));
             if (_setter.SetField(ref _bufferSize, bufferSize, nameof(BufferSize)) == true)
             {
+                _lines.Updated -= Lines_Updated;
                 _lines.Update();
+                _lines.Updated += Lines_Updated;
                 Scroll.PropertyChanged -= Scroll_PropertyChanged;
                 Scroll.ViewportSize = _bufferSize.Height;
                 Scroll.SmallChange = 1;
@@ -356,7 +360,7 @@ public class Terminal : ITerminal
                 Scroll.PropertyChanged += Scroll_PropertyChanged;
             }
         }
-        _view.Update(_lines);
+        _rows.Update(_lines);
         UpdateCursorCoordinate();
     }
 
@@ -420,15 +424,18 @@ public class Terminal : ITerminal
         Scroll.Maximum = GetScrollMaximum();
         Scroll.IsVisible = Scroll.Maximum > 0;
         Scroll.PropertyChanged += Scroll_PropertyChanged;
-        _view.Update(_lines);
+        _rows.Update(_lines);
         UpdateCursorCoordinate();
     }
 
-    private void View_Updated(object? sender, TerminalRowUpdateEventArgs e)
+    private void Rows_Updated(object? sender, TerminalRowUpdateEventArgs e)
         => InvokeUpdatedEvent(e.ChangedRows);
 
     private void Scroll_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-        => _view.Update(_lines);
+    {
+        _view = new TerminalRect(0, Scroll.Value, _bufferSize.Width, _bufferSize.Height);
+        _rows.Update(_lines);
+    }
 
     private int GetScrollMaximum()
     {
