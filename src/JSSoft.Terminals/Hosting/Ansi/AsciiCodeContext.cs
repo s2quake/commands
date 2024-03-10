@@ -16,15 +16,12 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using JSSoft.Terminals.Extensions;
-
 namespace JSSoft.Terminals.Hosting.Ansi;
 
 sealed class AsciiCodeContext(TerminalLineCollection lines, string text, ITerminal terminal)
 {
     private readonly ITerminal _terminal = terminal;
     private TerminalIndex _index;
-    private TerminalRect _view = new(0, terminal.Scroll.Value, terminal.BufferSize.Width, terminal.BufferSize.Height);
 
     public string Title
     {
@@ -70,7 +67,7 @@ sealed class AsciiCodeContext(TerminalLineCollection lines, string text, ITermin
         set => _terminal.ViewCoordinate = value;
     }
 
-    public TerminalRect View => _view;
+    public TerminalRect View => Lines.View;
 
     public TerminalCoord GetCoordinate(TerminalLineCollection lines, TerminalIndex index)
     {

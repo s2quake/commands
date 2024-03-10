@@ -145,7 +145,7 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
                 else
                 {
 #if DEBUG && NET8_0
-                    Trace.WriteLine($"Read: {ToLiteral(sb.ToString())}");
+                    Console.WriteLine($"Read: {ToLiteral(sb.ToString())}");
 #endif
                     action(sb.ToString());
                     sb.Clear();
