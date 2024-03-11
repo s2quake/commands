@@ -32,15 +32,15 @@ sealed class DECPrivateModeReset : CSISequenceBase
 
     protected override void OnProcess(SequenceContext context)
     {
-        var mode = context.GetParameterAsInteger(index: 0);
-        var modeType = (TerminalMode)mode;
-        try
+        var value = context.GetParameterAsInteger(index: 0);
+        switch (value)
         {
-            context.Modes[modeType] = true;
-        }
-        catch (Exception)
-        {
-            Console.WriteLine($"Mode '{mode}' is not supported.");
+            case 1:
+                context.Modes[TerminalMode.DECCKM] = false;
+                break;
+            default:
+                Console.WriteLine($"Mode '{value}' is not supported.");
+                break;
         }
     }
 }
