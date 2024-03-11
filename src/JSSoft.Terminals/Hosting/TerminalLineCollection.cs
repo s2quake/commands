@@ -18,7 +18,9 @@
 
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using JSSoft.Terminals.Hosting.Ansi;
 
 namespace JSSoft.Terminals.Hosting;
@@ -44,9 +46,10 @@ sealed class TerminalLineCollection : IReadOnlyList<TerminalLine>
     private TerminalIndex _index;
     private TerminalIndex _beginIndex;
     private string _rest = string.Empty;
+    private TerminalRange _alternativeRange1 = TerminalRange.Empty;
     private TerminalRange _alternativeRange = TerminalRange.Empty;
     private TerminalRect _view;
-    private bool _b;
+    private string _s = string.Empty;
 
     public TerminalLineCollection(Terminal terminal)
     {
@@ -54,7 +57,7 @@ sealed class TerminalLineCollection : IReadOnlyList<TerminalLine>
         _index = new(terminal, TerminalCoord.Empty);
         _beginIndex = new(terminal, TerminalCoord.Empty);
         _view = new(0, terminal.Scroll.Value, terminal.BufferSize.Width, terminal.BufferSize.Height);
-        _terminal.ModeChanged += Terminal_ModeChanged;
+        // _terminal.ModeChanged += Terminal_ModeChanged;
     }
 
     public TerminalRect View
@@ -63,14 +66,55 @@ sealed class TerminalLineCollection : IReadOnlyList<TerminalLine>
         set => _view = value;
     }
 
-    private void Terminal_ModeChanged(object? sender, TerminalModeChangedEventArgs e)
+    private bool _isAlternativeMode;
+    public bool IsAlternativeMode
     {
-        if (e.Mode == TerminalMode.DECCKM)
+        get => _isAlternativeMode;
+        set
         {
-            _alternativeRange = e.Value ? new(_terminal.CursorCoordinate.Y, _terminal.BufferSize.Height) : TerminalRange.Empty;
-            _view = new TerminalRect(0, _alternativeRange.Begin, _terminal.BufferSize.Width, _terminal.BufferSize.Height);
+            if (_isAlternativeMode != value)
+            {
+                _isAlternativeMode = value;
+                if (_isAlternativeMode == true)
+                {
+                    _alternativeRange = new(_terminal.CursorCoordinate.Y, _terminal.BufferSize.Height);
+                    _alternativeRange1 = _alternativeRange;
+                    _view = new TerminalRect(0, _alternativeRange.Begin, _terminal.BufferSize.Width, _terminal.BufferSize.Height);
+                }
+                else
+                {
+                    var index = new TerminalIndex(x: 0, y: _alternativeRange1.Begin, _terminal.BufferSize.Width);
+                    Take(index);
+                    _index = index;
+                    _beginIndex = _index;
+                    _alternativeRange = TerminalRange.Empty;
+
+                }
+            }
         }
     }
+
+    // private void Terminal_ModeChanged(object? sender, TerminalModeChangedEventArgs e)
+    // {
+    //     if (e.Mode == TerminalMode.DECCKM)
+    //     {
+    //         if (e.Value == true)
+    //         {
+    //             _alternativeRange = new(_terminal.CursorCoordinate.Y, _terminal.BufferSize.Height);
+    //             _alternativeRange1 = _alternativeRange;
+    //             _view = new TerminalRect(0, _alternativeRange.Begin, _terminal.BufferSize.Width, _terminal.BufferSize.Height);
+    //         }
+    //         else
+    //         {
+    //             var index = new TerminalIndex(x: 0, y: _alternativeRange1.Begin, _terminal.BufferSize.Width);
+    //             Take(index);
+    //             _index = index;
+    //             _beginIndex = _index;
+    //             _alternativeRange = TerminalRange.Empty;
+
+    //         }
+    //     }
+    // }
 
     public int Count => _lineList.Count;
 
@@ -222,14 +266,21 @@ sealed class TerminalLineCollection : IReadOnlyList<TerminalLine>
         if (_terminal.Modes[TerminalMode.DECCKM] == true)
         {
             _alternativeRange = new(_alternativeRange.Begin, _terminal.BufferSize.Height);
+            var g = _alternativeRange.End - _alternativeRange1.End;
             _view = new(0, _alternativeRange.Begin, bufferSize.Width, bufferSize.Height);
             for (var i = Count; i < _alternativeRange.End; i++)
             {
                 var line = new TerminalLine(_items, i, bufferSize.Width);
                 _lineList.Add(line);
             }
-            _b = true;
+            var sb = new StringBuilder();
+            for (var i = 0; i < g; i++)
+            {
+                sb.Append("\x1bOB");
+            }
+            _s = sb.ToString();
 
+            // _terminal.WriteInput("\u001b[2J");
         }
         else
         {
@@ -307,18 +358,18 @@ sealed class TerminalLineCollection : IReadOnlyList<TerminalLine>
                 var character = contextText[context.TextIndex];
                 if (AsciiCodeByCharacter.ContainsKey(character) == true)
                 {
-                    if (s != string.Empty)
+#if DEBUG && NET8_0
+                    if (character == '\x1b' && s != string.Empty)
                     {
-                        Console.WriteLine(s);
+                        Console.WriteLine(SequenceUtility.ToLiteral(s));
                         s = string.Empty;
                     }
-                    AsciiCodeByCharacter[character].Process(context);
-#if DEBUG && NET8_0
-                    if (character != '\x1b')
+                    else
                     {
-                        Console.WriteLine($"{SequenceUtility.ToLiteral($"{character}")}");
+                        s += character;
                     }
 #endif
+                    AsciiCodeByCharacter[character].Process(context);
                 }
                 else
                 {
@@ -344,10 +395,12 @@ sealed class TerminalLineCollection : IReadOnlyList<TerminalLine>
         lines.Prepare(_beginIndex, ref _index);
         lines.UpdateLines();
         InvokeTextChangedEvent();
-        if (_b == true)
+        if (_s != string.Empty)
         {
-            _terminal.WriteInput($"\x1b[2J");
-            _b = false; ;
+            // await Task.Delay(1000);
+            // _terminal.WriteInput(_s);
+            // _terminal.WriteInput("\u001b[2J");
+            _s = string.Empty;
         }
     }
 
