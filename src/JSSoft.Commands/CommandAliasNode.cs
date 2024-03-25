@@ -24,9 +24,9 @@ sealed class CommandAliasNode(ICommandNode commandNode, string alias) : ICommand
 
     public ICommandNode? Parent => commandNode.Parent;
 
-    public IReadOnlyDictionary<string, ICommandNode> Childs => commandNode.Childs;
+    public IReadOnlyDictionary<string, ICommandNode> Children => commandNode.Children;
 
-    public IReadOnlyDictionary<string, ICommandNode> ChildsByAlias => commandNode.ChildsByAlias;
+    public IReadOnlyDictionary<string, ICommandNode> ChildByAlias => commandNode.ChildByAlias;
 
     public string Name { get; } = alias;
 

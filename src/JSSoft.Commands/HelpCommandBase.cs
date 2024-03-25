@@ -96,7 +96,7 @@ public abstract class HelpCommandBase : CommandBase
     private static void PrintCommands(CommandTextWriter commandWriter, ICommandContext commandContext)
     {
         var rootNode = commandContext.Node;
-        var query = from item in rootNode.Childs
+        var query = from item in rootNode.Children
                     let command = item.Value
                     where command.IsEnabled == true
                     orderby command.Name
@@ -159,7 +159,7 @@ public abstract class HelpCommandBase : CommandBase
         var commandName = commandNames.FirstOrDefault() ?? string.Empty;
         if (commandName == string.Empty)
         {
-            var query = from item in node.Childs
+            var query = from item in node.Children
                         let command = item.Value
                         where command.IsEnabled == true
                         from name in new string[] { command.Name }.Concat(command.Aliases)
@@ -169,13 +169,13 @@ public abstract class HelpCommandBase : CommandBase
                         select name;
             return query.ToArray();
         }
-        else if (node.Childs.ContainsKey(commandName) == true)
+        else if (node.Children.ContainsKey(commandName) == true)
         {
-            return GetCommandNames(node.Childs[commandName], commandNames.Skip(1).ToArray(), find);
+            return GetCommandNames(node.Children[commandName], commandNames.Skip(1).ToArray(), find);
         }
-        else if (node.ChildsByAlias.ContainsKey(commandName) == true)
+        else if (node.ChildByAlias.ContainsKey(commandName) == true)
         {
-            return GetCommandNames(node.ChildsByAlias[commandName], commandNames.Skip(1).ToArray(), find);
+            return GetCommandNames(node.ChildByAlias[commandName], commandNames.Skip(1).ToArray(), find);
         }
         return [];
     }

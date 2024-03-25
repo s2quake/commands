@@ -140,26 +140,26 @@ public abstract class CommandContextBase : ICommandContext
     {
         if (argList.FirstOrDefault() is { } commandName)
         {
-            if (parentNode.Childs.ContainsKey(commandName) == true)
+            if (parentNode.Children.ContainsKey(commandName) == true)
             {
-                var commandNode = parentNode.Childs[commandName];
+                var commandNode = parentNode.Children[commandName];
                 if (commandNode.IsEnabled == true)
                 {
                     argList.RemoveAt(0);
-                    if (argList.Count > 0 && commandNode.Childs.Any())
+                    if (argList.Count > 0 && commandNode.Children.Any())
                     {
                         return GetCommand(commandNode, argList);
                     }
                     return commandNode.Command;
                 }
             }
-            else if (parentNode.ChildsByAlias.ContainsKey(commandName) == true)
+            else if (parentNode.ChildByAlias.ContainsKey(commandName) == true)
             {
-                var commandNode = parentNode.ChildsByAlias[commandName];
+                var commandNode = parentNode.ChildByAlias[commandName];
                 if (commandNode.IsEnabled == true)
                 {
                     argList.RemoveAt(0);
-                    if (argList.Count > 0 && commandNode.Childs.Any())
+                    if (argList.Count > 0 && commandNode.Children.Any())
                     {
                         return GetCommand(commandNode, argList);
                     }
@@ -284,27 +284,27 @@ public abstract class CommandContextBase : ICommandContext
     {
         var commandName = command.Name;
         var partialCommandAttribute = command.GetType().GetCustomAttribute<PartialCommandAttribute>();
-        if (parentNode.Childs.ContainsKey(commandName) == true && partialCommandAttribute == null)
+        if (parentNode.Children.ContainsKey(commandName) == true && partialCommandAttribute == null)
             throw new CommandDefinitionException($"Command '{commandName}' is already registered.");
-        if (parentNode.Childs.ContainsKey(commandName) == false && partialCommandAttribute != null)
+        if (parentNode.Children.ContainsKey(commandName) == false && partialCommandAttribute != null)
             throw new CommandDefinitionException($"Partial command cannot be registered because command '{commandName}' does not exist.");
         if (partialCommandAttribute != null && command.Aliases.Length != 0)
             throw new CommandDefinitionException($"Partial command '{commandName}' cannot have alias");
 
-        if (parentNode.Childs.ContainsKey(commandName) == false)
+        if (parentNode.Children.ContainsKey(commandName) == false)
         {
             var commandNode = new CommandNode(this, command)
             {
                 Parent = parentNode,
             };
-            parentNode.Childs.Add(commandNode);
+            parentNode.Children.Add(commandNode);
             foreach (var item in command.Aliases)
             {
-                parentNode.ChildsByAlias.Add(new CommandAliasNode(commandNode, item));
+                parentNode.ChildByAlias.Add(new CommandAliasNode(commandNode, item));
             }
         }
         {
-            var commandNode = parentNode.Childs[commandName];
+            var commandNode = parentNode.Children[commandName];
             commandNode.CommandList.Add(command);
             if (command is ICommandHost commandHost)
             {
@@ -321,7 +321,7 @@ public abstract class CommandContextBase : ICommandContext
     {
         if (itemList.Count == 0)
         {
-            var query = from item in parentNode.Childs.Values
+            var query = from item in parentNode.Children.Values
                         where item.IsEnabled
                         from name in new string[] { item.Name }.Concat(item.Aliases)
                         where name.StartsWith(find)
@@ -332,9 +332,9 @@ public abstract class CommandContextBase : ICommandContext
         else
         {
             var commandName = itemList.First();
-            if ((parentNode.Childs[commandName] ?? parentNode.ChildsByAlias[commandName]) is { } commandNode)
+            if ((parentNode.Children[commandName] ?? parentNode.ChildByAlias[commandName]) is { } commandNode)
             {
-                if (commandNode.IsEnabled == true && commandNode.Childs.Any() == true)
+                if (commandNode.IsEnabled == true && commandNode.Children.Any() == true)
                 {
                     itemList.RemoveAt(0);
                     return GetCompletion(commandNode, itemList, find);

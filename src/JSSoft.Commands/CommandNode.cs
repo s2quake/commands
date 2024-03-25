@@ -37,9 +37,9 @@ sealed class CommandNode : ICommandNode
 
     public CommandNode? Parent { get; set; }
 
-    public CommandNodeCollection Childs { get; } = [];
+    public CommandNodeCollection Children { get; } = [];
 
-    public CommandAliasNodeCollection ChildsByAlias { get; } = [];
+    public CommandAliasNodeCollection ChildByAlias { get; } = [];
 
     public ICommand Command { get; }
 
@@ -63,9 +63,9 @@ sealed class CommandNode : ICommandNode
 
     ICommandNode? ICommandNode.Parent => Parent;
 
-    IReadOnlyDictionary<string, ICommandNode> ICommandNode.Childs => Childs;
+    IReadOnlyDictionary<string, ICommandNode> ICommandNode.Children => Children;
 
-    IReadOnlyDictionary<string, ICommandNode> ICommandNode.ChildsByAlias => ChildsByAlias;
+    IReadOnlyDictionary<string, ICommandNode> ICommandNode.ChildByAlias => ChildByAlias;
 
     ICommandContext ICommandNode.CommandContext => CommandContext;
 

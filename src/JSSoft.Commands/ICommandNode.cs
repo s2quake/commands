@@ -22,9 +22,9 @@ public interface ICommandNode
 {
     ICommandNode? Parent { get; }
 
-    IReadOnlyDictionary<string, ICommandNode> Childs { get; }
+    IReadOnlyDictionary<string, ICommandNode> Children { get; }
 
-    IReadOnlyDictionary<string, ICommandNode> ChildsByAlias { get; }
+    IReadOnlyDictionary<string, ICommandNode> ChildByAlias { get; }
 
     string Name { get; }
 
