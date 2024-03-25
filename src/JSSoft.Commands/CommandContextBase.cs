@@ -332,7 +332,7 @@ public abstract class CommandContextBase : ICommandContext
         else
         {
             var commandName = itemList.First();
-            if ((parentNode.Children[commandName] ?? parentNode.ChildByAlias[commandName]) is { } commandNode)
+            if (parentNode.Children.TryGetValue(commandName, out var commandNode) == true || parentNode.ChildByAlias.TryGetValue(commandName, out commandNode) == true)
             {
                 if (commandNode.IsEnabled == true && commandNode.Children.Any() == true)
                 {
