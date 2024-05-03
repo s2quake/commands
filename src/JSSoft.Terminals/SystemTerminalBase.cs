@@ -25,27 +25,37 @@ using System.Threading.Tasks;
 
 namespace JSSoft.Terminals;
 
-public abstract class SystemTerminalBase
+public abstract class SystemTerminalBase : IDisposable
 {
+    private static SystemTerminalBase? _instance;
     private readonly SystemTerminalHost _terminal;
+    private readonly TextWriter _oldOut;
+    private readonly TextWriter _oldError;
+    private readonly TextWriter _out;
+    private readonly TextWriter _error;
     private string _prompt = string.Empty;
+    private bool _isDisposed;
 
     protected SystemTerminalBase()
     {
+        if (_instance != null)
+            throw new InvalidOperationException("The instance can only be created once.");
+
+        _instance = this;
         _terminal = new InternalSystemTerminalHost(this);
+        _oldOut = Console.Out;
+        _oldError = Console.Error;
+
+        _out = new TerminalTextWriter(_terminal, Console.OutputEncoding);
+        _error = new TerminalTextWriter(_terminal, Console.OutputEncoding);
+
+        Console.SetOut(_out);
+        Console.SetError(_error);
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        var consoleOut = Console.Out;
-        var consoleError = Console.Error;
-
-        var @out = new TerminalTextWriter(_terminal, Console.OutputEncoding);
-        var error = new TerminalTextWriter(_terminal, Console.OutputEncoding);
-
-        Console.SetOut(@out);
-        Console.SetError(error);
-        OnInitialize(@out, error);
+        OnInitialize(_out, _error);
 
         while (cancellationToken.IsCancellationRequested == false)
         {
@@ -53,21 +63,32 @@ public abstract class SystemTerminalBase
             var prompt = Prompt;
             if (isEnabled == true && _terminal.ReadStringInternal(prompt, cancellationToken) is { } text)
             {
-                await ExecuteAsync(error, text);
+                await ExecuteAsync(_error, text);
             }
 #pragma warning disable CA2016
             await Task.Delay(1);
 #pragma warning restore
         }
-
-        Console.SetOut(consoleOut);
-        Console.SetError(consoleError);
-        Console.Write("\u001b[?25h");
     }
 
     public string? ReadString(string prompt, string command) => _terminal.ReadString(prompt, command);
 
     public SecureString? ReadSecureString(string prompt) => _terminal.ReadSecureString(prompt);
+
+    public void Dispose()
+    {
+        if (_isDisposed == true)
+            throw new ObjectDisposedException($"{this}");
+
+        OnDispose();
+
+        Console.SetOut(_oldOut);
+        Console.SetError(_oldError);
+        Console.Write("\u001b[?25h");
+        _instance = null;
+        _isDisposed = true;
+        GC.SuppressFinalize(this);
+    }
 
     public string Prompt
     {
@@ -93,6 +114,10 @@ public abstract class SystemTerminalBase
     protected virtual string FormatCommand(string command) => command;
 
     protected virtual string[] GetCompletion(string[] items, string find) => [];
+
+    protected virtual void OnDispose()
+    {
+    }
 
     protected abstract void OnInitialize(TextWriter @out, TextWriter error);
 
