@@ -23,7 +23,7 @@ public class CommandMemberDescriptorCollectionTest
     sealed class StyleCommand
     {
         [CommandPropertySwitch('i')]
-        [CommandPropertyCondition(nameof(StyleName), "", IsInvert = true)]
+        [CommandPropertyCondition(nameof(StyleName), "", IsNot = true)]
         public bool IsDetail { get; set; }
 
         [CommandPropertyRequired(DefaultValue = "")]

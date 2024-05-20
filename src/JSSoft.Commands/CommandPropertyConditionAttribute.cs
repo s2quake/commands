@@ -28,5 +28,14 @@ public sealed class CommandPropertyConditionAttribute(string propertyName, objec
 
     public int Group { get; set; }
 
-    public bool IsInvert { get; set; }
+    [Obsolete("This property is obsolete and will be removed in the future. Use the IsNot property instead.")]
+    public bool IsInvert
+    {
+        get => IsNot;
+        set => IsNot = value;
+    }
+
+    public bool IsNot { get; set; }
+
+    public bool IsSet { get; set; }
 }
