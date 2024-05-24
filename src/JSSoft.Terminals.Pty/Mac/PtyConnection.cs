@@ -23,6 +23,7 @@ namespace JSSoft.Terminals.Pty.Mac;
 sealed class PtyConnection(int controller, int pid)
     : Unix.PtyConnection(controller, pid)
 {
+    private int _pid = pid;
     protected override bool Peek(int fd)
         => NativeMethods.peek(fd) == 1;
 
@@ -36,7 +37,7 @@ sealed class PtyConnection(int controller, int pid)
         => NativeMethods.close(fd) != -1;
 
     protected override bool Resize(int fd, int cols, int rows)
-        => NativeMethods.resize(fd, (ushort)cols, (ushort)rows) != -1;
+        => NativeMethods.resize(fd, _pid, (ushort)cols, (ushort)rows) != -1;
 
     protected override bool WaitPid(int pid, ref int status)
         => NativeMethods.waitpid(pid, ref status, 0) != -1;

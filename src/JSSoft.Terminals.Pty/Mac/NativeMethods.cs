@@ -42,7 +42,7 @@ static class NativeMethods
     public static extern int peek(int pid);
 
     [DllImport(LibSystem, SetLastError = true, EntryPoint = "pty_resize")]
-    public static extern int resize(int fd, ushort column, ushort row);
+    public static extern int resize(int fd, int pid, ushort column, ushort row);
 
     [DllImport(LibSystem, SetLastError = true, EntryPoint = "pty_close")]
     public static extern int close(int fd);

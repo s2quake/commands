@@ -273,14 +273,7 @@ sealed class TerminalLineCollection : IReadOnlyList<TerminalLine>
                 var line = new TerminalLine(_items, i, bufferSize.Width);
                 _lineList.Add(line);
             }
-            var sb = new StringBuilder();
-            for (var i = 0; i < g; i++)
-            {
-                sb.Append("\x1bOB");
-            }
-            _s = sb.ToString();
-
-            // _terminal.WriteInput("\u001b[2J");
+            _terminal.WriteInput("\u001b[999;999H");
         }
         else
         {
@@ -364,7 +357,7 @@ sealed class TerminalLineCollection : IReadOnlyList<TerminalLine>
                         Console.WriteLine(SequenceUtility.ToLiteral(s));
                         s = string.Empty;
                     }
-                    else
+                    else if (character != '\x1b')
                     {
                         s += character;
                     }
@@ -374,7 +367,7 @@ sealed class TerminalLineCollection : IReadOnlyList<TerminalLine>
                 else
                 {
                     Process(lines, context);
-                    s = s + character;
+                    s += character;
                 }
             }
             if (s != string.Empty)
@@ -395,13 +388,6 @@ sealed class TerminalLineCollection : IReadOnlyList<TerminalLine>
         lines.Prepare(_beginIndex, ref _index);
         lines.UpdateLines();
         InvokeTextChangedEvent();
-        if (_s != string.Empty)
-        {
-            // await Task.Delay(1000);
-            // _terminal.WriteInput(_s);
-            // _terminal.WriteInput("\u001b[2J");
-            _s = string.Empty;
-        }
     }
 
     private static void Process(TerminalLineCollection lines, AsciiCodeContext context)

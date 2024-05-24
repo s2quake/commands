@@ -146,6 +146,8 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
 
     public void SelectAll() => _terminal.Selections.SelectAll();
 
+    public void WriteInput(string text) => _terminal.WriteInput(text);
+
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
