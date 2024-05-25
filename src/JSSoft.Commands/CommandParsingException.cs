@@ -34,7 +34,7 @@ public class CommandParsingException(CommandParser parser, CommandParsingError e
 
     public CommandParser Parser { get; } = parser;
 
-    public CommandMemberDescriptorCollection MemberDescriptors => CommandDescriptor.GetMemberDescriptors(Parser.Instance.GetType());
+    public CommandMemberDescriptorCollection MemberDescriptors => CommandDescriptor.GetMemberDescriptors(Parser.Instance);
 
     #region ICommandUsage
 
