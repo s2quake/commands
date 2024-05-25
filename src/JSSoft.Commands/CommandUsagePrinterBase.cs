@@ -16,6 +16,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using System.CodeDom.Compiler;
 using JSSoft.Commands.Extensions;
 
 namespace JSSoft.Commands;
@@ -95,7 +96,7 @@ public abstract class CommandUsagePrinterBase(ICommandUsage commandUsage, Comman
             memberDescriptors.HasOptions == true ? "[options]" : string.Empty,
             .. from item in memberDescriptors where item.IsVariables == true select GetString(item),
         ];
-        var maxWidth = commandWriter.Width - (CommandTextWriter.DefaultTabString.Length * commandWriter.Indent) - (executionName.Length + 1);
+        var maxWidth = commandWriter.Width - (IndentedTextWriter.DefaultTabString.Length * commandWriter.Indent) - (executionName.Length + 1);
         var width = Math.Max(maxWidth, 1);
         var lines = CommandTextWriter.Wrap(items, maxWidth);
         for (var i = 0; i < lines.Length; i++)

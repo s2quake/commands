@@ -29,7 +29,7 @@ sealed class CommandNodeCollection : Dictionary<string, CommandNode>, IReadOnlyD
 
     public void Add(CommandNode node)
     {
-        base.Add(node.Name, node);
+        Add(node.Name, node);
     }
 
     #region IReadOnlyDictionary
