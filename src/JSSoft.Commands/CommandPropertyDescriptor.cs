@@ -95,7 +95,7 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
                     throw new InvalidOperationException($"'{item.PropertyName}' is not property.");
 
                 var parseDescriptor1 = parseDescriptorByMemberDescriptor[memberDescriptor];
-                var value1 = item.IsSet != true || parseDescriptor1.IsOptionSet == true ? parseDescriptor1.ActualValue : null;
+                var value1 = item.OnSet != true || parseDescriptor1.IsOptionSet == true ? parseDescriptor1.ActualValue : null;
                 var value2 = item.Value;
 
                 if (item.IsNot != true)
