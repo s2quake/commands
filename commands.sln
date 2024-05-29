@@ -17,11 +17,7 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "JSSoft.Commands.Shared", "e
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Commands.Sets", "example\JSSoft.Commands.Sets\JSSoft.Commands.Sets.csproj", "{E67B82A8-8EC2-43C1-A59E-39C916AB2EC3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Commands.AppUI", "example\JSSoft.Commands.AppUI\JSSoft.Commands.AppUI.csproj", "{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Terminals", "src\JSSoft.Terminals\JSSoft.Terminals.csproj", "{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSSoft.Terminals.Pty", "src\JSSoft.Terminals.Pty\JSSoft.Terminals.Pty.csproj", "{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{48D566AB-4138-430E-983D-6B7BD452ECEF}"
 EndProject
@@ -109,18 +105,6 @@ Global
 		{E67B82A8-8EC2-43C1-A59E-39C916AB2EC3}.Release|x64.Build.0 = Release|Any CPU
 		{E67B82A8-8EC2-43C1-A59E-39C916AB2EC3}.Release|x86.ActiveCfg = Release|Any CPU
 		{E67B82A8-8EC2-43C1-A59E-39C916AB2EC3}.Release|x86.Build.0 = Release|Any CPU
-		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Debug|x64.Build.0 = Debug|Any CPU
-		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Debug|x86.Build.0 = Debug|Any CPU
-		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Release|x64.ActiveCfg = Release|Any CPU
-		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Release|x64.Build.0 = Release|Any CPU
-		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Release|x86.ActiveCfg = Release|Any CPU
-		{D1DAAB6E-BA1D-4871-B3A0-BAEA55F03E08}.Release|x86.Build.0 = Release|Any CPU
 		{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -133,18 +117,6 @@ Global
 		{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}.Release|x64.Build.0 = Release|Any CPU
 		{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}.Release|x86.ActiveCfg = Release|Any CPU
 		{8C1E2DB1-D23D-46DF-9A7F-0F3F32BE1EB5}.Release|x86.Build.0 = Release|Any CPU
-		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Debug|x64.Build.0 = Debug|Any CPU
-		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Debug|x86.Build.0 = Debug|Any CPU
-		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Release|x64.ActiveCfg = Release|Any CPU
-		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Release|x64.Build.0 = Release|Any CPU
-		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Release|x86.ActiveCfg = Release|Any CPU
-		{EAE8E0AC-7F3E-4548-80CC-EF72AACE74FB}.Release|x86.Build.0 = Release|Any CPU
 		{475CB056-8D2D-47E1-8E1C-A2665BFB3C4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{475CB056-8D2D-47E1-8E1C-A2665BFB3C4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{475CB056-8D2D-47E1-8E1C-A2665BFB3C4B}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -161,6 +133,9 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{475CB056-8D2D-47E1-8E1C-A2665BFB3C4B} = {48D566AB-4138-430E-983D-6B7BD452ECEF}
+	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ED97A8D1-7DE5-4AE4-A2A6-303384BB1EFE}
 	EndGlobalSection
@@ -169,8 +144,5 @@ Global
 		JSSoft.Commands\JSSoft.Commands.Shared\JSSoft.Commands.Shared.projitems*{d1daab6e-ba1d-4871-b3a0-baea55f03e08}*SharedItemsImports = 5
 		JSSoft.Commands\JSSoft.Commands.Shared\JSSoft.Commands.Shared.projitems*{e67b82a8-8ec2-43c1-a59e-39c916ab2ec3}*SharedItemsImports = 5
 		JSSoft.Commands\JSSoft.Commands.Shared\JSSoft.Commands.Shared.projitems*{f6427925-5255-4b00-be11-543b0539cc07}*SharedItemsImports = 13
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{475CB056-8D2D-47E1-8E1C-A2665BFB3C4B} = {48D566AB-4138-430E-983D-6B7BD452ECEF}
 	EndGlobalSection
 EndGlobal
