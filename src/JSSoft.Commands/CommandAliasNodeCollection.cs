@@ -27,7 +27,7 @@ sealed class CommandAliasNodeCollection : Dictionary<string, CommandAliasNode>, 
     {
     }
 
-    public void Add(CommandAliasNode node) => base.Add(node.Name, node);
+    public void Add(CommandAliasNode node) => Add(node.Name, node);
 
     #region IReadOnlyDictionary
 

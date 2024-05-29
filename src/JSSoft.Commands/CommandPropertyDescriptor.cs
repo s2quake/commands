@@ -95,12 +95,12 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
                     throw new InvalidOperationException($"'{item.PropertyName}' is not property.");
 
                 var parseDescriptor1 = parseDescriptorByMemberDescriptor[memberDescriptor];
-                var value1 = item.IsSet == true && parseDescriptor1.IsOptionSet == true ? parseDescriptor1.ActualValue : null;
+                var value1 = item.OnSet != true || parseDescriptor1.IsOptionSet == true ? parseDescriptor1.ActualValue : null;
                 var value2 = item.Value;
 
                 if (item.IsNot != true)
                 {
-                    if (object.Equals(value1, value2) == false)
+                    if (Equals(value1, value2) == false)
                     {
                         if (memberDescriptor.IsSwitch == true)
                             throw new CommandPropertyConditionException($"'{DisplayName}' cannot be used. Cannot be used with switch '{memberDescriptor.DisplayName}'.", this);
@@ -110,7 +110,7 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
                 }
                 else
                 {
-                    if (object.Equals(value1, value2) == true)
+                    if (Equals(value1, value2) == true)
                     {
                         if (memberDescriptor.IsSwitch == true)
                             throw new CommandPropertyConditionException($"'{DisplayName}' cannot be used because switch '{memberDescriptor.DisplayName}' is not specified.", this);

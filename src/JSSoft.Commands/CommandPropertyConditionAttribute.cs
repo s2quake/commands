@@ -37,5 +37,5 @@ public sealed class CommandPropertyConditionAttribute(string propertyName, objec
 
     public bool IsNot { get; set; }
 
-    public bool IsSet { get; set; }
+    public bool OnSet { get; set; }
 }
