@@ -20,7 +20,8 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Condition="'$(SolutionDir)' != '' and '$(SolutionDir)' != '$(MSBuildThisFileDirectory)' and $([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../')) != ''" Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
   <PropertyGroup>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(_IsPacking)'=='true'">net6.0;net7.0;net8.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks Condition="'$(_IsPacking)'!='true'">net8.0</TargetFrameworks>
     <AssemblyVersion>6.0</AssemblyVersion>
     <FileVersion>6.0.0</FileVersion>
     <RepositoryType>git</RepositoryType>
@@ -32,7 +33,9 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     <PackageVersion>6.0.0</PackageVersion>
     <PackageProjectUrl>https://github.com/s2quake/commands</PackageProjectUrl>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
-    <LangVersion>preview</LangVersion>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>command-line, console, REPL, terminal</PackageTags>
+    <LangVersion>12</LangVersion>
     <RootPath Condition="'$(SolutionDir)' != ''">$(SolutionDir)</RootPath>
     <RootPath Condition="'$(SolutionDir)' == ''">$(MSBuildThisFileDirectory)\</RootPath>
     <DelaySign>true</DelaySign>
@@ -43,6 +46,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     <AssemblyOriginatorKeyFile Condition="Exists('$(MSBuildThisFileDirectory).build/public.snk')">$(MSBuildThisFileDirectory).build/public.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="../LICENSE.md" Pack="true" PackagePath="" />
+    <None Include="../../LICENSE.md" Pack="true" PackagePath="" />
+    <None Include="../../README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 </Project>

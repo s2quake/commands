@@ -26,7 +26,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     <DesiredPublishDirTemp Condition="'$(PublishDir)' != '$(DesiredPublishDir)'">$(PublishDir)</DesiredPublishDirTemp>
     <DesiredPublishDir>$(DesiredPublishDirTemp)</DesiredPublishDir>
   </PropertyGroup>
-<Target Name="BeforeBuild">
+  <Target Name="BeforeBuild">
     <Exec Command="git rev-parse HEAD" ConsoleToMsBuild="true" EchoOff="true" StandardOutputImportance="Low" WorkingDirectory="$(MSBuildThisFileDirectory)">
       <Output TaskParameter="ConsoleOutput" PropertyName="RepositorySHA" />
     </Exec>
