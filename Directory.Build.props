@@ -23,14 +23,14 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     <TargetFrameworks Condition="'$(_IsPacking)'=='true'">net6.0;net7.0;net8.0;netstandard2.1</TargetFrameworks>
     <TargetFrameworks Condition="'$(_IsPacking)'!='true'">net8.0</TargetFrameworks>
     <AssemblyVersion>6.0</AssemblyVersion>
-    <FileVersion>6.0.0</FileVersion>
+    <FileVersion>6.0.1</FileVersion>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/s2quake/commands</RepositoryUrl>
     <LicenseUrl>https://github.com/s2quake/commands/blob/main/LICENSE</LicenseUrl>
     <Copyright>Copyright (c) 2024 Jeesu Choi</Copyright>
     <Description>Parse command line or Supports console environment like REPL.</Description>
     <Authors>s2quake</Authors>
-    <PackageVersion>6.0.0</PackageVersion>
+    <PackageVersion>$(FileVersion)</PackageVersion>
     <PackageProjectUrl>https://github.com/s2quake/commands</PackageProjectUrl>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
