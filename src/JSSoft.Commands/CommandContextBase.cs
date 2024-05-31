@@ -258,7 +258,7 @@ public abstract class CommandContextBase : ICommandContext
     {
         var query = from item in commands
                     orderby item.Name
-                    orderby item.GetType().GetCustomAttribute<PartialCommandAttribute>()
+                    orderby item.GetType().GetCustomAttribute<PartialCommandAttribute>() != null
                     select item;
 
         CollectCommands(commandNode, query);
