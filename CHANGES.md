@@ -4,6 +4,8 @@ Commands changes
 6.0.1
 -------------
 
+Released on May 31, 2024.
+
 * Fixed an issue where an exception was thrown when multiple 
   commands using `PartialCommandAttribute` were inside an assembly.  [[#8]]
 
