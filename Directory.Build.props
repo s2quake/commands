@@ -23,7 +23,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     <TargetFrameworks Condition="'$(_IsPacking)'=='true'">net6.0;net7.0;net8.0;netstandard2.1</TargetFrameworks>
     <TargetFrameworks Condition="'$(_IsPacking)'!='true'">net8.0</TargetFrameworks>
     <AssemblyVersion>6.0</AssemblyVersion>
-    <FileVersion>6.0.1</FileVersion>
+    <FileVersion>6.0.2</FileVersion>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/s2quake/commands</RepositoryUrl>
     <LicenseUrl>https://github.com/s2quake/commands/blob/main/LICENSE</LicenseUrl>
