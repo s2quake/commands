@@ -1,0 +1,7 @@
+[files]
+extend-exclude = [
+    "**/words.txt",
+    "**/Resources.Designer.cs",
+    "src/JSSoft.Terminals/SystemTerminalHost.cs",
+    "example/JSSoft.Commands.AppUI/Controls/TerminalMarshal.cs"
+]

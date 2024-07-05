@@ -17,26 +17,14 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER I
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -->
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project>
+
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
   <PropertyGroup>
-    <DesiredPublishDir>$(OutputPath)publish\</DesiredPublishDir>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <NoWarn Condition="'$(_IsPacking)'=='true'">$(NoWarn);NU1701</NoWarn>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(PublishName)' != '' and ($(PublishGroup) == 'commands' or $(PublishGroup) == '')">
-    <DesiredPublishDirTemp Condition="'$(PublishDir)' == '$(DesiredPublishDir)'">$(RootPath)publish\$(Configuration)\$(TargetFramework)\</DesiredPublishDirTemp>
-    <DesiredPublishDirTemp Condition="'$(PublishDir)' != '$(DesiredPublishDir)'">$(PublishDir)</DesiredPublishDirTemp>
-    <DesiredPublishDir>$(DesiredPublishDirTemp)</DesiredPublishDir>
-  </PropertyGroup>
-
-  <Target Name="AfterBuild">
-    <PropertyGroup Condition="'$(PublishName)' != ''">
-      <PublishDir>$([System.IO.Path]::Combine($(DesiredPublishDir),$(PublishName)))</PublishDir>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(PublishName)' == ''">
-      <PublishDir>$(DesiredPublishDir)</PublishDir>
-    </PropertyGroup>
-
-  </Target>
 
 </Project>

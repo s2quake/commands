@@ -47,7 +47,7 @@ sealed class CommandNodeCollection : Dictionary<string, CommandNode>, IReadOnlyD
             value = v;
             return true;
         }
-        value = null;
+        value = default!;
         return false;
     }
 
