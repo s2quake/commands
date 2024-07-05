@@ -6,6 +6,10 @@ Commands changes
 
 To be Released.
 
+* Add github action for CI.  [[#13]]
+
+[#13]: https://github.com/s2quake/commands/pull/13
+
 
 6.0.1
 -------------
