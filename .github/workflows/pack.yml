@@ -1,0 +1,47 @@
+name: Pack
+
+on:
+  pull_request: 
+  push:
+    branches:
+      - main
+    tags:
+      - "*"
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4.1.7
+      - uses: actions/setup-dotnet@v4.0.0
+        with:
+          dotnet-version: 8.0.100
+      - run: | 
+          echo "${{ secrets.SNK_FILE }}" | base64 --decode > private.snk
+          echo "PRIVATE_KEY_PATH=$(Join-Path $PWD private.snk)" | `
+            Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - if: ${{ github.event_name == 'pull_request' }}
+        run: | 
+          .github/scripts/pack-on-pull-request.ps1 `
+            -OutputPath "pack" `
+            -PullRequestNumber ${{ github.event.pull_request.number }}
+      - if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: | 
+          .github/scripts/pack-on-push-main.ps1 `
+            -OutputPath "pack" `
+            -CommitSha ${{ github.sha }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      - if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
+        run: | 
+          $tagName = "${{ github.ref }}" -replace "refs/tags/", ""
+          .github/scripts/pack-on-push-tag.ps1 `
+            -OutputPath "pack" `
+            -TagName $tagName
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}

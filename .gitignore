@@ -22,6 +22,7 @@
 
 bin/
 publish/
+pack/
 obj/
 logs/
 packages/

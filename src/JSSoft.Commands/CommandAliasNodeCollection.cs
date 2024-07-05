@@ -44,7 +44,7 @@ sealed class CommandAliasNodeCollection : Dictionary<string, CommandAliasNode>, 
             value = v;
             return true;
         }
-        value = null;
+        value = default!;
         return false;
     }
 
@@ -52,13 +52,13 @@ sealed class CommandAliasNodeCollection : Dictionary<string, CommandAliasNode>, 
 
     #region IEnumerable
 
-    IEnumerator<KeyValuePair<string, ICommandNode>> IEnumerable<KeyValuePair<string, ICommandNode>>.GetEnumerator()
+    IEnumerator<KeyValuePair<string, ICommandNode>> IEnumerable<KeyValuePair< string, ICommandNode >>.GetEnumerator()
     {
-        foreach (var item in this)
-        {
-            yield return new KeyValuePair<string, ICommandNode>(item.Key, item.Value);
-        }
+    foreach (var item in this)
+    {
+        yield return new KeyValuePair<string, ICommandNode>(item.Key, item.Value);
     }
+}
 
     #endregion
 }

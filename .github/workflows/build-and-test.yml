@@ -1,0 +1,34 @@
+name: Build and Test
+
+on:
+  pull_request:
+
+env:
+  TEST_RESULTS_PATH: ${{ github.workspace }}/test-results.trx
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.7
+      - uses: actions/setup-dotnet@v4.0.0
+        with:
+          dotnet-version: 8.0.100
+      - run: echo "${{ secrets.SNK_FILE }}" | base64 --decode > private.snk
+      - run: |
+          dotnet build \
+            --configuration Release \
+            -p:TreatWarningsAsErrors=true \
+            -p:TreatWarningsAsErrors=true \
+            -p:AssemblyOriginatorKeyFile=$(pwd)/private.snk
+      - run: |
+          dotnet test \
+            --configuration Release \
+            --no-restore \
+            --no-build \
+            --logger "trx;LogFileName=${{ env.TEST_RESULTS_PATH }}"
+      - uses: dorny/test-reporter@v1
+        with:
+          name: XUnit Tests
+          path: ${{ env.TEST_RESULTS_PATH }}
+          reporter: dotnet-trx
