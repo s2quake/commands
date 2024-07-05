@@ -82,7 +82,7 @@ public class CommandDefinitionException : SystemException
         }
     }
 
-    public static void ThrowIfPropertyNotRightTypeForSwtich(CommandType commandType, PropertyInfo propertyInfo)
+    public static void ThrowIfPropertyNotRightTypeForSwitch(CommandType commandType, PropertyInfo propertyInfo)
     {
         if (commandType == CommandType.Switch && propertyInfo.PropertyType != typeof(bool))
             throw new CommandDefinitionException($"Attribute '{nameof(CommandPropertySwitchAttribute)}' is not available for property '{propertyInfo}'.", propertyInfo.DeclaringType!);

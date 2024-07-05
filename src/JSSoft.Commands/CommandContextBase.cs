@@ -357,13 +357,13 @@ public abstract class CommandContextBase : ICommandContext
 
     private string[] GetCompletion(ICommand command, string[] args, string find)
     {
-        if (command is ICommandCompletor completor)
+        if (command is ICommandCompleter completer)
         {
             var memberDescriptors = CommandDescriptor.GetMemberDescriptors(command);
             var context = CommandCompletionContext.Create(command, memberDescriptors, args, find);
             if (context is CommandCompletionContext completionContext)
             {
-                return completor.GetCompletions(completionContext);
+                return completer.GetCompletions(completionContext);
             }
             else if (context is string[] completions)
             {

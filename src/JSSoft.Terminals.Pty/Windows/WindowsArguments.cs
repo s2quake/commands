@@ -19,7 +19,7 @@ namespace JSSoft.Terminals.Pty.Windows
             string.Join(" ", (args ?? Enumerable.Empty<string>()).Select(Format));
 
         /// <summary>
-        /// Joins the arguments together witout modification.
+        /// Joins the arguments together without modification.
         /// </summary>
         /// <param name="args">The command line arguments to format.</param>
         /// <returns>A space-delimited list of command line arguments.</returns>

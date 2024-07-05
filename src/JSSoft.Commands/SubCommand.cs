@@ -19,7 +19,7 @@
 namespace JSSoft.Commands;
 
 sealed class SubCommand(CommandMethodBase commandMethod, CommandMethodDescriptor methodDescriptor)
-    : ICommand, ICommandCompletor, IExecutable, ICommandUsage, ICommandUsagePrinter, ICustomCommandDescriptor
+    : ICommand, ICommandCompleter, IExecutable, ICommandUsage, ICommandUsagePrinter, ICustomCommandDescriptor
 {
     public string Name => methodDescriptor.Name;
 

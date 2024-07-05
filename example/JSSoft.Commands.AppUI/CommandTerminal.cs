@@ -37,7 +37,7 @@ sealed class CommandTerminal : IDisposable
         _terminalControl = terminalControl;
         _commandContext.Out = new TerminalControlTextWriter(_terminalControl);
         _commandContext.Error = new TerminalControlTextWriter(_terminalControl);
-        _terminalControl.Completor = _commandContext.GetCompletion;
+        _terminalControl.Completer = _commandContext.GetCompletion;
         _terminalControl.Out.Write(_prompt);
     }
 

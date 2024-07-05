@@ -30,7 +30,7 @@ public sealed class StaticClass_Browable_False_Test
     }
 
     [Fact]
-    public void GetMemberDescriptors_Arg0_BrowsableFalsStaticClass_Test()
+    public void GetMemberDescriptors_Arg0_BrowsableFalseStaticClass_Test()
     {
         var memberDescriptors = CommandDescriptor.GetMemberDescriptors(typeof(BrowsableFalseStaticClass));
 

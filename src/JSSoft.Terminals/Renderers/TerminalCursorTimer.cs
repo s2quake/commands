@@ -25,7 +25,7 @@ sealed class TerminalCursorTimer : TerminalPropertyChangedBase, IDisposable
     private readonly SynchronizationContext? _synchronizationContext = SynchronizationContext.Current;
 
     private bool _isEnabled;
-    private int _inverval = 1000;
+    private int _interval = 1000;
     private bool _isDisposed;
     private Timer? _timer;
 
@@ -38,7 +38,7 @@ sealed class TerminalCursorTimer : TerminalPropertyChangedBase, IDisposable
             {
                 if (_isEnabled == true)
                 {
-                    _timer = new(Timer_Callback, _synchronizationContext, 0, _inverval);
+                    _timer = new(Timer_Callback, _synchronizationContext, 0, _interval);
                 }
                 else
                 {
@@ -49,19 +49,19 @@ sealed class TerminalCursorTimer : TerminalPropertyChangedBase, IDisposable
         }
     }
 
-    public int Inverval
+    public int Interval
     {
-        get => _inverval;
+        get => _interval;
         set
         {
-            if (SetField(ref _inverval, value, nameof(Inverval)) == true)
+            if (SetField(ref _interval, value, nameof(Interval)) == true)
             {
-                _timer?.Change(_inverval, _inverval);
+                _timer?.Change(_interval, _interval);
             }
         }
     }
 
-    public void Reset() => _timer?.Change(_inverval, _inverval);
+    public void Reset() => _timer?.Change(_interval, _interval);
 
     public void Dispose()
     {

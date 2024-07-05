@@ -45,7 +45,7 @@ public class TerminalCursorRenderer : TerminalRendererBase
         _terminal = terminal;
         _cursorTimer = new TerminalCursorTimer()
         {
-            Inverval = _cursorBlinkDelay,
+            Interval = _cursorBlinkDelay,
             IsEnabled = _terminal.IsFocused && _isCursorBlinkable
         };
         _cursorShapeProperty = new(terminal, nameof(ITerminalStyle.CursorShape), CursorShapeProperty_Changed);
@@ -84,7 +84,7 @@ public class TerminalCursorRenderer : TerminalRendererBase
         {
             if (SetField(ref _cursorBlinkDelay, value, nameof(CursorBlinkDelay)) == true)
             {
-                _cursorTimer.Inverval = _cursorBlinkDelay;
+                _cursorTimer.Interval = _cursorBlinkDelay;
             }
         }
     }

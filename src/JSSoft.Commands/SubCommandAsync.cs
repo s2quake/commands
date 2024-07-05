@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 namespace JSSoft.Commands;
 
 sealed class SubCommandAsync(CommandMethodBase commandMethod, CommandMethodDescriptor methodDescriptor)
-    : ICommand, ICommandCompletor, IAsyncExecutable, ICommandUsage, ICommandUsagePrinter, ICustomCommandDescriptor
+    : ICommand, ICommandCompleter, IAsyncExecutable, ICommandUsage, ICommandUsagePrinter, ICustomCommandDescriptor
 {
     public string Name => methodDescriptor.Name;
 

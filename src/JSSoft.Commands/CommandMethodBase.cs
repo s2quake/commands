@@ -20,7 +20,7 @@ using System.IO;
 
 namespace JSSoft.Commands;
 
-public abstract class CommandMethodBase : ICommand, ICommandHost, ICommandHierarchy, ICommandCompletor, ICommandUsage, ICommandUsagePrinter
+public abstract class CommandMethodBase : ICommand, ICommandHost, ICommandHierarchy, ICommandCompleter, ICommandUsage, ICommandUsagePrinter
 {
     private readonly CommandCollection _commands;
     private readonly CommandUsageDescriptorBase _usageDescriptor;
@@ -101,8 +101,8 @@ public abstract class CommandMethodBase : ICommand, ICommandHost, ICommandHierar
 
     private static CommandCollection CreateCommands(CommandMethodBase obj)
     {
-        var methosDescriptors = CommandDescriptor.GetMethodDescriptors(obj.GetType());
-        var query = from methodDescriptor in methosDescriptors
+        var methodDescriptors = CommandDescriptor.GetMethodDescriptors(obj.GetType());
+        var query = from methodDescriptor in methodDescriptors
                     select CreateCommand(obj, methodDescriptor);
         return new CommandCollection(query);
 
@@ -142,9 +142,9 @@ public abstract class CommandMethodBase : ICommand, ICommandHost, ICommandHierar
 
     #endregion
 
-    #region ICommandCompletor
+    #region ICommandCompleter
 
-    string[] ICommandCompletor.GetCompletions(CommandCompletionContext completionContext) => [];
+    string[] ICommandCompleter.GetCompletions(CommandCompletionContext completionContext) => [];
 
     #endregion
 

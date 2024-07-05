@@ -183,8 +183,8 @@ public abstract class SystemTerminalBase : IDisposable
     private void WriteException(TextWriter error, Exception e)
     {
         var exception = e is TargetInvocationException ? e.InnerException ?? e : e;
-        var errorMesssage = DetailErrorMessage == true ? $"{exception}" : exception.Message;
-        var formattedMessage = TerminalStringBuilder.GetString(errorMesssage, TerminalColorType.Red);
+        var errorMessage = DetailErrorMessage == true ? $"{exception}" : exception.Message;
+        var formattedMessage = TerminalStringBuilder.GetString(errorMessage, TerminalColorType.Red);
         error.WriteLine(formattedMessage);
     }
 

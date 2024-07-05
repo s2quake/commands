@@ -18,4 +18,4 @@
 
 namespace JSSoft.Terminals;
 
-public delegate string[] TerminalCompletor(string[] items, string find);
+public delegate string[] TerminalCompleter(string[] items, string find);

@@ -51,8 +51,8 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
     public static readonly StyledProperty<TerminalStyle?> TerminalStyleProperty =
         AvaloniaProperty.Register<TerminalControl, TerminalStyle?>(nameof(TerminalStyle));
 
-    public static readonly StyledProperty<TerminalControlCompletor> CompletorProperty =
-        AvaloniaProperty.Register<TerminalControl, TerminalControlCompletor>(nameof(Completor), defaultValue: (items, find) => []);
+    public static readonly StyledProperty<TerminalControlCompleter> CompleterProperty =
+        AvaloniaProperty.Register<TerminalControl, TerminalControlCompleter>(nameof(Completer), defaultValue: (items, find) => []);
 
     public static readonly DirectProperty<TerminalControl, Size> BufferSizeProperty =
         AvaloniaProperty.RegisterDirect<TerminalControl, Size>(nameof(BufferSize), o => o.BufferSize);
@@ -110,10 +110,10 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         set => SetValue(TerminalStyleProperty, value);
     }
 
-    public TerminalControlCompletor Completor
+    public TerminalControlCompleter Completer
     {
-        get => GetValue(CompletorProperty);
-        set => SetValue(CompletorProperty, value);
+        get => GetValue(CompleterProperty);
+        set => SetValue(CompleterProperty, value);
     }
 
     public Size BufferSize
@@ -327,7 +327,7 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
 
     private string[] GetCompletion(string[] items, string find)
     {
-        return Completor.Invoke(items, find);
+        return Completer.Invoke(items, find);
     }
 
     private void Terminal_PropertyChanged(object? sender, PropertyChangedEventArgs e)

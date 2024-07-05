@@ -146,7 +146,7 @@ internal class PtyProvider : IPtyProvider
         if (isWow64)
         {
             // On Wow64, if %PATH% contains %WINDIR%\System32 but does not have %WINDIR%\Sysnative, add it before System32.
-            // We do that to accomodate terminal app that VSCode may use. VSCode is a 64 bit app,
+            // We do that to accommodate terminal app that VSCode may use. VSCode is a 64 bit app,
             // and to access 64 bit System32 from wow64 vsls-agent app, we need to go to sysnative.
             var indexOfSystem32 = paths.FindIndex(entry =>
                 string.Equals(entry, system32Path, StringComparison.OrdinalIgnoreCase)

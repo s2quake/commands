@@ -30,7 +30,7 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
         CommandDefinitionException.ThrowIfPropertyNotReadWrite(propertyInfo);
         CommandDefinitionException.ThrowIfPropertyUnsupportedType(propertyInfo);
         CommandDefinitionException.ThrowIfPropertyNotRightTypeForVariables(CommandType, propertyInfo);
-        CommandDefinitionException.ThrowIfPropertyNotRightTypeForSwtich(CommandType, propertyInfo);
+        CommandDefinitionException.ThrowIfPropertyNotRightTypeForSwitch(CommandType, propertyInfo);
 
         _propertyInfo = propertyInfo;
         _conditionsAttributes = AttributeUtility.GetCustomAttributes<CommandPropertyConditionAttribute>(propertyInfo, inherit: true);

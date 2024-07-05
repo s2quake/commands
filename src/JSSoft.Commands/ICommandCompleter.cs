@@ -18,7 +18,7 @@
 
 namespace JSSoft.Commands;
 
-public interface ICommandCompletor
+public interface ICommandCompleter
 {
     string[] GetCompletions(CommandCompletionContext completionContext);
 }

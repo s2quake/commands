@@ -21,7 +21,7 @@ using System.IO;
 namespace JSSoft.Commands;
 
 public abstract class CommandBase
-    : ICommand, IExecutable, ICommandHost, ICommandCompletor, ICommandUsage, ICommandUsagePrinter
+    : ICommand, IExecutable, ICommandHost, ICommandCompleter, ICommandUsage, ICommandUsagePrinter
 {
     private readonly CommandUsageDescriptorBase _usageDescriptor;
     private ICommandNode? _commandNode;
@@ -135,7 +135,7 @@ public abstract class CommandBase
 
     #region
 
-    string[] ICommandCompletor.GetCompletions(CommandCompletionContext completionContext) => GetCompletions(completionContext);
+    string[] ICommandCompleter.GetCompletions(CommandCompletionContext completionContext) => GetCompletions(completionContext);
 
     #endregion
 }

@@ -270,7 +270,7 @@ public abstract class CommandUsagePrinterBase(ICommandUsage commandUsage, Comman
         if (memberDescriptor.IsSwitch == true)
             return memberDescriptor.DisplayName;
         else if (memberDescriptor.DefaultValue is not DBNull)
-            return $"{memberDescriptor.DisplayName} [value, defaul='{memberDescriptor.DefaultValue:R}']";
+            return $"{memberDescriptor.DisplayName} [value, default='{memberDescriptor.DefaultValue:R}']";
         else
             return $"{memberDescriptor.DisplayName} <value>";
     }
