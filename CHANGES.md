@@ -8,8 +8,10 @@ To be Released.
 
 * Added github action for CI.  [[#13]]
 * Fixed cursor not updating when buffer height changed.  [[#17]]
+* Fix an error where the system terminal fails to catch a TaskCanceledException.  [[#14]]
 
 [#13]: https://github.com/s2quake/commands/pull/13
+[#14]: https://github.com/s2quake/commands/pull/14
 [#17]: https://github.com/s2quake/commands/pull/17
 
 
