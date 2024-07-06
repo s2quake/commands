@@ -141,6 +141,15 @@ internal sealed class TestCommand(IApplication application) : CommandMethodBase(
         await Task.Delay(10000, cancellationToken);
     }
 
+    [CommandMethod]
+    public async Task CancelAsync(int timeout = 1000, CancellationToken cancellationToken = default)
+    {
+        using var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken);
+        cancellationTokenSource.CancelAfter(timeout);
+        await Task.Delay(timeout, cancellationTokenSource.Token);
+    }
+
     public string[] CompleteShowItem(CommandMemberDescriptor memberDescriptor, string find)
     {
         return [];
