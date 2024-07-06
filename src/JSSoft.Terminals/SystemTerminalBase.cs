@@ -140,6 +140,11 @@ public abstract class SystemTerminalBase : IDisposable
                 await Task.Delay(1);
             }
 
+            if (task.IsCanceled == true)
+            {
+                throw new TaskCanceledException(task);
+            }
+
             if (task.Exception is not null)
             {
                 throw task.Exception;
