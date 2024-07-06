@@ -26,6 +26,7 @@ public abstract class CommandAsyncBase : ICommand, IAsyncExecutable, ICommandHos
 {
     private readonly CommandUsageDescriptorBase _usageDescriptor;
     private ICommandNode? _node;
+    private IProgress<ProgressInfo>? _progress;
 
     protected CommandAsyncBase()
         : this(Array.Empty<string>())
@@ -79,7 +80,9 @@ public abstract class CommandAsyncBase : ICommand, IAsyncExecutable, ICommandHos
         }
     }
 
-    protected abstract Task OnExecuteAsync(CancellationToken cancellationToken, IProgress<ProgressInfo> progress);
+    protected abstract Task OnExecuteAsync(CancellationToken cancellationToken);
+
+    protected IProgress<ProgressInfo> Progress => _progress ?? throw new InvalidOperationException("The progress is not available.");
 
     protected CommandMemberDescriptor GetDescriptor(string propertyName)
     {
@@ -101,7 +104,15 @@ public abstract class CommandAsyncBase : ICommand, IAsyncExecutable, ICommandHos
 
     Task IAsyncExecutable.ExecuteAsync(CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
     {
-        return OnExecuteAsync(cancellationToken, progress);
+        _progress = progress;
+        try
+        {
+            return OnExecuteAsync(cancellationToken);
+        }
+        finally
+        {
+            _progress = null;
+        }
     }
 
     #endregion
