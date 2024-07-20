@@ -25,8 +25,10 @@ public abstract class SystemTerminalBase : IDisposable
 
     protected SystemTerminalBase()
     {
-        if (_instance != null)
+        if (_instance is not null)
+        {
             throw new InvalidOperationException("The instance can only be created once.");
+        }
 
         _instance = this;
         _terminal = new InternalSystemTerminalHost(this);
@@ -44,7 +46,7 @@ public abstract class SystemTerminalBase : IDisposable
     {
         OnInitialize(_out, _error);
 
-        while (cancellationToken.IsCancellationRequested == false)
+        while (cancellationToken.IsCancellationRequested != true)
         {
             var isEnabled = _terminal.IsEnabled;
             var prompt = Prompt;
@@ -65,7 +67,9 @@ public abstract class SystemTerminalBase : IDisposable
     public void Dispose()
     {
         if (_isDisposed == true)
+        {
             throw new ObjectDisposedException($"{this}");
+        }
 
         OnDispose();
 
@@ -84,7 +88,9 @@ public abstract class SystemTerminalBase : IDisposable
         {
             _prompt = value;
             if (_terminal.IsReading == true)
+            {
                 _terminal.Prompt = value;
+            }
         }
     }
 
@@ -116,19 +122,29 @@ public abstract class SystemTerminalBase : IDisposable
         var cancellationTokenSource = new CancellationTokenSource();
         try
         {
-            if (Console.IsInputRedirected == false)
+            if (Console.IsInputRedirected != true)
+            {
                 Console.TreatControlCAsInput = false;
+            }
+
             Console.CancelKeyPress += ConsoleCancelEventHandler;
-            if (OnCanExecute(text) == false)
+            if (OnCanExecute(text) != true)
+            {
                 return;
+            }
+
             var task = OnExecuteAsync(text, cancellationTokenSource.Token);
-            while (task.IsCompleted == false)
+            while (task.IsCompleted != true)
             {
                 _terminal.Update();
                 await Task.Delay(1);
             }
-            if (task.Exception != null)
+
+            if (task.Exception is not null)
+            {
                 throw task.Exception;
+            }
+
             OnExecuted(exception: null);
         }
         catch (Exception e)
@@ -137,8 +153,11 @@ public abstract class SystemTerminalBase : IDisposable
         }
         finally
         {
-            if (Console.IsInputRedirected == false)
+            if (Console.IsInputRedirected != true)
+            {
                 Console.TreatControlCAsInput = consoleControlC;
+            }
+
             Console.CancelKeyPress -= ConsoleCancelEventHandler;
             cancellationTokenSource = null;
         }
@@ -158,6 +177,7 @@ public abstract class SystemTerminalBase : IDisposable
             {
                 WriteException(error, item);
             }
+
             OnExecuted(e2);
         }
         else
@@ -175,9 +195,7 @@ public abstract class SystemTerminalBase : IDisposable
         error.WriteLine(formattedMessage);
     }
 
-    #region InternalSystemTerminalHost
-
-    sealed class InternalSystemTerminalHost(SystemTerminalBase terminalBase)
+    private sealed class InternalSystemTerminalHost(SystemTerminalBase terminalBase)
         : SystemTerminalHost
     {
         protected override string FormatPrompt(string prompt) => terminalBase.FormatPrompt(prompt);
@@ -190,11 +208,7 @@ public abstract class SystemTerminalBase : IDisposable
         }
     }
 
-    #endregion
-
-    #region TerminalTextWriter
-
-    sealed class TerminalTextWriter(SystemTerminalHost terminalHost, Encoding encoding)
+    private sealed class TerminalTextWriter(SystemTerminalHost terminalHost, Encoding encoding)
         : TextWriter
     {
         public override Encoding Encoding => encoding;
@@ -215,6 +229,4 @@ public abstract class SystemTerminalBase : IDisposable
 
         private Task WriteToStreamAsync(string? text) => terminalHost.EnqueueStringAsync(text ?? string.Empty);
     }
-
-    #endregion
 }

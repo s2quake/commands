@@ -38,18 +38,18 @@ public class TerminalKeyBindingCollection : ITerminalKeyBindingCollection
                 return true;
             }
         }
+
         if (Parent?.Process(obj, modifiers, key) == true)
         {
             return true;
         }
+
         return false;
     }
 
     public int Count => _keyBindingByName.Count;
 
     public ITerminalKeyBindingCollection? Parent { get; }
-
-    #region IEnumerable
 
     IEnumerator<ITerminalKeyBinding> IEnumerable<ITerminalKeyBinding>.GetEnumerator()
     {
@@ -66,6 +66,4 @@ public class TerminalKeyBindingCollection : ITerminalKeyBindingCollection
             yield return item.Value;
         }
     }
-
-    #endregion
 }

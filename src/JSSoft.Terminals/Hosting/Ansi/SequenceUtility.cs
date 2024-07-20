@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-static class SequenceUtility
+internal static class SequenceUtility
 {
     private static readonly SortedDictionary<SequenceType, SequenceCollection> SequenceCollectionByType = new()
     {
@@ -63,6 +63,7 @@ static class SequenceUtility
                 return sequenceCollection;
             }
         }
+
         throw new NotSupportedException("not supported sequence");
     }
 

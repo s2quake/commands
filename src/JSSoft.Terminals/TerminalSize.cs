@@ -13,6 +13,7 @@ public struct TerminalSize(int width, int height) : IEquatable<TerminalSize>
         {
             return Width == size.Width && Height == size.Height;
         }
+
         return base.Equals(obj);
     }
 
@@ -52,10 +53,6 @@ public struct TerminalSize(int width, int height) : IEquatable<TerminalSize>
     public static TerminalSize operator /(TerminalSize size, int value)
         => new(size.Width / value, size.Height / value);
 
-    #region IEquatable
-
     readonly bool IEquatable<TerminalSize>.Equals(TerminalSize other)
         => Width == other.Width && Height == other.Height;
-
-    #endregion
 }

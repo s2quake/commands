@@ -11,7 +11,7 @@ namespace JSSoft.Commands.Applications.Commands;
 [Export(typeof(ICommand))]
 [ResourceUsage]
 [Category("Git-like")]
-sealed class CleanCommand : CommandBase
+internal sealed class CleanCommand : CommandBase
 {
     [CommandPropertySwitch('d')]
     public bool IsDirectory { get; set; }

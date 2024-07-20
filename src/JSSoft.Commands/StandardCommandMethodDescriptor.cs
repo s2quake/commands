@@ -8,11 +8,10 @@ using System.Threading.Tasks;
 
 namespace JSSoft.Commands;
 
-sealed class StandardCommandMethodDescriptor : CommandMethodDescriptor
+internal sealed class StandardCommandMethodDescriptor : CommandMethodDescriptor
 {
     private readonly PropertyInfo? _validationPropertyInfo;
     private readonly MethodInfo? _completionMethodInfo;
-    private readonly bool _isStatic;
 
     public StandardCommandMethodDescriptor(MethodInfo methodInfo)
         : base(methodInfo)
@@ -28,7 +27,6 @@ sealed class StandardCommandMethodDescriptor : CommandMethodDescriptor
         Category = AttributeUtility.GetCategory(methodInfo);
         _validationPropertyInfo = CommandMethodUtility.GetValidationPropertyInfo(methodInfo);
         _completionMethodInfo = CommandMethodUtility.GetCompletionMethodInfo(methodInfo);
-        _isStatic = TypeUtility.IsStaticClass(methodInfo.DeclaringType!);
     }
 
     public override string MethodName { get; }
@@ -63,15 +61,17 @@ sealed class StandardCommandMethodDescriptor : CommandMethodDescriptor
         {
             return @bool;
         }
+
         return base.OnCanExecute(instance);
     }
 
     protected override string[] GetCompletion(object instance, object?[] parameters)
     {
-        if (_completionMethodInfo != null)
+        if (_completionMethodInfo is not null)
         {
             return InvokeCompletionMethod(instance, parameters);
         }
+
         return base.GetCompletion(instance, parameters);
     }
 
@@ -86,10 +86,14 @@ sealed class StandardCommandMethodDescriptor : CommandMethodDescriptor
             }
             else if (value is Task<string[]> task)
             {
-                if (task.Wait(CommandSettings.AsyncTimeout) == false)
+                if (task.Wait(CommandSettings.AsyncTimeout) != true)
+                {
                     return [];
+                }
+
                 return task.Result;
             }
+
             throw new UnreachableException();
         }
         catch (Exception e)

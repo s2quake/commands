@@ -42,7 +42,6 @@ public class CommandParser : CommandAnalyzer
         OnValidate(args);
 
         var instance = Instance;
-        var commandName = args.Length > 0 ? args[0] : string.Empty;
         var memberDescriptors = CommandDescriptor.GetMemberDescriptors(instance);
         var parserContext = new ParseContext(memberDescriptors, args);
         parserContext.SetValue(instance);
@@ -50,11 +49,19 @@ public class CommandParser : CommandAnalyzer
 
     protected virtual void OnValidate(string[] args)
     {
-        if (CommandUtility.IsEmptyArgs(args) == true && Settings.AllowEmpty == false)
+        if (CommandUtility.IsEmptyArgs(args) == true && Settings.AllowEmpty != true)
+        {
             throw new CommandParsingException(this, CommandParsingError.Empty, args);
+        }
+
         if (Settings.ContainsHelpOption(args) == true)
+        {
             throw new CommandParsingException(this, CommandParsingError.Help, args);
+        }
+
         if (Settings.ContainsVersionOption(args) == true)
+        {
             throw new CommandParsingException(this, CommandParsingError.Version, args);
+        }
     }
 }

@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class QueryKeyModifierOptions : CSISequenceBase
+internal sealed class QueryKeyModifierOptions : CSISequenceBase
 {
     public QueryKeyModifierOptions()
         : base('m')

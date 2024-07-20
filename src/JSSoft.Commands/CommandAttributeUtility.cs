@@ -4,89 +4,53 @@
 // </copyright>
 
 using System.ComponentModel;
+using static JSSoft.Commands.AttributeUtility;
+using static JSSoft.Commands.CommandSettings;
 
 namespace JSSoft.Commands;
 
 public static class CommandAttributeUtility
 {
     public static bool IsCommandProperty(PropertyInfo propertyInfo)
-    {
-        if (AttributeUtility.GetCustomAttribute<CommandPropertyBaseAttribute>(propertyInfo, inherit: true) is { } == true)
-        {
-            return true;
-        }
-        return false;
-    }
+        => IsDefined<CommandPropertyBaseAttribute>(propertyInfo, inherit: true);
 
     public static bool IsCommandMethod(MethodInfo methodInfo)
-    {
-        if (AttributeUtility.GetCustomAttribute<CommandMethodAttribute>(methodInfo) is { } == true)
-        {
-            return true;
-        }
-        return false;
-    }
+        => IsDefined<CommandMethodAttribute>(methodInfo);
 
     public static bool GetBrowsable(MemberInfo memberInfo)
     {
-        if (AttributeUtility.GetBrowsable(memberInfo) == false)
+        var browsable = GetValue<BrowsableAttribute, bool>(
+            memberInfo: memberInfo,
+            getter: memberInfo => memberInfo.Browsable,
+            defaultValue: true);
+        if (browsable != true)
+        {
             return false;
-        if (CommandSettings.IsConsoleMode == false && AttributeUtility.GetCustomAttribute<ConsoleModeOnlyAttribute>(memberInfo) is not { })
+        }
+
+        if (IsConsoleMode == true && IsDefined<ConsoleModeOnlyAttribute>(memberInfo) == true)
+        {
             return false;
+        }
+
         return true;
     }
 
     public static string GetSummary(MemberInfo memberInfo)
-    {
-        if (AttributeUtility.GetCustomAttribute<CommandSummaryAttribute>(memberInfo) is { } commandSummaryAttribute)
-        {
-            return commandSummaryAttribute.Summary;
-        }
-        return string.Empty;
-    }
+        => GetValue<CommandSummaryAttribute>(memberInfo, memberInfo => memberInfo.Summary);
 
     public static string GetSummary(ParameterInfo parameterInfo)
-    {
-        if (AttributeUtility.GetCustomAttribute<CommandSummaryAttribute>(parameterInfo) is { } commandSummaryAttribute)
-        {
-            return commandSummaryAttribute.Summary;
-        }
-        return string.Empty;
-    }
+        => GetValue<CommandSummaryAttribute>(parameterInfo, memberInfo => memberInfo.Summary);
 
     public static string GetDescription(MemberInfo memberInfo)
-    {
-        if (AttributeUtility.GetCustomAttribute<DescriptionAttribute>(memberInfo) is { } descriptionAttribute)
-        {
-            return descriptionAttribute.Description;
-        }
-        return string.Empty;
-    }
+        => GetValue<DescriptionAttribute>(memberInfo, memberInfo => memberInfo.Description);
 
     public static string GetDescription(ParameterInfo parameterInfo)
-    {
-        if (AttributeUtility.GetCustomAttribute<DescriptionAttribute>(parameterInfo) is { } descriptionAttribute)
-        {
-            return descriptionAttribute.Description;
-        }
-        return string.Empty;
-    }
+        => GetValue<DescriptionAttribute>(parameterInfo, memberInfo => memberInfo.Description);
 
     public static string GetExample(MemberInfo memberInfo)
-    {
-        if (AttributeUtility.GetCustomAttribute<CommandExampleAttribute>(memberInfo) is { } commandExampleAttribute)
-        {
-            return commandExampleAttribute.Example;
-        }
-        return string.Empty;
-    }
+        => GetValue<CommandExampleAttribute>(memberInfo, memberInfo => memberInfo.Example);
 
     public static string GetExample(ParameterInfo parameterInfo)
-    {
-        if (AttributeUtility.GetCustomAttribute<CommandExampleAttribute>(parameterInfo) is { } commandExampleAttribute)
-        {
-            return commandExampleAttribute.Example;
-        }
-        return string.Empty;
-    }
+        => GetValue<CommandExampleAttribute>(parameterInfo, parameterInfo => parameterInfo.Example);
 }

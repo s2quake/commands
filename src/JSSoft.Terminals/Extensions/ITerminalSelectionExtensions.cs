@@ -21,6 +21,7 @@ public static class ITerminalSelectionExtensions
             @this.Add(selection);
             return true;
         }
+
         return false;
     }
 
@@ -31,6 +32,7 @@ public static class ITerminalSelectionExtensions
             @this.Clear();
             return true;
         }
+
         return false;
     }
 
@@ -48,6 +50,7 @@ public static class ITerminalSelectionExtensions
                 }
             }
         }
+
         return false;
     }
 }

@@ -6,7 +6,7 @@
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 // DECRST
-sealed class DECPrivateModeReset : CSISequenceBase
+internal sealed class DECPrivateModeReset : CSISequenceBase
 {
     public DECPrivateModeReset()
         : base('h')

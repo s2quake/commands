@@ -8,39 +8,39 @@ using System.Threading.Tasks;
 
 namespace JSSoft.Commands;
 
-sealed class SubCommandAsync(CommandMethodBase commandMethod, CommandMethodDescriptor methodDescriptor)
-    : ICommand, ICommandCompleter, IAsyncExecutable, ICommandUsage, ICommandUsagePrinter, ICustomCommandDescriptor
+internal sealed class SubCommandAsync(
+    CommandMethodBase method, CommandMethodDescriptor methodDescriptor)
+    : ICommand, ICommandCompleter, IAsyncExecutable, ICommandUsage, ICommandUsagePrinter,
+    ICustomCommandDescriptor
 {
     public string Name => methodDescriptor.Name;
 
     public string[] Aliases => methodDescriptor.Aliases;
 
-    public CommandSettings Settings => commandMethod.CommandContext.Settings;
+    public CommandSettings Settings => method.CommandContext.Settings;
+
+    bool ICommand.IsEnabled => methodDescriptor.CanExecute(method);
+
+    string ICommandUsage.ExecutionName
+        => $"{method.ExecutionName} {CommandUtility.GetExecutionName(Name, Aliases)}";
+
+    string ICommandUsage.Summary => methodDescriptor.UsageDescriptor.Summary;
+
+    string ICommandUsage.Description => methodDescriptor.UsageDescriptor.Description;
+
+    string ICommandUsage.Example => methodDescriptor.UsageDescriptor.Example;
 
     public CommandMemberDescriptorCollection GetMembers() => methodDescriptor.Members;
 
-    public object GetMemberOwner(CommandMemberDescriptor memberDescriptor)
-    {
-        return commandMethod;
-    }
+    public object GetMemberOwner(CommandMemberDescriptor memberDescriptor) => method;
 
     public Task ExecuteAsync(CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
-    {
-        return methodDescriptor.InvokeAsync(commandMethod, methodDescriptor.Members, cancellationToken, progress);
-    }
+        => methodDescriptor.InvokeAsync(
+            method, methodDescriptor.Members, cancellationToken, progress);
 
     public string[] GetCompletions(CommandCompletionContext completionContext)
-    {
-        return commandMethod.GetCompletions(methodDescriptor, completionContext.MemberDescriptor, completionContext.Find);
-    }
-
-    #region ICommand
-
-    bool ICommand.IsEnabled => methodDescriptor.CanExecute(commandMethod);
-
-    #endregion
-
-    #region ICommandUsagePrinter
+        => method.GetCompletions(
+            methodDescriptor, completionContext.MemberDescriptor, completionContext.Find);
 
     void ICommandUsagePrinter.Print(bool isDetail)
     {
@@ -49,20 +49,6 @@ sealed class SubCommandAsync(CommandMethodBase commandMethod, CommandMethodDescr
         {
             IsDetail = isDetail,
         };
-        usagePrinter.Print(commandMethod.Out, methodDescriptor);
+        usagePrinter.Print(method.Out, methodDescriptor);
     }
-
-    #endregion
-
-    #region ICommandUsage
-
-    string ICommandUsage.ExecutionName => $"{commandMethod.ExecutionName} {CommandUtility.GetExecutionName(Name, Aliases)}";
-
-    string ICommandUsage.Summary => methodDescriptor.UsageDescriptor.Summary;
-
-    string ICommandUsage.Description => methodDescriptor.UsageDescriptor.Description;
-
-    string ICommandUsage.Example => methodDescriptor.UsageDescriptor.Example;
-
-    #endregion
 }

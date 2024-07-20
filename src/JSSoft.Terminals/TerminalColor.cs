@@ -18,6 +18,7 @@ public struct TerminalColor : IEquatable<TerminalColor>
         {
             return _a == color._a && _r == color._r && _g == color._g && _b == color._b;
         }
+
         return base.Equals(obj);
     }
 
@@ -34,6 +35,7 @@ public struct TerminalColor : IEquatable<TerminalColor>
         {
             return $"#{R:x2}{G:x2}{B:x2}";
         }
+
         return $"#{R:x2}{G:x2}{B:x2}{A:x2}";
     }
 
@@ -127,7 +129,10 @@ public struct TerminalColor : IEquatable<TerminalColor>
         set
         {
             if (value < 0 || value > 1.0f)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
             _a = (byte)(value * 255.0f);
             Name = string.Empty;
         }
@@ -139,7 +144,10 @@ public struct TerminalColor : IEquatable<TerminalColor>
         set
         {
             if (value < 0 || value > 1.0f)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
             _r = (byte)(value * 255.0f);
             Name = string.Empty;
         }
@@ -151,7 +159,10 @@ public struct TerminalColor : IEquatable<TerminalColor>
         set
         {
             if (value < 0 || value > 1.0f)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
             _g = (byte)(value * 255.0f);
             Name = string.Empty;
         }
@@ -163,7 +174,10 @@ public struct TerminalColor : IEquatable<TerminalColor>
         set
         {
             if (value < 0 || value > 1.0f)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
             _b = (byte)(value * 255.0f);
             Name = string.Empty;
         }
@@ -183,10 +197,6 @@ public struct TerminalColor : IEquatable<TerminalColor>
 
     public static implicit operator uint(TerminalColor color) => color.ToUInt32();
 
-    #region IEquatable
-
     readonly bool IEquatable<TerminalColor>.Equals(TerminalColor other)
         => _a == other._a && _r == other._r && _g == other._g && _b == other._b;
-
-    #endregion
 }

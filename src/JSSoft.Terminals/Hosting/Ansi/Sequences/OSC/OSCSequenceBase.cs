@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.OSC;
 
-abstract class OSCSequenceBase(char character)
+internal abstract class OSCSequenceBase(char character)
     : SequenceBase(SequenceType.OSC, character)
 {
 }

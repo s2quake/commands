@@ -36,7 +36,7 @@ public static class TerminalSelectionUtility
         {
             var isRow1Empty = IsRowEmpty(terminal, s1);
             var isRow2Empty = IsRowEmpty(terminal, s2);
-            if (isRow1Empty == false)
+            if (isRow1Empty != true)
             {
                 var l1 = s1.MoveBackwardToEndOfString(terminal);
                 var distance = TerminalIndex.DistanceOf(l1, s1);
@@ -48,7 +48,7 @@ public static class TerminalSelectionUtility
                 s1 = s1.MoveToEndOfLine();
             }
 
-            if (isRow2Empty == false)
+            if (isRow2Empty != true)
             {
                 var l2 = s2.MoveBackwardToEndOfString(terminal);
                 var distance = TerminalIndex.DistanceOf(l2, s2);
@@ -64,6 +64,7 @@ public static class TerminalSelectionUtility
         {
             s2++;
         }
+
         return new TerminalSelection(s1, s2);
     }
 
@@ -99,12 +100,18 @@ public static class TerminalSelectionUtility
         var coord = terminal.ViewToWorld(viewCoord);
         var characterInfo = terminal.GetInfo(coord);
         var x1 = terminal.GetInfo(new TerminalCoord(0, coord.Y));
-        if (x1 == null && characterInfo == null)
+        if (x1 is null && characterInfo is null)
+        {
             return SelectWordOfEmptyRow(terminal, coord);
-        else if (x1 != null && characterInfo == null)
+        }
+        else if (x1 is not null && characterInfo is null)
+        {
             return SelectWordOfEmptyCell(terminal, coord);
+        }
         else
+        {
             return SelectWordOfCell(terminal, coord);
+        }
     }
 
     private static bool IsRowEmpty(ITerminal terminal, TerminalIndex index)
@@ -130,9 +137,15 @@ public static class TerminalSelectionUtility
         var c1 = index.MoveBackward(terminal, (index, info) =>
         {
             if (info is { } d)
+            {
                 return d.Character == char.MinValue;
+            }
+
             if (info is null)
+            {
                 return true;
+            }
+
             return index.X != 0;
         }) + 1;
         var i2 = index.MoveToEndOfLine();
@@ -149,17 +162,29 @@ public static class TerminalSelectionUtility
         var i1 = index.MoveBackward(terminal, (index, characterInfo) =>
         {
             if (characterInfo is { } d && d.Group == group)
+            {
                 return predicate(d);
+            }
+
             if (characterInfo is null)
+            {
                 return false;
+            }
+
             return false;
         }) + 1;
         var i2 = index.MoveForward(terminal, (index, characterInfo) =>
         {
             if (characterInfo is { } d)
+            {
                 return predicate(d);
+            }
+
             if (characterInfo is null)
+            {
                 return false;
+            }
+
             return false;
         });
         return new TerminalSelection(i1, i2);
@@ -167,11 +192,17 @@ public static class TerminalSelectionUtility
         static Func<TerminalCharacterInfo, bool> GetPredicate(TerminalCharacterInfo characterInfo)
         {
             if (char.IsLetterOrDigit(characterInfo.Character) == true)
+            {
                 return item => char.IsLetterOrDigit(item.Character) == true;
+            }
             else if (char.IsWhiteSpace(characterInfo.Character) == true)
+            {
                 return item => char.IsWhiteSpace(item.Character) == true;
+            }
             else
-                return item => char.IsLetterOrDigit(item.Character) == false && char.IsWhiteSpace(item.Character) == false;
+            {
+                return item => char.IsLetterOrDigit(item.Character) != true && char.IsWhiteSpace(item.Character) != true;
+            }
         }
     }
 }

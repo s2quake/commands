@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class InsertCharacter : CSISequenceBase
+internal sealed class InsertCharacter : CSISequenceBase
 {
     private const char SpaceCharacter = ' ';
 

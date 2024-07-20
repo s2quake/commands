@@ -14,29 +14,32 @@ public static class CommandUsageUtility
     {
         var action = GetAction(e.Error);
         action.Invoke(writer, e);
-
-        static Action<TextWriter, CommandParsingException> GetAction(CommandParsingError error) => error switch
-        {
-            CommandParsingError.Empty => PrintSummary,
-            CommandParsingError.Help => PrintHelp,
-            CommandParsingError.Version => PrintVersion,
-            _ => throw new SwitchExpressionException(),
-        };
     }
 
     public static void Print(TextWriter writer, CommandInvocationException e)
     {
         var action = GetAction(e.Error);
         action.Invoke(writer, e);
+    }
 
-        static Action<TextWriter, CommandInvocationException> GetAction(CommandInvocationError error) => error switch
+    private static Action<TextWriter, CommandParsingException> GetAction(CommandParsingError error)
+        => error switch
+        {
+            CommandParsingError.Empty => PrintSummary,
+            CommandParsingError.Help => PrintHelp,
+            CommandParsingError.Version => PrintVersion,
+            _ => throw new SwitchExpressionException(),
+        };
+
+    private static Action<TextWriter, CommandInvocationException> GetAction(
+        CommandInvocationError error)
+        => error switch
         {
             CommandInvocationError.Empty => PrintSummary,
             CommandInvocationError.Help => PrintHelp,
             CommandInvocationError.Version => PrintVersion,
             _ => throw new SwitchExpressionException(),
         };
-    }
 
     private static void PrintSummary(TextWriter writer, CommandParsingException e)
     {
@@ -54,7 +57,8 @@ public static class CommandUsageUtility
         PrintSummary(writer, executionName, settings);
     }
 
-    private static void PrintSummary(TextWriter writer, string executionName, CommandSettings settings)
+    private static void PrintSummary(
+        TextWriter writer, string executionName, CommandSettings settings)
     {
         var helpNames = GetHelpNames(settings);
         var versionNames = GetVersionNames(settings);
@@ -62,6 +66,7 @@ public static class CommandUsageUtility
         {
             writer.WriteLine($"Type '{executionName} {helpNames}' for usage.");
         }
+
         if (versionNames != string.Empty)
         {
             writer.WriteLine($"Type '{executionName} {versionNames}' for version.");
@@ -71,9 +76,15 @@ public static class CommandUsageUtility
         {
             var itemList = new List<string>(2);
             if (settings.HelpName != string.Empty)
+            {
                 itemList.Add($"{CommandUtility.Delimiter}{settings.HelpName}");
+            }
+
             if (settings.HelpShortName != char.MinValue)
+            {
                 itemList.Add($"{CommandUtility.ShortDelimiter}{settings.HelpShortName}");
+            }
+
             return string.Join(" | ", itemList);
         }
 
@@ -81,9 +92,15 @@ public static class CommandUsageUtility
         {
             var itemList = new List<string>(2);
             if (settings.VersionName != string.Empty)
+            {
                 itemList.Add($"{CommandUtility.Delimiter}{settings.VersionName}");
+            }
+
             if (settings.VersionShortName != char.MinValue)
+            {
                 itemList.Add($"{CommandUtility.ShortDelimiter}{settings.VersionShortName}");
+            }
+
             return string.Join(" | ", itemList);
         }
     }
@@ -126,14 +143,16 @@ public static class CommandUsageUtility
     private static void PrintVersion(TextWriter writer, CommandParsingException e)
     {
         var settings = CommandParsingVersion.Create(e);
-        var text = settings.IsQuiet == false ? settings.GetDetailedString() : settings.GetQuietString();
+        var text = settings.GetVersionString();
         writer.WriteLine(text);
     }
 
     private static void PrintVersion(TextWriter writer, CommandInvocationException e)
     {
         var settings = CommandInvocationVersion.Create(e);
-        var text = settings.IsQuiet == false ? settings.GetDetailedString() : settings.GetQuietString();
+        var text = settings.IsQuiet != true
+            ? settings.GetDetailedString()
+            : settings.GetQuietString();
         writer.WriteLine(text);
     }
 }

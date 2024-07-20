@@ -7,7 +7,7 @@ using JSSoft.Terminals.Extensions;
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-sealed class AsciiCodeContext(TerminalLineCollection lines, string text, ITerminal terminal)
+internal sealed class AsciiCodeContext(TerminalLineCollection lines, string text, ITerminal terminal)
 {
     private readonly ITerminal _terminal = terminal;
     private TerminalIndex _index;
@@ -35,7 +35,9 @@ sealed class AsciiCodeContext(TerminalLineCollection lines, string text, ITermin
         set
         {
             if (value.X < 0 || value.Y < 0)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
 
             _index = value;
         }
@@ -64,7 +66,10 @@ sealed class AsciiCodeContext(TerminalLineCollection lines, string text, ITermin
         if (lines.GetCharacterInfo(index) is { } characterInfo)
         {
             if (characterInfo.Span < 0)
+            {
                 return GetCoordinate(lines, index + characterInfo.Span);
+            }
+
             var bufferWidth = _terminal.BufferSize.Width;
             var x = index.Value % bufferWidth;
             var y = index.Value / bufferWidth;

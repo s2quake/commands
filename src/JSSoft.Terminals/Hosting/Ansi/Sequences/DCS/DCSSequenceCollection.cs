@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-sealed class DCSSequenceCollection : SequenceCollection
+internal sealed class DCSSequenceCollection : SequenceCollection
 {
     public DCSSequenceCollection()
         : base("\x001bP")

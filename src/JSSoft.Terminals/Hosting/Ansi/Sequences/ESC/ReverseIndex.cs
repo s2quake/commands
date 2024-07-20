@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.ESC;
 
-sealed class ReverseIndex : ESCSequenceBase
+internal sealed class ReverseIndex : ESCSequenceBase
 {
     public ReverseIndex()
         : base('M')

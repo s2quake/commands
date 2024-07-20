@@ -3,15 +3,17 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
+using System.Collections;
 using System.ComponentModel;
 
 namespace JSSoft.Commands;
 
-static class ParseUtility
+internal static class ParseUtility
 {
     public static object Parse(CommandMemberDescriptor memberDescriptor, string arg)
     {
-        if (memberDescriptor.MemberType.IsArray == true || typeof(System.Collections.IList).IsAssignableFrom(memberDescriptor.MemberType) == true)
+        var isListType = typeof(IList).IsAssignableFrom(memberDescriptor.MemberType);
+        if (memberDescriptor.MemberType.IsArray == true || isListType == true)
         {
             return ParseArray(memberDescriptor, arg);
         }
@@ -29,9 +31,11 @@ static class ParseUtility
         }
     }
 
-    public static object ParseArray(CommandMemberDescriptor memberDescriptor, string[] args) => ParseArray(memberDescriptor.MemberType, args);
+    public static object ParseArray(CommandMemberDescriptor memberDescriptor, string[] args)
+        => ParseArray(memberDescriptor.MemberType, args);
 
-    public static object ParseArray(Type propertyType, string arg) => ParseArray(propertyType, args: arg.Split([CommandUtility.ItemSperator]));
+    public static object ParseArray(Type propertyType, string arg)
+        => ParseArray(propertyType, args: arg.Split(CommandUtility.ItemSperator));
 
     public static object ParseArray(Type propertyType, string[] args)
     {
@@ -43,24 +47,30 @@ static class ParseUtility
             var value = converter.ConvertFromString(args[i]);
             array.SetValue(value, i);
         }
+
         return array;
     }
 
-    private static object ParseArray(CommandMemberDescriptor memberDescriptor, string arg) => ParseArray(memberDescriptor, arg.Split([CommandUtility.ItemSperator]));
+    private static object ParseArray(CommandMemberDescriptor memberDescriptor, string arg)
+        => ParseArray(memberDescriptor, arg.Split(CommandUtility.ItemSperator));
 
-    private static object ParseBoolean(CommandMemberDescriptor memberDescriptor, string arg) => ParseDefault(memberDescriptor, arg);
+    private static object ParseBoolean(CommandMemberDescriptor memberDescriptor, string arg)
+        => ParseDefault(memberDescriptor, arg);
 
     private static object ParseEnum(CommandMemberDescriptor memberDescriptor, string arg)
     {
-        var segments = arg.Split([CommandUtility.ItemSperator]);
-        var names = Enum.GetNames(memberDescriptor.MemberType).ToDictionary(item => CommandUtility.ToSpinalCase(item), item => item);
-        var nameList = new List<string>(segments.Length);
-        foreach (var item in segments)
+        var items = arg.Split(CommandUtility.ItemSperator);
+        var names = Enum.GetNames(memberDescriptor.MemberType)
+                        .ToDictionary(CommandUtility.ToSpinalCase, item => item);
+        var nameList = new List<string>(items.Length);
+        foreach (var item in items)
         {
-            if (names.ContainsKey(item) == false)
+            if (names.TryGetValue(item, out var value) != true)
+            {
                 throw new InvalidOperationException($"The value '{arg}' is not available.");
+            }
 
-            nameList.Add(names[item]);
+            nameList.Add(value);
         }
 
         return Enum.Parse(memberDescriptor.MemberType, string.Join(", ", nameList));
@@ -76,7 +86,9 @@ static class ParseUtility
         catch (Exception e)
         {
             var error = CommandLineError.InvalidValue;
-            var message = $"Value '{arg}' cannot be used for option '{memberDescriptor.DisplayName}'.";
+            var message = $"""
+                Value '{arg}' cannot be used for option '{memberDescriptor.DisplayName}'.
+                """;
             throw new CommandLineException(error, message, memberDescriptor, e);
         }
     }
@@ -85,8 +97,14 @@ static class ParseUtility
     {
         if (propertyType.IsArray == true)
         {
-            if (propertyType.HasElementType == false)
-                throw new ArgumentException($"Property '{nameof(Type.HasElementType)}' of '{nameof(Type)}' must be true.", nameof(propertyType));
+            if (propertyType.HasElementType != true)
+            {
+                var message = $"""
+                    Property '{nameof(Type.HasElementType)}' of '{nameof(Type)}' must be true.
+                    """;
+                throw new ArgumentException(message, nameof(propertyType));
+            }
+
             return propertyType.GetElementType()!;
         }
 

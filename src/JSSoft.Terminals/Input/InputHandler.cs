@@ -5,7 +5,9 @@
 
 namespace JSSoft.Terminals.Input;
 
-public abstract class InputHandler<T> : IInputHandler where T : InputHandlerContext
+public abstract class InputHandler<T> : IInputHandler
+    where T : InputHandlerContext
+
 {
     private readonly Dictionary<ITerminal, T> ContextByTerminal = [];
 
@@ -24,8 +26,6 @@ public abstract class InputHandler<T> : IInputHandler where T : InputHandlerCont
     protected virtual void OnPointerExit(InputHandlerContext context, IPointerEventData eventData) => context.PointerExit(eventData);
 
     protected abstract T CreateContext(ITerminal terminal);
-
-    #region IInputHandler
 
     void IInputHandler.Select(ITerminal terminal) => OnSelect(ContextByTerminal[terminal]);
 
@@ -48,6 +48,4 @@ public abstract class InputHandler<T> : IInputHandler where T : InputHandlerCont
         ContextByTerminal[terminal].Dispose();
         ContextByTerminal.Remove(terminal);
     }
-
-    #endregion
 }

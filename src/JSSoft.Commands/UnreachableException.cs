@@ -15,11 +15,10 @@ using System.Text.RegularExpressions;
 
 namespace JSSoft.Commands;
 
-class UnreachableException : SystemException
+public sealed class UnreachableException : SystemException
 {
     public UnreachableException()
     {
-
     }
 
     public UnreachableException(string message)

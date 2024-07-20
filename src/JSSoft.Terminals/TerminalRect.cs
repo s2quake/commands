@@ -21,6 +21,7 @@ public struct TerminalRect(TerminalPoint location, TerminalSize size) : IEquatab
         {
             return _location == rect._location && _size == rect._size;
         }
+
         return base.Equals(obj);
     }
 
@@ -36,14 +37,26 @@ public struct TerminalRect(TerminalPoint location, TerminalSize size) : IEquatab
     public static bool Contains(TerminalRect outerRect, TerminalRect innerRect, TerminalPoint point)
     {
         if (outerRect.Left >= innerRect.Left)
+        {
             throw new ArgumentOutOfRangeException(nameof(outerRect));
+        }
+
         if (outerRect.Top >= innerRect.Top)
+        {
             throw new ArgumentOutOfRangeException(nameof(outerRect));
+        }
+
         if (outerRect.Right < innerRect.Right)
+        {
             throw new ArgumentOutOfRangeException(nameof(outerRect));
+        }
+
         if (outerRect.Bottom < innerRect.Bottom)
+        {
             throw new ArgumentOutOfRangeException(nameof(outerRect));
-        return outerRect.Contains(point) == true && innerRect.Contains(point) == false;
+        }
+
+        return outerRect.Contains(point) == true && innerRect.Contains(point) != true;
     }
 
     public static bool Contains(TerminalRect rect, TerminalThickness margin, TerminalThickness padding, TerminalPoint point)
@@ -86,18 +99,22 @@ public struct TerminalRect(TerminalPoint location, TerminalSize size) : IEquatab
         {
             rect.X = targetRect.Left;
         }
+
         if (rect.Top < targetRect.Top)
         {
             rect.Y = targetRect.Top;
         }
+
         if (rect.Right >= targetRect.Right)
         {
             rect.X = targetRect.Right - rect.Width;
         }
+
         if (rect.Bottom >= targetRect.Bottom)
         {
             rect.Y = targetRect.Bottom - rect.Height;
         }
+
         return rect;
     }
 
@@ -171,10 +188,6 @@ public struct TerminalRect(TerminalPoint location, TerminalSize size) : IEquatab
     public static TerminalRect operator *(TerminalRect rect, int value)
         => new(rect.Location.X * value, rect.Location.Y * value, rect.Size.Width * value, rect.Size.Height * value);
 
-    #region IEquatable
-
     readonly bool IEquatable<TerminalRect>.Equals(TerminalRect other)
         => Location == other.Location && Size == other.Size;
-
-    #endregion
 }

@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.ESC;
 
-sealed class DesignateG0CharacterSet : ESCSequenceBase
+internal sealed class DesignateG0CharacterSet : ESCSequenceBase
 {
     public DesignateG0CharacterSet()
         : base('(')
@@ -31,6 +31,7 @@ sealed class DesignateG0CharacterSet : ESCSequenceBase
             actualParameterRange = new Range(s, s + 1);
             return true;
         }
+
         return base.Match(text, parameterRange, out actualParameterRange);
     }
 }

@@ -8,7 +8,7 @@ namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 /// <summary>
 /// CSI ? Pm l
 /// </summary>
-sealed class PrivateResetMode : CSISequenceBase
+internal sealed class PrivateResetMode : CSISequenceBase
 {
     public PrivateResetMode()
         : base('l')

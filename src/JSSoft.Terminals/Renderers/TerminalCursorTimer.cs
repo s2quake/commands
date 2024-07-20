@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace JSSoft.Terminals.Renderers;
 
-sealed class TerminalCursorTimer : TerminalPropertyChangedBase, IDisposable
+internal sealed class TerminalCursorTimer : TerminalPropertyChangedBase, IDisposable
 {
     private readonly SynchronizationContext? _synchronizationContext = SynchronizationContext.Current;
 
@@ -53,7 +53,9 @@ sealed class TerminalCursorTimer : TerminalPropertyChangedBase, IDisposable
     public void Dispose()
     {
         if (_isDisposed == true)
+        {
             throw new ObjectDisposedException($"{this}");
+        }
 
         IsEnabled = false;
         _isDisposed = true;

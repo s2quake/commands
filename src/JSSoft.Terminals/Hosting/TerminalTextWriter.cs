@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace JSSoft.Terminals.Hosting;
 
-sealed class TerminalTextWriter(Terminal terminal) : TextWriter
+internal sealed class TerminalTextWriter(Terminal terminal) : TextWriter
 {
     private readonly Terminal _terminal = terminal;
 

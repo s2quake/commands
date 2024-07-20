@@ -5,10 +5,12 @@
 
 namespace JSSoft.Commands;
 
-public class CommandParsingException(CommandParser parser, CommandParsingError error, string[] args, Exception? innerException)
+public class CommandParsingException(
+    CommandParser parser, CommandParsingError error, string[] args, Exception? innerException)
     : Exception(innerException?.Message, innerException), ICommandUsage
 {
-    private readonly CommandUsageDescriptorBase _usageDescriptor = CommandDescriptor.GetUsageDescriptor(parser.Instance.GetType());
+    private readonly CommandUsageDescriptorBase _usageDescriptor
+        = CommandDescriptor.GetUsageDescriptor(parser.Instance.GetType());
 
     public CommandParsingException(CommandParser parser, CommandParsingError error, string[] args)
         : this(parser, error, args, innerException: null)
@@ -21,9 +23,8 @@ public class CommandParsingException(CommandParser parser, CommandParsingError e
 
     public CommandParser Parser { get; } = parser;
 
-    public CommandMemberDescriptorCollection MemberDescriptors => CommandDescriptor.GetMemberDescriptors(Parser.Instance);
-
-    #region ICommandUsage
+    public CommandMemberDescriptorCollection MemberDescriptors
+        => CommandDescriptor.GetMemberDescriptors(Parser.Instance);
 
     string ICommandUsage.ExecutionName => Parser.ExecutionName;
 
@@ -32,6 +33,4 @@ public class CommandParsingException(CommandParser parser, CommandParsingError e
     string ICommandUsage.Description => _usageDescriptor.Description;
 
     string ICommandUsage.Example => _usageDescriptor.Example;
-
-    #endregion
 }

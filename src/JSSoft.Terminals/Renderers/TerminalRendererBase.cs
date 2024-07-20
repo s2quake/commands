@@ -15,23 +15,17 @@ public abstract class TerminalRendererBase : TerminalPropertyChangedBase, ITermi
     {
     }
 
-    #region ITerminalRenderer
-
     void ITerminalRenderer.Render(ITerminalDrawingContext drawingContext) => OnRender(drawingContext);
-
-    #endregion
-
-    #region IDisposable
 
     void IDisposable.Dispose()
     {
         if (_isDisposed == true)
+        {
             throw new ObjectDisposedException($"{this}");
+        }
 
         OnDispose();
         _isDisposed = true;
         GC.SuppressFinalize(this);
     }
-
-    #endregion
 }

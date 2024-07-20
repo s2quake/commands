@@ -7,7 +7,7 @@ using System.Security;
 
 namespace JSSoft.Terminals.Extensions;
 
-static class SecureStringExtensions
+internal static class SecureStringExtensions
 {
     public static void InsertAt(this SecureString secureString, int index, string text)
     {

@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class SaveCursor : CSISequenceBase
+internal sealed class SaveCursor : CSISequenceBase
 {
     public SaveCursor()
         : base('s')

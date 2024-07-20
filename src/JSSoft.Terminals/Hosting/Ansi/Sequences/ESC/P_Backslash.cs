@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.ESC;
 
-sealed class P_Backslash : ESCSequenceBase
+internal sealed class P_Backslash : ESCSequenceBase
 {
     public P_Backslash()
         : base('\\')

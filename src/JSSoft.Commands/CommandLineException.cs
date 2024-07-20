@@ -18,21 +18,27 @@ public sealed class CommandLineException : SystemException
         Descriptor = memberDescriptor;
     }
 
-    public CommandLineException(CommandLineError error, string message, CommandMemberDescriptor memberDescriptor)
+    public CommandLineException(
+        CommandLineError error, string message, CommandMemberDescriptor memberDescriptor)
         : base(message)
     {
         Error = error;
         Descriptor = memberDescriptor;
     }
 
-    public CommandLineException(CommandLineError error, string message, CommandMemberDescriptor memberDescriptor, Exception? innerException)
+    public CommandLineException(
+        CommandLineError error,
+        string message,
+        CommandMemberDescriptor memberDescriptor,
+        Exception? innerException)
         : base(message, innerException)
     {
         Error = error;
         Descriptor = memberDescriptor;
     }
 
-    public CommandLineException(string message, CommandMemberDescriptor memberDescriptor, Exception innerException)
+    public CommandLineException(
+        string message, CommandMemberDescriptor memberDescriptor, Exception innerException)
         : base(message, innerException)
     {
         Descriptor = memberDescriptor;
@@ -57,7 +63,9 @@ public sealed class CommandLineException : SystemException
     public static void ThrowIfInvalidValue(CommandMemberDescriptor memberDescriptor, string value)
     {
         var error = CommandLineError.InvalidValue;
-        var message = $"Value '{value}' cannot be used for option '{memberDescriptor.DisplayName}'.";
+        var message = $"""
+            Value '{value}' cannot be used for option '{memberDescriptor.DisplayName}'.
+            """;
         throw new CommandLineException(error, message, memberDescriptor);
     }
 }

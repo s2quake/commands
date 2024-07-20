@@ -5,16 +5,16 @@
 
 using System;
 using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
-using System.ComponentModel.Composition.Hosting;
 using JSSoft.Commands.Applications;
 
 namespace JSSoft.Commands.Repl;
 
-sealed class Application : IApplication, IDisposable
+internal sealed class Application : IApplication, IDisposable
 {
     private readonly CompositionContainer _container;
     private string _currentDirectory = Directory.GetCurrentDirectory();
@@ -29,49 +29,7 @@ sealed class Application : IApplication, IDisposable
         _container.ComposeExportedValue(this);
     }
 
-    public void Cancel()
-    {
-        _cancellationTokenSource?.Cancel();
-        _cancellationTokenSource = null;
-    }
-
-    public string? ReadString(string prompt, string command)
-    {
-        if (_terminal == null)
-            throw new InvalidOperationException("Application has not started.");
-
-        return _terminal.ReadString(prompt, command);
-    }
-
-    public SecureString? ReadSecureString(string prompt)
-    {
-        if (_terminal == null)
-            throw new InvalidOperationException("Application has not started.");
-
-        return _terminal.ReadSecureString(prompt);
-    }
-
-    public Task StartAsync()
-    {
-        if (_terminal != null)
-            throw new InvalidOperationException("Application has already been started.");
-
-        _terminal = _container.GetExportedValue<SystemTerminal>();
-        _cancellationTokenSource = new();
-        return _terminal.StartAsync(_cancellationTokenSource.Token);
-    }
-
-    public void Dispose()
-    {
-        if (_isDisposed == true)
-            throw new ObjectDisposedException($"{this}");
-
-        _cancellationTokenSource?.Cancel();
-        _cancellationTokenSource = null;
-        _terminal = null;
-        _container.Dispose();
-        _isDisposed = true;
-    }
+    public event EventHandler? DirectoryChanged;
 
     public string CurrentDirectory
     {
@@ -83,5 +41,57 @@ sealed class Application : IApplication, IDisposable
         }
     }
 
-    public event EventHandler? DirectoryChanged;
+    public void Cancel()
+    {
+        _cancellationTokenSource?.Cancel();
+        _cancellationTokenSource = null;
+    }
+
+    public string? ReadString(string prompt, string command)
+    {
+        if (_terminal is null)
+        {
+            throw new InvalidOperationException("Application has not started.");
+        }
+
+        return _terminal.ReadString(prompt, command);
+    }
+
+    public SecureString? ReadSecureString(string prompt)
+    {
+        if (_terminal is null)
+        {
+            throw new InvalidOperationException("Application has not started.");
+        }
+
+        return _terminal.ReadSecureString(prompt);
+    }
+
+    public Task StartAsync()
+    {
+        if (_terminal is not null)
+        {
+            throw new InvalidOperationException("Application has already been started.");
+        }
+
+        _terminal = _container.GetExportedValue<SystemTerminal>();
+        _cancellationTokenSource = new();
+        return _terminal.StartAsync(_cancellationTokenSource.Token);
+    }
+
+    public void Dispose()
+    {
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
+
+        if (_cancellationTokenSource is not null)
+        {
+            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource.Dispose();
+            _cancellationTokenSource = null;
+        }
+
+        _terminal = null;
+        _container.Dispose();
+        _isDisposed = true;
+    }
 }

@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class CursorDown : CSISequenceBase
+internal sealed class CursorDown : CSISequenceBase
 {
     public CursorDown()
         : base('B')

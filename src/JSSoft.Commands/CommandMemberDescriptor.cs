@@ -26,8 +26,6 @@ public abstract class CommandMemberDescriptor
         DisplayName = GenerateDisplayName(this);
     }
 
-    public override string ToString() => $"{MemberName} [{DisplayName}]";
-
     public string Name { get; }
 
     public char ShortName { get; }
@@ -56,28 +54,54 @@ public abstract class CommandMemberDescriptor
 
     public abstract CommandUsageDescriptorBase UsageDescriptor { get; }
 
+    protected CommandPropertyBaseAttribute Attribute { get; }
+
+    public override string ToString() => $"{MemberName} [{DisplayName}]";
+
+    internal void SetValueInternal(object instance, object? value) => SetValue(instance, value);
+
+    internal object? GetValueInternal(object instance) => GetValue(instance);
+
+    internal void VerifyTrigger(ParseDescriptorCollection parseDescriptors)
+        => OnVerifyTrigger(parseDescriptors);
+
+    internal string[]? GetCompletionInternal(object instance, string find)
+    {
+        if (GetCompletion(instance, find) is { } items)
+        {
+            var query = from item in items
+                        where item.StartsWith(find)
+                        select item;
+            return query.ToArray();
+        }
+
+        return null;
+    }
+
     protected abstract void SetValue(object instance, object? value);
 
     protected abstract object? GetValue(object instance);
 
-    protected virtual void OnValidateTrigger(ParseDescriptorCollection parseDescriptors)
+    protected virtual void OnVerifyTrigger(ParseDescriptorCollection parseDescriptors)
     {
     }
 
-    protected virtual string[]? GetCompletion(object instance, string find)
-    {
-        return null;
-    }
+    protected virtual string[]? GetCompletion(object instance, string find) => null;
 
-    protected string[] GetCompletion(object instance, string find, CommandMemberCompletionAttribute attribute)
+    protected string[] GetCompletion(
+        object instance, string find, CommandMemberCompletionAttribute attribute)
     {
         var methodName = attribute.MethodName;
         var type = attribute.StaticType ?? instance.GetType();
-        var obj = attribute.StaticType != null ? null : instance;
-        var flag = attribute.StaticType != null ? BindingFlags.Static : BindingFlags.Instance;
-        var method = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | flag, null, [], null);
-        if (method == null)
+        var obj = attribute.StaticType is not null ? null : instance;
+        var flag = attribute.StaticType is not null ? BindingFlags.Static : BindingFlags.Instance;
+        var bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | flag;
+        var method = type.GetMethod(methodName, bindingFlags, null, [], null);
+        if (method is null)
+        {
             throw new ArgumentException($"Cannot found method '{methodName}'", nameof(attribute));
+        }
+
         try
         {
             var arrayType = MemberType.MakeArrayType();
@@ -89,6 +113,7 @@ public abstract class CommandMemberDescriptor
                 {
                     itemList.Add($"{item}");
                 }
+
                 return [.. itemList];
             }
             else if (value is string[] items)
@@ -97,37 +122,21 @@ public abstract class CommandMemberDescriptor
             }
             else if (value is Task<string[]> task)
             {
-                if (task.Wait(CommandSettings.AsyncTimeout) == false)
+                if (task.Wait(CommandSettings.AsyncTimeout) != true)
+                {
                     return [];
+                }
+
                 return task.Result;
             }
-            throw new NotImplementedException();
+
+            throw new NotSupportedException();
         }
         catch (Exception e)
         {
             Trace.TraceError($"{e}");
             return [];
         }
-    }
-
-    protected CommandPropertyBaseAttribute Attribute { get; }
-
-    internal void SetValueInternal(object instance, object? value) => SetValue(instance, value);
-
-    internal object? GetValueInternal(object instance) => GetValue(instance);
-
-    internal void ValidateTrigger(ParseDescriptorCollection parseDescriptors) => OnValidateTrigger(parseDescriptors);
-
-    internal string[]? GetCompletionInternal(object instance, string find)
-    {
-        if (GetCompletion(instance, find) is { } items)
-        {
-            var query = from item in items
-                        where item.StartsWith(find)
-                        select item;
-            return query.ToArray();
-        }
-        return null;
     }
 
     private static string GenerateDisplayName(CommandMemberDescriptor memberDescriptor)
@@ -141,23 +150,36 @@ public abstract class CommandMemberDescriptor
         {
             itemList.Reverse();
         }
+
         return string.Join(" | ", itemList.Where(item => item != string.Empty));
 
         string GetNamePattern()
         {
             if (memberDescriptor.Name == string.Empty)
+            {
                 return string.Empty;
+            }
+
             if (memberDescriptor.IsExplicit == true)
+            {
                 return CommandUtility.Delimiter + memberDescriptor.Name;
+            }
+
             return memberDescriptor.Name;
         }
 
         string GetShortNamePattern()
         {
             if (memberDescriptor.ShortName == char.MinValue)
+            {
                 return string.Empty;
+            }
+
             if (memberDescriptor.IsExplicit == true)
+            {
                 return CommandUtility.ShortDelimiter + memberDescriptor.ShortName;
+            }
+
             return $"{memberDescriptor.ShortName}";
         }
     }

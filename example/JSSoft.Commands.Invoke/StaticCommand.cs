@@ -10,8 +10,11 @@ namespace JSSoft.Commands.Invoke;
 
 [ConsoleModeOnly]
 [ResourceUsage]
-static class StaticCommand
+internal static class StaticCommand
 {
+    [CommandProperty]
+    public static string Filter { get; set; } = string.Empty;
+
     [CommandMethod]
     [CommandMethodProperty(nameof(Filter))]
     [Category("ReadOnly")]
@@ -19,7 +22,4 @@ static class StaticCommand
     {
         Console.WriteLine("list invoked.");
     }
-
-    [CommandProperty]
-    public static string Filter { get; set; } = string.Empty;
 }

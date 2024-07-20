@@ -27,6 +27,7 @@ try
     {
         sb.AppendLine($"    {item}");
     }
+
     Console.WriteLine(sb.ToString());
 }
 catch (CommandParsingException e)

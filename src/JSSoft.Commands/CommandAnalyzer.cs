@@ -12,12 +12,12 @@ public abstract class CommandAnalyzer
     private readonly string _fullName;
     private readonly string _filename;
 
-    public CommandAnalyzer(string commandName, object instance)
-        : this(commandName, instance, CommandSettings.Default)
+    protected CommandAnalyzer(string commandName, object instance)
+        : this(commandName, instance, settings: default)
     {
     }
 
-    public CommandAnalyzer(string commandName, object instance, CommandSettings settings)
+    protected CommandAnalyzer(string commandName, object instance, CommandSettings settings)
     {
         ThrowUtility.ThrowIfEmpty(commandName, nameof(commandName));
         CommandName = commandName;
@@ -27,12 +27,12 @@ public abstract class CommandAnalyzer
         _filename = commandName;
     }
 
-    public CommandAnalyzer(Assembly assembly, object instance)
-        : this(assembly, instance, CommandSettings.Default)
+    protected CommandAnalyzer(Assembly assembly, object instance)
+        : this(assembly, instance, settings: default)
     {
     }
 
-    public CommandAnalyzer(Assembly assembly, object instance, CommandSettings settings)
+    protected CommandAnalyzer(Assembly assembly, object instance, CommandSettings settings)
     {
         _fullName = AssemblyUtility.GetAssemblyLocation(assembly);
         _filename = Path.GetFileName(_fullName);
@@ -74,20 +74,31 @@ public abstract class CommandAnalyzer
 
     internal void ThrowIfNotVerifyCommandName(string commandName)
     {
-        if (VerifyCommandName(commandName) == false)
+        if (VerifyCommandName(commandName) != true)
         {
-            throw new ArgumentException($"Command name '{commandName}' is not available.", nameof(commandName));
+            throw new ArgumentException(
+                message: $"Command name '{commandName}' is not available.",
+                paramName: nameof(commandName));
         }
     }
 
     internal bool VerifyCommandName(string commandName)
     {
         if (CommandName == commandName)
+        {
             return true;
+        }
+
         if (_fullName == commandName)
+        {
             return true;
+        }
+
         if (_filename == commandName)
+        {
             return true;
+        }
+
         return false;
     }
 }

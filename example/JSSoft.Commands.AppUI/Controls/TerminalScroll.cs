@@ -46,12 +46,12 @@ sealed class TerminalScroll : ITerminalScroll
         get => _scrollBar;
         set
         {
-            if (_scrollBar != null)
+            if (_scrollBar is not null)
             {
                 _scrollBar.ValueChanged -= ScrollBar_ValueChanged;
             }
             _scrollBar = value;
-            if (_scrollBar != null)
+            if (_scrollBar is not null)
             {
                 _scrollBar.Minimum = _minimum;
                 _scrollBar.Maximum = _maximum;

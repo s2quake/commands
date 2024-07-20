@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class SetMode : CSISequenceBase
+internal sealed class SetMode : CSISequenceBase
 {
     public SetMode()
         : base('h')
@@ -16,6 +16,6 @@ sealed class SetMode : CSISequenceBase
 
     protected override void OnProcess(SequenceContext context)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 }

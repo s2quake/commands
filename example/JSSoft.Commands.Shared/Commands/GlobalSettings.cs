@@ -6,7 +6,7 @@
 namespace JSSoft.Commands.Applications.Commands;
 
 [ResourceUsage]
-static class GlobalSettings
+internal static class GlobalSettings
 {
     [CommandProperty]
     public static string ID { get; set; } = string.Empty;

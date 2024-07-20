@@ -5,13 +5,22 @@
 
 namespace JSSoft.Commands.Extensions;
 
-static class CommandTextWriterExtensions
+internal static class CommandTextWriterExtensions
 {
     public static void WriteLineIf(this CommandTextWriter @this, bool condition)
     {
         if (condition == true)
         {
             @this.WriteLine();
+        }
+    }
+
+    public static void WriteLineIf(
+        this CommandTextWriter @this, string value, Func<string, bool> predicate)
+    {
+        if (predicate(value) == true)
+        {
+            @this.WriteLine(value);
         }
     }
 
@@ -26,15 +35,8 @@ static class CommandTextWriterExtensions
         }
     }
 
-    public static void WriteLineIf(this CommandTextWriter @this, string value, Func<string, bool> predicate)
-    {
-        if (predicate(value) == true)
-        {
-            @this.WriteLine(value);
-        }
-    }
-
-    public static void WriteIf(this CommandTextWriter @this, string value, Func<string, bool> predicate)
+    public static void WriteIf(
+        this CommandTextWriter @this, string value, Func<string, bool> predicate)
     {
         if (predicate(value) == true)
         {
@@ -49,7 +51,7 @@ static class CommandTextWriterExtensions
 
     public static void WriteLineIndent(this CommandTextWriter @this, string value, int indent)
     {
-        using var _ = @this.IndentScope(indent);
+        using var indentScope = @this.IndentScope(indent);
         var width = @this.Width - @this.TotalIndentSpaces;
         var lines = CommandTextWriter.Wrap(value, width);
         @this.WriteLine(lines);

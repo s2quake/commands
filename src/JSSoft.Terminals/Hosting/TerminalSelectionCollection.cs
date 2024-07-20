@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 
 namespace JSSoft.Terminals.Hosting;
 
-sealed class TerminalSelectionCollection(Terminal terminal, Action<ITerminalRow[]> updator)
+internal sealed class TerminalSelectionCollection(Terminal terminal, Action<ITerminalRow[]> updator)
     : ObservableCollection<TerminalSelection>, ITerminalSelectionCollection
 {
     private readonly Terminal _terminal = terminal;
@@ -28,9 +28,14 @@ sealed class TerminalSelectionCollection(Terminal terminal, Action<ITerminalRow[
     protected override void InsertItem(int index, TerminalSelection item)
     {
         if (item == TerminalSelection.Empty)
+        {
             throw new ArgumentException("Invalid selection", nameof(item));
+        }
+
         if (Contains(item) == true)
+        {
             throw new ArgumentException("Already exists.", nameof(item));
+        }
 
         base.InsertItem(index, item);
         _updator.Invoke([.. _terminal.View]);

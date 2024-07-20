@@ -3,8 +3,10 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
+using JSSoft.Commands.Extensions;
 
 namespace JSSoft.Commands;
 
@@ -45,29 +47,33 @@ public class CommandInvoker : CommandAnalyzer
         OnValidate(args);
 
         var commandName = args.Length > 0 ? args[0] : string.Empty;
-        var commandArguments = args.Length > 1 ? args.Skip(1).ToArray() : Array.Empty<string>();
+        var commandArguments = args.Length > 1 ? args.Skip(1).ToArray() : [];
         var instance = Instance;
 
-        if (instance is ICommandHierarchy hierarchy && hierarchy.Commands.ContainsKey(commandName) == true)
+        if (instance is ICommandHierarchy hierarchy
+            && hierarchy.Commands.TryGetValue(commandName, out var command) == true)
         {
-            var command = hierarchy.Commands[commandName];
             var parser = new CommandParser(commandName, command);
             parser.Parse(commandArguments);
             if (command is IExecutable commandExecutable)
+            {
                 commandExecutable.Execute();
-            else if (command is IAsyncExecutable commandAsyncExecutable)
+            }
+            else if (command is IAsyncExecutable)
+            {
                 throw new InvalidOperationException("Use InvokeAsync instead.");
+            }
         }
         else if (instance is IExecutable executable)
         {
             Parse(args);
             executable.Execute();
         }
-        else if (instance is IAsyncExecutable asyncExecutable)
+        else if (instance is IAsyncExecutable)
         {
             throw new InvalidOperationException("Use InvokeAsync instead.");
         }
-        else if (CommandDescriptor.GetMethodDescriptors(instance.GetType()).FindByName(commandName) is { } methodDescriptor)
+        else if (TryGetMethodDescriptor(instance, commandName, out var methodDescriptor) == true)
         {
             if (methodDescriptor.IsAsync == true)
             {
@@ -80,22 +86,27 @@ public class CommandInvoker : CommandAnalyzer
         }
     }
 
-    public async Task InvokeAsync(string[] args, CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
+    public async Task InvokeAsync(
+        string[] args, CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
     {
         OnValidate(args);
 
         var commandName = args.Length > 0 ? args[0] : string.Empty;
-        var commandArguments = args.Length > 0 ? args.Skip(1).ToArray() : Array.Empty<string>();
+        var commandArguments = args.Length > 0 ? args.Skip(1).ToArray() : [];
         var instance = Instance;
-        if (instance is ICommandHierarchy hierarchy && hierarchy.Commands.ContainsKey(commandName) == true)
+        if (instance is ICommandHierarchy hierarchy
+            && hierarchy.TryGetCommand(commandName, out var command) == true)
         {
-            var command = hierarchy.Commands[commandName];
             var parser = new CommandParser(commandName, command);
             parser.Parse(commandArguments);
             if (command is IExecutable commandExecutable)
+            {
                 commandExecutable.Execute();
+            }
             else if (command is IAsyncExecutable commandAsyncExecutable1)
+            {
                 await commandAsyncExecutable1.ExecuteAsync(cancellationToken, progress);
+            }
         }
         else if (instance is IExecutable executable)
         {
@@ -107,39 +118,68 @@ public class CommandInvoker : CommandAnalyzer
             Parse(args);
             await asyncExecutable.ExecuteAsync(cancellationToken, progress);
         }
-        else if (commandName != string.Empty && CommandDescriptor.GetMethodDescriptors(instance.GetType()).FindByName(commandName) is { } methodDescriptor)
+        else if (TryGetMethodDescriptor(instance, commandName, out var methodDescriptor) == true)
         {
             if (methodDescriptor.IsAsync == true)
-                await InvokeAsync(methodDescriptor, instance, commandArguments, cancellationToken, progress);
+            {
+                await InvokeAsync(
+                    methodDescriptor, instance, commandArguments, cancellationToken, progress);
+            }
             else
+            {
                 Invoke(methodDescriptor, instance, commandArguments);
+            }
         }
     }
 
     protected virtual void OnValidate(string[] args)
     {
-        if (CommandUtility.IsEmptyArgs(args) == true && Settings.AllowEmpty == false)
+        if (CommandUtility.IsEmptyArgs(args) == true && Settings.AllowEmpty != true)
+        {
             throw new CommandInvocationException(this, CommandInvocationError.Empty, args);
+        }
+
         if (Settings.ContainsHelpOption(args) == true)
+        {
             throw new CommandInvocationException(this, CommandInvocationError.Help, args);
+        }
+
         if (Settings.ContainsVersionOption(args) == true)
+        {
             throw new CommandInvocationException(this, CommandInvocationError.Version, args);
+        }
     }
 
-    private static void Invoke(CommandMethodDescriptor methodDescriptor, object instance, string[] args)
+    private static bool TryGetMethodDescriptor(
+        object instance,
+        string commandName,
+        [MaybeNullWhen(false)] out CommandMethodDescriptor methodDescriptor)
+    {
+        var methodDescriptors = CommandDescriptor.GetMethodDescriptors(instance.GetType());
+        methodDescriptor = methodDescriptors.FindByName(commandName)!;
+        return methodDescriptor is not null;
+    }
+
+    private static void Invoke(
+        CommandMethodDescriptor methodDescriptor, object instance, string[] args)
     {
         methodDescriptor.Invoke(instance, args, methodDescriptor.Members);
     }
 
-    private static Task InvokeAsync(CommandMethodDescriptor methodDescriptor, object instance, string[] args, CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
+    private static Task InvokeAsync(
+        CommandMethodDescriptor methodDescriptor,
+        object instance,
+        string[] args,
+        CancellationToken cancellationToken,
+        IProgress<ProgressInfo> progress)
     {
-        return methodDescriptor.InvokeAsync(instance, args, methodDescriptor.Members, cancellationToken, progress);
+        return methodDescriptor.InvokeAsync(
+            instance, args, methodDescriptor.Members, cancellationToken, progress);
     }
 
     private void Parse(string[] args)
     {
         var instance = Instance;
-        var commandName = args.Length > 0 ? args[0] : string.Empty;
         var memberDescriptors = CommandDescriptor.GetMemberDescriptors(instance);
         var parserContext = new ParseContext(memberDescriptors, args);
         parserContext.SetValue(instance);

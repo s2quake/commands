@@ -3,6 +3,9 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
+#pragma warning disable SA1312 // Variable names should begin with lower-case letter
+#pragma warning disable S4144 // Methods should not have identical implementations
+
 using System.CodeDom.Compiler;
 using JSSoft.Commands.Extensions;
 
@@ -46,6 +49,7 @@ public abstract class CommandUsagePrinterBase(ICommandUsage commandUsage, Comman
             commandWriter.WriteIndentLine(summary);
             return true;
         }
+
         return false;
     }
 
@@ -58,6 +62,7 @@ public abstract class CommandUsagePrinterBase(ICommandUsage commandUsage, Comman
             commandWriter.WriteIndentLine(description);
             return true;
         }
+
         return false;
     }
 
@@ -70,10 +75,14 @@ public abstract class CommandUsagePrinterBase(ICommandUsage commandUsage, Comman
             commandWriter.WriteLine(example);
             return true;
         }
+
         return false;
     }
 
-    protected static void PrintUsage(CommandTextWriter commandWriter, string executionName, CommandMemberDescriptorCollection memberDescriptors)
+    protected static void PrintUsage(
+        CommandTextWriter commandWriter,
+        string executionName,
+        CommandMemberDescriptorCollection memberDescriptors)
     {
         var groupName = StringByName[TextUsage];
         using var _ = commandWriter.Group(groupName);
@@ -83,8 +92,9 @@ public abstract class CommandUsagePrinterBase(ICommandUsage commandUsage, Comman
             memberDescriptors.HasOptions == true ? "[options]" : string.Empty,
             .. from item in memberDescriptors where item.IsVariables == true select GetString(item),
         ];
-        var maxWidth = commandWriter.Width - (IndentedTextWriter.DefaultTabString.Length * commandWriter.Indent) - (executionName.Length + 1);
-        var width = Math.Max(maxWidth, 1);
+        var maxWidth = commandWriter.Width
+            - (IndentedTextWriter.DefaultTabString.Length * commandWriter.Indent)
+            - (executionName.Length + 1);
         var lines = CommandTextWriter.Wrap(items, maxWidth);
         for (var i = 0; i < lines.Length; i++)
         {
@@ -93,7 +103,8 @@ public abstract class CommandUsagePrinterBase(ICommandUsage commandUsage, Comman
         }
     }
 
-    protected static bool PrintRequirements(CommandTextWriter commandWriter, CommandMemberDescriptorCollection memberDescriptors)
+    protected static bool PrintRequirements(
+        CommandTextWriter commandWriter, CommandMemberDescriptorCollection memberDescriptors)
     {
         if (memberDescriptors.HasRequirements == true)
         {
@@ -103,23 +114,28 @@ public abstract class CommandUsagePrinterBase(ICommandUsage commandUsage, Comman
             PrintMany(commandWriter, requirementDescriptors, PrintRequirement);
             return true;
         }
+
         return false;
     }
 
-    protected static bool PrintRequirementsInDetail(CommandTextWriter commandWriter, CommandMemberDescriptorCollection memberDescriptors)
+    protected static bool PrintRequirementsInDetail(
+        CommandTextWriter commandWriter, CommandMemberDescriptorCollection memberDescriptors)
     {
         if (memberDescriptors.HasRequirements == true)
         {
             var requirementDescriptors = memberDescriptors.RequirementDescriptors;
             var groupName = StringByName[TextRequirements];
             using var _ = commandWriter.Group(groupName);
-            PrintMany(commandWriter, requirementDescriptors, PrintRequirementInDetail, separatorCount: 1);
+            PrintMany(
+                commandWriter, requirementDescriptors, PrintRequirementInDetail, separatorCount: 1);
             return true;
         }
+
         return false;
     }
 
-    protected static bool PrintVariables(CommandTextWriter commandWriter, CommandMemberDescriptorCollection memberDescriptors)
+    protected static bool PrintVariables(
+        CommandTextWriter commandWriter, CommandMemberDescriptorCollection memberDescriptors)
     {
         if (memberDescriptors.VariablesDescriptor is { } variablesDescriptor)
         {
@@ -128,10 +144,20 @@ public abstract class CommandUsagePrinterBase(ICommandUsage commandUsage, Comman
             PrintVariables(commandWriter, variablesDescriptor);
             return true;
         }
+
         return false;
     }
 
-    protected static bool PrintVariablesInDetail(CommandTextWriter commandWriter, CommandMemberDescriptorCollection memberDescriptors)
+    protected static void PrintVariables(
+        CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
+    {
+        var label = memberDescriptor.DisplayName;
+        var summary = memberDescriptor.UsageDescriptor.Summary;
+        commandWriter.WriteLine(label: label, summary: summary);
+    }
+
+    protected static bool PrintVariablesInDetail(
+        CommandTextWriter commandWriter, CommandMemberDescriptorCollection memberDescriptors)
     {
         if (memberDescriptors.VariablesDescriptor is { } variablesDescriptor)
         {
@@ -140,10 +166,21 @@ public abstract class CommandUsagePrinterBase(ICommandUsage commandUsage, Comman
             PrintVariablesInDetail(commandWriter, variablesDescriptor);
             return true;
         }
+
         return false;
     }
 
-    protected static bool PrintOptions(CommandTextWriter commandWriter, CommandMemberDescriptorCollection memberDescriptors)
+    protected static void PrintVariablesInDetail(
+        CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
+    {
+        var label = memberDescriptor.DisplayName;
+        var description = memberDescriptor.UsageDescriptor.Description;
+        commandWriter.WriteLine(label);
+        commandWriter.WriteLineIndent(description, commandWriter.Indent + 1);
+    }
+
+    protected static bool PrintOptions(
+        CommandTextWriter commandWriter, CommandMemberDescriptorCollection memberDescriptors)
     {
         if (memberDescriptors.HasOptions == true)
         {
@@ -153,10 +190,12 @@ public abstract class CommandUsagePrinterBase(ICommandUsage commandUsage, Comman
             PrintMany(commandWriter, optionDescriptors, PrintOption, separatorCount: 1);
             return true;
         }
+
         return false;
     }
 
-    protected static bool PrintOptionsInDetail(CommandTextWriter commandWriter, CommandMemberDescriptorCollection memberDescriptors)
+    protected static bool PrintOptionsInDetail(
+        CommandTextWriter commandWriter, CommandMemberDescriptorCollection memberDescriptors)
     {
         if (memberDescriptors.HasOptions == true)
         {
@@ -168,21 +207,25 @@ public abstract class CommandUsagePrinterBase(ICommandUsage commandUsage, Comman
                 var item = optionDescriptors[i];
                 var isLast = i + 1 == optionDescriptors.Length;
                 PrintOptionInDetail(commandWriter, item);
-                commandWriter.WriteLineIf(condition: isLast == false);
+                commandWriter.WriteLineIf(condition: isLast != true);
             }
+
             return true;
         }
+
         return false;
     }
 
-    protected static void PrintRequirement(CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
+    protected static void PrintRequirement(
+        CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
     {
         var label = memberDescriptor.DisplayName;
         var summary = memberDescriptor.UsageDescriptor.Summary;
         commandWriter.WriteLine(label: label, summary: summary);
     }
 
-    protected static void PrintRequirementInDetail(CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
+    protected static void PrintRequirementInDetail(
+        CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
     {
         var label = memberDescriptor.DisplayName;
         var description = memberDescriptor.UsageDescriptor.Description;
@@ -190,22 +233,8 @@ public abstract class CommandUsagePrinterBase(ICommandUsage commandUsage, Comman
         commandWriter.WriteLineIndent(description, commandWriter.Indent + 1);
     }
 
-    protected static void PrintVariables(CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
-    {
-        var label = memberDescriptor.DisplayName;
-        var summary = memberDescriptor.UsageDescriptor.Summary;
-        commandWriter.WriteLine(label: label, summary: summary);
-    }
-
-    protected static void PrintVariablesInDetail(CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
-    {
-        var label = memberDescriptor.DisplayName;
-        var description = memberDescriptor.UsageDescriptor.Description;
-        commandWriter.WriteLine(label);
-        commandWriter.WriteLineIndent(description, commandWriter.Indent + 1);
-    }
-
-    protected static void PrintOption(CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
+    protected static void PrintOption(
+        CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
     {
         var optionString = GetOptionString(memberDescriptor);
         var summary = memberDescriptor.UsageDescriptor.Summary;
@@ -213,7 +242,8 @@ public abstract class CommandUsagePrinterBase(ICommandUsage commandUsage, Comman
         commandWriter.WriteLineIndent(summary, commandWriter.Indent + 1);
     }
 
-    protected static void PrintOptionInDetail(CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
+    protected static void PrintOptionInDetail(
+        CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
     {
         var optionString = GetOptionString(memberDescriptor);
         var description = memberDescriptor.UsageDescriptor.Description;
@@ -229,20 +259,21 @@ public abstract class CommandUsagePrinterBase(ICommandUsage commandUsage, Comman
             if (memberDescriptor.DefaultValue is DBNull)
             {
                 if (memberDescriptor.IsExplicit == true)
+                {
                     return $"<{displayName} 'value'>";
+                }
                 else
+                {
                     return $"<{displayName}>";
+                }
             }
             else
             {
                 var value = memberDescriptor.DefaultValue ?? "null";
-                if (memberDescriptor.IsExplicit == true)
-                    return $"[{displayName} default='{value:R}']";
-                else
-                    return $"[{displayName} default='{value:R}']";
+                return $"[{displayName} default='{value:R}']";
             }
         }
-        else if (memberDescriptor.IsSwitch == false)
+        else if (memberDescriptor.IsSwitch != true)
         {
             return $"[{displayName} 'value']";
         }
@@ -255,54 +286,73 @@ public abstract class CommandUsagePrinterBase(ICommandUsage commandUsage, Comman
     protected static string GetOptionString(CommandMemberDescriptor memberDescriptor)
     {
         if (memberDescriptor.IsSwitch == true)
+        {
             return memberDescriptor.DisplayName;
+        }
         else if (memberDescriptor.DefaultValue is not DBNull)
-            return $"{memberDescriptor.DisplayName} [value, default='{memberDescriptor.DefaultValue:R}']";
+        {
+            return $"""
+                {memberDescriptor.DisplayName} [value, default='{memberDescriptor.DefaultValue:R}']
+                """;
+        }
         else
+        {
             return $"{memberDescriptor.DisplayName} <value>";
+        }
     }
 
-    protected static void PrintMemberSummary(CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
+    protected static void PrintMemberSummary(
+        CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
     {
         var groupName = StringByName[TextSummary];
         using var _ = commandWriter.Group(groupName);
         commandWriter.WriteLine(memberDescriptor.UsageDescriptor.Summary);
     }
 
-    protected static void PrintMemberUsage(CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
+    protected static void PrintMemberUsage(
+        CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
     {
         var groupName = StringByName[TextUsage];
         using var _ = commandWriter.Group(groupName);
         commandWriter.WriteLine(GetString(memberDescriptor));
     }
 
-    protected static void PrintMemberDescription(CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
+    protected static void PrintMemberDescription(
+        CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
     {
         var groupName = StringByName[TextDescription];
         using var _ = commandWriter.Group(groupName);
         commandWriter.WriteLine(memberDescriptor.UsageDescriptor.Description);
     }
 
-    protected static void PrintMemberExample(CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
+    protected static void PrintMemberExample(
+        CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
     {
         var groupName = StringByName[TextExample];
         using var _ = commandWriter.Group(groupName);
         commandWriter.WriteLine(memberDescriptor.UsageDescriptor.Example);
     }
 
-    protected static void PrintMany(CommandTextWriter commandWriter, CommandMemberDescriptor[] memberDescriptors, Action<CommandTextWriter, CommandMemberDescriptor> printer)
+    protected static void PrintMany(
+        CommandTextWriter commandWriter,
+        CommandMemberDescriptor[] memberDescriptors,
+        Action<CommandTextWriter, CommandMemberDescriptor> printer)
     {
         PrintMany(commandWriter, memberDescriptors, printer, separatorCount: 0);
     }
 
-    protected static void PrintMany(CommandTextWriter commandWriter, CommandMemberDescriptor[] memberDescriptors, Action<CommandTextWriter, CommandMemberDescriptor> printer, int separatorCount)
+    protected static void PrintMany(
+        CommandTextWriter commandWriter,
+        CommandMemberDescriptor[] memberDescriptors,
+        Action<CommandTextWriter, CommandMemberDescriptor> printer,
+        int separatorCount)
     {
         for (var i = 0; i < memberDescriptors.Length; i++)
         {
             var item = memberDescriptors[i];
             var isLast = i + 1 == memberDescriptors.Length;
             printer(commandWriter, item);
-            commandWriter.WriteLinesIf(separatorCount, condition: isLast == false);
+            commandWriter.WriteLinesIf(separatorCount, condition: isLast != true);
         }
     }
 }

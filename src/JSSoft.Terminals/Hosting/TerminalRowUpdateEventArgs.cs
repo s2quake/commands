@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting;
 
-sealed class TerminalRowUpdateEventArgs(TerminalRow[] changedRows) : EventArgs
+internal sealed class TerminalRowUpdateEventArgs(TerminalRow[] changedRows) : EventArgs
 {
     public TerminalRow[] ChangedRows { get; } = changedRows;
 }

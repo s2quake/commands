@@ -8,7 +8,7 @@ using KeyBinding = JSSoft.Terminals.SystemTerminalKeyBinding;
 
 namespace JSSoft.Terminals;
 
-partial class SystemTerminalHost
+public partial class SystemTerminalHost
 {
     private TerminalKeyBindingCollection? _keyBindings;
 
@@ -72,6 +72,7 @@ partial class SystemTerminalHost
             var match = matches.Where(item => item.Index <= index).Last();
             terminalHost.CursorIndex = match.Index;
         }
+
         return terminalHost.CursorIndex;
     }
 
@@ -86,6 +87,7 @@ partial class SystemTerminalHost
             var match = matches.Where(item => item.Index > index).First();
             terminalHost.CursorIndex = Math.Min(command.Length, match.Index + 1);
         }
+
         return terminalHost.CursorIndex;
     }
 
@@ -116,8 +118,12 @@ partial class SystemTerminalHost
     private static void InputEnter(SystemTerminalHost terminalHost)
     {
         if (CommandUtility.TrySplit(terminalHost.Command, out var _) == true)
+        {
             terminalHost.EndInput();
+        }
         else
+        {
             terminalHost.InsertNewLine();
+        }
     }
 }

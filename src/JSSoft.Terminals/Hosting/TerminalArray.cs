@@ -7,7 +7,7 @@ using System.Collections;
 
 namespace JSSoft.Terminals.Hosting;
 
-sealed class TerminalArray<T> : IEnumerable<T>
+internal sealed class TerminalArray<T> : IEnumerable<T>
 {
     private readonly int _growSize = 128;
 
@@ -29,7 +29,9 @@ sealed class TerminalArray<T> : IEnumerable<T>
         private set
         {
             if (value < 0)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
 
             if (_count != value)
             {
@@ -37,6 +39,7 @@ sealed class TerminalArray<T> : IEnumerable<T>
                 {
                     _lineList.Add(new T[_growSize]);
                 }
+
                 _count = value;
             }
         }
@@ -47,7 +50,9 @@ sealed class TerminalArray<T> : IEnumerable<T>
         get
         {
             if (index < 0 || index >= _count)
+            {
                 throw new ArgumentOutOfRangeException(nameof(index));
+            }
 
             var y = index / _growSize;
             var x = index % _growSize;
@@ -56,7 +61,9 @@ sealed class TerminalArray<T> : IEnumerable<T>
         set
         {
             if (index < 0 || index >= _count)
+            {
                 throw new ArgumentOutOfRangeException(nameof(index));
+            }
 
             var y = index / _growSize;
             var x = index % _growSize;
@@ -70,6 +77,7 @@ sealed class TerminalArray<T> : IEnumerable<T>
         {
             Array.Clear(_lineList[x], 0, _growSize);
         }
+
         _count = 0;
     }
 
@@ -79,6 +87,7 @@ sealed class TerminalArray<T> : IEnumerable<T>
         {
             this[i] = default!;
         }
+
         Count = count;
     }
 
@@ -97,8 +106,6 @@ sealed class TerminalArray<T> : IEnumerable<T>
             Count = count;
         }
     }
-
-    #region IEnumerable
 
     IEnumerator<T> IEnumerable<T>.GetEnumerator()
     {
@@ -119,6 +126,4 @@ sealed class TerminalArray<T> : IEnumerable<T>
             yield return _lineList[y][x];
         }
     }
-
-    #endregion
 }

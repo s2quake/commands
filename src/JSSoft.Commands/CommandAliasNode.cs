@@ -5,7 +5,7 @@
 
 namespace JSSoft.Commands;
 
-sealed class CommandAliasNode(ICommandNode commandNode, string alias) : ICommandNode
+internal sealed class CommandAliasNode(ICommandNode commandNode, string alias) : ICommandNode
 {
     private readonly ICommandNode commandNode = commandNode;
 

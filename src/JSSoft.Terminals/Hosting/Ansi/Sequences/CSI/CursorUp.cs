@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class CursorUp : CSISequenceBase
+internal sealed class CursorUp : CSISequenceBase
 {
     public CursorUp()
         : base('A')

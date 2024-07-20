@@ -16,11 +16,15 @@ using JSSoft.Terminals;
 namespace JSSoft.Commands.Repl;
 
 [Export]
-sealed class SystemTerminal : SystemTerminalBase
+internal sealed class SystemTerminal : SystemTerminalBase
 {
-    private static readonly string postfix = "$ ";
-    private static readonly string postfixC = TerminalStringBuilder.GetString(postfix, TerminalColorType.BrightGreen);
-    private static readonly string separatorC = TerminalStringBuilder.GetString($"{Path.DirectorySeparatorChar}", TerminalColorType.Red);
+    private static readonly string Suffix = "$ ";
+    private static readonly string SuffixC
+        = TerminalStringBuilder.GetString(Suffix, TerminalColorType.BrightGreen);
+
+    private static readonly string SeparatorC
+        = TerminalStringBuilder.GetString($"{Path.DirectorySeparatorChar}", TerminalColorType.Red);
+
     private readonly IApplication _application;
     private readonly CommandContext _commandContext;
 
@@ -36,12 +40,13 @@ sealed class SystemTerminal : SystemTerminalBase
 
     protected override string FormatPrompt(string prompt)
     {
-        if (prompt.EndsWith(postfix) == true)
+        if (prompt.EndsWith(Suffix) == true)
         {
-            var text = prompt.Substring(0, prompt.Length - postfix.Length);
-            var textC = Regex.Replace(text, $"\\{Path.DirectorySeparatorChar}", separatorC);
-            return textC + postfixC;
+            var text = prompt.Substring(0, prompt.Length - Suffix.Length);
+            var textC = Regex.Replace(text, $"\\{Path.DirectorySeparatorChar}", SeparatorC);
+            return textC + SuffixC;
         }
+
         return prompt;
     }
 
@@ -68,6 +73,6 @@ sealed class SystemTerminal : SystemTerminalBase
 
     private void UpdatePrompt()
     {
-        Prompt = $"{_application.CurrentDirectory}{postfix}";
+        Prompt = $"{_application.CurrentDirectory}{Suffix}";
     }
 }

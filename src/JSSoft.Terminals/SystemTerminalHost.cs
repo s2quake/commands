@@ -83,9 +83,13 @@ public partial class SystemTerminalHost
                 if (r == 0)
                 {
                     if (i + 1 < completions.Length)
+                    {
                         return completions[i + 1];
+                    }
                     else
+                    {
                         return completions.First();
+                    }
                 }
             }
         }
@@ -100,6 +104,7 @@ public partial class SystemTerminalHost
                 }
             }
         }
+
         return text;
     }
 
@@ -114,9 +119,13 @@ public partial class SystemTerminalHost
                 if (r == 0)
                 {
                     if (i - 1 >= 0)
+                    {
                         return completions[i - 1];
+                    }
                     else
+                    {
                         return completions.Last();
+                    }
                 }
             }
         }
@@ -131,6 +140,7 @@ public partial class SystemTerminalHost
                 }
             }
         }
+
         return text;
     }
 
@@ -141,6 +151,7 @@ public partial class SystemTerminalHost
         {
             length += charWidths[(int)item];
         }
+
         return length;
     }
 
@@ -151,6 +162,7 @@ public partial class SystemTerminalHost
         {
             return value;
         }
+
         return null;
     }
 
@@ -161,6 +173,7 @@ public partial class SystemTerminalHost
         {
             return value;
         }
+
         return null;
     }
 
@@ -171,6 +184,7 @@ public partial class SystemTerminalHost
         {
             return value;
         }
+
         return null;
     }
 
@@ -181,6 +195,7 @@ public partial class SystemTerminalHost
         {
             return value;
         }
+
         return null;
     }
 
@@ -194,7 +209,7 @@ public partial class SystemTerminalHost
         using var initializer = new Initializer(this)
         {
             Prompt = prompt,
-            Command = command
+            Command = command,
         };
         return initializer.ReadLineImpl(i => true) as string;
     }
@@ -205,7 +220,7 @@ public partial class SystemTerminalHost
         {
             Prompt = prompt,
             Command = _command,
-            Flags = TerminalFlags.IsPassword
+            Flags = TerminalFlags.IsPassword,
         };
         return initializer.ReadLineImpl(i => true) as SecureString;
     }
@@ -240,7 +255,10 @@ public partial class SystemTerminalHost
         lock (LockedObject)
         {
             if (IsPassword == true)
+            {
                 throw new InvalidOperationException();
+            }
+
             if (_historyIndex + 1 < _histories.Count)
             {
                 SetHistoryIndex(_historyIndex + 1);
@@ -253,7 +271,10 @@ public partial class SystemTerminalHost
         lock (LockedObject)
         {
             if (IsPassword == true)
+            {
                 throw new InvalidOperationException();
+            }
+
             if (_historyIndex > 0)
             {
                 SetHistoryIndex(_historyIndex - 1);
@@ -273,9 +294,15 @@ public partial class SystemTerminalHost
         set
         {
             if (value < 0 || value >= _histories.Count)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
             if (_historyIndex == value)
+            {
                 return;
+            }
+
             lock (LockedObject)
             {
                 SetHistoryIndex(value);
@@ -367,7 +394,10 @@ public partial class SystemTerminalHost
         lock (LockedObject)
         {
             if (IsPassword == true)
+            {
                 throw new InvalidOperationException();
+            }
+
             CompletionImpl(NextCompletion);
         }
     }
@@ -377,7 +407,10 @@ public partial class SystemTerminalHost
         lock (LockedObject)
         {
             if (IsPassword == true)
+            {
                 throw new InvalidOperationException();
+            }
+
             CompletionImpl(PrevCompletion);
         }
     }
@@ -388,6 +421,7 @@ public partial class SystemTerminalHost
         {
             _stringQueue.Enqueue(text);
         }
+
         RenderStringQueue();
     }
 
@@ -398,6 +432,7 @@ public partial class SystemTerminalHost
             _eventSet.Reset();
             _stringQueue.Enqueue(text);
         }
+
         await Task.Run(_eventSet.WaitOne);
     }
 
@@ -407,9 +442,15 @@ public partial class SystemTerminalHost
         set
         {
             if (value < 0 || value > _command.Length)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
             if (_cursorIndex == value)
+            {
                 return;
+            }
+
             lock (LockedObject)
             {
                 SetCursorIndex(value);
@@ -423,9 +464,15 @@ public partial class SystemTerminalHost
         set
         {
             if (IsPassword == true)
+            {
                 throw new InvalidOperationException();
+            }
+
             if (_command == value)
+            {
                 return;
+            }
+
             lock (LockedObject)
             {
                 SetCommand(value);
@@ -439,7 +486,10 @@ public partial class SystemTerminalHost
         set
         {
             if (_prompt == value)
+            {
                 return;
+            }
+
             lock (LockedObject)
             {
                 SetPrompt(value);
@@ -561,10 +611,12 @@ public partial class SystemTerminalHost
         {
             sb.Append(item);
         }
+
         if (NeedLineBreak() == true)
         {
             sb.Append(Environment.NewLine);
         }
+
         sb.Append(EscEraseDown);
         sb.Append(ct1.CursorString);
         RenderString(sb.ToString());
@@ -572,13 +624,25 @@ public partial class SystemTerminalHost
         bool NeedLineBreak()
         {
             if (TerminalEnvironment.IsWindows() == true && Console.BufferHeight > Console.WindowHeight && pt2.Y <= bufferHeight)
+            {
                 return false;
+            }
+
             if (pt2.Y <= pt1.Y)
+            {
                 return false;
+            }
+
             if (pt2.X != 0)
+            {
                 return false;
+            }
+
             if (last.EndsWith(Environment.NewLine) == true)
+            {
                 return false;
+            }
+
             return true;
         }
     }
@@ -627,6 +691,7 @@ public partial class SystemTerminalHost
                 x -= w;
             }
         }
+
         return new TerminalCoord(x, y);
     }
 
@@ -660,6 +725,7 @@ public partial class SystemTerminalHost
                 x += w;
             }
         }
+
         return new TerminalCoord(x, y);
     }
 
@@ -743,11 +809,13 @@ public partial class SystemTerminalHost
                 prefix = true;
                 matchText = matchText.Substring(1);
             }
+
             if (matchText.Length > 1 && matchText.Last() == '\"')
             {
                 postfix = true;
                 matchText = matchText.Remove(matchText.Length - 1);
             }
+
             if (matchText == matchText.Trim())
             {
                 find = matchText;
@@ -761,11 +829,13 @@ public partial class SystemTerminalHost
         {
             var matchText = matches[i].Value.Trim();
             if (matchText != string.Empty)
+            {
                 argList.Add(matchText);
+            }
         }
 
         var completions = GetCompletion([.. argList], find);
-        if (completions != null && completions.Length != 0)
+        if (completions is not null && completions.Length != 0)
         {
             var completion = func(completions, _completion);
             var inputText = _inputText;
@@ -774,6 +844,7 @@ public partial class SystemTerminalHost
             {
                 command = leftText + "\"" + completion + "\"";
             }
+
             SetCommand(command);
             _completion = completion;
             _inputText = inputText;
@@ -862,18 +933,18 @@ public partial class SystemTerminalHost
         using var initializer = new Initializer(this)
         {
             Prompt = prompt,
-            Command = $"{value}"
+            Command = $"{value}",
         };
         return initializer.ReadLineImpl(validation);
     }
 
     private object? ReadLineImpl(CancellationToken cancellation)
     {
-        while (IsEnabled == true && cancellation.IsCancellationRequested == false)
+        while (IsEnabled == true && cancellation.IsCancellationRequested != true)
         {
             var text = string.Empty;
             Update();
-            if (Console.IsInputRedirected == false)
+            if (Console.IsInputRedirected != true)
             {
                 while (Console.KeyAvailable == true)
                 {
@@ -882,29 +953,43 @@ public partial class SystemTerminalHost
                     var modifiers = (TerminalModifiers)keyInfo.Modifiers;
                     var key = (TerminalKey)keyInfo.Key;
                     if (text != string.Empty)
+                    {
                         FlushKeyChars(ref text);
+                    }
 
-                    if (KeyBindings.Process(this, modifiers, key) == false &&
+                    if (KeyBindings.Process(this, modifiers, key) != true &&
                         PreviewKeyChar(keyInfo.KeyChar) == true &&
                         PreviewCommand(text + keyInfo.KeyChar) == true)
                     {
                         text += keyInfo.KeyChar;
                     }
+
                     if (IsInputEnded == true)
+                    {
                         return OnInputEnd();
+                    }
                     else if (IsInputCancelled == true)
+                    {
                         return OnInputCancel();
+                    }
                 }
+
                 if (text != string.Empty)
+                {
                     FlushKeyChars(ref text);
+                }
+
                 Thread.Sleep(1);
             }
             else
             {
                 if (Console.In.Peek() != -1)
+                {
                     return Console.ReadLine();
+                }
             }
         }
+
         return null;
     }
 
@@ -927,11 +1012,16 @@ public partial class SystemTerminalHost
                     var item = _stringQueue.Dequeue();
                     sb.Append(item);
                 }
+
                 text = sb.ToString();
             }
         }
+
         if (text != string.Empty)
+        {
             RenderOutput(text);
+        }
+
         _eventSet.Set();
     }
 
@@ -942,9 +1032,11 @@ public partial class SystemTerminalHost
             var key = Console.ReadKey(true);
 
             if ((int)key.Modifiers != 0)
+            {
                 continue;
+            }
 
-            if (filters.Length != 0 == false || filters.Any(item => item == key.Key) == true)
+            if (filters.Length != 0 != true || filters.Any(item => item == key.Key) == true)
             {
                 InsertText(key.Key.ToString());
                 return key.Key;
@@ -957,9 +1049,13 @@ public partial class SystemTerminalHost
         if (ch != '\0')
         {
             if (IsPassword == true)
+            {
                 return Regex.IsMatch($"{ch}", PasswordPattern);
+            }
+
             return true;
         }
+
         return false;
     }
 
@@ -1010,6 +1106,7 @@ public partial class SystemTerminalHost
             {
                 writer.WriteLine(EscCursorInvisible);
             }
+
             _outputText.AppendLine(_promptText);
             _pt1 = new TerminalCoord(0, Console.IsOutputRedirected == true ? 0 : Console.CursorTop);
             _pt2 = _pt1;
@@ -1029,9 +1126,15 @@ public partial class SystemTerminalHost
     private object? OnInputEnd()
     {
         if (CanRecord == true)
+        {
             RecordCommand(_command.Text);
+        }
+
         if (IsPassword == true)
+        {
             return _secureString;
+        }
+
         var items = CommandUtility.Split(_command.Text);
         return CommandUtility.Join(items);
     }
@@ -1043,7 +1146,7 @@ public partial class SystemTerminalHost
 
     private void RecordCommand(string command)
     {
-        if (_histories.Contains(command) == false)
+        if (_histories.Contains(command) != true)
         {
             _histories.Add(command);
             _historyIndex = _histories.Count;
@@ -1092,15 +1195,30 @@ public partial class SystemTerminalHost
         static bool NeedLineBreak(TerminalCoord pt, int height, string text)
         {
             if (text == "\r")
+            {
                 return false;
+            }
+
             if (text == "\n")
+            {
                 return false;
+            }
+
             if (text.EndsWith(Environment.NewLine) == true)
+            {
                 return false;
+            }
+
             if (pt == TerminalCoord.Empty)
+            {
                 return false;
+            }
+
             if (TerminalEnvironment.IsWindows() == true && Console.BufferHeight > Console.WindowHeight && pt.Y < height)
+            {
                 return false;
+            }
+
             return true;
         }
     }
@@ -1112,7 +1230,7 @@ public partial class SystemTerminalHost
 
     private bool IsRecordable => _flags.HasFlag(TerminalFlags.IsRecordable);
 
-    private bool CanRecord => IsRecordable == true && IsPassword == false && _command != string.Empty;
+    private bool CanRecord => IsRecordable == true && IsPassword != true && _command != string.Empty;
 
     private bool IsInputCancelled => _flags.HasFlag(TerminalFlags.IsInputCancelled);
 
@@ -1130,8 +1248,11 @@ public partial class SystemTerminalHost
 
     internal void Update()
     {
-        if (Console.IsOutputRedirected == false && _width != Console.BufferWidth)
+        if (Console.IsOutputRedirected != true && _width != Console.BufferWidth)
+        {
             UpdateLayout(Console.BufferWidth, Console.BufferHeight);
+        }
+
         RenderStringQueue();
     }
 
@@ -1139,9 +1260,7 @@ public partial class SystemTerminalHost
 
     internal static object ExternalObject { get; } = new object();
 
-    #region Initializer
-
-    sealed class Initializer : IDisposable
+    private sealed class Initializer : IDisposable
     {
         private readonly SystemTerminalHost _terminalHost;
         private readonly bool _isControlC = Console.IsInputRedirected != true && Console.TreatControlCAsInput;
@@ -1149,7 +1268,7 @@ public partial class SystemTerminalHost
         public Initializer(SystemTerminalHost terminalHost)
         {
             _terminalHost = terminalHost;
-            if (Console.IsInputRedirected == false)
+            if (Console.IsInputRedirected != true)
             {
                 _isControlC = Console.TreatControlCAsInput;
                 Console.TreatControlCAsInput = true;
@@ -1186,19 +1305,15 @@ public partial class SystemTerminalHost
         public void Dispose()
         {
             _terminalHost.Release();
-            if (Console.IsInputRedirected == false)
+            if (Console.IsInputRedirected != true)
             {
                 Console.TreatControlCAsInput = _isControlC;
             }
         }
     }
 
-    #endregion
-
-    #region TerminalFlags
-
     [Flags]
-    enum TerminalFlags
+    private enum TerminalFlags
     {
         None = 0,
 
@@ -1210,9 +1325,7 @@ public partial class SystemTerminalHost
 
         IsInputCancelled = 8,
 
-        IsInputEnded = 16
+        IsInputEnded = 16,
     }
-
-    #endregion
 
 }

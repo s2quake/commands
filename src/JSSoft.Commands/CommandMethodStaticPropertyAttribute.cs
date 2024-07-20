@@ -10,7 +10,8 @@ namespace JSSoft.Commands;
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 public class CommandMethodStaticPropertyAttribute : Attribute
 {
-    public CommandMethodStaticPropertyAttribute(string staticTypeName, params string[] propertyNames)
+    public CommandMethodStaticPropertyAttribute(
+        string staticTypeName, params string[] propertyNames)
     {
         try
         {
@@ -58,6 +59,7 @@ public class CommandMethodStaticPropertyAttribute : Attribute
         {
             throw new CommandDefinitionException(e.Message, requestType, innerException: e);
         }
+
         return StaticType!;
     }
 }

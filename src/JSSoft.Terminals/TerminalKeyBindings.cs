@@ -12,7 +12,10 @@ public static class TerminalKeyBindings
     public static TerminalKeyBindingCollection GetDefaultBindings()
     {
         if (TerminalEnvironment.IsMacOS() == true)
+        {
             return MacOS;
+        }
+
         return Common;
     }
 

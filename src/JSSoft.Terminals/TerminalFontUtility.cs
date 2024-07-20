@@ -13,7 +13,10 @@ public static class TerminalFontUtility
     public static TerminalGlyphInfo? GetGlyph(ITerminalFont font, char character)
     {
         if (font.Contains(character) == true)
+        {
             return font[character];
+        }
+
         return null;
     }
 
@@ -26,6 +29,7 @@ public static class TerminalFontUtility
             var span = (int)Math.Ceiling((float)horizontalAdvance / defaultWidth);
             return Math.Max(span, 1);
         }
+
         return 1;
     }
 
@@ -43,6 +47,7 @@ public static class TerminalFontUtility
             var fy = y + glyphInfo.YOffset;
             return new TerminalRect(fx, fy, glyphInfo.Width, glyphInfo.Height);
         }
+
         return new TerminalRect(x + 1, y + 1, font.Width - 2, font.Height - 2);
     }
 }

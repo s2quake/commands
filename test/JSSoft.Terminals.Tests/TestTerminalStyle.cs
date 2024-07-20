@@ -15,9 +15,11 @@ public sealed class TestTerminalStyle : ITerminalStyle
 
     public TerminalColor BackgroundColor => TerminalStyleUtility.DefaultBackgroundColor;
 
-    public TerminalColor SelectionForegroundColor => TerminalStyleUtility.DefaultSelectionForegroundColor;
+    public TerminalColor SelectionForegroundColor
+        => TerminalStyleUtility.DefaultSelectionForegroundColor;
 
-    public TerminalColor SelectionBackgroundColor => TerminalStyleUtility.DefaultSelectionBackgroundColor;
+    public TerminalColor SelectionBackgroundColor
+        => TerminalStyleUtility.DefaultSelectionBackgroundColor;
 
     public TerminalColorSource SelectionForegroundColorSource => default;
 

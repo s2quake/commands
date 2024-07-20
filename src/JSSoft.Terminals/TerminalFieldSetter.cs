@@ -24,9 +24,11 @@ public sealed class TerminalFieldSetter
     public bool SetField(ref string oldField, string newField, string propertyName)
     {
         if (newField is null)
+        {
             throw new ArgumentNullException(nameof(newField));
+        }
 
-        if (Equals(oldField, newField) == false)
+        if (Equals(oldField, newField) != true)
         {
 #if !NETSTANDARD && !NETFRAMEWORK
             System.ComponentModel.DataAnnotations.Validator.ValidateProperty(newField, new System.ComponentModel.DataAnnotations.ValidationContext(_obj) { MemberName = propertyName });
@@ -35,12 +37,13 @@ public sealed class TerminalFieldSetter
             InvokePropertyChangedEvent(propertyName);
             return true;
         }
+
         return false;
     }
 
     public bool SetField<T>(ref T oldField, T newField, string propertyName)
     {
-        if (Equals(oldField, newField) == false)
+        if (Equals(oldField, newField) != true)
         {
 #if !NETSTANDARD && !NETFRAMEWORK
             System.ComponentModel.DataAnnotations.Validator.ValidateProperty(newField, new System.ComponentModel.DataAnnotations.ValidationContext(_obj) { MemberName = propertyName });
@@ -49,13 +52,16 @@ public sealed class TerminalFieldSetter
             InvokePropertyChangedEvent(propertyName);
             return true;
         }
+
         return false;
     }
 
     public IDisposable LockEvent()
     {
-        if (_scope != null)
+        if (_scope is not null)
+        {
             throw new InvalidOperationException();
+        }
 
         _scope = _defaultScope;
         _action = _scope.InvokePropertyChangedEvent;
@@ -65,9 +71,7 @@ public sealed class TerminalFieldSetter
     private void InvokePropertyChangedEvent(string propertyName)
         => _action.Invoke(new PropertyChangedEventArgs(propertyName));
 
-    #region EventScope
-
-    sealed class EventScope(TerminalFieldSetter setter, Action<PropertyChangedEventArgs> action) : IDisposable
+    private sealed class EventScope(TerminalFieldSetter setter, Action<PropertyChangedEventArgs> action) : IDisposable
     {
         private readonly List<PropertyChangedEventArgs> _argList = [];
         private readonly TerminalFieldSetter _setter = setter;
@@ -82,11 +86,10 @@ public sealed class TerminalFieldSetter
             {
                 _action.Invoke(item);
             }
+
             _setter._action = _action;
             _setter._scope = null;
             _argList.Clear();
         }
     }
-
-    #endregion
 }

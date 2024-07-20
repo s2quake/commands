@@ -10,12 +10,22 @@ namespace JSSoft.Commands.Extensions;
 
 public static class CommandContextBaseExtensions
 {
-    public static ICommand? GetCommandByCommandLine(this CommandContextBase @this, string commandLine)
+    private static readonly Progress<ProgressInfo> EmptyProgress = new();
+
+    public static ICommand? GetCommandByCommandLine(
+        this CommandContextBase @this, string commandLine)
     {
-        if (CommandUtility.TrySplitCommandLine(commandLine, out var commandName, out var commandArguments) == false)
+        if (CommandUtility.TrySplitCommandLine(
+            commandLine, out var commandName, out var commandArguments) != true)
+        {
             return null;
-        if (@this.VerifyCommandName(commandName) == false)
+        }
+
+        if (@this.VerifyCommandName(commandName) != true)
+        {
             return null;
+        }
+
         return @this.GetCommand(commandArguments);
     }
 
@@ -33,16 +43,17 @@ public static class CommandContextBaseExtensions
     }
 
     public static Task ExecuteCommandLineAsync(this CommandContextBase @this, string commandLine)
-    {
-        return @this.ExecuteCommandLineAsync(commandLine, CancellationToken.None);
-    }
+        => @this.ExecuteCommandLineAsync(commandLine, CancellationToken.None);
 
-    public static Task ExecuteCommandLineAsync(this CommandContextBase @this, string commandLine, CancellationToken cancellationToken)
-    {
-        return ExecuteCommandLineAsync(@this, commandLine, cancellationToken, new Progress<ProgressInfo>());
-    }
+    public static Task ExecuteCommandLineAsync(
+        this CommandContextBase @this, string commandLine, CancellationToken cancellationToken)
+        => ExecuteCommandLineAsync(@this, commandLine, cancellationToken, EmptyProgress);
 
-    public static Task ExecuteCommandLineAsync(this CommandContextBase @this, string commandLine, CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
+    public static Task ExecuteCommandLineAsync(
+        this CommandContextBase @this,
+        string commandLine,
+        CancellationToken cancellationToken,
+        IProgress<ProgressInfo> progress)
     {
         var (commandName, commandArguments) = CommandUtility.SplitCommandLine(commandLine);
         @this.ThrowIfNotVerifyCommandName(commandName);
@@ -50,31 +61,33 @@ public static class CommandContextBaseExtensions
     }
 
     public static Task ExecuteAsync(this CommandContextBase @this, string[] args)
-    {
-        return @this.ExecuteAsync(args, CancellationToken.None, new Progress<ProgressInfo>());
-    }
+        => @this.ExecuteAsync(args, CancellationToken.None, EmptyProgress);
 
-    public static Task ExecuteAsync(this CommandContextBase @this, string[] args, CancellationToken cancellationToken)
-    {
-        return @this.ExecuteAsync(args, cancellationToken, new Progress<ProgressInfo>());
-    }
+    public static Task ExecuteAsync(
+        this CommandContextBase @this, string[] args, CancellationToken cancellationToken)
+        => @this.ExecuteAsync(args, cancellationToken, EmptyProgress);
 
-    public static Task ExecuteAsync(this CommandContextBase @this, string[] args, CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
+    public static Task ExecuteAsync(
+        this CommandContextBase @this,
+        string[] args,
+        CancellationToken cancellationToken,
+        IProgress<ProgressInfo> progress)
     {
         return @this.ExecuteAsync(args, cancellationToken, progress);
     }
 
     public static Task ExecuteAsync(this CommandContextBase @this, string argumentLine)
-    {
-        return ExecuteAsync(@this, argumentLine, CancellationToken.None);
-    }
+        => ExecuteAsync(@this, argumentLine, CancellationToken.None);
 
-    public static Task ExecuteAsync(this CommandContextBase @this, string argumentLine, CancellationToken cancellationToken)
-    {
-        return ExecuteAsync(@this, argumentLine, cancellationToken, new Progress<ProgressInfo>());
-    }
+    public static Task ExecuteAsync(
+        this CommandContextBase @this, string argumentLine, CancellationToken cancellationToken)
+        => ExecuteAsync(@this, argumentLine, cancellationToken, EmptyProgress);
 
-    public static async Task ExecuteAsync(this CommandContextBase @this, string argumentLine, CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
+    public static async Task ExecuteAsync(
+        this CommandContextBase @this,
+        string argumentLine,
+        CancellationToken cancellationToken,
+        IProgress<ProgressInfo> progress)
     {
         var args = CommandUtility.Split(argumentLine);
         await @this.ExecuteAsync(args, cancellationToken, progress);

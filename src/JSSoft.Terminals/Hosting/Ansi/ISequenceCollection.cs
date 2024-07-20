@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-interface ISequenceCollection : IEnumerable<ISequence>
+internal interface ISequenceCollection : IEnumerable<ISequence>
 {
     string SequenceString { get; }
 }

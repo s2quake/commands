@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Renderers;
 
-sealed class TerminalRenderRange(int begin, int end, IDisposable transformScope) : IDisposable
+internal sealed class TerminalRenderRange(int begin, int end, IDisposable transformScope) : IDisposable
 {
     private readonly IDisposable _transformScope = transformScope;
 

@@ -8,52 +8,65 @@ using System.Collections.ObjectModel;
 namespace JSSoft.Commands;
 
 // https://stackoverflow.com/questions/58453972/how-to-use-net-reflection-to-check-for-nullable-reference-type
-static partial class CommandUtility
+public static partial class CommandUtility
 {
-    internal static bool IsNullable(PropertyInfo propertyInfo) =>
-        IsNullableHelper(propertyInfo.PropertyType, propertyInfo.DeclaringType, propertyInfo.CustomAttributes);
+    private const string NullableAttribute = "System.Runtime.CompilerServices.NullableAttribute";
+    private const string NullableContextAttribute
+         = "System.Runtime.CompilerServices.NullableContextAttribute";
 
-    internal static bool IsNullable(FieldInfo fieldInfo) =>
-        IsNullableHelper(fieldInfo.FieldType, fieldInfo.DeclaringType, fieldInfo.CustomAttributes);
+    internal static bool IsNullable(PropertyInfo propertyInfo)
+        => IsNullableHelper(
+            propertyInfo.PropertyType, propertyInfo.DeclaringType, propertyInfo.CustomAttributes);
 
-    internal static bool IsNullable(ParameterInfo parameterInfo) =>
-        IsNullableHelper(parameterInfo.ParameterType, parameterInfo.Member, parameterInfo.CustomAttributes);
+    internal static bool IsNullable(FieldInfo fieldInfo)
+        => IsNullableHelper(
+            fieldInfo.FieldType, fieldInfo.DeclaringType, fieldInfo.CustomAttributes);
 
-    private static bool IsNullableHelper(Type memberType, MemberInfo? declaringType, IEnumerable<CustomAttributeData> customAttributes)
+    internal static bool IsNullable(ParameterInfo parameterInfo)
+        => IsNullableHelper(
+            parameterInfo.ParameterType, parameterInfo.Member, parameterInfo.CustomAttributes);
+
+    private static bool IsNullableHelper(
+        Type memberType,
+        MemberInfo? declaringType,
+        IEnumerable<CustomAttributeData> customAttributes)
     {
         if (memberType.IsValueType)
-            return Nullable.GetUnderlyingType(memberType) != null;
+        {
+            return Nullable.GetUnderlyingType(memberType) is not null;
+        }
 
         var nullable = customAttributes
-            .FirstOrDefault(x => x.AttributeType.FullName == "System.Runtime.CompilerServices.NullableAttribute");
-        if (nullable != null && nullable.ConstructorArguments.Count == 1)
+            .FirstOrDefault(x => x.AttributeType.FullName == NullableAttribute);
+        if (nullable is not null && nullable.ConstructorArguments.Count == 1)
         {
-            var attributeArgument = nullable.ConstructorArguments[0];
-            if (attributeArgument.ArgumentType == typeof(byte[]))
+            var argument = nullable.ConstructorArguments[0];
+            if (argument.ArgumentType == typeof(byte[]))
             {
-                var args = (ReadOnlyCollection<CustomAttributeTypedArgument>)attributeArgument.Value!;
+                var args = (ReadOnlyCollection<CustomAttributeTypedArgument>)argument.Value!;
                 if (args.Count > 0 && args[0].ArgumentType == typeof(byte))
                 {
                     return (byte)args[0].Value! == 2;
                 }
             }
-            else if (attributeArgument.ArgumentType == typeof(byte))
+            else if (argument.ArgumentType == typeof(byte))
             {
-                return (byte)attributeArgument.Value! == 2;
+                return (byte)argument.Value! == 2;
             }
         }
 
-        for (var type = declaringType; type != null; type = type.DeclaringType)
+        for (var type = declaringType; type is not null; type = type.DeclaringType)
         {
             var context = type.CustomAttributes
-                .FirstOrDefault(x => x.AttributeType.FullName == "System.Runtime.CompilerServices.NullableContextAttribute");
-            if (context != null &&
+                .FirstOrDefault(x => x.AttributeType.FullName == NullableContextAttribute);
+            if (context is not null &&
                 context.ConstructorArguments.Count == 1 &&
                 context.ConstructorArguments[0].ArgumentType == typeof(byte))
             {
                 return (byte)context.ConstructorArguments[0].Value! == 2;
             }
         }
+
         // Couldn't find a suitable attribute
         return false;
     }

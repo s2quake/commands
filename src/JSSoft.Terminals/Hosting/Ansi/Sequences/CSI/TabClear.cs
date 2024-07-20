@@ -8,7 +8,7 @@ namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 /// <summary>
 /// CSI Ps g
 /// </summary>
-sealed class TabClear : CSISequenceBase
+internal sealed class TabClear : CSISequenceBase
 {
     public TabClear()
         : base('g')

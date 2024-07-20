@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class SetTitleMode : CSISequenceBase
+internal sealed class SetTitleMode : CSISequenceBase
 {
     public SetTitleMode()
         : base('t')

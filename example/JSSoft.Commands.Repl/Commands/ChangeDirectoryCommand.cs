@@ -14,7 +14,7 @@ namespace JSSoft.Commands.Repl.Commands;
 [ResourceUsage]
 [Category("IO")]
 [method: ImportingConstructor]
-sealed class ChangeDirectoryCommand(IApplication application)
+internal sealed class ChangeDirectoryCommand(IApplication application)
     : CommandBase("cd")
 {
     [CommandPropertyRequired("dir", DefaultValue = "")]
@@ -40,7 +40,7 @@ sealed class ChangeDirectoryCommand(IApplication application)
         }
         else
         {
-            throw new DirectoryNotFoundException(string.Format("'{0}'은(는) 존재하지 않는 경로입니다.", DirectoryName));
+            throw new DirectoryNotFoundException($"'{DirectoryName}' directory not found.");
         }
     }
 }

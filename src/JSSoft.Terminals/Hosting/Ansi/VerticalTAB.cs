@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-sealed class VerticalTAB : IAsciiCode
+internal sealed class VerticalTAB : IAsciiCode
 {
     public void Process(AsciiCodeContext context)
     {

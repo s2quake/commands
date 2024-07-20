@@ -42,9 +42,9 @@ public sealed class CommandStaticPropertyAttribute : Attribute
         PropertyNames = propertyNames;
     }
 
-    public string StaticTypeName { get; } = string.Empty;
+    public string StaticTypeName { get; }
 
-    public string[] PropertyNames { get; } = [];
+    public string[] PropertyNames { get; }
 
     public Type? StaticType { get; }
 
@@ -58,6 +58,7 @@ public sealed class CommandStaticPropertyAttribute : Attribute
         {
             throw new CommandDefinitionException(e.Message, requestType, innerException: e);
         }
+
         return StaticType!;
     }
 }

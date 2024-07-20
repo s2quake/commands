@@ -7,7 +7,7 @@ using System.Text;
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-sealed class SequenceContext(string parameter, AsciiCodeContext asciiCodeContext)
+internal sealed class SequenceContext(string parameter, AsciiCodeContext asciiCodeContext)
 {
     private readonly AsciiCodeContext _asciiCodeContext = asciiCodeContext;
 
@@ -69,6 +69,7 @@ sealed class SequenceContext(string parameter, AsciiCodeContext asciiCodeContext
                 sb.Append(item);
             }
         }
+
         return int.TryParse(sb.ToString(), out var i) == true ? i : 0;
     }
 

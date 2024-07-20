@@ -42,9 +42,9 @@ public sealed class CommandStaticMethodAttribute : Attribute
         MethodNames = methodNames;
     }
 
-    public string StaticTypeName { get; } = string.Empty;
+    public string StaticTypeName { get; }
 
-    public string[] MethodNames { get; } = [];
+    public string[] MethodNames { get; }
 
     public Type? StaticType { get; }
 
@@ -58,6 +58,7 @@ public sealed class CommandStaticMethodAttribute : Attribute
         {
             throw new CommandDefinitionException(e.Message, requestType, innerException: e);
         }
+
         return StaticType!;
     }
 }

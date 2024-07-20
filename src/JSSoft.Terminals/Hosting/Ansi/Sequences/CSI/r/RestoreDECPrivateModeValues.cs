@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class RestoreDECPrivateModeValues : CSISequenceBase
+internal sealed class RestoreDECPrivateModeValues : CSISequenceBase
 {
     public RestoreDECPrivateModeValues()
         : base('r')

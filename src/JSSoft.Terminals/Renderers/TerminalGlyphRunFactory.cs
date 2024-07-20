@@ -7,7 +7,9 @@ using JSSoft.Terminals.Extensions;
 
 namespace JSSoft.Terminals.Renderers;
 
-sealed class TerminalGlyphRunFactory<T>(ITerminalFont font, int capacity, Func<TerminalGlyphRunInfo, T> creator) where T : TerminalGlyphRun
+internal sealed class TerminalGlyphRunFactory<T>(ITerminalFont font, int capacity, Func<TerminalGlyphRunInfo, T> creator)
+    where T : TerminalGlyphRun
+
 {
     private readonly ITerminalFont _font = font;
     private readonly Func<TerminalGlyphRunInfo, T> _creator = creator;
@@ -25,7 +27,10 @@ sealed class TerminalGlyphRunFactory<T>(ITerminalFont font, int capacity, Func<T
     private static bool Predicate(char character)
     {
         if (character == 0)
+        {
             return false;
+        }
+
         return true;
     }
 
@@ -40,9 +45,15 @@ sealed class TerminalGlyphRunFactory<T>(ITerminalFont font, int capacity, Func<T
             var viewCoord = new TerminalCoord(i, row.Index);
             var coord = terminal.ViewToWorld(viewCoord);
             if (terminal.GetInfo(coord) is not { } characterInfo)
+            {
                 break;
-            if (Predicate(characterInfo.Character) == false)
+            }
+
+            if (Predicate(characterInfo.Character) != true)
+            {
                 continue;
+            }
+
             var glyphInfo = GetGlyphInfo(font, characterInfo.Character);
             var foregroundColor = terminal.GetForegroundColor(coord);
             var isBold = characterInfo.DisplayInfo.IsBold;
@@ -51,6 +62,7 @@ sealed class TerminalGlyphRunFactory<T>(ITerminalFont font, int capacity, Func<T
             var backgroundRect = terminal.GetBackgroundRect(coord, span);
             glyphRunFactory.Add(glyphInfo, backgroundRect, foregroundColor, isBold, isItalic, span);
         }
+
         return glyphRunFactory.ToArray();
     }
 
@@ -86,6 +98,7 @@ sealed class TerminalGlyphRunFactory<T>(ITerminalFont font, int capacity, Func<T
         {
             Flush();
         }
+
         _glyphInfoList.Add(glyphInfo);
         _spanList.Add(span);
         _characterList.Add(glyphInfo.Character);
@@ -114,7 +127,7 @@ sealed class TerminalGlyphRunFactory<T>(ITerminalFont font, int capacity, Func<T
                 Group = _group,
                 GlyphInfos = [.. _glyphInfoList],
                 Spans = [.. _spanList],
-                Position = new TerminalPoint(_x, 0)
+                Position = new TerminalPoint(_x, 0),
             };
             _itemList.Add(_creator(info));
             _glyphInfoList.Clear();
@@ -130,6 +143,7 @@ sealed class TerminalGlyphRunFactory<T>(ITerminalFont font, int capacity, Func<T
         {
             return font[character];
         }
+
         return new()
         {
             Character = character,

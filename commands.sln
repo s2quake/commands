@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Commands.Invoke", "e
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Commands.Repl", "example\JSSoft.Commands.Repl\JSSoft.Commands.Repl.csproj", "{B55042D0-D2DB-4804-A0AD-71FB03780B15}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Commands.Test", "test\JSSoft.Commands.Test\JSSoft.Commands.Test.csproj", "{16C6DF61-5111-4162-9CF7-583937AD9708}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSSoft.Commands.Tests", "test\JSSoft.Commands.Tests\JSSoft.Commands.Tests.csproj", "{16C6DF61-5111-4162-9CF7-583937AD9708}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "JSSoft.Commands.Shared", "example\JSSoft.Commands.Shared\JSSoft.Commands.Shared.shproj", "{F6427925-5255-4B00-BE11-543B0539CC07}"
 EndProject

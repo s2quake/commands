@@ -28,11 +28,12 @@ public abstract class InputHandlerContext(ITerminal terminal) : IDisposable
         OnPointerMove(pointerEventData);
         if (pointerEventData.IsMouseLeftButton == true)
         {
-            if (_isDragging == false)
+            if (_isDragging != true)
             {
                 OnBeginDrag(pointerEventData);
                 _isDragging = true;
             }
+
             if (_isDragging == true)
             {
                 OnDrag(pointerEventData);
@@ -46,6 +47,7 @@ public abstract class InputHandlerContext(ITerminal terminal) : IDisposable
         {
             OnEndDrag(pointerEventData);
         }
+
         OnPointerUp(pointerEventData);
         _isDragging = false;
     }
@@ -100,13 +102,9 @@ public abstract class InputHandlerContext(ITerminal terminal) : IDisposable
     {
     }
 
-    #region IDisposable
-
     void IDisposable.Dispose()
     {
         Dispose();
         GC.SuppressFinalize(this);
     }
-
-    #endregion
 }

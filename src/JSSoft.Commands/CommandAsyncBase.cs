@@ -9,14 +9,15 @@ using System.Threading.Tasks;
 
 namespace JSSoft.Commands;
 
-public abstract class CommandAsyncBase : ICommand, IAsyncExecutable, ICommandHost, ICommandUsage, ICommandUsagePrinter
+public abstract class CommandAsyncBase
+    : ICommand, IAsyncExecutable, ICommandHost, ICommandUsage, ICommandUsagePrinter
 {
     private readonly CommandUsageDescriptorBase _usageDescriptor;
     private ICommandNode? _node;
     private IProgress<ProgressInfo>? _progress;
 
     protected CommandAsyncBase()
-        : this(Array.Empty<string>())
+        : this(aliases: [])
     {
     }
 
@@ -39,11 +40,6 @@ public abstract class CommandAsyncBase : ICommand, IAsyncExecutable, ICommandHos
         _usageDescriptor = CommandDescriptor.GetUsageDescriptor(GetType());
     }
 
-    public virtual string[] GetCompletions(CommandCompletionContext completionContext)
-    {
-        return [];
-    }
-
     public string Name { get; }
 
     public string[] Aliases { get; }
@@ -54,7 +50,28 @@ public abstract class CommandAsyncBase : ICommand, IAsyncExecutable, ICommandHos
 
     public TextWriter Error => CommandContext.Error;
 
-    public ICommandContext CommandContext => _node?.CommandContext ?? throw new InvalidOperationException();
+    public ICommandContext CommandContext
+        => _node is not null
+            ? _node.CommandContext
+            : throw new InvalidOperationException("The command node is not available.");
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Minor Code Smell",
+        "S2292:Trivial properties should be auto-implemented",
+        Justification = "This property does not need to be public.")]
+    ICommandNode? ICommandHost.Node
+    {
+        get => _node;
+        set => _node = value;
+    }
+
+    string ICommandUsage.ExecutionName => ExecutionName;
+
+    string ICommandUsage.Summary => _usageDescriptor.Summary;
+
+    string ICommandUsage.Description => _usageDescriptor.Description;
+
+    string ICommandUsage.Example => _usageDescriptor.Example;
 
     internal string ExecutionName
     {
@@ -62,14 +79,36 @@ public abstract class CommandAsyncBase : ICommand, IAsyncExecutable, ICommandHos
         {
             var executionName = CommandUtility.GetExecutionName(Name, Aliases);
             if (CommandContext.ExecutionName != string.Empty)
+            {
                 return $"{CommandContext.ExecutionName} {executionName}";
+            }
+
             return executionName;
         }
     }
 
-    protected abstract Task OnExecuteAsync(CancellationToken cancellationToken);
+    protected IProgress<ProgressInfo> Progress
+        => _progress ?? throw new InvalidOperationException("The progress is not available.");
 
-    protected IProgress<ProgressInfo> Progress => _progress ?? throw new InvalidOperationException("The progress is not available.");
+    public virtual string[] GetCompletions(CommandCompletionContext completionContext) => [];
+
+    Task IAsyncExecutable.ExecuteAsync(
+        CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
+    {
+        _progress = progress;
+        try
+        {
+            return OnExecuteAsync(cancellationToken);
+        }
+        finally
+        {
+            _progress = null;
+        }
+    }
+
+    void ICommandUsagePrinter.Print(bool isDetail) => OnUsagePrint(isDetail);
+
+    protected abstract Task OnExecuteAsync(CancellationToken cancellationToken);
 
     protected CommandMemberDescriptor GetDescriptor(string propertyName)
     {
@@ -86,49 +125,4 @@ public abstract class CommandAsyncBase : ICommand, IAsyncExecutable, ICommandHos
         };
         usagePrinter.Print(Out, memberDescriptors);
     }
-
-    #region IAsyncExecutable
-
-    Task IAsyncExecutable.ExecuteAsync(CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
-    {
-        _progress = progress;
-        try
-        {
-            return OnExecuteAsync(cancellationToken);
-        }
-        finally
-        {
-            _progress = null;
-        }
-    }
-
-    #endregion
-
-    #region ICommandHost
-
-    ICommandNode? ICommandHost.Node
-    {
-        get => _node;
-        set => _node = value;
-    }
-
-    #endregion
-
-    #region ICommandUsage
-
-    string ICommandUsage.ExecutionName => ExecutionName;
-
-    string ICommandUsage.Summary => _usageDescriptor.Summary;
-
-    string ICommandUsage.Description => _usageDescriptor.Description;
-
-    string ICommandUsage.Example => _usageDescriptor.Example;
-
-    #endregion
-
-    #region ICommandUsagePrinter
-
-    void ICommandUsagePrinter.Print(bool isDetail) => OnUsagePrint(isDetail);
-
-    #endregion
 }

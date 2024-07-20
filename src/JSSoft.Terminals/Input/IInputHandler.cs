@@ -26,7 +26,7 @@ public interface IInputHandler
     void Detach(ITerminal terminal);
 }
 
-static class IInputHandlerExtensions
+internal static class IInputHandlerExtensions
 {
     public static void SelectIf(this IInputHandler @this, bool condition, ITerminal terminal)
     {

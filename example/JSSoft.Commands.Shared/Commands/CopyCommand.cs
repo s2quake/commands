@@ -12,7 +12,7 @@ namespace JSSoft.Commands.Applications.Commands;
 [Export(typeof(ICommand))]
 [ResourceUsage]
 [Category("IO")]
-sealed class CopyCommand : CommandBase
+internal sealed class CopyCommand : CommandBase
 {
     public CopyCommand()
         : base("copy", ["cp"])

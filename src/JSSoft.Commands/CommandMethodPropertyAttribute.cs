@@ -6,11 +6,13 @@
 namespace JSSoft.Commands;
 
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-public sealed class CommandMethodPropertyAttribute(string propertyName, params string[] propertyNames) : Attribute
+public sealed class CommandMethodPropertyAttribute(
+    string propertyName, params string[] propertyNames)
+    : Attribute
 {
     public string[] PropertyNames { get; } = [propertyName, .. propertyNames];
 
-    internal IEnumerable<CommandMemberDescriptor> GetCommandMemberDescriptors(Type type)
+    internal IEnumerable<CommandMemberDescriptor> GetMemberDescriptors(Type type)
     {
         var memberDescriptors = CommandDescriptor.GetMemberDescriptors(type);
         foreach (var item in PropertyNames)
@@ -21,7 +23,8 @@ public sealed class CommandMethodPropertyAttribute(string propertyName, params s
             }
             else
             {
-                throw new CommandDefinitionException($"Type '{type}' does not have property '{item}'.", type);
+                var message = $"Type '{type}' does not have property '{item}'.";
+                throw new CommandDefinitionException(message, type);
             }
         }
     }

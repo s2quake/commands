@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class WindowManipulation : CSISequenceBase
+internal sealed class WindowManipulation : CSISequenceBase
 {
     public WindowManipulation()
         : base('t')

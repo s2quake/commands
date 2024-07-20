@@ -293,5 +293,5 @@ public enum TerminalKey
 
     Pa1 = 253,
 
-    OemClear = 254
+    OemClear = 254,
 }

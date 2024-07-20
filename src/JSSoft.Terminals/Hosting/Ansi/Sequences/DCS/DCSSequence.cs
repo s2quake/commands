@@ -6,7 +6,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.DCS;
 
-sealed class DCSSequence : SequenceBase
+internal sealed class DCSSequence : SequenceBase
 {
     public DCSSequence()
         : base(SequenceType.DCS, '\\')

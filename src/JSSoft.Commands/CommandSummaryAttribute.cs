@@ -5,7 +5,10 @@
 
 namespace JSSoft.Commands;
 
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Parameter, AllowMultiple = true)]
+[AttributeUsage(
+    validOn: AttributeTargets.Class | AttributeTargets.Method
+        | AttributeTargets.Property | AttributeTargets.Parameter,
+    AllowMultiple = true)]
 public class CommandSummaryAttribute(string summary) : Attribute
 {
     public virtual string Summary { get; } = summary;

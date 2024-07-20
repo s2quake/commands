@@ -29,6 +29,7 @@ public struct TerminalThickness : IEquatable<TerminalThickness>
         {
             return Left == thickness.Left && Top == thickness.Top && Right == thickness.Right && Bottom == thickness.Bottom;
         }
+
         return base.Equals(obj);
     }
 
@@ -85,7 +86,10 @@ public struct TerminalThickness : IEquatable<TerminalThickness>
     public static explicit operator TerminalThickness(int[] values)
     {
         if (values.Length != 4)
+        {
             throw new ArgumentException("The array must be 4 in length.", nameof(values));
+        }
+
         return new TerminalThickness(values[0], values[1], values[2], values[3]);
     }
 
@@ -97,10 +101,6 @@ public struct TerminalThickness : IEquatable<TerminalThickness>
         Bottom = values[3];
     }
 
-    #region IEquatable
-
     readonly bool IEquatable<TerminalThickness>.Equals(TerminalThickness other)
         => Left == other.Left && Top == other.Top && Right == other.Right && Bottom == other.Bottom;
-
-    #endregion
 }

@@ -9,6 +9,6 @@ namespace JSSoft.Commands.Applications.Commands;
 
 [Export(typeof(ICommand))]
 [Export(typeof(HelpCommand))]
-sealed class HelpCommand : HelpCommandBase
+internal sealed class HelpCommand : HelpCommandBase
 {
 }

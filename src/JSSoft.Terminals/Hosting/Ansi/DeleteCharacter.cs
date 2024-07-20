@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-sealed class DeleteCharacter : IAsciiCode
+internal sealed class DeleteCharacter : IAsciiCode
 {
     public void Process(AsciiCodeContext context)
     {

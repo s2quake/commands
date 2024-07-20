@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <PublishName>commands</PublishName>
     <DefineConstants>JSSOFT_TERMINALS</DefineConstants>
@@ -17,4 +18,11 @@
     <EmbeddedResource Include="Unix.dat" />
     <EmbeddedResource Include="Win32NT.dat" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Remove="StyleCop.Analyzers" />
+    <PackageReference Remove="Menees.Analyzers" />
+    <PackageReference Remove="SonarAnalyzer.CSharp"/>
+  </ItemGroup>
+
 </Project>

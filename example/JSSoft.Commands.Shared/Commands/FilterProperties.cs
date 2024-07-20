@@ -27,6 +27,7 @@ public static class FilterProperties
                 var lines = File.ReadAllLines(FilterFile);
                 return string.Join(";", lines);
             }
+
             return Filter;
         }
     }

@@ -3,18 +3,18 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
-using JSSoft.Commands.Extensions;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.IO;
+using JSSoft.Commands.Extensions;
 
 namespace JSSoft.Commands.Applications.Commands;
 
 [Export(typeof(ICommand))]
 [ResourceUsage]
 [Category("IO")]
-sealed class ListDirectoryCommand : CommandBase
+internal sealed class ListDirectoryCommand : CommandBase
 {
     public ListDirectoryCommand()
         : base("ls")
@@ -32,17 +32,10 @@ sealed class ListDirectoryCommand : CommandBase
 
     private void PrintItems(string dir)
     {
-        var items = new List<string[]>();
-
+        var items = new List<string[]>
         {
-            var props = new List<string>
-            {
-                "DateTime",
-                "",
-                "Name"
-            };
-            items.Add([.. props]);
-        }
+            new string[] { "DateTime", string.Empty, "Name" },
+        };
 
         foreach (var item in Directory.GetDirectories(dir))
         {
@@ -52,7 +45,7 @@ sealed class ListDirectoryCommand : CommandBase
             {
                 itemInfo.LastWriteTime.ToString("yyyy-MM-dd tt hh:mm"),
                 "<DIR>",
-                itemInfo.Name
+                itemInfo.Name,
             };
             items.Add([.. props]);
         }
@@ -65,7 +58,7 @@ sealed class ListDirectoryCommand : CommandBase
             {
                 itemInfo.LastWriteTime.ToString("yyyy-MM-dd tt hh:mm"),
                 string.Empty,
-                itemInfo.Name
+                itemInfo.Name,
             };
             items.Add([.. props]);
         }

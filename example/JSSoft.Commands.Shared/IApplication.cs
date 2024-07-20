@@ -12,16 +12,16 @@ namespace JSSoft.Commands.Applications;
 public interface IApplication
 {
 #if JSSOFT_COMMANDS_REPL
+    event EventHandler DirectoryChanged;
+
+    string CurrentDirectory { get; set; }
+
     void Cancel();
 
     Task StartAsync();
 
-    string CurrentDirectory { get; set; }
-
     string? ReadString(string prompt, string command);
 
     SecureString? ReadSecureString(string prompt);
-
-    event EventHandler DirectoryChanged;
 #endif // JSSOFT_COMMANDS_REPL
 }

@@ -9,14 +9,8 @@ using System.Threading.Tasks;
 
 namespace JSSoft.Commands;
 
-public abstract class CommandMethodDescriptor
+public abstract class CommandMethodDescriptor(MethodInfo methodInfo)
 {
-    protected CommandMethodDescriptor(MethodInfo methodInfo)
-    {
-        MethodInfo = methodInfo;
-        UsageDescriptor = CommandDescriptor.GetUsageDescriptor(methodInfo);
-    }
-
     public abstract string Name { get; }
 
     public abstract string[] Aliases { get; }
@@ -31,28 +25,15 @@ public abstract class CommandMethodDescriptor
 
     public abstract string Category { get; }
 
-    public MethodInfo MethodInfo { get; }
+    public MethodInfo MethodInfo { get; } = methodInfo;
 
     public CommandUsageDescriptorBase UsageDescriptor { get; }
+        = CommandDescriptor.GetUsageDescriptor(methodInfo);
 
-    protected abstract object? OnInvoke(object instance, object?[] parameters);
+    internal bool CanExecute(object instance) => OnCanExecute(instance);
 
-    protected virtual bool OnCanExecute(object instance)
-    {
-        return true;
-    }
-
-    protected virtual string[] GetCompletion(object instance, object?[] parameters)
-    {
-        return [];
-    }
-
-    internal bool CanExecute(object instance)
-    {
-        return OnCanExecute(instance);
-    }
-
-    internal object? Invoke(object instance, string[] args, CommandMemberDescriptorCollection memberDescriptors)
+    internal object? Invoke(
+        object instance, string[] args, CommandMemberDescriptorCollection memberDescriptors)
     {
         var parseContext = new ParseContext(memberDescriptors, args);
         var parameters = MethodInfo.GetParameters();
@@ -64,37 +45,8 @@ public abstract class CommandMethodDescriptor
             var value = memberDescriptor.GetValueInternal(instance);
             valueList.Add(value);
         }
-        return OnInvoke(instance, [.. valueList]);
-    }
 
-    internal Task InvokeAsync(object instance, string[] args, CommandMemberDescriptorCollection memberDescriptors, CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
-    {
-        var parseContext = new ParseContext(memberDescriptors, args);
-        var parameters = MethodInfo.GetParameters();
-        var valueList = new List<object?>(parameters.Length);
-        parseContext.SetValue(instance);
-        foreach (var item in parameters)
-        {
-            if (item.ParameterType == typeof(CancellationToken))
-            {
-                valueList.Add(cancellationToken);
-            }
-            else if (CommandMethodUtility.IsProgressParameter(item) == true)
-            {
-                valueList.Add(new CommandProgress(progress));
-            }
-            else
-            {
-                var memberDescriptor = memberDescriptors[item.Name!];
-                var value = memberDescriptor.GetValueInternal(instance);
-                valueList.Add(value);
-            }
-        }
-        if (OnInvoke(instance, [.. valueList]) is Task task)
-        {
-            return task;
-        }
-        throw new UnreachableException();
+        return OnInvoke(instance, [.. valueList]);
     }
 
     internal object? Invoke(object instance, CommandMemberDescriptorCollection memberDescriptors)
@@ -107,10 +59,52 @@ public abstract class CommandMethodDescriptor
             var value = memberDescriptor.GetValueInternal(instance);
             valueList.Add(value);
         }
+
         return OnInvoke(instance, [.. valueList]);
     }
 
-    internal Task InvokeAsync(object instance, CommandMemberDescriptorCollection memberDescriptors, CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
+    internal Task InvokeAsync(
+        object instance,
+        string[] args,
+        CommandMemberDescriptorCollection memberDescriptors,
+        CancellationToken cancellationToken,
+        IProgress<ProgressInfo> progress)
+    {
+        var parseContext = new ParseContext(memberDescriptors, args);
+        var parameters = MethodInfo.GetParameters();
+        var valueList = new List<object?>(parameters.Length);
+        parseContext.SetValue(instance);
+        foreach (var item in parameters)
+        {
+            if (item.ParameterType == typeof(CancellationToken))
+            {
+                valueList.Add(cancellationToken);
+            }
+            else if (CommandMethodUtility.IsProgressParameter(item) == true)
+            {
+                valueList.Add(new CommandProgress(progress));
+            }
+            else
+            {
+                var memberDescriptor = memberDescriptors[item.Name!];
+                var value = memberDescriptor.GetValueInternal(instance);
+                valueList.Add(value);
+            }
+        }
+
+        if (OnInvoke(instance, [.. valueList]) is Task task)
+        {
+            return task;
+        }
+
+        throw new UnreachableException();
+    }
+
+    internal Task InvokeAsync(
+        object instance,
+        CommandMemberDescriptorCollection memberDescriptors,
+        CancellationToken cancellationToken,
+        IProgress<ProgressInfo> progress)
     {
         var parameters = MethodInfo.GetParameters();
         var valueList = new List<object?>(parameters.Length);
@@ -131,17 +125,32 @@ public abstract class CommandMethodDescriptor
                 valueList.Add(value);
             }
         }
+
         if (OnInvoke(instance, [.. valueList]) is Task task)
         {
             return task;
         }
+
         throw new UnreachableException();
     }
 
-    internal string[] GetCompletionInternal(object instance, CommandMemberDescriptor memberDescriptor, string find)
+    internal string[] GetCompletionInternal(
+        object instance, CommandMemberDescriptor memberDescriptor, string find)
     {
         if (memberDescriptor.GetCompletionInternal(instance, find) is string[] items)
+        {
             return items;
+        }
+
         return GetCompletion(instance, [memberDescriptor, find]);
     }
+
+    protected abstract object? OnInvoke(object instance, object?[] parameters);
+
+    protected virtual bool OnCanExecute(object instance)
+    {
+        return true;
+    }
+
+    protected virtual string[] GetCompletion(object instance, object?[] parameters) => [];
 }

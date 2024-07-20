@@ -7,7 +7,7 @@ using System.Collections;
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-class SequenceCollection(string sequenceString) : ISequenceCollection
+internal class SequenceCollection(string sequenceString) : ISequenceCollection
 {
     private readonly Dictionary<char, SortedSet<ISequence>> _sequencesByCharacter = [];
 
@@ -17,17 +17,20 @@ class SequenceCollection(string sequenceString) : ISequenceCollection
 
     public void Add(ISequence item)
     {
-        if (_sequencesByCharacter.ContainsKey(item.Character) == false)
+        if (_sequencesByCharacter.ContainsKey(item.Character) != true)
         {
             _sequencesByCharacter.Add(item.Character, []);
         }
+
         _sequencesByCharacter[item.Character].Add(item);
     }
 
     public (ISequence value, string parameter, int endIndex) GetValue(string text)
     {
         if (text.StartsWith(SequenceString) != true)
+        {
             throw new ArgumentException($"text does not start with: '{SequenceString}'", nameof(text));
+        }
 
         for (var i = SequenceString.Length; i < text.Length; i++)
         {
@@ -44,6 +47,7 @@ class SequenceCollection(string sequenceString) : ISequenceCollection
                         return (sequence, parameter, endIndex);
                     }
                 }
+
                 throw new NotFoundSequenceException(text[0..i]);
             }
             else if (Test(character) != true)
@@ -51,6 +55,7 @@ class SequenceCollection(string sequenceString) : ISequenceCollection
                 throw new NotFoundSequenceException(text[0..i]);
             }
         }
+
         throw new NotSupportedException();
     }
 
@@ -66,8 +71,6 @@ class SequenceCollection(string sequenceString) : ISequenceCollection
         '\x1b' => false,
         _ => true,
     };
-
-    #region IEnumerable
 
     IEnumerator<ISequence> IEnumerable<ISequence>.GetEnumerator()
     {
@@ -90,6 +93,4 @@ class SequenceCollection(string sequenceString) : ISequenceCollection
             }
         }
     }
-
-    #endregion
 }

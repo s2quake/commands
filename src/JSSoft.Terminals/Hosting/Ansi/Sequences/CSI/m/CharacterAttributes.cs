@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class CharacterAttributes : CSISequenceBase
+internal sealed class CharacterAttributes : CSISequenceBase
 {
     public CharacterAttributes()
         : base('m')
@@ -26,6 +26,7 @@ sealed class CharacterAttributes : CSISequenceBase
         {
             displayInfo.Reset();
         }
+
         context.DisplayInfo = displayInfo;
     }
 }

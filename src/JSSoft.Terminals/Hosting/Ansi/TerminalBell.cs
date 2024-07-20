@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-sealed class TerminalBell : IAsciiCode
+internal sealed class TerminalBell : IAsciiCode
 {
     public void Process(AsciiCodeContext context)
     {

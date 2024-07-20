@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals;
 
-readonly struct SystemTerminalCommand(string text, Func<string, string> formatter)
+internal readonly struct SystemTerminalCommand(string text, Func<string, string> formatter)
     : IFormattable
 {
     private const string MultilinePrompt = "> ";
@@ -61,14 +61,13 @@ readonly struct SystemTerminalCommand(string text, Func<string, string> formatte
 
     public static SystemTerminalCommand Empty { get; } = new SystemTerminalCommand(string.Empty, (s) => s);
 
-    #region IFormattable
-
     readonly string IFormattable.ToString(string? format, IFormatProvider? formatProvider)
     {
         if (format == "terminal")
+        {
             return FormattedText.Replace(Environment.NewLine, $"{Environment.NewLine}{MultilinePrompt}");
+        }
+
         return base.ToString() ?? string.Empty;
     }
-
-    #endregion
 }

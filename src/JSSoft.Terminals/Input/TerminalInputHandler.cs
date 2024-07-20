@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Input;
 
-sealed class TerminalInputHandler : InputHandler<TerminalInputHandlerContext>
+internal sealed class TerminalInputHandler : InputHandler<TerminalInputHandlerContext>
 {
     protected override TerminalInputHandlerContext CreateContext(ITerminal terminal)
     {

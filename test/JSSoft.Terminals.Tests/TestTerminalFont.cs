@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Tests;
 
-sealed class TestTerminalFont : ITerminalFont
+internal sealed class TestTerminalFont : ITerminalFont
 {
     public bool Contains(char character) => true;
 

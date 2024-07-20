@@ -20,6 +20,7 @@ public class TerminalRowRenderer(ITerminalRow row) : ITerminalRenderer
         {
             Array.ForEach(_glyphRuns, item => item.Dispose());
         }
+
         _row = row;
         _glyphRuns = null;
         _rectRuns = null;
@@ -33,10 +34,12 @@ public class TerminalRowRenderer(ITerminalRow row) : ITerminalRenderer
             var font = _row.Terminal.ActualStyle.Font;
             _glyphRuns = TerminalGlyphRunFactory<TerminalGlyphRun>.Create(_row, item => new TerminalGlyphRun(item));
         }
+
         if (_rectRuns is not null)
         {
             Array.ForEach(_rectRuns, item => item.Render(drawingContext));
         }
+
         if (_glyphRuns is not null)
         {
             var transform = _row.Terminal.GetTransform(_row.Index);

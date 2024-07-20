@@ -12,5 +12,5 @@ public enum TerminalModifiers
 
     Shift = 2,
 
-    Control = 4
+    Control = 4,
 }

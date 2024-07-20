@@ -3,6 +3,8 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
+using static JSSoft.Commands.AttributeUtility;
+
 namespace JSSoft.Commands;
 
 public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
@@ -12,16 +14,18 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
     private readonly CommandPropertyCompletionAttribute? _completionAttribute;
 
     public CommandPropertyDescriptor(PropertyInfo propertyInfo)
-        : base(AttributeUtility.GetCustomAttribute<CommandPropertyBaseAttribute>(propertyInfo)!, propertyInfo.Name)
+        : base(GetCustomAttribute<CommandPropertyBaseAttribute>(propertyInfo)!, propertyInfo.Name)
     {
         CommandDefinitionException.ThrowIfPropertyNotReadWrite(propertyInfo);
         CommandDefinitionException.ThrowIfPropertyUnsupportedType(propertyInfo);
-        CommandDefinitionException.ThrowIfPropertyNotRightTypeForVariables(CommandType, propertyInfo);
+        CommandDefinitionException.ThrowIfPropertyNotRightTypeForVariables(
+            CommandType, propertyInfo);
         CommandDefinitionException.ThrowIfPropertyNotRightTypeForSwitch(CommandType, propertyInfo);
 
         _propertyInfo = propertyInfo;
-        _conditionsAttributes = AttributeUtility.GetCustomAttributes<CommandPropertyConditionAttribute>(propertyInfo, inherit: true);
-        _completionAttribute = propertyInfo.GetCustomAttribute<CommandPropertyCompletionAttribute>();
+        _conditionsAttributes = GetCustomAttributes<CommandPropertyConditionAttribute>(
+            propertyInfo, inherit: true);
+        _completionAttribute = GetCustomAttribute<CommandPropertyCompletionAttribute>(propertyInfo);
         MemberType = propertyInfo.PropertyType;
         InitValue = Attribute.InitValue;
         DefaultValue = Attribute.DefaultValue;
@@ -33,7 +37,9 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
     {
         get
         {
-            var displayName = AttributeUtility.TryGetDisplayName(_propertyInfo, out var v) == true ? v : base.DisplayName;
+            var propertyInfo = _propertyInfo;
+            var displayName
+                = TryGetDisplayName(propertyInfo, out var value) == true ? value : base.DisplayName;
             return CommandType == CommandType.Variables ? $"{displayName}..." : displayName;
         }
     }
@@ -58,41 +64,59 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
         return _propertyInfo.GetValue(instance, null);
     }
 
-    protected override void OnValidateTrigger(ParseDescriptorCollection parseDescriptors)
+    protected override void OnVerifyTrigger(ParseDescriptorCollection parseDescriptors)
     {
-        if (_conditionsAttributes.Length != 0 == false)
-            return;
-
-        var query = from item in _conditionsAttributes
-                    group item by item.Group into @group
-                    select @group;
-
-        var memberDescriptorByMemberName = parseDescriptors.ToDictionary(item => item.MemberDescriptor.MemberName, item => item.MemberDescriptor);
-        var parseDescriptorByMemberDescriptor = parseDescriptors.ToDictionary(item => item.MemberDescriptor);
-
-        foreach (var group in query)
+        if (_conditionsAttributes.Length == 0)
         {
-            foreach (var item in group)
+            return;
+        }
+
+        var groups = from item in _conditionsAttributes
+                     group item by item.Group into @group
+                     select @group;
+
+        foreach (var group in groups)
+        {
+            foreach (var attribute in group)
             {
-                if (memberDescriptorByMemberName.ContainsKey(item.PropertyName) == false)
-                    throw new InvalidOperationException($"Property '{item.PropertyName}' does not exists.");
-
-                var memberDescriptor = memberDescriptorByMemberName[item.PropertyName];
-                if (memberDescriptor is not CommandPropertyDescriptor)
-                    throw new InvalidOperationException($"'{item.PropertyName}' is not property.");
-
-                var parseDescriptor1 = parseDescriptorByMemberDescriptor[memberDescriptor];
-                var value1 = item.OnSet != true || parseDescriptor1.IsOptionSet == true ? parseDescriptor1.ActualValue : null;
-                var value2 = item.Value;
-
-                if (item.IsNot != true)
+                var propertyName = attribute.PropertyName;
+                if (parseDescriptors.TryGetValue(propertyName, out var parseDescriptor) != true)
                 {
-                    if (Equals(value1, value2) == false)
+                    var message = $"Property '{attribute.PropertyName}' does not exists.";
+                    throw new InvalidOperationException(message);
+                }
+
+                var memberDescriptor = parseDescriptor.MemberDescriptor;
+                if (memberDescriptor is not CommandPropertyDescriptor)
+                {
+                    var message = $"'{attribute.PropertyName}' is not property.";
+                    throw new InvalidOperationException(message);
+                }
+
+                var value1 = attribute.OnSet != true
+                    || parseDescriptor.IsOptionSet == true ? parseDescriptor.ActualValue : null;
+                var value2 = attribute.Value;
+
+                if (attribute.IsNot != true)
+                {
+                    if (Equals(value1, value2) != true)
                     {
                         if (memberDescriptor.IsSwitch == true)
-                            throw new CommandPropertyConditionException($"'{DisplayName}' cannot be used. Cannot be used with switch '{memberDescriptor.DisplayName}'.", this);
+                        {
+                            var message = $"""
+                                '{DisplayName}' cannot be used. Cannot be used with switch 
+                                '{memberDescriptor.DisplayName}'.
+                                """;
+                            throw new CommandPropertyConditionException(message, this);
+                        }
                         else
-                            throw new CommandPropertyConditionException($"'{DisplayName}' can not use. property '{memberDescriptor.DisplayName}' value must be '{value2:R}'.", this);
+                        {
+                            var message = $"""
+                                '{DisplayName}' can not use. property 
+                                '{memberDescriptor.DisplayName}' value must be '{value2:R}'.
+                                """;
+                            throw new CommandPropertyConditionException(message, this);
+                        }
                     }
                 }
                 else
@@ -100,9 +124,21 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
                     if (Equals(value1, value2) == true)
                     {
                         if (memberDescriptor.IsSwitch == true)
-                            throw new CommandPropertyConditionException($"'{DisplayName}' cannot be used because switch '{memberDescriptor.DisplayName}' is not specified.", this);
+                        {
+                            var message = $"""
+                                '{DisplayName}' cannot be used because switch 
+                                '{memberDescriptor.DisplayName}' is not specified.
+                                """;
+                            throw new CommandPropertyConditionException(message, this);
+                        }
                         else
-                            throw new CommandPropertyConditionException($"'{DisplayName}' can not use. property '{memberDescriptor.DisplayName}' value must be not '{value2:R}'.", this);
+                        {
+                            var message = $"""
+                                '{DisplayName}' can not use. property 
+                                '{memberDescriptor.DisplayName}' value must be not '{value2:R}'.
+                                """;
+                            throw new CommandPropertyConditionException(message, this);
+                        }
                     }
                 }
             }
@@ -111,8 +147,11 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
 
     protected override string[]? GetCompletion(object instance, string find)
     {
-        if (_completionAttribute != null)
+        if (_completionAttribute is not null)
+        {
             return GetCompletion(instance, find, _completionAttribute);
+        }
+
         return base.GetCompletion(instance, find);
     }
 }

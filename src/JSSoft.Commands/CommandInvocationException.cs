@@ -5,12 +5,15 @@
 
 namespace JSSoft.Commands;
 
-public class CommandInvocationException(CommandInvoker invoker, CommandInvocationError error, string[] args, Exception? innerException)
+public class CommandInvocationException(
+    CommandInvoker invoker, CommandInvocationError error, string[] args, Exception? innerException)
     : Exception(innerException?.Message, innerException), ICommandUsage
 {
-    private readonly CommandUsageDescriptorBase _usageDescriptor = CommandDescriptor.GetUsageDescriptor(invoker.Instance.GetType());
+    private readonly CommandUsageDescriptorBase _usageDescriptor
+        = CommandDescriptor.GetUsageDescriptor(invoker.Instance.GetType());
 
-    public CommandInvocationException(CommandInvoker invoker, CommandInvocationError error, string[] args)
+    public CommandInvocationException(
+        CommandInvoker invoker, CommandInvocationError error, string[] args)
         : this(invoker, error, args, innerException: null)
     {
     }
@@ -21,9 +24,8 @@ public class CommandInvocationException(CommandInvoker invoker, CommandInvocatio
 
     public CommandInvoker Invoker { get; } = invoker;
 
-    public CommandMethodDescriptorCollection MethodDescriptors => CommandDescriptor.GetMethodDescriptors(Invoker.Instance.GetType());
-
-    #region ICommandUsage
+    public CommandMethodDescriptorCollection MethodDescriptors
+        => CommandDescriptor.GetMethodDescriptors(Invoker.Instance.GetType());
 
     string ICommandUsage.ExecutionName => Invoker.ExecutionName;
 
@@ -32,6 +34,4 @@ public class CommandInvocationException(CommandInvoker invoker, CommandInvocatio
     string ICommandUsage.Description => _usageDescriptor.Description;
 
     string ICommandUsage.Example => _usageDescriptor.Example;
-
-    #endregion
 }

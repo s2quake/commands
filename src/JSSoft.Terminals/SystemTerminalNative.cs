@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace JSSoft.Terminals;
 
-static class SystemTerminalNative
+internal static class SystemTerminalNative
 {
     private const int STD_OUTPUT_HANDLE = -11;
     private const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004;
@@ -27,7 +27,7 @@ static class SystemTerminalNative
 
     public static void Initialize()
     {
-        if (IsInitialized == false && TerminalEnvironment.IsWindows() == true && Console.IsOutputRedirected == false)
+        if (IsInitialized != true && TerminalEnvironment.IsWindows() == true && Console.IsOutputRedirected != true)
         {
             var iStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
             if (!GetConsoleMode(iStdOut, out uint outConsoleMode))
@@ -36,10 +36,11 @@ static class SystemTerminalNative
             }
 
             outConsoleMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN;
-            if (SetConsoleMode(iStdOut, outConsoleMode) == false)
+            if (SetConsoleMode(iStdOut, outConsoleMode) != true)
             {
                 throw new InvalidOperationException($"failed to set output console mode, error code: {GetLastError()}");
             }
+
             IsInitialized = true;
         }
     }

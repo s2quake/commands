@@ -5,7 +5,8 @@
 
 namespace JSSoft.Commands;
 
-public class CommandPropertyConditionException(string message, CommandPropertyDescriptor propertyDescriptor)
+public class CommandPropertyConditionException(
+    string message, CommandPropertyDescriptor propertyDescriptor)
     : SystemException(message)
 {
     public CommandPropertyDescriptor PropertyDescriptor { get; } = propertyDescriptor;

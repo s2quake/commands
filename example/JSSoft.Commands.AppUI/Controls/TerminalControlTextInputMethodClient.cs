@@ -65,14 +65,14 @@ sealed class TerminalControlTextInputMethodClient : TextInputMethodClient
     {
         get
         {
-            if (_parent == null || _presenter == null)
+            if (_parent is null || _presenter is null)
             {
                 return default;
             }
 
             var transform = _presenter.TransformToVisual(_parent);
 
-            if (transform == null)
+            if (transform is null)
             {
                 return default;
             }
@@ -133,21 +133,21 @@ sealed class TerminalControlTextInputMethodClient : TextInputMethodClient
 
     public void SetPresenter(TerminalPresenter? presenter, TerminalControl? parent)
     {
-        if (_parent != null)
+        if (_parent is not null)
         {
             _parent.PropertyChanged -= OnParentPropertyChanged;
         }
 
         _parent = parent;
 
-        if (_parent != null)
+        if (_parent is not null)
         {
             _parent.PropertyChanged += OnParentPropertyChanged;
         }
 
         var oldPresenter = _presenter;
 
-        // if (oldPresenter != null)
+        // if (oldPresenter is not null)
         // {
         //     oldPresenter.ClearValue(TerminalPresenter.PreeditTextProperty);
 
@@ -156,7 +156,7 @@ sealed class TerminalControlTextInputMethodClient : TextInputMethodClient
 
         _presenter = presenter;
 
-        // if (_presenter != null)
+        // if (_presenter is not null)
         // {
         //     _presenter.CaretBoundsChanged += (s, e) => RaiseCursorRectangleChanged();
         // }
@@ -170,7 +170,7 @@ sealed class TerminalControlTextInputMethodClient : TextInputMethodClient
 
     public override void SetPreeditText(string? preeditText, int? cursorPos)
     {
-        if (_presenter == null || _parent == null)
+        if (_presenter is null || _parent is null)
         {
             return;
         }

@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.ESC;
 
-abstract class ESCSequenceBase(char character)
+internal abstract class ESCSequenceBase(char character)
     : SequenceBase(SequenceType.ESC, character)
 {
 }

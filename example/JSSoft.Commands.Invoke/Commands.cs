@@ -9,12 +9,16 @@ namespace JSSoft.Commands.Invoke;
 
 [ResourceUsage]
 [CommandStaticMethod(typeof(StaticCommand))]
-sealed class Commands
+internal sealed class Commands
 {
     public Commands()
     {
         Message = string.Empty;
     }
+
+    [CommandPropertyExplicitRequired('m', useName: true)]
+    [ConsoleModeOnly]
+    public string Message { get; set; }
 
     [CommandMethod("init")]
     [CommandMethodStaticProperty(typeof(GlobalSettings))]
@@ -54,12 +58,12 @@ sealed class Commands
     public void Commit(string path = "")
     {
         if (Message == string.Empty)
+        {
             Console.WriteLine("{0} committed.", path);
+        }
         else
+        {
             Console.WriteLine("{0} committed. : {1}", path, Message);
+        }
     }
-
-    [CommandPropertyExplicitRequired('m', useName: true)]
-    [ConsoleModeOnly]
-    public string Message { get; set; }
 }

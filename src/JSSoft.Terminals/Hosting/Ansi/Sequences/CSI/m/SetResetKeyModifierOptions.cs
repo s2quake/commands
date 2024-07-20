@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class SetResetKeyModifierOptions : CSISequenceBase
+internal sealed class SetResetKeyModifierOptions : CSISequenceBase
 {
     public SetResetKeyModifierOptions()
         : base('m')

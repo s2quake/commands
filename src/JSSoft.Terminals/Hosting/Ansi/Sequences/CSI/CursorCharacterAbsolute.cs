@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class CursorCharacterAbsolute : CSISequenceBase
+internal sealed class CursorCharacterAbsolute : CSISequenceBase
 {
     public CursorCharacterAbsolute()
         : base('G')

@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class SetScrollingRegion : CSISequenceBase
+internal sealed class SetScrollingRegion : CSISequenceBase
 {
     public SetScrollingRegion()
         : base('r')

@@ -106,7 +106,7 @@ public sealed class TerminalStyle : ITerminalStyle
             if (_fontSize != value)
             {
                 _fontSize = value;
-                if (_font != null)
+                if (_font is not null)
                 {
                     _font.Size = (int)value;
                 }
@@ -321,8 +321,6 @@ public sealed class TerminalStyle : ITerminalStyle
     private FontFamily[] GetActualFontFamilies()
         => _fontFamilyList.Count > 0 ? _fontFamilyList.ToArray() : [FontManager.Current.DefaultFontFamily];
 
-    #region ITerminalStyle
-
     ITerminalFont ITerminalStyle.Font => _font ??= new TerminalFont(GetActualFontFamilies(), (int)_fontSize);
 
     TerminalColor ITerminalStyle.ForegroundColor => Convert(ForegroundColor);
@@ -368,6 +366,4 @@ public sealed class TerminalStyle : ITerminalStyle
     TerminalColor ITerminalStyle.BrightCyan => Convert(BrightCyan);
 
     TerminalColor ITerminalStyle.BrightWhite => Convert(BrightWhite);
-
-    #endregion
 }

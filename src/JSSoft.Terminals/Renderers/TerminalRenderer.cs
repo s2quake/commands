@@ -8,7 +8,7 @@ namespace JSSoft.Terminals.Renderers;
 public class TerminalRenderer : TerminalRendererBase
 {
     private readonly ITerminal _terminal;
-    private readonly ITerminalRenderer[] _renderers = [];
+    private readonly ITerminalRenderer[] _renderers;
 
     public void Render(ITerminalDrawingContext drawingContext) => ((ITerminalRenderer)this).Render(drawingContext);
 

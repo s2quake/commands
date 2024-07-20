@@ -17,6 +17,7 @@ public static class ITerminalFontExtensions
             var span = (int)Math.Ceiling((float)horizontalAdvance / defaultWidth);
             return Math.Max(span, 1);
         }
+
         return 1;
     }
 }

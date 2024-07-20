@@ -13,7 +13,7 @@ namespace JSSoft.Commands.Applications.Commands;
 [ResourceUsage]
 [CommandStaticProperty(typeof(GlobalSettings))]
 [Category("Git-like")]
-sealed class AddCommand : CommandBase
+internal sealed class AddCommand : CommandBase
 {
     [CommandPropertyRequired]
     public string Path { get; set; } = string.Empty;
@@ -35,6 +35,6 @@ sealed class AddCommand : CommandBase
 
     protected override void OnExecute()
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 }

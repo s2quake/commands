@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class ResetMode : CSISequenceBase
+internal sealed class ResetMode : CSISequenceBase
 {
     public ResetMode()
         : base('l')

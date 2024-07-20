@@ -37,7 +37,7 @@ public class TerminalPresenter : Control
 
     internal void SetObject(Terminals.Hosting.Terminal terminal)
     {
-        if (_terminal != null)
+        if (_terminal is not null)
         {
             _terminal.Updated -= Terminal_Updated;
             _terminal.Scroll.PropertyChanged -= Scroll_PropertyChanged;
@@ -45,7 +45,7 @@ public class TerminalPresenter : Control
             _renderer?.Dispose();
         }
         _terminal = terminal;
-        if (_terminal != null)
+        if (_terminal is not null)
         {
             _renderer = new TerminalRenderer(_terminal);
             _terminal.PropertyChanged += Terminal_PropertyChanged;

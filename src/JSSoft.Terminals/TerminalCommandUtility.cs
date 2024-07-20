@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 
 namespace JSSoft.Terminals;
 
-static class CommandUtility
+internal static class CommandUtility
 {
     public const char ItemSperator = ',';
     public const string Delimiter = "--";
@@ -82,6 +82,7 @@ static class CommandUtility
         {
             itemList.Add(item.Contains(' ') == true ? $"\"{item}\"" : item);
         }
+
         return string.Join(" ", itemList);
     }
 
@@ -99,6 +100,7 @@ static class CommandUtility
         catch
         {
         }
+
         commandName = string.Empty;
         commandArguments = [];
         return false;
@@ -151,6 +153,7 @@ static class CommandUtility
             wrappedText = WrapDoubleQuotes(text);
             return true;
         }
+
         wrappedText = text;
         return false;
     }
@@ -159,7 +162,7 @@ static class CommandUtility
 
     public static bool IsSupportedType(Type value)
     {
-        if (Nullable.GetUnderlyingType(value) != null &&
+        if (Nullable.GetUnderlyingType(value) is not null &&
             value.GenericTypeArguments.Length == 1 &&
             IsSupportedType(value.GenericTypeArguments[0]) == true)
         {
@@ -189,7 +192,10 @@ static class CommandUtility
     {
         var text = label.PadRight(labelWidth);
         if (labelWidth <= label.Length)
+        {
             return label.PadRight(label.Length + 1);
+        }
+
         var l = text.Length % indentSpaces;
         return text.PadRight(l);
     }
@@ -208,6 +214,7 @@ static class CommandUtility
         {
             sb.Append($"({string.Join(",", aliases)})");
         }
+
         return sb.ToString();
     }
 
@@ -226,9 +233,10 @@ static class CommandUtility
         {
             etc = etc.Remove(matches[i].Index, matches[i].Length);
         }
+
         if (etc.Trim() != string.Empty)
         {
-            throw new ArgumentException("", nameof(text));
+            throw new ArgumentException(string.Empty, nameof(text));
         }
 
         var itemList = new List<string>(matches.Count);
@@ -259,6 +267,7 @@ static class CommandUtility
                 }
             }
         }
+
         if (arrayList.Count > 0)
         {
             itemList.Add(JoinList(arrayList));
@@ -275,7 +284,7 @@ static class CommandUtility
 
     private static (string name, string value, int space, int array) GetMatchInfo(Match match)
     {
-        if (FindGroup(match, out var group, out var index) == false || group.Name == "etc")
+        if (FindGroup(match, out var group, out var index) != true || group.Name == "etc")
         {
             throw new ArgumentException($"‘{match.Value}’ is an invalid string.: [{match.Index} .. {match.Index + match.Length}]", nameof(match));
         }
@@ -298,6 +307,7 @@ static class CommandUtility
             var item = itemList[i];
             itemList[i] = item.Contains(' ') == true ? $"'{item}'" : item;
         }
+
         return string.Join(",", itemList);
     }
 
@@ -312,6 +322,7 @@ static class CommandUtility
                 return true;
             }
         }
+
         group = match.Groups[0];
         index = -1;
         return false;

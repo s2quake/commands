@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class CursorPrecedingLine : CSISequenceBase
+internal sealed class CursorPrecedingLine : CSISequenceBase
 {
     public CursorPrecedingLine()
         : base('F')

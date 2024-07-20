@@ -21,6 +21,7 @@ public struct TerminalPoint(int x, int y) : IEquatable<TerminalPoint>
         {
             return X == point.X && Y == point.Y;
         }
+
         return base.Equals(obj);
     }
 
@@ -63,10 +64,6 @@ public struct TerminalPoint(int x, int y) : IEquatable<TerminalPoint>
     public static TerminalPoint operator /(TerminalPoint point, int value)
         => new(point.X / value, point.Y / value);
 
-    #region IEquatable
-
     readonly bool IEquatable<TerminalPoint>.Equals(TerminalPoint other)
         => X == other.X && Y == other.Y;
-
-    #endregion
 }

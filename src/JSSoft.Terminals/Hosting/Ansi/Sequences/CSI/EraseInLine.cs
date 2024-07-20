@@ -7,7 +7,7 @@ using JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
 namespace JSSoft.Terminals.Hosting.Ansi.EraseFunctions;
 
-sealed class EraseInLine : CSISequenceBase
+internal sealed class EraseInLine : CSISequenceBase
 {
     private static readonly Action<SequenceContext> EmptyAction = (context) => { };
 

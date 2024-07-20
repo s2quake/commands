@@ -139,6 +139,7 @@ public static class ITerminalExtensions
             @this.Selecting = TerminalSelectionUtility.GetSelection(@this, c1, c2);
             return true;
         }
+
         return false;
     }
 
@@ -148,6 +149,7 @@ public static class ITerminalExtensions
         {
             return @this.Selecting.Intersect(coord);
         }
+
         return false;
     }
 
@@ -162,8 +164,10 @@ public static class ITerminalExtensions
             {
                 rows[i - y1] = @this.View[i];
             }
+
             return rows;
         }
+
         return [];
     }
 
@@ -175,7 +179,10 @@ public static class ITerminalExtensions
     public static TerminalCharacterInfo? GetInfo(this ITerminal @this, TerminalIndex index)
     {
         if (index.Width != @this.BufferSize.Width)
+        {
             throw new ArgumentException("The width of index and the buffer width of terminal are different.", nameof(index));
+        }
+
         return @this.GetInfo((TerminalCoord)index);
     }
 
@@ -211,7 +218,10 @@ public static class ITerminalExtensions
         var b1 = displayInfo.IsInverse != true ? displayInfo.Background : displayInfo.Foreground;
         var b2 = displayInfo.IsInverse != true ? style.BackgroundColor : style.ForegroundColor;
         if (terminal.IsSelecting(coord) == true || terminal.Selections.IsSelected(coord) == true)
+        {
             return GetSelectionColor(style);
+        }
+
         return TerminalStyleUtility.GetColor(style, f1) ?? f2;
 
         TerminalColor GetSelectionColor(ITerminalStyle style) => style.SelectionForegroundColorSource switch
@@ -234,7 +244,10 @@ public static class ITerminalExtensions
         var b1 = displayInfo.IsInverse != true ? displayInfo.Background : displayInfo.Foreground;
         var b2 = displayInfo.IsInverse != true ? style.BackgroundColor : style.ForegroundColor;
         if (terminal.IsSelecting(coord) == true || terminal.Selections.IsSelected(coord) == true)
+        {
             return GetSelectionColor(style);
+        }
+
         return TerminalStyleUtility.GetColor(style, b1) ?? b2;
 
         TerminalColor GetSelectionColor(ITerminalStyle style) => style.SelectionBackgroundColorSource switch

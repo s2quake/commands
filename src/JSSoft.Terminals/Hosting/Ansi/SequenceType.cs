@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-enum SequenceType
+internal enum SequenceType
 {
     // \u001b
     ESC,
@@ -17,5 +17,5 @@ enum SequenceType
     DCS,
 
     // \u001b ]
-    OSC
+    OSC,
 }

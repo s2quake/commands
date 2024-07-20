@@ -22,6 +22,7 @@ public class TerminalRowsRenderer : TerminalRendererBase
         {
             _rowRenderers[i] = Create(terminal.View[i]);
         }
+
         _terminal.Updated += Terminal_Updated;
         _terminal.PropertyChanged += Terminal_PropertyChanged;
         _backgroundColorProperty.Changed += BackgroundColorProperty_Changed;
@@ -63,9 +64,13 @@ public class TerminalRowsRenderer : TerminalRendererBase
         {
             var index = item.Index;
             if (_rowRenderers[index] is null)
+            {
                 _rowRenderers[index] = Create(item);
+            }
             else
+            {
                 _rowRenderers[index].Reset(item);
+            }
         }
     }
 

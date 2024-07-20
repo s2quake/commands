@@ -6,7 +6,7 @@
 namespace JSSoft.Terminals;
 
 // https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
-partial struct TerminalDisplayInfo
+public partial struct TerminalDisplayInfo
 {
     private delegate void GraphicRenditionSetter(ref TerminalDisplayInfo o, ref Span<int> codes);
 

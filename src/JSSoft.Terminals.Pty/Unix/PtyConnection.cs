@@ -132,8 +132,6 @@ internal abstract partial class PtyConnection : IPtyConnection
         Exited?.Invoke(this, new PtyExitedEventArgs(_exitCode));
     }
 
-    #region NativeOptions
-
     [StructLayout(LayoutKind.Sequential)]
     public struct NativeOptions
     {
@@ -163,15 +161,9 @@ internal abstract partial class PtyConnection : IPtyConnection
             => Marshalling(items.Select(item => $"{item.Key}={item.Value}").ToArray());
     }
 
-    #endregion
-
-    #region IPtyConnection
-
     int IPtyConnection.Read(byte[] buffer, int count) => Read(_fd, buffer, count);
 
     int IPtyConnection.Write(byte[] buffer, int count) => Write(_fd, buffer, count);
 
     bool IPtyConnection.CanRead => Peek(_fd);
-
-    #endregion
 }

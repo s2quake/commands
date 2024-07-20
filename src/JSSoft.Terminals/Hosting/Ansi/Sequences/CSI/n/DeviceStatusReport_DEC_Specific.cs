@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class DeviceStatusReport_DEC_Specific : CSISequenceBase
+internal sealed class DeviceStatusReport_DEC_Specific : CSISequenceBase
 {
     public DeviceStatusReport_DEC_Specific()
         : base('n')

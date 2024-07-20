@@ -7,18 +7,21 @@ using System.Text;
 
 namespace JSSoft.Commands.Extensions;
 
-static class StringBuilderExtensions
+internal static class StringBuilderExtensions
 {
-    public static StringBuilder AppendLineIf(this StringBuilder @this, string value, Func<string, bool> predicate)
+    public static StringBuilder AppendLineIf(
+        this StringBuilder @this, string value, Func<string, bool> predicate)
     {
         if (predicate(value) == true)
         {
             @this.AppendLine(value);
         }
+
         return @this;
     }
 
-    public static StringBuilder AppendIf(this StringBuilder @this, string value, Func<string, bool> predicate)
+    public static StringBuilder AppendIf(
+        this StringBuilder @this, string value, Func<string, bool> predicate)
     {
         if (predicate(value) == true)
         {

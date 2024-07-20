@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class DisableKeyModifierOptions : CSISequenceBase
+internal sealed class DisableKeyModifierOptions : CSISequenceBase
 {
     public DisableKeyModifierOptions()
         : base('n')

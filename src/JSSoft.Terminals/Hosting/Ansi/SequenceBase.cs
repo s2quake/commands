@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-abstract class SequenceBase(SequenceType type, char character)
+internal abstract class SequenceBase(SequenceType type, char character)
     : ISequence
 {
     public SequenceType Type { get; } = type;
@@ -30,6 +30,7 @@ abstract class SequenceBase(SequenceType type, char character)
             actualParameterRange = parameterRange;
             return false;
         }
+
         if (Suffix != string.Empty && parameter.EndsWith(Suffix) != true)
         {
             actualParameterRange = parameterRange;
@@ -40,40 +41,40 @@ abstract class SequenceBase(SequenceType type, char character)
         return true;
     }
 
-    #region ISequence
-
     void ISequence.Process(SequenceContext context)
         => OnProcess(context);
 
     bool ISequence.Match(string text, Range parameterRange, out Range actualParameterRange)
         => Match(text, parameterRange, out actualParameterRange);
 
-    #endregion
-
-    #region IComparable
-
     int IComparable<ISequence>.CompareTo(ISequence? other)
     {
         if (other is SequenceBase sequence)
         {
             if (Type != sequence.Type)
+            {
                 return Type.CompareTo(sequence.Type);
+            }
+
             if (Character != sequence.Character)
+            {
                 return Character.CompareTo(sequence.Character);
+            }
+
             if (sequence.Prefix != Prefix)
+            {
                 return StringComparer.Ordinal.Compare(sequence.Prefix, Prefix);
+            }
+
             return StringComparer.Ordinal.Compare(sequence.Suffix, Suffix);
         }
         else if (other is not null)
         {
             return Character.CompareTo(other.Character);
         }
+
         return 1;
     }
-
-    #endregion
-
-    #region IEquatable 
 
     bool IEquatable<ISequence>.Equals(ISequence? other)
     {
@@ -84,6 +85,4 @@ abstract class SequenceBase(SequenceType type, char character)
 
         return false;
     }
-
-    #endregion
 }

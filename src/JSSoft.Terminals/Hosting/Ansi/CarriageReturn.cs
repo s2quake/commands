@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-sealed class CarriageReturn : IAsciiCode
+internal sealed class CarriageReturn : IAsciiCode
 {
     public void Process(AsciiCodeContext context)
     {

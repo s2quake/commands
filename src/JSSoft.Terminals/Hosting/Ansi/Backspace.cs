@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-sealed class Backspace : IAsciiCode
+internal sealed class Backspace : IAsciiCode
 {
     public void Process(AsciiCodeContext context)
     {

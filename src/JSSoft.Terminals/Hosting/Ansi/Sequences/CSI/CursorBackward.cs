@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class CursorBackward : CSISequenceBase
+internal sealed class CursorBackward : CSISequenceBase
 {
     public CursorBackward()
         : base('D')

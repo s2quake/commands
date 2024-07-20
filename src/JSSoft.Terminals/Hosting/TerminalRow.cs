@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting;
 
-sealed class TerminalRow(Terminal terminal) : ITerminalRow
+internal sealed class TerminalRow(Terminal terminal) : ITerminalRow
 {
     private readonly TerminalArray<TerminalCharacterInfo?> _items = new();
 
@@ -19,7 +19,7 @@ sealed class TerminalRow(Terminal terminal) : ITerminalRow
 
     public void Sync(TerminalLine? line)
     {
-        if (line == null)
+        if (line is null)
         {
             _items.Reset();
         }
@@ -38,14 +38,13 @@ sealed class TerminalRow(Terminal terminal) : ITerminalRow
         get
         {
             if (index < _items.Count && _items[index] is { } characterInfo)
+            {
                 return characterInfo;
+            }
+
             return TerminalCharacterInfo.Empty;
         }
     }
 
-    #region ITerminalRow
-
     ITerminal ITerminalRow.Terminal => Terminal;
-
-    #endregion
 }

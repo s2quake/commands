@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class RestoreCursor : CSISequenceBase
+internal sealed class RestoreCursor : CSISequenceBase
 {
     public RestoreCursor()
         : base('u')

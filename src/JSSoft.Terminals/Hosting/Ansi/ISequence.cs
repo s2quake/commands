@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-interface ISequence : IComparable<ISequence>, IEquatable<ISequence>
+internal interface ISequence : IComparable<ISequence>, IEquatable<ISequence>
 {
     SequenceType Type { get; }
 

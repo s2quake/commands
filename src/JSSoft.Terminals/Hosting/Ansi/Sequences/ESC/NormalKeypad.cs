@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.ESC;
 
-sealed class NormalKeypad : ESCSequenceBase
+internal sealed class NormalKeypad : ESCSequenceBase
 {
     public NormalKeypad()
         : base('>')

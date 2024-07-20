@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting;
 
-sealed class TerminalModes : ITerminalModes
+internal sealed class TerminalModes : ITerminalModes
 {
     private readonly Dictionary<TerminalMode, bool> _modes;
 
@@ -17,6 +17,7 @@ sealed class TerminalModes : ITerminalModes
         {
             modes.Add(type, false);
         }
+
         _modes = modes;
     }
 

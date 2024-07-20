@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class CursorPosition : CSISequenceBase
+internal sealed class CursorPosition : CSISequenceBase
 {
     public CursorPosition()
         : base('H')

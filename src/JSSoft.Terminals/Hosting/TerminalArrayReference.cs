@@ -7,7 +7,7 @@ using System.Collections;
 
 namespace JSSoft.Terminals.Hosting;
 
-sealed class TerminalArrayReference<T>(TerminalArray<T> @array, int offset, int length)
+internal sealed class TerminalArrayReference<T>(TerminalArray<T> @array, int offset, int length)
     : IEnumerable<T>
 {
     private readonly TerminalArray<T> _array = @array;
@@ -20,19 +20,22 @@ sealed class TerminalArrayReference<T>(TerminalArray<T> @array, int offset, int 
         get
         {
             if (index < 0 || index >= Length)
+            {
                 throw new ArgumentOutOfRangeException(nameof(index));
+            }
 
             return _array[index + _offset];
         }
         set
         {
             if (index < 0 || index >= Length)
+            {
                 throw new ArgumentOutOfRangeException(nameof(index));
+            }
+
             _array[index + _offset] = value;
         }
     }
-
-    #region IEnumerable
 
     IEnumerator<T> IEnumerable<T>.GetEnumerator()
     {
@@ -49,6 +52,4 @@ sealed class TerminalArrayReference<T>(TerminalArray<T> @array, int offset, int 
             yield return _array[i + _offset];
         }
     }
-
-    #endregion
 }

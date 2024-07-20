@@ -3,6 +3,8 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
+#pragma warning disable SA1312 // Variable names should begin with lower-case letter
+
 using System.IO;
 using System.Text;
 using JSSoft.Commands.Extensions;
@@ -56,13 +58,16 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         }
     }
 
-    public virtual void Print(TextWriter writer, CommandMethodDescriptor methodDescriptor, CommandMemberDescriptor memberDescriptor)
+    public virtual void Print(
+        TextWriter writer,
+        CommandMethodDescriptor methodDescriptor,
+        CommandMemberDescriptor memberDescriptor)
     {
         using var commandWriter = new CommandTextWriter(writer, Settings);
         if (IsDetail == true)
         {
             PrintMemberSummary(commandWriter, memberDescriptor);
-            PrintMemberUsage(commandWriter, memberDescriptor); 
+            PrintMemberUsage(commandWriter, memberDescriptor);
             PrintMemberDescription(commandWriter, memberDescriptor);
             PrintMemberExample(commandWriter, memberDescriptor);
         }
@@ -74,7 +79,8 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         }
     }
 
-    protected static void PrintMethodSummary(CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
+    protected static void PrintMethodSummary(
+        CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
     {
         var groupName = StringByName[TextSummary];
         using var _ = commandWriter.Group(groupName);
@@ -84,7 +90,8 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         commandWriter.WriteLine(lines);
     }
 
-    protected static void PrintMethodDescription(CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
+    protected static void PrintMethodDescription(
+        CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
     {
         var groupName = StringByName[TextDescription];
         using var _ = commandWriter.Group(groupName);
@@ -94,7 +101,8 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         commandWriter.WriteLine(lines);
     }
 
-    protected static void PrintMethodExample(CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
+    protected static void PrintMethodExample(
+        CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
     {
         var groupName = StringByName[TextExample];
         using var _ = commandWriter.Group(groupName);
@@ -102,7 +110,8 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         commandWriter.WriteLine(example);
     }
 
-    protected static void PrintCommands(CommandTextWriter commandWriter, CommandMethodDescriptor[] methodDescriptors)
+    protected static void PrintCommands(
+        CommandTextWriter commandWriter, CommandMethodDescriptor[] methodDescriptors)
     {
         var query = from item in methodDescriptors
                     orderby item.Name
@@ -133,7 +142,8 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         }
     }
 
-    protected static void PrintCommandsInDetail(CommandTextWriter commandWriter, CommandMethodDescriptor[] methodDescriptors)
+    protected static void PrintCommandsInDetail(
+        CommandTextWriter commandWriter, CommandMethodDescriptor[] methodDescriptors)
     {
         var query = from item in methodDescriptors
                     orderby item.Name
@@ -162,7 +172,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
                 var isLast = item == methodDescriptors.Last();
                 commandWriter.WriteLine(label);
                 commandWriter.WriteLineIndent(description, commandWriter.Indent + 1);
-                commandWriter.WriteLineIf(condition: isLast == false);
+                commandWriter.WriteLineIf(condition: isLast != true);
             }
         }
     }
@@ -174,7 +184,8 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         commandWriter.WriteLine($"{executionName} <command> [options...]");
     }
 
-    protected static bool PrintRequirements(CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
+    protected static bool PrintRequirements(
+        CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
     {
         var memberDescriptors = methodDescriptor.Members;
         if (memberDescriptors.HasRequirements == true)
@@ -185,10 +196,12 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
             PrintMany(commandWriter, requirementDescriptors, PrintRequirement);
             return true;
         }
+
         return false;
     }
 
-    protected static bool PrintRequirementsInDetail(CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
+    protected static bool PrintRequirementsInDetail(
+        CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
     {
         var memberDescriptors = methodDescriptor.Members;
         if (memberDescriptors.HasRequirements == true)
@@ -196,13 +209,16 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
             var requirementDescriptors = memberDescriptors.RequirementDescriptors;
             var groupName = StringByName[TextRequirements];
             using var _ = commandWriter.Group(groupName);
-            PrintMany(commandWriter, requirementDescriptors, PrintRequirementInDetail, separatorCount: 1);
+            PrintMany(
+                commandWriter, requirementDescriptors, PrintRequirementInDetail, separatorCount: 1);
             return true;
         }
+
         return false;
     }
 
-    protected static bool PrintVariables(CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
+    protected static bool PrintVariables(
+        CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
     {
         if (methodDescriptor.Members.VariablesDescriptor is { } variablesDescriptor)
         {
@@ -211,10 +227,12 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
             PrintVariables(commandWriter, variablesDescriptor);
             return true;
         }
+
         return false;
     }
 
-    protected static bool PrintVariablesInDetail(CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
+    protected static bool PrintVariablesInDetail(
+        CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
     {
         if (methodDescriptor.Members.VariablesDescriptor is { } variablesDescriptor)
         {
@@ -223,10 +241,12 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
             PrintVariablesInDetail(commandWriter, variablesDescriptor);
             return true;
         }
+
         return false;
     }
 
-    protected static bool PrintOptions(CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
+    protected static bool PrintOptions(
+        CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
     {
         var memberDescriptors = methodDescriptor.Members;
         if (memberDescriptors.HasOptions == true)
@@ -237,10 +257,12 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
             PrintMany(commandWriter, optionDescriptors, PrintOption, separatorCount: 1);
             return true;
         }
+
         return false;
     }
 
-    protected static bool PrintOptionsInDetail(CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
+    protected static bool PrintOptionsInDetail(
+        CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
     {
         var memberDescriptors = methodDescriptor.Members;
         if (memberDescriptors.HasOptions == true)
@@ -251,6 +273,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
             PrintMany(commandWriter, optionDescriptors, PrintOptionInDetail, separatorCount: 1);
             return true;
         }
+
         return false;
     }
 
@@ -262,6 +285,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         {
             sb.Append($", {item}");
         }
+
         return sb.ToString();
     }
 }

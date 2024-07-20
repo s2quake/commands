@@ -37,17 +37,15 @@ public class TerminalGlyphRun(TerminalGlyphRunInfo info) : IDisposable
         Disposed?.Invoke(this, e);
     }
 
-    #region IDisposable
-
     public void Dispose()
     {
         if (_isDisposed == true)
+        {
             throw new ObjectDisposedException($"{this}");
+        }
 
         OnDisposed(EventArgs.Empty);
         _isDisposed = true;
         GC.SuppressFinalize(this);
     }
-
-    #endregion
 }

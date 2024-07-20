@@ -66,15 +66,15 @@ public sealed class TerminalStringBuilder
 
     public static string GetString(string text, TerminalColorType? foreground, TerminalColorType? background)
     {
-        if (foreground != null && background != null)
+        if (foreground is not null && background is not null)
         {
             return $"\x1b[0;{ForegroundValues[foreground.Value]};{BackgroundValues[background.Value]}m{text}\x1b[0m";
         }
-        else if (foreground != null)
+        else if (foreground is not null)
         {
             return $"\x1b[0;{ForegroundValues[foreground.Value]}m{text}\x1b[0m";
         }
-        else if (background != null)
+        else if (background is not null)
         {
             return $"\x1b[0;{BackgroundValues[background.Value]}m{text}\x1b[0m";
         }
@@ -196,20 +196,41 @@ public sealed class TerminalStringBuilder
     {
         var itemList = new List<string>(3);
         if (_isBold == true)
+        {
             itemList.Add($"{1}");
+        }
+
         if (_isUnderline == true)
+        {
             itemList.Add($"{4}");
+        }
+
         if (_isNegative == true)
+        {
             itemList.Add($"{7}");
-        if (_foreground != null)
+        }
+
+        if (_foreground is not null)
+        {
             itemList.Add($"{ForegroundValues[_foreground.Value]}");
-        if (_background != null)
+        }
+
+        if (_background is not null)
+        {
             itemList.Add($"{BackgroundValues[_background.Value]}");
+        }
+
         if (itemList.Count != 0)
+        {
             _p1 = $"\x1b[{string.Join(";", itemList)}m";
+        }
         else if (_p2 != string.Empty)
+        {
             _p1 = $"\x1b[0m";
+        }
         else
+        {
             _p1 = string.Empty;
+        }
     }
 }

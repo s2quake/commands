@@ -13,6 +13,7 @@ public struct TerminalCoord(int x, int y) : IEquatable<TerminalCoord>, IComparab
         {
             return X == coord.X && Y == coord.Y;
         }
+
         return base.Equals(obj);
     }
 
@@ -54,30 +55,28 @@ public struct TerminalCoord(int x, int y) : IEquatable<TerminalCoord>, IComparab
 
     internal readonly string CursorString => $"\u001b[{Y + 1};{X + 1}f";
 
-    #region IEquatable
-
     readonly bool IEquatable<TerminalCoord>.Equals(TerminalCoord other) => X == other.X && Y == other.Y;
-
-    #endregion
-
-    #region IComparable
 
     readonly int IComparable.CompareTo(object? obj)
     {
         if (obj is TerminalCoord coord)
         {
             if (this < coord)
+            {
                 return -1;
+            }
             else if (this > coord)
+            {
                 return 1;
+            }
+
             return 0;
         }
         else if (obj is null)
         {
             return 1;
         }
+
         throw new ArgumentException($"Object is not a {nameof(TerminalCoord)}", nameof(obj));
     }
-
-    #endregion
 }

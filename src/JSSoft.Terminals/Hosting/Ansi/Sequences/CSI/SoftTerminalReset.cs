@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class SoftTerminalReset : CSISequenceBase
+internal sealed class SoftTerminalReset : CSISequenceBase
 {
     public SoftTerminalReset()
         : base('p')

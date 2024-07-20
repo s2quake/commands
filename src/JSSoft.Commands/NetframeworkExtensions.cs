@@ -4,6 +4,9 @@
 // </copyright>
 
 #if NETFRAMEWORK || NETSTANDARD
+#pragma warning disable SA1402
+#pragma warning disable SA1649
+
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -11,19 +14,7 @@ using System.Text.RegularExpressions;
 
 namespace JSSoft.Commands;
 
-[AttributeUsage(AttributeTargets.Parameter)]
-class MaybeNullWhenAttribute : Attribute
-{
-    public MaybeNullWhenAttribute(bool b)
-    {
-    }
-}
-
-class SwitchExpressionException : InvalidOperationException
-{
-}
-
-static class NetframeworkExtensions
+internal static class NetframeworkExtensions
 {
     public static bool TryPeek<T>(this Queue<T> @this, out T? result)
     {
@@ -48,5 +39,17 @@ static class NetframeworkExtensions
         result = @this.Dequeue();
         return true;
     }
+}
+
+[AttributeUsage(AttributeTargets.Parameter)]
+internal sealed class MaybeNullWhenAttribute : Attribute
+{
+    public MaybeNullWhenAttribute(bool b)
+    {
+    }
+}
+
+internal sealed class SwitchExpressionException : InvalidOperationException
+{
 }
 #endif // NETFRAMEWORK

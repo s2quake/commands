@@ -16,28 +16,36 @@ static class CommandUtility
 namespace JSSoft.Commands;
 
 /// <summary>
-/// https://rubular.com/r/Jsdc0Vz2FNiTaM
+/// See this(https://rubular.com/r/Jsdc0Vz2FNiTaM).
 /// </summary>
 public static partial class CommandUtility
-#endif 
+#endif
 {
     public const char ItemSperator = ',';
     public const string Delimiter = "--";
     public const string ShortDelimiter = "-";
     public const string OptionPattern = "[a-zA-Z](?:(?<!-)-(?!$)|[a-zA-Z0-9])+";
     public const string ShortOptionPattern = "[a-zA-Z]";
-    private const string doubleQuotesPattern = "(?<!\\\\)\"(?:\\\\.|(?<!\\\\)[^\"])*(?:\\\\.\"|(?<!\\\\)\")";
-    private const string singleQuotePattern = "'[^']*'";
-    private const string stringPattern = "(?:(?<!\\\\)[^\"'\\s,]|(?<=\\\\).)+";
-    private const string separatorPattern = "\\s*,*\\s*";
-    private static readonly string fullPattern;
-    private static readonly IReadOnlyDictionary<string, Func<string, string>> replacerByName = new Dictionary<string, Func<string, string>>
+    private const string DoubleQuotesPattern
+        = "(?<!\\\\)\"(?:\\\\.|(?<!\\\\)[^\"])*(?:\\\\.\"|(?<!\\\\)\")";
+
+    private const string SingleQuotePattern = "'[^']*'";
+    private const string StringPattern = "(?:(?<!\\\\)[^\"'\\s,]|(?<=\\\\).)+";
+    private const string SeparatorPattern = "\\s*,*\\s*";
+    private static readonly string FullPattern = string.Join(
+        "|",
+        $"(?<double>{DoubleQuotesPattern}){SeparatorPattern}",
+        $"(?<single>{SingleQuotePattern}){SeparatorPattern}",
+        $"(?<string>{StringPattern}){SeparatorPattern}");
+
+    private static readonly Dictionary<string, Func<string, string>> ReplacerByName = new()
     {
         { "double", UnescapeDoubleQuotes },
         { "single", UnescapeSingleQuote },
         { "string", UnescapeString },
     };
-    private static readonly Type[] supportedTypes =
+
+    private static readonly Type[] SupportedTypes =
     [
         typeof(bool),
         typeof(string),
@@ -53,17 +61,6 @@ public static partial class CommandUtility
         typeof(double),
         typeof(decimal),
     ];
-
-    static CommandUtility()
-    {
-        var patterns = new string[]
-        {
-            $"(?<double>{doubleQuotesPattern}){separatorPattern}",
-            $"(?<single>{singleQuotePattern}){separatorPattern}",
-            $"(?<string>{stringPattern}){separatorPattern}",
-        };
-        fullPattern = string.Join("|", patterns);
-    }
 
     public static bool TrySplit(string argumentLine, out string[] items)
     {
@@ -91,10 +88,12 @@ public static partial class CommandUtility
         {
             itemList.Add(item.Contains(' ') == true ? $"\"{item}\"" : item);
         }
+
         return string.Join(" ", itemList);
     }
 
-    public static bool TrySplitCommandLine(string commandLine, out string commandName, out string[] commandArguments)
+    public static bool TrySplitCommandLine(
+        string commandLine, out string commandName, out string[] commandArguments)
     {
         try
         {
@@ -107,13 +106,16 @@ public static partial class CommandUtility
         }
         catch
         {
+            // do nothing
         }
+
         commandName = string.Empty;
         commandArguments = [];
         return false;
     }
 
-    public static (string commandName, string[] commandArguments) SplitCommandLine(string commandLine)
+    public static (string CommandName, string[] CommandArguments) SplitCommandLine(
+        string commandLine)
     {
         try
         {
@@ -124,57 +126,54 @@ public static partial class CommandUtility
         }
         catch (Exception e)
         {
-            throw new ArgumentException($"CommandLine '{commandLine}' cannot be split.", nameof(commandLine), e);
+            var message = $"CommandLine '{commandLine}' cannot be split.";
+            throw new ArgumentException(message, nameof(commandLine), e);
         }
     }
 
-    public static MatchCollection MatchCompletion(string text)
-    {
-        return Regex.Matches(text, fullPattern);
-    }
+    public static MatchCollection MatchCompletion(string text) => Regex.Matches(text, FullPattern);
 
     public static bool IsMultipleSwitch(string argument)
-    {
-        return Regex.IsMatch(argument, @$"^{ShortDelimiter}{ShortOptionPattern}{{2,}}$");
-    }
+        => Regex.IsMatch(argument, @$"^{ShortDelimiter}{ShortOptionPattern}{{2,}}$");
 
     public static bool IsOption(string argument)
-    {
-        return Regex.IsMatch(argument, $"^({Delimiter}{OptionPattern}|{ShortDelimiter}{ShortOptionPattern})$");
-    }
+        => Regex.IsMatch(
+            input: argument,
+            pattern: $"^({Delimiter}{OptionPattern}|{ShortDelimiter}{ShortOptionPattern})$");
 
     public static string ToSpinalCase(string text)
-    {
-        return Regex.Replace(text, @"([a-z])([A-Z])", "$1-$2").ToLower();
-    }
+        => Regex.Replace(text, @"([a-z])([A-Z])", "$1-$2").ToLower();
 
     public static string WrapDoubleQuotes(string text)
-    {
-        return $"\"{text.Replace("\\", "\\\\").Replace("\"", "\\\"")}\"";
-    }
+        => $"\"{text.Replace("\\", "\\\\").Replace("\"", "\\\"")}\"";
 
     public static bool TryWrapDoubleQuotes(string text, out string wrappedText)
     {
-        if (text.Contains('\\') == true || text.Contains('"') == true || text.Contains('\'') == true || text.Contains(' ') == true)
+        if (text.Contains('\\') == true
+            || text.Contains('"') == true
+            || text.Contains('\'') == true
+            || text.Contains(' ') == true)
         {
             wrappedText = WrapDoubleQuotes(text);
             return true;
         }
+
         wrappedText = text;
         return false;
     }
 
-    public static int GetBufferWidth() => Console.IsOutputRedirected == true ? int.MaxValue : Console.BufferWidth;
+    public static int GetBufferWidth()
+        => Console.IsOutputRedirected == true ? int.MaxValue : Console.BufferWidth;
 
     public static bool IsSupportedType(Type value)
     {
-        if (Nullable.GetUnderlyingType(value) != null &&
+        if (Nullable.GetUnderlyingType(value) is not null &&
             value.GenericTypeArguments.Length == 1 &&
             IsSupportedType(value.GenericTypeArguments[0]) == true)
         {
             return true;
         }
-        else if (supportedTypes.Contains(value) == true)
+        else if (SupportedTypes.Contains(value) == true)
         {
             return true;
         }
@@ -202,12 +201,14 @@ public static partial class CommandUtility
 
     internal static string GetExecutionName(string name, string[] aliases)
     {
-        var sb = new StringBuilder(name.Length + 2 + aliases.Length + aliases.Sum(item => item.Length));
+        var capacity = name.Length + 2 + aliases.Length + aliases.Sum(item => item.Length);
+        var sb = new StringBuilder(capacity);
         sb.Append(name);
         if (aliases.Length > 0)
         {
             sb.Append($"({string.Join(",", aliases)})");
         }
+
         return sb.ToString();
     }
 
@@ -220,15 +221,16 @@ public static partial class CommandUtility
 
     private static string[] GetMatches(string text)
     {
-        var matches = Regex.Matches(text, fullPattern);
+        var matches = Regex.Matches(text, FullPattern);
         var etc = text;
         for (var i = matches.Count - 1; i >= 0; i--)
         {
             etc = etc.Remove(matches[i].Index, matches[i].Length);
         }
+
         if (etc.Trim() != string.Empty)
         {
-            throw new ArgumentException("", nameof(text));
+            throw new ArgumentException(string.Empty, nameof(text));
         }
 
         var itemList = new List<string>(matches.Count);
@@ -237,7 +239,7 @@ public static partial class CommandUtility
         for (var i = 0; i < matches.Count; i++)
         {
             var item = matches[i];
-            var (name, value, space, array) = GetMatchInfo(item);
+            var (_, value, space, array) = GetMatchInfo(item);
             if (array > 0)
             {
                 arrayList.Add(value);
@@ -259,6 +261,7 @@ public static partial class CommandUtility
                 }
             }
         }
+
         if (arrayList.Count > 0)
         {
             itemList.Add(JoinList(arrayList));
@@ -273,11 +276,15 @@ public static partial class CommandUtility
         return [.. itemList];
     }
 
-    private static (string name, string value, int space, int array) GetMatchInfo(Match match)
+    private static (string Name, string Value, int Space, int Array) GetMatchInfo(Match match)
     {
-        if (FindGroup(match, out var group, out var index) == false || group.Name == "etc")
+        if (FindGroup(match, out var group, out var index) != true || group.Name == "etc")
         {
-            throw new ArgumentException($"‘{match.Value}’ is an invalid string.: [{match.Index} .. {match.Index + match.Length}]", nameof(match));
+            var message = $"""
+                '{match.Value}' is an invalid string.: 
+                [{match.Index} .. {match.Index + match.Length}]
+                """;
+            throw new ArgumentException(message, nameof(match));
         }
 
         var value = group.Value;
@@ -287,8 +294,18 @@ public static partial class CommandUtility
         var value3 = value2.TrimEnd();
         var array = value1.Length - value2.Length;
         var space = value0.Length - value1.Length + (value2.Length - value3.Length);
-        var replacer = replacerByName.TryGetValue(group.Name, out var r) == true ? r : (s) => string.Empty;
+        var replacer = GetReplacer(group.Name);
         return (group.Name, replacer(value), space, array);
+    }
+
+    private static Func<string, string> GetReplacer(string name)
+    {
+        if (ReplacerByName.TryGetValue(name, out var replacer) == true)
+        {
+            return replacer;
+        }
+
+        return (s) => string.Empty;
     }
 
     private static string JoinList(IList<string> itemList)
@@ -298,6 +315,7 @@ public static partial class CommandUtility
             var item = itemList[i];
             itemList[i] = item.Contains(' ') == true ? $"'{item}'" : item;
         }
+
         return string.Join(",", itemList);
     }
 
@@ -312,6 +330,7 @@ public static partial class CommandUtility
                 return true;
             }
         }
+
         group = match.Groups[0];
         index = -1;
         return false;
@@ -323,18 +342,7 @@ public static partial class CommandUtility
         return Regex.Replace(text1, "\\\\(\\\\|\\\")", "$1", RegexOptions.Singleline);
     }
 
-    private static string UnescapeSingleQuote(string text)
-    {
-        return Regex.Replace(text, "^'(.*)'$", "$1");
-    }
+    private static string UnescapeSingleQuote(string text) => Regex.Replace(text, "^'(.*)'$", "$1");
 
-    private static string EscapeCharacter(string text)
-    {
-        return Regex.Replace(text, "\\\\(.)", "$1");
-    }
-
-    private static string UnescapeString(string text)
-    {
-        return Regex.Replace(text, "(\\\\)(.)", "$2");
-    }
+    private static string UnescapeString(string text) => Regex.Replace(text, "(\\\\)(.)", "$2");
 }

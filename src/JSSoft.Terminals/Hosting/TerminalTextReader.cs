@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace JSSoft.Terminals.Hosting;
 
-sealed class TerminalTextReader : TextReader
+internal sealed class TerminalTextReader : TextReader
 {
     private readonly StringBuilder _sb = new();
     private readonly ManualResetEvent _manualResetEvent = new(initialState: false);
@@ -22,6 +22,7 @@ sealed class TerminalTextReader : TextReader
             _manualResetEvent.Reset();
             return -1;
         }
+
         var value = _sb[0];
         _sb.Remove(0, 1);
         return value;

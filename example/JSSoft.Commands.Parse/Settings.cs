@@ -9,7 +9,7 @@ namespace JSSoft.Commands.Parse;
 
 [ResourceUsage]
 [CommandStaticProperty(typeof(GlobalSettings))]
-sealed class Settings
+internal sealed class Settings
 {
     [CommandPropertyRequired]
     public string Path { get; set; } = string.Empty;

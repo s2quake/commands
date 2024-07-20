@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-sealed class Linefeed : IAsciiCode
+internal sealed class Linefeed : IAsciiCode
 {
     public void Process(AsciiCodeContext context)
     {

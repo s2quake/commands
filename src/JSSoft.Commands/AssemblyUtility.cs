@@ -3,66 +3,37 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
+using static JSSoft.Commands.AttributeUtility;
 
 namespace JSSoft.Commands;
 
-static class AssemblyUtility
+internal static class AssemblyUtility
 {
     public static string GetAssemblyVersion(Assembly assembly)
-    {
-        if (assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>() is { } assemblyInformationalVersionAttribute)
-        {
-            return assemblyInformationalVersionAttribute.InformationalVersion;
-        }
-        return string.Empty;
-    }
+        => GetValue<AssemblyInformationalVersionAttribute>(
+            assembly: assembly,
+            getter: assembly => assembly.InformationalVersion);
 
     public static string GetAssemblyFileVersion(Assembly assembly)
-    {
-        if (assembly.GetCustomAttribute<AssemblyFileVersionAttribute>() is { } assemblyFileVersionAttribute)
-        {
-            return assemblyFileVersionAttribute.Version;
-        }
-        return string.Empty;
-    }
+        => GetValue<AssemblyFileVersionAttribute>(assembly, assembly => assembly.Version);
 
     public static string GetAssemblyCopyright(Assembly assembly)
-    {
-        if (assembly.GetCustomAttribute<AssemblyCopyrightAttribute>() is { } assemblyCopyrightAttribute)
-        {
-            return assemblyCopyrightAttribute.Copyright;
-        }
-        return string.Empty;
-    }
+        => GetValue<AssemblyCopyrightAttribute>(assembly, assembly => assembly.Copyright);
 
     public static string GetAssemblyProduct(Assembly assembly)
-    {
-        if (assembly.GetCustomAttribute<AssemblyProductAttribute>() is { } assemblyProductAttribute)
-        {
-            return assemblyProductAttribute.Product;
-        }
-        return string.Empty;
-    }
+        => GetValue<AssemblyProductAttribute>(assembly, assembly => assembly.Product);
 
     public static string GetAssemblyCompany(Assembly assembly)
-    {
-        if (assembly.GetCustomAttribute<AssemblyCompanyAttribute>() is { } assemblyCompanyAttribute)
-        {
-            return assemblyCompanyAttribute.Company;
-        }
-        return string.Empty;
-    }
+        => GetValue<AssemblyCompanyAttribute>(assembly, assembly => assembly.Company);
 
     public static string GetAssemblyName(Assembly assembly)
     {
-        if (assembly.GetName() is { } assemblyName && assemblyName.Name != null)
+        if (assembly.GetName() is { } assemblyName && assemblyName.Name is { } name)
         {
-            return assemblyName.Name;
+            return name;
         }
+
         return string.Empty;
     }
 
@@ -70,7 +41,9 @@ static class AssemblyUtility
     {
 #pragma warning disable IL3000
         if (assembly.Location != string.Empty)
+        {
             return assembly.Location;
+        }
 #pragma warning restore IL3000
         return Path.Combine(AppContext.BaseDirectory, assembly.GetName().Name!);
     }
@@ -78,9 +51,9 @@ static class AssemblyUtility
     public static IEnumerable<KeyValuePair<string, string?>> GetMetadatas(Assembly assembly)
     {
         var attributes = assembly.GetCustomAttributes<AssemblyMetadataAttribute>();
-        foreach (var item in attributes)
+        foreach (var attribute in attributes)
         {
-            yield return new KeyValuePair<string, string?>(item.Key, item.Value);
+            yield return new KeyValuePair<string, string?>(attribute.Key, attribute.Value);
         }
     }
 

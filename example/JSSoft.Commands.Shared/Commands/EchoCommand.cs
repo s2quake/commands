@@ -10,14 +10,12 @@ namespace JSSoft.Commands.Applications.Commands;
 
 [Export(typeof(ICommand))]
 [CommandSummary("Write arguments to the standard output")]
-[Description("The echo utility writes any specified operands, separated by single blank (‘ ’) characters and followed by a newline (‘\\n’) character, to the standard output.")]
-sealed class EchoCommand : CommandBase
+[Description("The echo utility writes any specified operands, separated by single blank (‘ ’) " +
+             "characters and followed by a newline (‘\\n’) character, to the standard output.")]
+internal sealed class EchoCommand : CommandBase
 {
     [CommandPropertyRequired(DefaultValue = "")]
     public string Text { get; set; } = string.Empty;
 
-    protected override void OnExecute()
-    {
-        Out.WriteLine(Text);
-    }
+    protected override void OnExecute() => Out.WriteLine(Text);
 }

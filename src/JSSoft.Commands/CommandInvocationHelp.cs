@@ -6,7 +6,7 @@
 namespace JSSoft.Commands;
 
 [ResourceUsage(typeof(HelpCommandBase))]
-sealed class CommandInvocationHelp
+internal sealed class CommandInvocationHelp
 {
     [CommandPropertyRequired(DefaultValue = "")]
     public string Command { get; set; } = string.Empty;
@@ -18,22 +18,19 @@ sealed class CommandInvocationHelp
     {
         var settings = e.Invoker.Settings;
         var name = e.Arguments[0];
-        var args = e.Arguments.Where(item => settings.IsHelpArg(item) == false).ToArray();
+        var args = e.Arguments.Where(item => settings.IsHelpArg(item) != true).ToArray();
         var obj = new CommandInvocationHelp();
         var parser = new HelpCommandParser(name, obj);
         parser.Parse(args);
         return obj;
     }
 
-    #region HelpCommandParser
-
-    sealed class HelpCommandParser(string commandName, object instance)
+    private sealed class HelpCommandParser(string commandName, object instance)
         : CommandParser(commandName, instance)
     {
         protected override void OnValidate(string[] args)
         {
+            // do nothing
         }
     }
-
-    #endregion
 }

@@ -9,7 +9,7 @@ using JSSoft.Commands.Applications;
 
 namespace JSSoft.Commands.Repl;
 
-sealed class Application : IApplication
+internal sealed class Application : IApplication
 {
     private readonly CompositionContainer _container;
 

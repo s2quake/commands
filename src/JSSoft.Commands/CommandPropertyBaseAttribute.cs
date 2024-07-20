@@ -8,19 +8,19 @@ namespace JSSoft.Commands;
 [AttributeUsage(AttributeTargets.Property)]
 public abstract class CommandPropertyBaseAttribute : Attribute
 {
-    internal CommandPropertyBaseAttribute()
+    private protected CommandPropertyBaseAttribute()
     {
         AllowName = true;
     }
 
-    internal CommandPropertyBaseAttribute(string name)
+    private protected CommandPropertyBaseAttribute(string name)
     {
         ThrowUtility.ThrowIfInvalidName(name);
 
         Name = name;
     }
 
-    internal CommandPropertyBaseAttribute(string name, char shortName)
+    private protected CommandPropertyBaseAttribute(string name, char shortName)
     {
         ThrowUtility.ThrowIfInvalidName(name);
         ThrowUtility.ThrowIfInvalidShortName(shortName);
@@ -29,12 +29,12 @@ public abstract class CommandPropertyBaseAttribute : Attribute
         ShortName = shortName;
     }
 
-    internal CommandPropertyBaseAttribute(char shortName)
+    private protected CommandPropertyBaseAttribute(char shortName)
         : this(shortName, useName: false)
     {
     }
 
-    internal CommandPropertyBaseAttribute(char shortName, bool useName)
+    private protected CommandPropertyBaseAttribute(char shortName, bool useName)
     {
         ThrowUtility.ThrowIfInvalidShortName(shortName);
 
@@ -54,9 +54,14 @@ public abstract class CommandPropertyBaseAttribute : Attribute
 
     public abstract CommandType CommandType { get; }
 
-    internal bool IsRequired => CommandType == CommandType.Required || CommandType == CommandType.ExplicitRequired;
+    internal bool IsRequired
+        => CommandType == CommandType.Required
+            || CommandType == CommandType.ExplicitRequired;
 
-    internal bool IsExplicit => CommandType == CommandType.General || CommandType == CommandType.ExplicitRequired || CommandType == CommandType.Switch;
+    internal bool IsExplicit
+        => CommandType == CommandType.General
+            || CommandType == CommandType.ExplicitRequired
+            || CommandType == CommandType.Switch;
 
     internal bool IsSwitch => CommandType == CommandType.Switch;
 
@@ -65,7 +70,10 @@ public abstract class CommandPropertyBaseAttribute : Attribute
     internal string GetName(string defaultName)
     {
         if (Name != string.Empty)
+        {
             return Name;
+        }
+
         return AllowName == true ? CommandUtility.ToSpinalCase(defaultName) : string.Empty;
     }
 }

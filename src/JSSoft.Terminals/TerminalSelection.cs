@@ -21,6 +21,7 @@ public struct TerminalSelection(TerminalCoord c1, TerminalCoord c2)
         {
             return _beginCoord == s._beginCoord && _endCoord == s._endCoord;
         }
+
         return base.Equals(obj);
     }
 
@@ -66,6 +67,7 @@ public struct TerminalSelection(TerminalCoord c1, TerminalCoord c2)
                 s1.Y++;
             }
         }
+
         return length;
     }
 

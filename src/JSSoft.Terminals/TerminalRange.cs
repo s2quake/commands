@@ -37,6 +37,7 @@ public readonly struct TerminalRange(int begin, int length) : IEquatable<Termina
         {
             return Begin == rangeInt.Begin && Length == rangeInt.Length;
         }
+
         return base.Equals(obj);
     }
 
@@ -52,10 +53,6 @@ public readonly struct TerminalRange(int begin, int length) : IEquatable<Termina
     public static bool operator !=(TerminalRange rangeInt1, TerminalRange rangeInt2)
         => rangeInt1.Begin != rangeInt2.Begin || rangeInt1.Length != rangeInt2.Length;
 
-    #region IEquatable
-
     readonly bool IEquatable<TerminalRange>.Equals(TerminalRange other)
         => Begin == other.Begin && Length == other.Length;
-
-    #endregion
 }

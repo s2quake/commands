@@ -6,7 +6,7 @@
 namespace JSSoft.Commands;
 
 [ResourceUsage(typeof(HelpCommandBase))]
-sealed class CommandParsingHelp
+internal sealed class CommandParsingHelp
 {
     [CommandPropertySwitch("detail")]
     public bool IsDetail { get; set; }
@@ -15,22 +15,19 @@ sealed class CommandParsingHelp
     {
         var settings = e.Parser.Settings;
         var name = e.Arguments[0];
-        var args = e.Arguments.Where(item => settings.IsHelpArg(item) == false).ToArray();
+        var args = e.Arguments.Where(item => settings.IsHelpArg(item) != true).ToArray();
         var obj = new CommandParsingHelp();
         var parser = new HelpCommandParser(name, obj);
         parser.Parse(args);
         return obj;
     }
 
-    #region HelpCommandParser
-
-    sealed class HelpCommandParser(string commandName, object instance)
+    private sealed class HelpCommandParser(string commandName, object instance)
         : CommandParser(commandName, instance)
     {
         protected override void OnValidate(string[] args)
         {
+            // do nothing
         }
     }
-
-    #endregion
 }

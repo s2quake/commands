@@ -5,51 +5,72 @@
 
 using System.Collections;
 using System.Collections.Specialized;
+using System.Diagnostics.CodeAnalysis;
 
 namespace JSSoft.Commands;
 
 public sealed class ParseDescriptorCollection : IEnumerable<ParseDescriptor>
 {
-    private readonly OrderedDictionary _parseDescriptorByMember;
+    private readonly OrderedDictionary _itemByMember;
+    private readonly Dictionary<string, ParseDescriptor> _itemByMemberName;
 
     internal ParseDescriptorCollection(CommandMemberDescriptorCollection memberDescriptors)
     {
-        _parseDescriptorByMember = new(memberDescriptors.Count);
+        _itemByMember = new(memberDescriptors.Count);
+        _itemByMemberName = new(memberDescriptors.Count);
         foreach (var item in memberDescriptors)
         {
-            _parseDescriptorByMember.Add(item, new ParseDescriptor(item));
+            var parseDescriptor = new ParseDescriptor(item);
+            _itemByMember.Add(item, parseDescriptor);
+            _itemByMemberName.Add(item.MemberName, parseDescriptor);
         }
     }
 
-    public int Count => _parseDescriptorByMember.Count;
+    public int Count => _itemByMember.Count;
 
-    public ParseDescriptor this[CommandMemberDescriptor memberDescriptor] => (ParseDescriptor)_parseDescriptorByMember[memberDescriptor]!;
+    public ParseDescriptor this[CommandMemberDescriptor memberDescriptor]
+        => (ParseDescriptor)_itemByMember[memberDescriptor]!;
+
+    public ParseDescriptor this[int index]
+        => (ParseDescriptor)_itemByMember[index]!;
+
+    public ParseDescriptor this[string memberName]
+        => _itemByMemberName[memberName]!;
+
+    public bool Contains(CommandMemberDescriptor memberDescriptor)
+        => _itemByMember.Contains(memberDescriptor);
+
+    public bool Contains(string memberName)
+        => _itemByMemberName.ContainsKey(memberName);
+
+    public bool TryGetValue(
+        CommandMemberDescriptor memberDescriptor, [MaybeNullWhen(false)] out ParseDescriptor value)
+    {
+        if (_itemByMember.Contains(memberDescriptor) == true)
+        {
+            value = (ParseDescriptor)_itemByMember[memberDescriptor]!;
+            return true;
+        }
+
+        value = default!;
+        return false;
+    }
+
+    public bool TryGetValue(string memberName, [MaybeNullWhen(false)] out ParseDescriptor value)
+        => _itemByMemberName.TryGetValue(memberName, out value);
+
+    IEnumerator<ParseDescriptor> IEnumerable<ParseDescriptor>.GetEnumerator()
+        => _itemByMember.Values.OfType<ParseDescriptor>().GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => _itemByMember.Values.GetEnumerator();
 
     internal Queue<ParseDescriptor> CreateQueue()
     {
-        var query = from ParseDescriptor item in _parseDescriptorByMember.Values
-                    where item.IsRequired == true && item.IsExplicit == false && item.HasValue == false
+        var query = from ParseDescriptor item in _itemByMember.Values
+                    where item.IsRequired == true
+                    where item.IsExplicit != true
+                    where item.HasValue != true
                     select item;
         return new(query);
     }
-
-    #region ParseDescriptorCollection
-
-    IEnumerator<ParseDescriptor> IEnumerable<ParseDescriptor>.GetEnumerator()
-    {
-        foreach (var item in _parseDescriptorByMember.Values)
-        {
-            yield return (ParseDescriptor)item;
-        }
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        foreach (var item in _parseDescriptorByMember.Values)
-        {
-            yield return item;
-        }
-    }
-
-    #endregion
 }

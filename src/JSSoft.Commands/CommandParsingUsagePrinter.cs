@@ -10,7 +10,8 @@ namespace JSSoft.Commands;
 public class CommandParsingUsagePrinter(ICommandUsage commandUsage, CommandSettings settings)
     : CommandUsagePrinterBase(commandUsage, settings)
 {
-    public virtual void Print(TextWriter writer, CommandMemberDescriptorCollection memberDescriptors)
+    public virtual void Print(
+        TextWriter writer, CommandMemberDescriptorCollection memberDescriptors)
     {
         using var commandWriter = new CommandTextWriter(writer, Settings);
         if (IsDetail == true)

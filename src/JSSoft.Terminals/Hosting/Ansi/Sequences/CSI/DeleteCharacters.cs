@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class DeleteCharacters : CSISequenceBase
+internal sealed class DeleteCharacters : CSISequenceBase
 {
     public DeleteCharacters()
         : base('P')

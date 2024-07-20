@@ -31,21 +31,23 @@ public abstract class TerminalKeyBindingBase<T> : ITerminalKeyBinding
 
     public bool IsPreview { get; set; }
 
-    #region IKeyBinding
-
     void ITerminalKeyBinding.Invoke(object obj)
     {
-        if (Type.IsAssignableFrom(obj.GetType()) == false)
+        if (Type.IsAssignableFrom(obj.GetType()) != true)
+        {
             throw new ArgumentException("invalid type", nameof(obj));
+        }
+
         OnInvoke((T)obj);
     }
 
     bool ITerminalKeyBinding.CanInvoke(object obj)
     {
-        if (Type.IsAssignableFrom(obj.GetType()) == false)
+        if (Type.IsAssignableFrom(obj.GetType()) != true)
+        {
             return false;
+        }
+
         return OnCanInvoke((T)obj);
     }
-
-    #endregion
 }

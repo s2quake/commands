@@ -33,7 +33,6 @@ public sealed class CommandPropertySwitchAttribute : CommandPropertyBaseAttribut
 
     public override CommandType CommandType => CommandType.Switch;
 
-    // 구현해야 함  
     public bool Invert { get; set; }
 
     [Obsolete("In the Switch property, InitValue is not used.")]

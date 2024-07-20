@@ -87,7 +87,7 @@ public static class TerminalStyleUtility
             TerminalColorType.BrightMagenta => style.BrightMagenta,
             TerminalColorType.BrightYellow => style.BrightYellow,
             TerminalColorType.BrightWhite => style.BrightWhite,
-            _ => throw new NotImplementedException(),
+            _ => throw new NotSupportedException(),
         };
     }
 }

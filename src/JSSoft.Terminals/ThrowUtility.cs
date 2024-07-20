@@ -7,7 +7,7 @@
 
 namespace JSSoft.Terminals;
 
-static class ThrowUtility
+internal static class ThrowUtility
 {
     public static void ThrowObjectDisposedException(bool condition, IDisposable instance)
     {

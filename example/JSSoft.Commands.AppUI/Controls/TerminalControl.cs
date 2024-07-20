@@ -237,7 +237,7 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
-        if (_window != null)
+        if (_window is not null)
         {
             _window.Activated -= Window_Activated;
             _window.Deactivated -= Window_Deactivated;
@@ -255,11 +255,11 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         {
             e.Handled = true;
         }
-        if (e.Handled == false && ProcessHotKey(e) == true)
+        if (e.Handled != true && ProcessHotKey(e) == true)
         {
             e.Handled = true;
         }
-        if (e.Handled == false && e.KeySymbol is { } keySymbol)
+        if (e.Handled != true && e.KeySymbol is { } keySymbol)
         {
             _terminal.WriteInput(keySymbol);
             e.Handled = true;
@@ -269,7 +269,7 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
     protected override void OnTextInput(TextInputEventArgs e)
     {
         base.OnTextInput(e);
-        if (e.Handled == false && e.Text is { } text)
+        if (e.Handled != true && e.Text is { } text)
         {
             _terminal.WriteInput(text);
             e.Handled = true;
@@ -366,9 +366,5 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         _terminal.IsFocused = IsFocused;
     }
 
-    #region ICustomHitTest
-
     bool ICustomHitTest.HitTest(Point point) => true;
-
-    #endregion
 }

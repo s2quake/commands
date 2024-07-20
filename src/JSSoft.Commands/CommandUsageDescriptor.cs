@@ -7,7 +7,7 @@ using System.Diagnostics;
 
 namespace JSSoft.Commands;
 
-sealed class CommandUsageDescriptor : CommandUsageDescriptorBase
+internal sealed class CommandUsageDescriptor : CommandUsageDescriptorBase
 {
     public CommandUsageDescriptor(object target)
         : base(new CommandUsageAttribute(), target)

@@ -46,8 +46,6 @@ sealed class CommandTerminal : IDisposable
         throw new NotImplementedException();
     }
 
-    #region TerminalProgress
-
     sealed class TerminalProgress(TerminalControl terminal) : IProgress<ProgressInfo>
     {
         private readonly TerminalControl _terminal = terminal;
@@ -83,6 +81,4 @@ sealed class CommandTerminal : IDisposable
             return $"{text}{percent}[{progress}]";
         }
     }
-
-    #endregion
 }

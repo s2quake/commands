@@ -9,7 +9,7 @@ using JSSoft.Terminals.Extensions;
 
 namespace JSSoft.Terminals.Input;
 
-sealed class TerminalInputHandlerContext(ITerminal terminal) : InputHandlerContext(terminal)
+internal sealed class TerminalInputHandlerContext(ITerminal terminal) : InputHandlerContext(terminal)
 {
     private const double ClickThreshold = 0.5;
     private TerminalPoint _downPosition;
@@ -111,7 +111,7 @@ sealed class TerminalInputHandlerContext(ITerminal terminal) : InputHandlerConte
             var position = terminal.ViewToWorld(eventData.Position);
             var newCoord = terminal.PositionToCoordinate(position);
             var oldCoord = _downCoord;
-            if (oldCoord == newCoord && _isDragging == false)
+            if (oldCoord == newCoord && _isDragging != true)
             {
                 if (downCount == 1)
                 {
@@ -124,6 +124,7 @@ sealed class TerminalInputHandlerContext(ITerminal terminal) : InputHandlerConte
                     terminal.Selecting = TerminalSelection.Empty;
                 }
             }
+
             _isDragging = false;
         }
     }
@@ -137,7 +138,7 @@ sealed class TerminalInputHandlerContext(ITerminal terminal) : InputHandlerConte
 
     private async void ObserveScroll()
     {
-        while (_cancellationTokenSource?.IsCancellationRequested == false)
+        while (_cancellationTokenSource?.IsCancellationRequested != true)
         {
             var terminal = Terminal;
             var dragTime = DateTime.Now;
@@ -151,6 +152,7 @@ sealed class TerminalInputHandlerContext(ITerminal terminal) : InputHandlerConte
             {
                 ScrollValue(terminal, timeSpan.Milliseconds / 100.0);
             }
+
             _dragTime = dragTime;
             await Task.Delay(100);
         }
@@ -178,7 +180,10 @@ sealed class TerminalInputHandlerContext(ITerminal terminal) : InputHandlerConte
     {
         var diffTime = newTime - oldTime;
         if (diffTime > ClickThreshold || oldPosition != newPosition)
+        {
             return 1;
+        }
+
         return count % 3 + 1;
     }
 }

@@ -8,7 +8,7 @@ namespace JSSoft.Terminals.Hosting.Ansi.Sequences.OSC;
 /// <summary>
 /// OSC Ps ; Pt BEL
 /// </summary>
-sealed class OperatingSystemCommandsBell : OperatingSystemCommandsBase
+internal sealed class OperatingSystemCommandsBell : OperatingSystemCommandsBase
 {
     public OperatingSystemCommandsBell()
         : base('\a')
@@ -27,6 +27,7 @@ sealed class OperatingSystemCommandsBell : OperatingSystemCommandsBase
                 {
                     context.Title = pt;
                 }
+
                 break;
         }
     }

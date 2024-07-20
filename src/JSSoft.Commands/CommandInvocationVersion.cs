@@ -9,7 +9,7 @@ using JSSoft.Commands.Extensions;
 namespace JSSoft.Commands;
 
 [ResourceUsage(typeof(VersionCommandBase))]
-sealed class CommandInvocationVersion
+internal sealed class CommandInvocationVersion
 {
     [CommandPropertySwitch("quiet", 'q')]
     public bool IsQuiet { get; set; }
@@ -24,7 +24,7 @@ sealed class CommandInvocationVersion
     {
         var settings = e.Invoker.Settings;
         var name = e.Arguments[0];
-        var args = e.Arguments.Where(item => settings.IsVersionArg(item) == false).ToArray();
+        var args = e.Arguments.Where(item => settings.IsVersionArg(item) != true).ToArray();
         var obj = new CommandInvocationVersion();
         var parser = new VersionCommandParser(name, obj);
         parser.Parse(args);
@@ -44,15 +44,15 @@ sealed class CommandInvocationVersion
 
     public string GetQuietString() => Version;
 
-    #region VersionCommandParser
+    public string GetVersionString()
+        => IsQuiet == true ? GetQuietString() : GetDetailedString();
 
-    sealed class VersionCommandParser(string commandName, object instance)
+    private sealed class VersionCommandParser(string commandName, object instance)
         : CommandParser(commandName, instance)
     {
         protected override void OnValidate(string[] args)
         {
+            // do nothing
         }
     }
-
-    #endregion
 }

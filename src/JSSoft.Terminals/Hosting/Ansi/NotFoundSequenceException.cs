@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-sealed class NotFoundSequenceException : InvalidOperationException
+internal sealed class NotFoundSequenceException : InvalidOperationException
 {
     public NotFoundSequenceException(string sequence)
     {

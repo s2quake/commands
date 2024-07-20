@@ -7,14 +7,20 @@ using System.IO;
 
 namespace JSSoft.Commands;
 
-public abstract class CommandMethodBase : ICommand, ICommandHost, ICommandHierarchy, ICommandCompleter, ICommandUsage, ICommandUsagePrinter
+public abstract class CommandMethodBase
+    : ICommand,
+    ICommandHost,
+    ICommandHierarchy,
+    ICommandCompleter,
+    ICommandUsage,
+    ICommandUsagePrinter
 {
     private readonly CommandCollection _commands;
     private readonly CommandUsageDescriptorBase _usageDescriptor;
     private ICommandNode? _node;
 
     protected CommandMethodBase()
-        : this(Array.Empty<string>())
+        : this(aliases: [])
     {
     }
 
@@ -39,11 +45,6 @@ public abstract class CommandMethodBase : ICommand, ICommandHost, ICommandHierar
         _usageDescriptor = CommandDescriptor.GetUsageDescriptor(GetType());
     }
 
-    public virtual string[] GetCompletions(CommandMethodDescriptor methodDescriptor, CommandMemberDescriptor memberDescriptor, string find)
-    {
-        return methodDescriptor.GetCompletionInternal(this, memberDescriptor, find);
-    }
-
     public string Name { get; }
 
     public string[] Aliases { get; }
@@ -54,7 +55,30 @@ public abstract class CommandMethodBase : ICommand, ICommandHost, ICommandHierar
 
     public TextWriter Error => CommandContext.Error;
 
-    public ICommandContext CommandContext => _node?.CommandContext ?? throw new InvalidOperationException();
+    public ICommandContext CommandContext
+        => _node is not null
+            ? _node.CommandContext
+            : throw new InvalidOperationException("The command node is not available.");
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Minor Code Smell",
+        "S2292:Trivial properties should be auto-implemented",
+        Justification = "This property does not need to be public.")]
+    ICommandNode? ICommandHost.Node
+    {
+        get => _node;
+        set => _node = value;
+    }
+
+    IReadOnlyDictionary<string, ICommand> ICommandHierarchy.Commands => _commands;
+
+    string ICommandUsage.ExecutionName => ExecutionName;
+
+    string ICommandUsage.Summary => _usageDescriptor.Summary;
+
+    string ICommandUsage.Description => _usageDescriptor.Description;
+
+    string ICommandUsage.Example => _usageDescriptor.Example;
 
     internal string ExecutionName
     {
@@ -62,12 +86,28 @@ public abstract class CommandMethodBase : ICommand, ICommandHost, ICommandHierar
         {
             var executionName = CommandUtility.GetExecutionName(Name, Aliases);
             if (CommandContext.ExecutionName != string.Empty)
+            {
                 return $"{CommandContext.ExecutionName} {executionName}";
+            }
+
             return executionName;
         }
     }
 
-    protected virtual bool IsMethodEnabled(CommandMethodDescriptor memberDescriptor) => true;
+    public virtual string[] GetCompletions(
+        CommandMethodDescriptor methodDescriptor,
+        CommandMemberDescriptor memberDescriptor,
+        string find)
+        => methodDescriptor.GetCompletionInternal(this, memberDescriptor, find);
+
+    string[] ICommandCompleter.GetCompletions(CommandCompletionContext completionContext) => [];
+
+    void ICommandUsagePrinter.Print(bool isDetail) => OnUsagePrint(isDetail);
+
+    internal bool InvokeIsMethodEnabled(CommandMethodDescriptor memberDescriptor)
+        => IsMethodEnabled(memberDescriptor);
+
+    protected virtual bool IsMethodEnabled(CommandMethodDescriptor methodDescriptor) => true;
 
     protected virtual void OnUsagePrint(bool isDetail)
     {
@@ -84,8 +124,6 @@ public abstract class CommandMethodBase : ICommand, ICommandHost, ICommandHierar
         usagePrinter.Print(Out, [.. query]);
     }
 
-    internal bool InvokeIsMethodEnabled(CommandMethodDescriptor memberDescriptor) => IsMethodEnabled(memberDescriptor);
-
     private static CommandCollection CreateCommands(CommandMethodBase obj)
     {
         var methodDescriptors = CommandDescriptor.GetMethodDescriptors(obj.GetType());
@@ -93,51 +131,12 @@ public abstract class CommandMethodBase : ICommand, ICommandHost, ICommandHierar
                     select CreateCommand(obj, methodDescriptor);
         return new CommandCollection(query);
 
-        static ICommand CreateCommand(CommandMethodBase obj, CommandMethodDescriptor methodDescriptor)
+        static ICommand CreateCommand(
+            CommandMethodBase obj, CommandMethodDescriptor methodDescriptor)
         {
-            return methodDescriptor.IsAsync == true ? 
-                new SubCommandAsync(obj, methodDescriptor) : 
+            return methodDescriptor.IsAsync == true ?
+                new SubCommandAsync(obj, methodDescriptor) :
                 new SubCommand(obj, methodDescriptor);
         }
     }
-
-    #region ICommandHost
-
-    ICommandNode? ICommandHost.Node
-    {
-        get => _node;
-        set => _node = value;
-    }
-
-    #endregion
-
-    #region ICommandHierarchy
-
-    IReadOnlyDictionary<string, ICommand> ICommandHierarchy.Commands => _commands;
-
-    #endregion
-
-    #region ICommandUsage
-
-    string ICommandUsage.ExecutionName => ExecutionName;
-
-    string ICommandUsage.Summary => _usageDescriptor.Summary;
-
-    string ICommandUsage.Description => _usageDescriptor.Description;
-
-    string ICommandUsage.Example => _usageDescriptor.Example;
-
-    #endregion
-
-    #region ICommandCompleter
-
-    string[] ICommandCompleter.GetCompletions(CommandCompletionContext completionContext) => [];
-
-    #endregion
-
-    #region ICommandUsagePrinter
-
-    void ICommandUsagePrinter.Print(bool isDetail) => OnUsagePrint(isDetail);
-
-    #endregion
 }

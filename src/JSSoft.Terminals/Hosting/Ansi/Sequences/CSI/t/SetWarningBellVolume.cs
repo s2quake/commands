@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class SetWarningBellVolume : CSISequenceBase
+internal sealed class SetWarningBellVolume : CSISequenceBase
 {
     public SetWarningBellVolume()
         : base('t')

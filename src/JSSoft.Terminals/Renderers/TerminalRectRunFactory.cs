@@ -7,7 +7,9 @@ using JSSoft.Terminals.Extensions;
 
 namespace JSSoft.Terminals.Renderers;
 
-public class TerminalRectRunFactory<T>(int capacity, Func<TerminalRectRunInfo, T> creator) where T : ITerminalRenderer
+public class TerminalRectRunFactory<T>(int capacity, Func<TerminalRectRunInfo, T> creator)
+    where T : ITerminalRenderer
+
 {
     private readonly Func<TerminalRectRunInfo, T> _creator = creator;
     private readonly List<TerminalRect> _rectList = new(capacity);
@@ -28,11 +30,15 @@ public class TerminalRectRunFactory<T>(int capacity, Func<TerminalRectRunInfo, T
             var characterInfo = terminal.GetInfo(coord);
             var span = characterInfo?.Span ?? 1;
             if (span <= 0)
+            {
                 continue;
+            }
+
             var backgroundColor = terminal.GetBackgroundColor(coord);
             var backgroundRect = terminal.GetBackgroundRect(coord - transformCoord, span);
             rectRunFactory.Add(backgroundRect, backgroundColor);
         }
+
         return rectRunFactory.ToArray();
     }
 
@@ -42,6 +48,7 @@ public class TerminalRectRunFactory<T>(int capacity, Func<TerminalRectRunInfo, T
         {
             Flush();
         }
+
         _rectList.Add(rect);
         _backgroundColor = backgroundColor;
     }
@@ -59,7 +66,7 @@ public class TerminalRectRunFactory<T>(int capacity, Func<TerminalRectRunInfo, T
             var info = new TerminalRectRunInfo
             {
                 Color = _backgroundColor,
-                Rect = _rectList.Aggregate((item, next) => item.Union(next))
+                Rect = _rectList.Aggregate((item, next) => item.Union(next)),
             };
             _itemList.Add(_creator(info));
             _rectList.Clear();

@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals;
 
-readonly struct SystemTerminalPrompt(string text, Func<string, string> formatter)
+internal readonly struct SystemTerminalPrompt(string text, Func<string, string> formatter)
     : IFormattable
 {
     public override readonly string ToString() => Text;
@@ -20,14 +20,13 @@ readonly struct SystemTerminalPrompt(string text, Func<string, string> formatter
 
     public static SystemTerminalPrompt Empty { get; } = new SystemTerminalPrompt(string.Empty, (s) => s);
 
-    #region IFormattable
-
     readonly string IFormattable.ToString(string? format, IFormatProvider? formatProvider)
     {
         if (format == "terminal")
+        {
             return FormattedText;
+        }
+
         return base.ToString() ?? string.Empty;
     }
-
-    #endregion
 }

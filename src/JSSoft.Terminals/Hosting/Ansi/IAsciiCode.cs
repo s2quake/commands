@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-interface IAsciiCode
+internal interface IAsciiCode
 {
     void Process(AsciiCodeContext context);
 }

@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class ChangeAttributesInRectangularArea : CSISequenceBase
+internal sealed class ChangeAttributesInRectangularArea : CSISequenceBase
 {
     public ChangeAttributesInRectangularArea()
         : base('r')

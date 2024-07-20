@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.ESC;
 
-sealed class ApplicationKeypad : ESCSequenceBase
+internal sealed class ApplicationKeypad : ESCSequenceBase
 {
     public ApplicationKeypad()
         : base('=')

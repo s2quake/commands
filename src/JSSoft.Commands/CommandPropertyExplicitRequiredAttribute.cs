@@ -32,7 +32,7 @@ public sealed class CommandPropertyExplicitRequiredAttribute : CommandPropertyBa
     }
 
     public override CommandType CommandType => CommandType.ExplicitRequired;
-    
+
     [Obsolete("In the Switch property, InitValue is not used.")]
     public new object InitValue => base.InitValue;
 }

@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.ESC;
 
-sealed class FullReset : ESCSequenceBase
+internal sealed class FullReset : ESCSequenceBase
 {
     public FullReset()
         : base('c')

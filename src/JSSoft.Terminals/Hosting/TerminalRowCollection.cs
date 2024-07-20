@@ -7,7 +7,7 @@ using System.ComponentModel;
 
 namespace JSSoft.Terminals.Hosting;
 
-sealed class TerminalRowCollection : List<TerminalRow>
+internal sealed class TerminalRowCollection : List<TerminalRow>
 {
     private readonly Terminal _terminal;
     private readonly Stack<TerminalRow> _poolStack = new();
@@ -29,6 +29,7 @@ sealed class TerminalRowCollection : List<TerminalRow>
             var line = lines.TryGetLine(y, out var l) == true ? l : null;
             row.Sync(line);
         }
+
         Updated?.Invoke(this, new([.. this]));
     }
 
@@ -54,6 +55,7 @@ sealed class TerminalRowCollection : List<TerminalRow>
             _poolStack.Push(this[i]);
             RemoveAt(i);
         }
+
         for (var i = Count; i < bufferHeight; i++)
         {
             var item = _poolStack.Count != 0 ? _poolStack.Pop() : new TerminalRow(_terminal);

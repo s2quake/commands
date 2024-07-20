@@ -11,7 +11,7 @@ namespace JSSoft.Commands.Repl.Commands;
 [Export(typeof(ICommand))]
 [ResourceUsage]
 [method: ImportingConstructor]
-sealed class ExitCommand(IApplication application) : CommandBase("exit")
+internal sealed class ExitCommand(IApplication application) : CommandBase("exit")
 {
     private readonly IApplication _application = application;
 

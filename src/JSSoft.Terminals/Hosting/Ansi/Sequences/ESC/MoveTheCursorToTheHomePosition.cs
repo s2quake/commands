@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.ESC;
 
-sealed class MoveTheCursorToTheHomePosition : ESCSequenceBase
+internal sealed class MoveTheCursorToTheHomePosition : ESCSequenceBase
 {
     public MoveTheCursorToTheHomePosition()
         : base('H')

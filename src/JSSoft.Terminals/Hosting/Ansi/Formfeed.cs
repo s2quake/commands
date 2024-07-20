@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-sealed class Formfeed : IAsciiCode
+internal sealed class Formfeed : IAsciiCode
 {
     public void Process(AsciiCodeContext context)
     {

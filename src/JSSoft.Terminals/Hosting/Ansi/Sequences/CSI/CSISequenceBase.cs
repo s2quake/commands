@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-abstract class CSISequenceBase(char character)
+internal abstract class CSISequenceBase(char character)
     : SequenceBase(SequenceType.CSI, character)
 {
 }

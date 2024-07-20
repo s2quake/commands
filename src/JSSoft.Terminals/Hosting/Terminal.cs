@@ -4,11 +4,11 @@
 // </copyright>
 
 using System.ComponentModel;
-using JSSoft.Terminals.Input;
 using System.Diagnostics;
-using JSSoft.Terminals.Extensions;
-using System.Threading;
 using System.IO;
+using System.Threading;
+using JSSoft.Terminals.Extensions;
+using JSSoft.Terminals.Input;
 
 namespace JSSoft.Terminals.Hosting;
 
@@ -45,10 +45,11 @@ public class Terminal : ITerminal
 
     public Terminal(ITerminalStyle originStyle, ITerminalScroll scroll)
     {
-        if (SynchronizationContext.Current == null)
+        if (SynchronizationContext.Current is null)
         {
             SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
         }
+
         SynchronizationContext = SynchronizationContext.Current!;
         _setter = new TerminalFieldSetter(this, OnPropertyChanged);
         _originStyle = _actualStyle = originStyle;
@@ -114,7 +115,10 @@ public class Terminal : ITerminal
         set
         {
             if (value < 5 || value < _bufferSize.Height)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
             _setter.SetField(ref _maximumBufferHeight, value, nameof(MaximumBufferHeight));
         }
     }
@@ -178,13 +182,24 @@ public class Terminal : ITerminal
         set
         {
             if (value.X < 0)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
             if (value.Y < 0)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
             if (value.X >= BufferSize.Width)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
             if (value.Y >= BufferSize.Height)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
 
             _setter.SetField(ref _viewCoordinate, value, nameof(ViewCoordinate));
         }
@@ -298,6 +313,7 @@ public class Terminal : ITerminal
             scroll.PropertyChanged += Scroll_PropertyChanged;
             return true;
         }
+
         if (scroll.Value < topIndex)
         {
             var value = topIndex;
@@ -306,6 +322,7 @@ public class Terminal : ITerminal
             scroll.PropertyChanged += Scroll_PropertyChanged;
             return true;
         }
+
         return false;
     }
 
@@ -317,14 +334,21 @@ public class Terminal : ITerminal
     public void Resize(double width, double height)
     {
         if (width < 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(width));
+        }
+
         if (height < 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(height));
+        }
 
         var size = new TerminalSize((int)width, (int)height);
         var bufferSize = GetBufferSize(this, size);
         if (bufferSize == _bufferSize)
+        {
             return;
+        }
 
         using (var _ = _setter.LockEvent())
         {
@@ -343,6 +367,7 @@ public class Terminal : ITerminal
                 Scroll.PropertyChanged += Scroll_PropertyChanged;
             }
         }
+
         _view.Update(_lines);
         UpdateCursorCoordinate();
     }
@@ -419,18 +444,15 @@ public class Terminal : ITerminal
 
     private int GetScrollMaximum()
     {
-        if (ActualStyle.IsScrollForwardEnabled == false)
+        if (ActualStyle.IsScrollForwardEnabled != true)
         {
             return Math.Max(_originCoordinate.Y, _lines.Count - BufferSize.Height);
         }
+
         return Math.Max(_lines.Count, _maximumBufferHeight) - BufferSize.Height;
     }
 
     private void InvokeUpdatedEvent(ITerminalRow[] rows) => OnUpdated(new(rows));
 
-    #region ITerminal
-
     ITerminalScroll ITerminal.Scroll => Scroll;
-
-    #endregion
 }

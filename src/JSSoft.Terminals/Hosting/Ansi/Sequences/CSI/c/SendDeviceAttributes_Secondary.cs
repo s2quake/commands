@@ -5,7 +5,7 @@
 
 namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 
-sealed class SendDeviceAttributes_Secondary : CSISequenceBase
+internal sealed class SendDeviceAttributes_Secondary : CSISequenceBase
 {
     public SendDeviceAttributes_Secondary()
         : base('c')
