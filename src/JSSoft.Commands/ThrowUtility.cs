@@ -7,6 +7,9 @@ using System.Text.RegularExpressions;
 
 namespace JSSoft.Commands;
 
+/// <summary>
+/// Provides utility methods for throwing exceptions.
+/// </summary>
 internal static partial class ThrowUtility
 {
     public static void ThrowIfEmpty(string argument, string paramName)

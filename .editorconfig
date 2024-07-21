@@ -77,9 +77,6 @@ dotnet_diagnostic.MEN007.severity = none
 # MEN016: Avoid top-level statements
 dotnet_diagnostic.MEN016.severity = none
 
-# SA1601: Partial elements should be documented
-dotnet_diagnostic.SA1601.severity = none
-
 [*.csproj]
 quote_type = double
 

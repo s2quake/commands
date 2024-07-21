@@ -11,6 +11,9 @@ namespace JSSoft.Commands.Tests;
 namespace JSSoft.Terminals.Tests;
 #endif
 
+/// <summary>
+/// Provides methods for generating random nullable values.
+/// </summary>
 public static partial class RandomUtility
 {
     public static T? Nullable<T>(Func<T> generator)

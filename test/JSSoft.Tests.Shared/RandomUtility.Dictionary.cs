@@ -14,6 +14,9 @@ namespace JSSoft.Commands.Tests;
 namespace JSSoft.Terminals.Tests;
 #endif
 
+/// <summary>
+/// Provides methods for generating random dictionary values.
+/// </summary>
 public static partial class RandomUtility
 {
     public static Dictionary<TKey, TValue?> Dictionary<TKey, TValue>()

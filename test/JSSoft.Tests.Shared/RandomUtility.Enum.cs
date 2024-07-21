@@ -13,6 +13,9 @@ namespace JSSoft.Commands.Tests;
 namespace JSSoft.Terminals.Tests;
 #endif
 
+/// <summary>
+/// Provides methods for generating random enum values.
+/// </summary>
 public static partial class RandomUtility
 {
     public static T Enum<T>()
