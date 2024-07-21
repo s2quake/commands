@@ -19,16 +19,15 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
         CommandDefinitionException.ThrowIfPropertyNotReadWrite(propertyInfo);
         CommandDefinitionException.ThrowIfPropertyUnsupportedType(propertyInfo);
         CommandDefinitionException.ThrowIfPropertyNotRightTypeForVariables(
-            CommandType, propertyInfo);
-        CommandDefinitionException.ThrowIfPropertyNotRightTypeForSwitch(CommandType, propertyInfo);
+            IsVariables, propertyInfo);
+        CommandDefinitionException.ThrowIfPropertyNotRightTypeForSwitch(
+            IsSwitch, propertyInfo);
 
         _propertyInfo = propertyInfo;
         _conditionsAttributes = GetCustomAttributes<CommandPropertyConditionAttribute>(
             propertyInfo, inherit: true);
         _completionAttribute = GetCustomAttribute<CommandPropertyCompletionAttribute>(propertyInfo);
         MemberType = propertyInfo.PropertyType;
-        InitValue = Attribute.InitValue;
-        DefaultValue = Attribute.DefaultValue;
         UsageDescriptor = CommandDescriptor.GetUsageDescriptor(propertyInfo);
         IsNullable = CommandUtility.IsNullable(propertyInfo);
     }
@@ -40,15 +39,11 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
             var propertyInfo = _propertyInfo;
             var displayName
                 = TryGetDisplayName(propertyInfo, out var value) == true ? value : base.DisplayName;
-            return CommandType == CommandType.Variables ? $"{displayName}..." : displayName;
+            return IsVariables == true ? $"{displayName}..." : displayName;
         }
     }
 
     public override Type MemberType { get; }
-
-    public override object? InitValue { get; }
-
-    public override object? DefaultValue { get; }
 
     public override bool IsNullable { get; }
 

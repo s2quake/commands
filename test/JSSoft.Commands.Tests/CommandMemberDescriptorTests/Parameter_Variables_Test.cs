@@ -44,7 +44,7 @@ public class Parameter_Variables_Test
         Assert.True(memberDescriptor.IsVariables);
         Assert.Equal(typeof(string[]), memberDescriptor.MemberType);
         Assert.Equal("args", memberDescriptor.MemberName);
-        Assert.Equal(CommandType.Variables, memberDescriptor.CommandType);
+        Assert.True(memberDescriptor.IsVariables);
     }
 
     [Fact]
@@ -66,6 +66,6 @@ public class Parameter_Variables_Test
         Assert.True(memberDescriptor.IsVariables);
         Assert.Equal(typeof(string[]), memberDescriptor.MemberType);
         Assert.Equal("Args", memberDescriptor.MemberName);
-        Assert.Equal(CommandType.Variables, memberDescriptor.CommandType);
+        Assert.True(memberDescriptor.IsVariables);
     }
 }

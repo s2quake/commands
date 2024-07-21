@@ -79,7 +79,7 @@ internal static partial class ThrowUtility
     {
         if (ShortNameRegex().IsMatch(shortName.ToString()) != true)
         {
-            var message = $"Short Name can only use alphabetical character.: '{shortName}'";
+            var message = $"Short Name can only use alphabetical character.: '{shortName}'.";
             throw new ArgumentException(message, paramName ?? nameof(shortName));
         }
     }
@@ -90,13 +90,13 @@ internal static partial class ThrowUtility
     {
         if (name.Length < 2)
         {
-            var message = $"Name length must be greater than 1.: '{name}'";
+            var message = $"Name length must be greater than 1.: '{name}'.";
             throw new ArgumentException(message, paramName ?? nameof(name));
         }
 
         if (IdentifierRegex().IsMatch(name) != true)
         {
-            var message = $"Name must be in SpinalCase form.: '{name}'";
+            var message = $"Name must be in SpinalCase form.: '{name}'.";
             throw new ArgumentException(message, paramName ?? nameof(name));
         }
     }

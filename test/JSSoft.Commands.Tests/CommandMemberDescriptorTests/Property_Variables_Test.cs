@@ -30,6 +30,5 @@ public class Property_Variables_Test
         Assert.True(memberDescriptor.IsVariables);
         Assert.Equal(typeof(string[]), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member1), memberDescriptor.MemberName);
-        Assert.Equal(CommandType.Variables, memberDescriptor.CommandType);
     }
 }

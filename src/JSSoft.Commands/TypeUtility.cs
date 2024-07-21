@@ -45,7 +45,7 @@ internal static class TypeUtility
     {
         if (interfaceType.IsInterface != true)
         {
-            var message = $"Type '{interfaceType}' must be a interface";
+            var message = $"Type '{interfaceType}' must be a interface.";
             throw new ArgumentException(message, nameof(interfaceType));
         }
 
@@ -66,7 +66,7 @@ internal static class TypeUtility
 
         if (interfaceType.IsInterface != true)
         {
-            var message = $"Type '{interfaceType}' must be a interface";
+            var message = $"Type '{interfaceType}' must be a interface.";
             throw new ArgumentException(message, nameof(interfaceType));
         }
 
@@ -132,7 +132,7 @@ internal static class TypeUtility
     {
         if (type.IsSubclassOf(baseType) != true)
         {
-            var message = $"Type '{type}' is not subclass of '{baseType}'";
+            var message = $"Type '{type}' is not subclass of '{baseType}'.";
             throw new ArgumentException(message, nameof(type));
         }
     }
@@ -147,7 +147,7 @@ internal static class TypeUtility
 
         if (Type.GetType(typeName) is { } type && baseType.IsAssignableFrom(type) != true)
         {
-            var message = $"Type '{type}' is not subclass of '{baseType}'";
+            var message = $"Type '{type}' is not subclass of '{baseType}'.";
             throw new ArgumentException(message, nameof(typeName));
         }
     }

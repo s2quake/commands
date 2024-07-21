@@ -31,13 +31,5 @@ public sealed class CommandPropertySwitchAttribute : CommandPropertyBaseAttribut
     {
     }
 
-    public override CommandType CommandType => CommandType.Switch;
-
     public bool Invert { get; set; }
-
-    [Obsolete("In the Switch property, InitValue is not used.")]
-    public new object InitValue => base.InitValue;
-
-    [Obsolete("In the Switch property, DefaultValue is not used.")]
-    public new object DefaultValue => base.DefaultValue;
 }

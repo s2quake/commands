@@ -45,7 +45,8 @@ public class Property_Explicit_Required_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member1), memberDescriptor.MemberName);
-        Assert.Equal(CommandType.ExplicitRequired, memberDescriptor.CommandType);
+        Assert.True(memberDescriptor.IsRequired);
+        Assert.True(memberDescriptor.IsExplicit);
     }
 
     [Fact]
@@ -65,7 +66,8 @@ public class Property_Explicit_Required_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member2), memberDescriptor.MemberName);
-        Assert.Equal(CommandType.ExplicitRequired, memberDescriptor.CommandType);
+        Assert.True(memberDescriptor.IsRequired);
+        Assert.True(memberDescriptor.IsExplicit);
     }
 
     [Fact]
@@ -85,7 +87,8 @@ public class Property_Explicit_Required_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member3), memberDescriptor.MemberName);
-        Assert.Equal(CommandType.ExplicitRequired, memberDescriptor.CommandType);
+        Assert.True(memberDescriptor.IsRequired);
+        Assert.True(memberDescriptor.IsExplicit);
     }
 
     [Fact]
@@ -105,7 +108,8 @@ public class Property_Explicit_Required_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member4), memberDescriptor.MemberName);
-        Assert.Equal(CommandType.ExplicitRequired, memberDescriptor.CommandType);
+        Assert.True(memberDescriptor.IsRequired);
+        Assert.True(memberDescriptor.IsExplicit);
     }
 
     [Fact]
@@ -125,7 +129,8 @@ public class Property_Explicit_Required_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member5), memberDescriptor.MemberName);
-        Assert.Equal(CommandType.ExplicitRequired, memberDescriptor.CommandType);
+        Assert.True(memberDescriptor.IsRequired);
+        Assert.True(memberDescriptor.IsExplicit);
     }
 
     [Fact]
@@ -145,6 +150,7 @@ public class Property_Explicit_Required_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member6), memberDescriptor.MemberName);
-        Assert.Equal(CommandType.ExplicitRequired, memberDescriptor.CommandType);
+        Assert.True(memberDescriptor.IsRequired);
+        Assert.True(memberDescriptor.IsExplicit);
     }
 }

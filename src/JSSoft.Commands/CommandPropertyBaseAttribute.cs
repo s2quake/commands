@@ -48,25 +48,6 @@ public abstract class CommandPropertyBaseAttribute : Attribute
 
     public bool AllowName { get; }
 
-    public object DefaultValue { get; set; } = DBNull.Value;
-
-    public object InitValue { get; set; } = DBNull.Value;
-
-    public abstract CommandType CommandType { get; }
-
-    internal bool IsRequired
-        => CommandType == CommandType.Required
-            || CommandType == CommandType.ExplicitRequired;
-
-    internal bool IsExplicit
-        => CommandType == CommandType.General
-            || CommandType == CommandType.ExplicitRequired
-            || CommandType == CommandType.Switch;
-
-    internal bool IsSwitch => CommandType == CommandType.Switch;
-
-    internal bool IsVariables => CommandType == CommandType.Variables;
-
     internal string GetName(string defaultName)
     {
         if (Name != string.Empty)

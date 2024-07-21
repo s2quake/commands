@@ -46,10 +46,10 @@ public struct CommandSettings
                 throw new ArgumentOutOfRangeException(nameof(value), message);
             }
 
-            if (value >= GetBufferWidth())
+            if (value >= BufferWidth)
             {
                 var message = $"""
-                    Value must be less than BufferWidth({GetBufferWidth()}).
+                    Value must be less than BufferWidth({BufferWidth}).
                     """;
                 Trace.TraceWarning(message);
             }

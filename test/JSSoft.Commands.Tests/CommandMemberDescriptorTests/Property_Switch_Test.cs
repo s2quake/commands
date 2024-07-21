@@ -45,7 +45,6 @@ public class Property_Switch_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(bool), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member1), memberDescriptor.MemberName);
-        Assert.Equal(CommandType.Switch, memberDescriptor.CommandType);
     }
 
     [Fact]
@@ -65,7 +64,6 @@ public class Property_Switch_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(bool), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member2), memberDescriptor.MemberName);
-        Assert.Equal(CommandType.Switch, memberDescriptor.CommandType);
     }
 
     [Fact]
@@ -85,7 +83,6 @@ public class Property_Switch_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(bool), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member3), memberDescriptor.MemberName);
-        Assert.Equal(CommandType.Switch, memberDescriptor.CommandType);
     }
 
     [Fact]
@@ -105,7 +102,6 @@ public class Property_Switch_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(bool), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member4), memberDescriptor.MemberName);
-        Assert.Equal(CommandType.Switch, memberDescriptor.CommandType);
     }
 
     [Fact]
@@ -125,7 +121,6 @@ public class Property_Switch_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(bool), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member5), memberDescriptor.MemberName);
-        Assert.Equal(CommandType.Switch, memberDescriptor.CommandType);
     }
 
     [Fact]
@@ -145,6 +140,5 @@ public class Property_Switch_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(bool), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member6), memberDescriptor.MemberName);
-        Assert.Equal(CommandType.Switch, memberDescriptor.CommandType);
     }
 }

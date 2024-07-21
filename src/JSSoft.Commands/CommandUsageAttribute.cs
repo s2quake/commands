@@ -50,10 +50,7 @@ public class CommandUsageAttribute : Attribute
         UsageDescriptorType = usageDescriptorType;
     }
 
-    internal CommandUsageAttribute()
-    {
-        UsageDescriptorType = typeof(CommandUsageDescriptor);
-    }
+    internal CommandUsageAttribute() => UsageDescriptorType = typeof(CommandUsageDescriptor);
 
     public Type UsageDescriptorType { get; }
 }

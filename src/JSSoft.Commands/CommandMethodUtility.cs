@@ -166,7 +166,7 @@ internal static class CommandMethodUtility
                     };
                     var preferredMethodName = GenerateMethodInfoName(
                         methodName, typeof(Task<string[]>), parameterTypes);
-                    var message = $"Method must have the following format: {preferredMethodName}";
+                    var message = $"Method must have the following format: {preferredMethodName}.";
                     Trace.TraceWarning(message);
                 }
                 else
@@ -183,7 +183,7 @@ internal static class CommandMethodUtility
                     };
                     var preferredMethodName = GenerateMethodInfoName(
                         methodName, typeof(string[]), parameterTypes);
-                    var message = $"Method must have the following format: {preferredMethodName}";
+                    var message = $"Method must have the following format: {preferredMethodName}.";
                     Trace.TraceWarning(message);
                 }
             }
@@ -215,7 +215,7 @@ internal static class CommandMethodUtility
                     };
                     var preferredMethodName = GenerateMethodInfoName(
                         asyncName, typeof(Task<string[]>), parameterTypes);
-                    var message = $"Method must have the following format: {preferredMethodName}";
+                    var message = $"Method must have the following format: {preferredMethodName}.";
                     Trace.TraceWarning(message);
                 }
             }
@@ -237,7 +237,7 @@ internal static class CommandMethodUtility
                     };
                     var preferredMethodName = GenerateMethodInfoName(
                         normalName, typeof(string[]), parameterTypes);
-                    var message = $"Method must have the following format: {preferredMethodName}";
+                    var message = $"Method must have the following format: {preferredMethodName}.";
                     Trace.TraceWarning(message);
                 }
             }

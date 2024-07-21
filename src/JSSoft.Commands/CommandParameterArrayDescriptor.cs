@@ -25,10 +25,6 @@ public sealed class CommandParameterArrayDescriptor : CommandMemberDescriptor
 
     public override Type MemberType { get; }
 
-    public override bool IsExplicit { get; }
-
-    public override bool IsRequired { get; }
-
     public override bool IsNullable { get; }
 
     public override CommandUsageDescriptorBase UsageDescriptor { get; }

@@ -16,13 +16,16 @@ public abstract class CommandMemberDescriptor
         MemberName = memberName;
         Name = attribute.GetName(defaultName: memberName);
         ShortName = attribute.ShortName;
-        IsRequired = attribute.IsRequired;
-        IsExplicit = attribute.IsExplicit;
-        IsSwitch = attribute.IsSwitch;
-        IsVariables = attribute.IsVariables;
-        DefaultValue = attribute.DefaultValue;
-        InitValue = attribute.InitValue;
-        CommandType = attribute.CommandType;
+        IsRequired = attribute is CommandPropertyRequiredAttribute
+                        || attribute is CommandPropertyExplicitRequiredAttribute;
+        IsExplicit = attribute is CommandPropertyExplicitRequiredAttribute
+                        || attribute is CommandPropertyAttribute
+                        || attribute is CommandPropertySwitchAttribute;
+        IsSwitch = attribute is CommandPropertySwitchAttribute;
+        IsVariables = attribute is CommandPropertyArrayAttribute;
+        IsGeneral = attribute is CommandPropertyAttribute;
+        DefaultValue = GetDefaultValue(attribute);
+        InitValue = GetInitValue(attribute);
         DisplayName = GenerateDisplayName(this);
     }
 
@@ -36,21 +39,21 @@ public abstract class CommandMemberDescriptor
 
     public virtual object? DefaultValue { get; }
 
-    public virtual bool IsRequired { get; }
+    public bool IsRequired { get; }
 
-    public virtual bool IsExplicit { get; }
+    public bool IsExplicit { get; }
 
-    public virtual bool IsSwitch { get; }
+    public bool IsSwitch { get; }
 
-    public virtual bool IsVariables { get; }
+    public bool IsVariables { get; }
+
+    public bool IsGeneral { get; }
 
     public abstract bool IsNullable { get; }
 
     public abstract Type MemberType { get; }
 
     public string MemberName { get; }
-
-    public CommandType CommandType { get; }
 
     public abstract CommandUsageDescriptorBase UsageDescriptor { get; }
 
@@ -99,7 +102,7 @@ public abstract class CommandMemberDescriptor
         var method = type.GetMethod(methodName, bindingFlags, null, [], null);
         if (method is null)
         {
-            throw new ArgumentException($"Cannot found method '{methodName}'", nameof(attribute));
+            throw new ArgumentException($"Cannot found method '{methodName}'.", nameof(attribute));
         }
 
         try
@@ -182,5 +185,40 @@ public abstract class CommandMemberDescriptor
 
             return $"{memberDescriptor.ShortName}";
         }
+    }
+
+    private static object GetDefaultValue(CommandPropertyBaseAttribute attribute)
+    {
+        if (attribute is CommandPropertyExplicitRequiredAttribute explicitAttribute)
+        {
+            return explicitAttribute.DefaultValue;
+        }
+
+        if (attribute is CommandPropertyRequiredAttribute requiredAttribute)
+        {
+            return requiredAttribute.DefaultValue;
+        }
+
+        if (attribute is CommandPropertyAttribute generalAttribute)
+        {
+            return generalAttribute.DefaultValue;
+        }
+
+        return DBNull.Value;
+    }
+
+    private static object GetInitValue(CommandPropertyBaseAttribute attribute)
+    {
+        if (attribute is CommandPropertyArrayAttribute arrayAttribute)
+        {
+            return arrayAttribute.InitValue;
+        }
+
+        if (attribute is CommandPropertyAttribute generalAttribute)
+        {
+            return generalAttribute.InitValue;
+        }
+
+        return DBNull.Value;
     }
 }

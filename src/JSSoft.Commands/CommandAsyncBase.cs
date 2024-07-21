@@ -111,9 +111,7 @@ public abstract class CommandAsyncBase
     protected abstract Task OnExecuteAsync(CancellationToken cancellationToken);
 
     protected CommandMemberDescriptor GetDescriptor(string propertyName)
-    {
-        return CommandDescriptor.GetMemberDescriptors(GetType())[propertyName];
-    }
+        => CommandDescriptor.GetMemberDescriptors(GetType())[propertyName];
 
     protected virtual void OnUsagePrint(bool isDetail)
     {

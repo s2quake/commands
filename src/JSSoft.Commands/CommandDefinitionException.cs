@@ -86,9 +86,9 @@ public class CommandDefinitionException : SystemException
     }
 
     public static void ThrowIfPropertyNotRightTypeForSwitch(
-        CommandType commandType, PropertyInfo propertyInfo)
+        bool isSwitch, PropertyInfo propertyInfo)
     {
-        if (commandType == CommandType.Switch && propertyInfo.PropertyType != typeof(bool))
+        if (isSwitch == true && propertyInfo.PropertyType != typeof(bool))
         {
             var message = $"""
                 Attribute '{nameof(CommandPropertySwitchAttribute)}' is not available for 
@@ -99,9 +99,9 @@ public class CommandDefinitionException : SystemException
     }
 
     public static void ThrowIfPropertyNotRightTypeForVariables(
-        CommandType commandType, PropertyInfo propertyInfo)
+        bool isVariables, PropertyInfo propertyInfo)
     {
-        if (commandType == CommandType.Variables && propertyInfo.PropertyType.IsArray != true)
+        if (isVariables == true && propertyInfo.PropertyType.IsArray != true)
         {
             var message = $"""
                 Attribute '{nameof(CommandPropertyArrayAttribute)}' is not available for 

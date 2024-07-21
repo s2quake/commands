@@ -31,5 +31,7 @@ public sealed class CommandPropertyAttribute : CommandPropertyBaseAttribute
     {
     }
 
-    public override CommandType CommandType => CommandType.General;
+    public object InitValue { get; set; } = DBNull.Value;
+
+    public object DefaultValue { get; set; } = DBNull.Value;
 }

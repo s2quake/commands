@@ -19,7 +19,7 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
     public CommandMemberDescriptorCollection(
         Type type, IEnumerable<CommandMemberDescriptor> memberDescriptors)
     {
-        if (memberDescriptors.Count(item => item.CommandType == CommandType.Variables) > 1)
+        if (memberDescriptors.Count(item => item.IsVariables) > 1)
         {
             var message = $"""
                 Attribute '{nameof(CommandPropertyArrayAttribute)}' can be defined in only one 
@@ -30,7 +30,10 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
 
         var query = from item in memberDescriptors
                     orderby item.DefaultValue != DBNull.Value
-                    orderby item.CommandType
+                    orderby item.IsGeneral descending
+                    orderby item.IsVariables descending
+                    orderby item.IsRequired && item.IsExplicit descending
+                    orderby item.IsRequired descending
                     select item;
         var items = query.ToArray();
         _itemByMemberName = new(items.Length);
@@ -201,9 +204,8 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
         => memberDescriptor.IsRequired == true;
 
     private static bool IsOptionDescriptor(CommandMemberDescriptor memberDescriptor)
-        => memberDescriptor.CommandType == CommandType.General
-            || memberDescriptor.CommandType == CommandType.Switch;
+        => memberDescriptor.IsGeneral == true || memberDescriptor.IsSwitch == true;
 
     private static bool IsVariableDescriptor(CommandMemberDescriptor memberDescriptor)
-        => memberDescriptor.CommandType == CommandType.Variables;
+        => memberDescriptor.IsVariables;
 }

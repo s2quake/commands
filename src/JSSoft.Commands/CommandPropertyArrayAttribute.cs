@@ -7,8 +7,5 @@ namespace JSSoft.Commands;
 
 public sealed class CommandPropertyArrayAttribute : CommandPropertyBaseAttribute
 {
-    public override CommandType CommandType => CommandType.Variables;
-
-    [Obsolete("In the Variables property, DefaultValue is not used.")]
-    public new object DefaultValue => base.DefaultValue;
+    public object InitValue { get; set; } = DBNull.Value;
 }

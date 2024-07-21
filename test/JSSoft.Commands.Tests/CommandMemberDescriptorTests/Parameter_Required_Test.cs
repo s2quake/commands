@@ -48,7 +48,7 @@ public class Parameter_Required_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal("arg0", memberDescriptor.MemberName);
-        Assert.Equal(CommandType.Required, memberDescriptor.CommandType);
+        Assert.True(memberDescriptor.IsRequired);
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public class Parameter_Required_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal("Arg0", memberDescriptor.MemberName);
-        Assert.Equal(CommandType.Required, memberDescriptor.CommandType);
+        Assert.True(memberDescriptor.IsRequired);
     }
 
     [Fact]
@@ -90,6 +90,6 @@ public class Parameter_Required_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal("arg0", memberDescriptor.MemberName);
-        Assert.Equal(CommandType.Required, memberDescriptor.CommandType);
+        Assert.True(memberDescriptor.IsRequired);
     }
 }

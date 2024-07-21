@@ -30,4 +30,15 @@ internal static class StringBuilderExtensions
 
         return @this;
     }
+
+    public static StringBuilder AppendMany<T>(
+        this StringBuilder @this, IEnumerable<T> items, Func<T, string> formatter)
+    {
+        foreach (var item in items)
+        {
+            @this.Append(formatter(item));
+        }
+
+        return @this;
+    }
 }

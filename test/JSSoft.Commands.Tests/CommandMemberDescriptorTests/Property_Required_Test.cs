@@ -36,7 +36,7 @@ public class Property_Required_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Required1), memberDescriptor.MemberName);
-        Assert.Equal(CommandType.Required, memberDescriptor.CommandType);
+        Assert.True(memberDescriptor.IsRequired);
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public class Property_Required_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Required2), memberDescriptor.MemberName);
-        Assert.Equal(CommandType.Required, memberDescriptor.CommandType);
+        Assert.True(memberDescriptor.IsRequired);
     }
 
     [Fact]
@@ -76,6 +76,6 @@ public class Property_Required_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Required3), memberDescriptor.MemberName);
-        Assert.Equal(CommandType.Required, memberDescriptor.CommandType);
+        Assert.True(memberDescriptor.IsRequired);
     }
 }

@@ -26,25 +26,7 @@ public abstract class HelpCommandBase : CommandBase
         }
         else
         {
-            var argList = new List<string>(CommandNames);
-            var command = CommandContextBase.GetCommand(CommandContext.Node, argList);
-            if (command is not null && argList.Count == 0)
-            {
-                if (command is ICommandUsagePrinter usagePrinter)
-                {
-                    usagePrinter.Print(IsDetail);
-                }
-                else
-                {
-                    var message = $"Command '{command.Name}' does not support help.";
-                    throw new InvalidOperationException(message);
-                }
-            }
-            else
-            {
-                var commandName = CommandUtility.Join(CommandNames);
-                throw new InvalidOperationException($"Command '{commandName}' does not exist.");
-            }
+            PrintCommandHelp();
         }
     }
 
@@ -127,10 +109,7 @@ public abstract class HelpCommandBase : CommandBase
     {
         var sb = new StringBuilder();
         sb.Append(node.Name);
-        foreach (var aliase in node.Aliases)
-        {
-            sb.Append($", {aliase}");
-        }
+        sb.AppendMany(node.Aliases, item => $", {item}");
 
         return sb.ToString();
     }
@@ -150,6 +129,29 @@ public abstract class HelpCommandBase : CommandBase
 
         PrintCommands(commandWriter, CommandContext);
         Out.Write(commandWriter.ToString());
+    }
+
+    private void PrintCommandHelp()
+    {
+        var argList = new List<string>(CommandNames);
+        var command = CommandContextBase.GetCommand(CommandContext.Node, argList);
+        if (command is not null && argList.Count == 0)
+        {
+            if (command is ICommandUsagePrinter usagePrinter)
+            {
+                usagePrinter.Print(IsDetail);
+            }
+            else
+            {
+                var message = $"Command '{command.Name}' does not support help.";
+                throw new InvalidOperationException(message);
+            }
+        }
+        else
+        {
+            var commandName = CommandUtility.Join(CommandNames);
+            throw new InvalidOperationException($"Command '{commandName}' does not exist.");
+        }
     }
 
     private string[] GetCommandNames(ICommandNode node, string[] names, string find)

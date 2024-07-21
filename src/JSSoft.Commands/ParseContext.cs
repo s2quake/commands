@@ -98,12 +98,12 @@ internal sealed class ParseContext(
                     var item = $"-{s}";
                     if (memberDescriptors.FindByOptionName(item) is not { } memberDescriptor1)
                     {
-                        throw new InvalidOperationException($"unknown switch: '{s}'");
+                        throw new InvalidOperationException($"Unknown switch: '{s}'.");
                     }
 
                     if (memberDescriptor1.MemberType != typeof(bool))
                     {
-                        throw new InvalidOperationException($"unknown switch: '{s}'");
+                        throw new InvalidOperationException($"Unknown switch: '{s}'.");
                     }
 
                     parseDescriptors[memberDescriptor1].IsOptionSet = true;

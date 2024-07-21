@@ -8,7 +8,6 @@ using System.ComponentModel;
 namespace JSSoft.Commands;
 
 [AttributeUsage(AttributeTargets.All)]
-public class CommandDescriptionAttribute(string description)
-    : DescriptionAttribute(description)
+public class CommandDescriptionAttribute(string description) : DescriptionAttribute(description)
 {
 }

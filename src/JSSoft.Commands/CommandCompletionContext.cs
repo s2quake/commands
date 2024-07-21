@@ -9,13 +9,13 @@ public sealed class CommandCompletionContext
 {
     private CommandCompletionContext(
         ICommand command,
-        CommandMemberDescriptor member,
+        CommandMemberDescriptor memberDescriptor,
         string[] args,
         string find,
         IReadOnlyDictionary<string, object?> properties)
     {
         Command = command;
-        MemberDescriptor = member;
+        MemberDescriptor = memberDescriptor;
         Arguments = args;
         Find = find;
         Properties = properties;
@@ -51,7 +51,7 @@ public sealed class CommandCompletionContext
             if (parseDescriptor.HasValue == true)
             {
                 properties.Add(memberDescriptor.MemberName, parseDescriptor.Value);
-                if (memberDescriptor.CommandType != CommandType.Variables)
+                if (memberDescriptor.IsVariables != true)
                 {
                     parseDescriptorByMemberDescriptor.Remove(memberDescriptor);
                 }

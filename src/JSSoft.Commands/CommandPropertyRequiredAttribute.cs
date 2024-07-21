@@ -16,8 +16,5 @@ public sealed class CommandPropertyRequiredAttribute : CommandPropertyBaseAttrib
     {
     }
 
-    public override CommandType CommandType => CommandType.Required;
-
-    [Obsolete("In the Required property, InitValue is not used.")]
-    public new object InitValue => base.InitValue;
+    public object DefaultValue { get; set; } = DBNull.Value;
 }

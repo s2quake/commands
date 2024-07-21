@@ -308,7 +308,7 @@ public abstract class CommandContextBase : ICommandContext
 
         if (isPartialCommand == true && command.Aliases.Length != 0)
         {
-            var message = $"Partial command '{commandName}' cannot have alias";
+            var message = $"Partial command '{commandName}' cannot have alias.";
             throw new CommandDefinitionException(message);
         }
 

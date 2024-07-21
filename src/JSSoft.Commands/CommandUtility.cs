@@ -62,6 +62,9 @@ public static partial class CommandUtility
         typeof(decimal),
     ];
 
+    public static int BufferWidth
+        => Console.IsOutputRedirected == true ? int.MaxValue : Console.BufferWidth;
+
     public static bool TrySplit(string argumentLine, out string[] items)
     {
         try
@@ -76,10 +79,7 @@ public static partial class CommandUtility
         }
     }
 
-    public static string[] Split(string argumentLine)
-    {
-        return GetMatches(argumentLine);
-    }
+    public static string[] Split(string argumentLine) => GetMatches(argumentLine);
 
     public static string Join(params string[] items)
     {
@@ -162,9 +162,6 @@ public static partial class CommandUtility
         return false;
     }
 
-    public static int GetBufferWidth()
-        => Console.IsOutputRedirected == true ? int.MaxValue : Console.BufferWidth;
-
     public static bool IsSupportedType(Type value)
     {
         if (Nullable.GetUnderlyingType(value) is not null &&
@@ -215,9 +212,7 @@ public static partial class CommandUtility
     internal static bool IsEmptyArgs(string[] args) => args.Length == 0 || args[0] == string.Empty;
 
     internal static string Join(string separator, IEnumerable<string> items)
-    {
-        return string.Join(separator, items.Where(item => item != string.Empty));
-    }
+        => string.Join(separator, items.Where(item => item != string.Empty));
 
     private static string[] GetMatches(string text)
     {

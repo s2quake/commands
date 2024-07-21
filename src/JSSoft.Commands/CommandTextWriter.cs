@@ -28,7 +28,7 @@ public class CommandTextWriter(TextWriter writer, int width, string tabString)
     }
 
     public CommandTextWriter(TextWriter writer, CommandSettings settings)
-        : this(writer, CommandUtility.GetBufferWidth(), settings.IndentString)
+        : this(writer, CommandUtility.BufferWidth, settings.IndentString)
     {
         _settings = settings;
     }

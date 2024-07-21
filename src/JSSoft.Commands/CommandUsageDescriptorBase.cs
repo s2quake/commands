@@ -5,21 +5,15 @@
 
 namespace JSSoft.Commands;
 
-public abstract class CommandUsageDescriptorBase
+public abstract class CommandUsageDescriptorBase(CommandUsageAttribute attribute, object target)
 {
-    protected CommandUsageDescriptorBase(CommandUsageAttribute attribute, object target)
-    {
-        Attribute = attribute;
-        Target = target;
-    }
-
     public abstract string Summary { get; }
 
     public abstract string Description { get; }
 
     public abstract string Example { get; }
 
-    protected CommandUsageAttribute Attribute { get; }
+    protected CommandUsageAttribute Attribute { get; } = attribute;
 
-    protected object Target { get; }
+    protected object Target { get; } = target;
 }

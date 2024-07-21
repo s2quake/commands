@@ -96,9 +96,7 @@ public abstract class CommandBase
     protected abstract void OnExecute();
 
     protected CommandMemberDescriptor GetDescriptor(string propertyName)
-    {
-        return CommandDescriptor.GetMemberDescriptors(GetType())[propertyName];
-    }
+        => CommandDescriptor.GetMemberDescriptors(GetType())[propertyName];
 
     protected virtual void OnUsagePrint(bool isDetail)
     {
