@@ -62,9 +62,6 @@ dotnet_diagnostic.S3881.severity = none
 # S3971: "GC.SuppressFinalize" should not be called
 dotnet_diagnostic.S3971.severity = none
 
-# S4143: Collection elements should not be replaced unconditionally
-dotnet_diagnostic.S4143.severity = none
-
 # MEN007: Use a single return
 dotnet_diagnostic.MEN007.severity = none
 
