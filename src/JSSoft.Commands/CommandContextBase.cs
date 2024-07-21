@@ -453,7 +453,7 @@ public abstract class CommandContextBase : ICommandContext
     private sealed class InternalCommandInvoker(ICommand command)
         : CommandInvoker(command.Name, command)
     {
-        protected override void OnValidate(string[] args)
+        protected override void OnVerify(string[] args)
         {
             // do nothing
         }

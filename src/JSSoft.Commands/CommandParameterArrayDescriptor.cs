@@ -29,13 +29,7 @@ public sealed class CommandParameterArrayDescriptor : CommandMemberDescriptor
 
     public override CommandUsageDescriptorBase UsageDescriptor { get; }
 
-    protected override void SetValue(object instance, object? value)
-    {
-        _value = value;
-    }
+    protected override void SetValue(object instance, object? value) => _value = value;
 
-    protected override object? GetValue(object instance)
-    {
-        return _value;
-    }
+    protected override object? GetValue(object instance) => _value;
 }

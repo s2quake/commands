@@ -39,7 +39,7 @@ public class CommandParser : CommandAnalyzer
 
     public void Parse(string[] args)
     {
-        OnValidate(args);
+        OnVerify(args);
 
         var instance = Instance;
         var memberDescriptors = CommandDescriptor.GetMemberDescriptors(instance);
@@ -47,7 +47,7 @@ public class CommandParser : CommandAnalyzer
         parserContext.SetValue(instance);
     }
 
-    protected virtual void OnValidate(string[] args)
+    protected virtual void OnVerify(string[] args)
     {
         if (CommandUtility.IsEmptyArgs(args) == true && Settings.AllowEmpty != true)
         {

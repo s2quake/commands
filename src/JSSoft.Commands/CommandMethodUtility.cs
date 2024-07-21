@@ -17,7 +17,7 @@ internal static class CommandMethodUtility
 {
     private static readonly Type[] ProgressGenericArgumentTypes =
     [
-       typeof(sbyte),
+        typeof(sbyte),
         typeof(byte),
         typeof(short),
         typeof(ushort),

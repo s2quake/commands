@@ -85,9 +85,7 @@ public sealed class CommandMethodDescriptorCollection : IEnumerable<CommandMetho
         => (CommandMethodDescriptor)_methodDescriptorByMethodName[index]!;
 
     public CommandMethodDescriptor? FindByName(string name)
-    {
-        return _methodDescriptorByName.TryGetValue(name, out var value) == true ? value : null;
-    }
+        => _methodDescriptorByName.TryGetValue(name, out var value) == true ? value : null;
 
     public bool Contains(string methodName) => _methodDescriptorByMethodName.Contains(methodName);
 
