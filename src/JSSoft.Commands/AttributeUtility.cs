@@ -9,50 +9,29 @@ namespace JSSoft.Commands;
 
 internal static class AttributeUtility
 {
+    public static T? GetCustomAttribute<T>(Assembly assembly)
+        where T : Attribute
+        => Attribute.GetCustomAttribute(assembly, typeof(T)) is T attr ? attr : default;
+
     public static T? GetCustomAttribute<T>(MemberInfo memberInfo)
         where T : Attribute
-    {
-        if (Attribute.GetCustomAttribute(memberInfo, typeof(T)) is T attribute)
-        {
-            return attribute;
-        }
-
-        return default;
-    }
+        => Attribute.GetCustomAttribute(memberInfo, typeof(T)) is T attr ? attr : default;
 
     public static T? GetCustomAttribute<T>(ParameterInfo parameterInfo)
         where T : Attribute
-    {
-        if (Attribute.GetCustomAttribute(parameterInfo, typeof(T)) is T attribute)
-        {
-            return attribute;
-        }
-
-        return default;
-    }
+        => Attribute.GetCustomAttribute(parameterInfo, typeof(T)) is T attr ? attr : default;
 
     public static T? GetCustomAttribute<T>(MemberInfo memberInfo, bool inherit)
         where T : Attribute
-    {
-        if (Attribute.GetCustomAttribute(memberInfo, typeof(T), inherit) is T attribute)
-        {
-            return attribute;
-        }
-
-        return default;
-    }
+        => Attribute.GetCustomAttribute(memberInfo, typeof(T), inherit) is T attr ? attr : default;
 
     public static T[] GetCustomAttributes<T>(MemberInfo memberInfo)
         where T : Attribute
-    {
-        return Attribute.GetCustomAttributes(memberInfo, typeof(T)).OfType<T>().ToArray();
-    }
+        => Attribute.GetCustomAttributes(memberInfo, typeof(T)).OfType<T>().ToArray();
 
     public static T[] GetCustomAttributes<T>(MemberInfo memberInfo, bool inherit)
         where T : Attribute
-    {
-        return Attribute.GetCustomAttributes(memberInfo, typeof(T), inherit).OfType<T>().ToArray();
-    }
+        => Attribute.GetCustomAttributes(memberInfo, typeof(T), inherit).OfType<T>().ToArray();
 
     public static object? GetDefaultValue(MemberInfo memberInfo)
         => GetValue<DefaultValueAttribute, object?>(memberInfo, a => a.Value, DBNull.Value);
@@ -90,26 +69,12 @@ internal static class AttributeUtility
     public static TV GetValue<TA, TV>(
         Assembly assembly, Func<TA, TV> getter, TV defaultValue)
         where TA : Attribute
-    {
-        if (Attribute.GetCustomAttribute(assembly, typeof(TA)) is TA attribute)
-        {
-            return getter(attribute);
-        }
-
-        return defaultValue;
-    }
+        => GetCustomAttribute<TA>(assembly) is TA attr ? getter(attr) : defaultValue;
 
     public static TV GetValue<TA, TV>(
         Assembly assembly, Func<TA, TV> getter, Func<Assembly, TV> defaultGetter)
         where TA : Attribute
-    {
-        if (Attribute.GetCustomAttribute(assembly, typeof(TA)) is TA attribute)
-        {
-            return getter(attribute);
-        }
-
-        return defaultGetter(assembly);
-    }
+        => GetCustomAttribute<TA>(assembly) is TA attr ? getter(attr) : defaultGetter(assembly);
 
     public static string GetValue<TA>(
         Assembly assembly, Func<TA, string> getter)
@@ -151,26 +116,12 @@ internal static class AttributeUtility
     public static TV GetValue<TA, TV>(
         MemberInfo memberInfo, Func<TA, TV> getter, TV defaultValue)
         where TA : Attribute
-    {
-        if (Attribute.GetCustomAttribute(memberInfo, typeof(TA)) is TA attribute)
-        {
-            return getter(attribute);
-        }
-
-        return defaultValue;
-    }
+        => GetCustomAttribute<TA>(memberInfo) is TA attr ? getter(attr) : defaultValue;
 
     public static TV GetValue<TA, TV>(
         MemberInfo memberInfo, Func<TA, TV> getter, Func<MemberInfo, TV> defaultGetter)
         where TA : Attribute
-    {
-        if (Attribute.GetCustomAttribute(memberInfo, typeof(TA)) is TA attribute)
-        {
-            return getter(attribute);
-        }
-
-        return defaultGetter(memberInfo);
-    }
+        => GetCustomAttribute<TA>(memberInfo) is TA attr ? getter(attr) : defaultGetter(memberInfo);
 
     public static string GetValue<TA>(
         MemberInfo memberInfo, Func<TA, string> getter)
@@ -212,26 +163,14 @@ internal static class AttributeUtility
     public static TV GetValue<TA, TV>(
         ParameterInfo parameterInfo, Func<TA, TV> getter, TV defaultValue)
         where TA : Attribute
-    {
-        if (Attribute.GetCustomAttribute(parameterInfo, typeof(TA)) is TA attribute)
-        {
-            return getter(attribute);
-        }
-
-        return defaultValue;
-    }
+        => GetCustomAttribute<TA>(parameterInfo) is TA attr ? getter(attr) : defaultValue;
 
     public static TV GetValue<TA, TV>(
         ParameterInfo parameterInfo, Func<TA, TV> getter, Func<ParameterInfo, TV> defaultGetter)
         where TA : Attribute
-    {
-        if (Attribute.GetCustomAttribute(parameterInfo, typeof(TA)) is TA attribute)
-        {
-            return getter(attribute);
-        }
-
-        return defaultGetter(parameterInfo);
-    }
+        => GetCustomAttribute<TA>(parameterInfo) is TA attr
+            ? getter(attr)
+            : defaultGetter(parameterInfo);
 
     public static string GetValue<TA>(
         ParameterInfo parameterInfo, Func<TA, string> getter)
