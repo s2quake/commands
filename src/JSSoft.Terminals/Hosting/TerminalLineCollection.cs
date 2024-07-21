@@ -1,20 +1,7 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="TerminalLineCollection.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
@@ -23,7 +10,7 @@ using JSSoft.Terminals.Hosting.Ansi;
 
 namespace JSSoft.Terminals.Hosting;
 
-sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<TerminalLine>
+internal sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<TerminalLine>
 {
     private static readonly Dictionary<char, IAsciiCode> AsciiCodeByCharacter = new()
     {
@@ -63,6 +50,7 @@ sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<TerminalL
         {
             lines.Add(GetString(item));
         }
+
         return string.Join(Environment.NewLine, lines);
     }
 
@@ -73,6 +61,7 @@ sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<TerminalL
             line = _lineList[index];
             return true;
         }
+
         line = null!;
         return false;
     }
@@ -84,6 +73,7 @@ sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<TerminalL
             line = _lineList[index.Y];
             return true;
         }
+
         line = null!;
         return false;
     }
@@ -101,6 +91,7 @@ sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<TerminalL
             _lineList.Add(line);
             line.Parent = beginIndex.Y != index.Y ? _lineList[beginIndex.Y] : null;
         }
+
         _items.Expand(_lineList.Count * width);
         return _lineList[index.Y];
     }
@@ -112,10 +103,12 @@ sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<TerminalL
             _lineList[_lineList.Count - 1].Parent = null;
             _lineList.RemoveAt(_lineList.Count - 1);
         }
+
         if (index.Y < _lineList.Count)
         {
             _lineList[index.Y].Take(index.X);
         }
+
         _items.Take(index.Value);
     }
 
@@ -129,6 +122,7 @@ sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<TerminalL
             line.Parent = null;
             line.Dispose();
         }
+
         _lineList.Clear();
         _items.Reset();
         AppendText(string.Empty, TerminalDisplayInfo.Empty);
@@ -137,7 +131,9 @@ sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<TerminalL
     public void Erase(TerminalIndex index, int length)
     {
         if (length < 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(length));
+        }
 
         var index1 = index;
         var index2 = index + length;
@@ -145,7 +141,9 @@ sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<TerminalL
         for (var i = index2.Y - 1; i >= index1.Y; i--)
         {
             if (i < 0 || i >= _lineList.Count)
+            {
                 continue;
+            }
 
             var line = _lineList[i];
             var x1 = i == index1.Y ? index1.X : 0;
@@ -164,7 +162,7 @@ sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<TerminalL
         Take(_index);
         var lines = this;
         var query = from item in lines
-                    where item.Parent == null
+                    where item.Parent is null
                     select item.GetCharacterInfos();
         var strings = query.ToArray();
         var index = new TerminalIndex(_terminal, TerminalCoord.Empty);
@@ -178,6 +176,7 @@ sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<TerminalL
             beginIndex = index;
             index = UpdateString(index, beginIndex, lines, @string);
         }
+
         _index = index;
         _beginIndex = beginIndex;
     }
@@ -197,7 +196,10 @@ sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<TerminalL
         if (GetCharacterInfo(index) is { } characterInfo)
         {
             if (characterInfo.Span < 0)
+            {
                 return GetCoordinate(index + characterInfo.Span);
+            }
+
             var bufferWidth = _terminal.BufferSize.Width;
             var x = index.Value % bufferWidth;
             var y = index.Value / bufferWidth;
@@ -218,12 +220,18 @@ sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<TerminalL
     public TerminalCharacterInfo? GetInfo(int x, int y)
     {
         if (y < 0 || y >= Count)
+        {
             return null;
+        }
+
         var block = this[y];
         var x1 = x;
         var y1 = y;
         if (y1 < Count && this[y1] is { } line && line.Length > 0)
+        {
             return line[x1];
+        }
+
         return null;
     }
 
@@ -262,6 +270,7 @@ sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<TerminalL
             Console.WriteLine($"rest: {SequenceUtility.ToLiteral(_rest)}");
 #endif
         }
+
         _index = context.Index;
         _beginIndex = context.BeginIndex;
         lines.Prepare(_beginIndex, _index);
@@ -314,6 +323,7 @@ sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<TerminalL
             line.SetCharacterInfo(index2, characterInfo);
             index = index2 + characterInfo.Span;
         }
+
         lines.Prepare(beginIndex, index);
         return index;
     }
@@ -343,20 +353,18 @@ sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<TerminalL
                 {
                     sb.AppendLine();
                 }
+
                 sb.Append(characterInfo.Character);
                 g = characterInfo.Group;
             }
         }
+
         return sb.ToString();
     }
-
-    #region IEnumerable
 
     IEnumerator<TerminalLine> IEnumerable<TerminalLine>.GetEnumerator()
         => _lineList.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator()
         => _lineList.GetEnumerator();
-
-    #endregion
 }

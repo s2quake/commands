@@ -1,22 +1,10 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="CommandSettings.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System.Diagnostics;
+using static JSSoft.Commands.CommandUtility;
 
 namespace JSSoft.Commands;
 
@@ -39,8 +27,6 @@ public struct CommandSettings
 
     public static bool IsConsoleMode { get; set; } = true;
 
-    public static CommandSettings Default { get; } = new CommandSettings();
-
     public bool IsPublicOnly { get; set; }
 
     public bool IsAnsiSupported
@@ -55,9 +41,19 @@ public struct CommandSettings
         set
         {
             if (value < 5)
-                throw new ArgumentOutOfRangeException(nameof(value), $"Value  must be greater than 5.");
-            if (value >= CommandUtility.GetBufferWidth())
-                Trace.TraceWarning($"Value must be less than BufferWidth({CommandUtility.GetBufferWidth()}).");
+            {
+                var message = $"Value  must be greater than 5.";
+                throw new ArgumentOutOfRangeException(nameof(value), message);
+            }
+
+            if (value >= BufferWidth)
+            {
+                var message = $"""
+                    Value must be less than BufferWidth({BufferWidth}).
+                    """;
+                Trace.TraceWarning(message);
+            }
+
             _labelWith = value;
         }
     }
@@ -68,7 +64,11 @@ public struct CommandSettings
         set
         {
             if (value == 0)
-                throw new ArgumentException($"The length of value must be greater than zero.", nameof(value));
+            {
+                var message = $"The length of value must be greater than zero.";
+                throw new ArgumentException(message, nameof(value));
+            }
+
             _indentSpaces = value;
         }
     }
@@ -105,55 +105,89 @@ public struct CommandSettings
 
     internal static BindingFlags GetBindingFlags(Type type)
     {
-        var instanceFlag = TypeUtility.IsStaticClass(type) == true ? BindingFlags.Static : BindingFlags.Static | BindingFlags.Instance;
+        var instanceFlag = TypeUtility.IsStaticClass(type) == true
+            ? BindingFlags.Static
+            : BindingFlags.Static | BindingFlags.Instance;
         var accessFlag = BindingFlags.Public | BindingFlags.NonPublic;
         return instanceFlag | accessFlag;
     }
-
-    internal readonly bool IsHelpArg(string arg)
-    {
-        if (HelpName != string.Empty && arg == $"{CommandUtility.Delimiter}{HelpName}")
-            return true;
-        if (HelpShortName != char.MinValue && arg == $"{CommandUtility.ShortDelimiter}{HelpShortName}")
-            return true;
-        return false;
-    }
-
-    internal readonly bool IsVersionArg(string arg)
-    {
-        if (VersionName != string.Empty && arg == $"{CommandUtility.Delimiter}{VersionName}")
-            return true;
-        if (VersionShortName != char.MinValue && arg == $"{CommandUtility.ShortDelimiter}{VersionShortName}")
-            return true;
-        return false;
-    }
-
-    internal readonly bool ContainsHelpOption(string[] args)
-    {
-        if (HelpName != string.Empty && args.Contains($"{CommandUtility.Delimiter}{HelpName}") == true)
-            return true;
-        if (HelpShortName != char.MinValue && args.Contains($"{CommandUtility.ShortDelimiter}{HelpShortName}") == true)
-            return true;
-        return false;
-    }
-
-    internal readonly bool ContainsVersionOption(string[] args)
-    {
-        if (VersionName != string.Empty && args.Contains($"{CommandUtility.Delimiter}{VersionName}") == true)
-            return true;
-        if (VersionShortName != char.MinValue && args.Contains($"{CommandUtility.ShortDelimiter}{VersionShortName}") == true)
-            return true;
-        return false;
-    }
-
-    internal readonly string GetLabelString(string label) => GetLabelString(label, LabelWidth, IndentSpaces);
 
     internal static string GetLabelString(string label, int labelWidth, int indentSpaces)
     {
         var text = label.PadRight(labelWidth);
         if (labelWidth <= label.Length)
+        {
             return label.PadRight(label.Length + 1);
+        }
+
         var l = text.Length % indentSpaces;
         return text.PadRight(l);
     }
+
+    internal readonly bool IsHelpArg(string arg)
+    {
+        if (HelpName != string.Empty && arg == $"{Delimiter}{HelpName}")
+        {
+            return true;
+        }
+
+        if (HelpShortName != char.MinValue && arg == $"{ShortDelimiter}{HelpShortName}")
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    internal readonly bool IsVersionArg(string arg)
+    {
+        if (VersionName != string.Empty && arg == $"{Delimiter}{VersionName}")
+        {
+            return true;
+        }
+
+        if (VersionShortName != char.MinValue && arg == $"{ShortDelimiter}{VersionShortName}")
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    internal readonly bool ContainsHelpOption(string[] args)
+    {
+        if (HelpName != string.Empty
+            && args.Contains($"{Delimiter}{HelpName}") == true)
+        {
+            return true;
+        }
+
+        if (HelpShortName != char.MinValue
+            && args.Contains($"{ShortDelimiter}{HelpShortName}") == true)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    internal readonly bool ContainsVersionOption(string[] args)
+    {
+        if (VersionName != string.Empty
+            && args.Contains($"{Delimiter}{VersionName}") == true)
+        {
+            return true;
+        }
+
+        if (VersionShortName != char.MinValue
+            && args.Contains($"{ShortDelimiter}{VersionShortName}") == true)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    internal readonly string GetLabelString(string label)
+        => GetLabelString(label, LabelWidth, IndentSpaces);
 }

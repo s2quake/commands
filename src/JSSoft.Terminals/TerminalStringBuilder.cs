@@ -1,20 +1,7 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="TerminalStringBuilder.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System.Text;
 
@@ -79,15 +66,15 @@ public sealed class TerminalStringBuilder
 
     public static string GetString(string text, TerminalColorType? foreground, TerminalColorType? background)
     {
-        if (foreground != null && background != null)
+        if (foreground is not null && background is not null)
         {
             return $"\x1b[0;{ForegroundValues[foreground.Value]};{BackgroundValues[background.Value]}m{text}\x1b[0m";
         }
-        else if (foreground != null)
+        else if (foreground is not null)
         {
             return $"\x1b[0;{ForegroundValues[foreground.Value]}m{text}\x1b[0m";
         }
-        else if (background != null)
+        else if (background is not null)
         {
             return $"\x1b[0;{BackgroundValues[background.Value]}m{text}\x1b[0m";
         }
@@ -209,20 +196,41 @@ public sealed class TerminalStringBuilder
     {
         var itemList = new List<string>(3);
         if (_isBold == true)
+        {
             itemList.Add($"{1}");
+        }
+
         if (_isUnderline == true)
+        {
             itemList.Add($"{4}");
+        }
+
         if (_isNegative == true)
+        {
             itemList.Add($"{7}");
-        if (_foreground != null)
+        }
+
+        if (_foreground is not null)
+        {
             itemList.Add($"{ForegroundValues[_foreground.Value]}");
-        if (_background != null)
+        }
+
+        if (_background is not null)
+        {
             itemList.Add($"{BackgroundValues[_background.Value]}");
+        }
+
         if (itemList.Count != 0)
+        {
             _p1 = $"\x1b[{string.Join(";", itemList)}m";
+        }
         else if (_p2 != string.Empty)
+        {
             _p1 = $"\x1b[0m";
+        }
         else
+        {
             _p1 = string.Empty;
+        }
     }
 }

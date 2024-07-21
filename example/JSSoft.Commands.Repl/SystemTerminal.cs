@@ -1,20 +1,7 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="SystemTerminal.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System;
 using System.ComponentModel.Composition;
@@ -29,11 +16,15 @@ using JSSoft.Terminals;
 namespace JSSoft.Commands.Repl;
 
 [Export]
-sealed class SystemTerminal : SystemTerminalBase
+internal sealed class SystemTerminal : SystemTerminalBase
 {
-    private static readonly string postfix = "$ ";
-    private static readonly string postfixC = TerminalStringBuilder.GetString(postfix, TerminalColorType.BrightGreen);
-    private static readonly string separatorC = TerminalStringBuilder.GetString($"{Path.DirectorySeparatorChar}", TerminalColorType.Red);
+    private static readonly string Suffix = "$ ";
+    private static readonly string SuffixC
+        = TerminalStringBuilder.GetString(Suffix, TerminalColorType.BrightGreen);
+
+    private static readonly string SeparatorC
+        = TerminalStringBuilder.GetString($"{Path.DirectorySeparatorChar}", TerminalColorType.Red);
+
     private readonly IApplication _application;
     private readonly CommandContext _commandContext;
 
@@ -49,12 +40,13 @@ sealed class SystemTerminal : SystemTerminalBase
 
     protected override string FormatPrompt(string prompt)
     {
-        if (prompt.EndsWith(postfix) == true)
+        if (prompt.EndsWith(Suffix) == true)
         {
-            var text = prompt.Substring(0, prompt.Length - postfix.Length);
-            var textC = Regex.Replace(text, $"\\{Path.DirectorySeparatorChar}", separatorC);
-            return textC + postfixC;
+            var text = prompt.Substring(0, prompt.Length - Suffix.Length);
+            var textC = Regex.Replace(text, $"\\{Path.DirectorySeparatorChar}", SeparatorC);
+            return textC + SuffixC;
         }
+
         return prompt;
     }
 
@@ -81,6 +73,6 @@ sealed class SystemTerminal : SystemTerminalBase
 
     private void UpdatePrompt()
     {
-        Prompt = $"{_application.CurrentDirectory}{postfix}";
+        Prompt = $"{_application.CurrentDirectory}{Suffix}";
     }
 }

@@ -1,20 +1,7 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="TerminalRect.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 namespace JSSoft.Terminals;
 
@@ -34,6 +21,7 @@ public struct TerminalRect(TerminalPoint location, TerminalSize size) : IEquatab
         {
             return _location == rect._location && _size == rect._size;
         }
+
         return base.Equals(obj);
     }
 
@@ -49,14 +37,26 @@ public struct TerminalRect(TerminalPoint location, TerminalSize size) : IEquatab
     public static bool Contains(TerminalRect outerRect, TerminalRect innerRect, TerminalPoint point)
     {
         if (outerRect.Left >= innerRect.Left)
+        {
             throw new ArgumentOutOfRangeException(nameof(outerRect));
+        }
+
         if (outerRect.Top >= innerRect.Top)
+        {
             throw new ArgumentOutOfRangeException(nameof(outerRect));
+        }
+
         if (outerRect.Right < innerRect.Right)
+        {
             throw new ArgumentOutOfRangeException(nameof(outerRect));
+        }
+
         if (outerRect.Bottom < innerRect.Bottom)
+        {
             throw new ArgumentOutOfRangeException(nameof(outerRect));
-        return outerRect.Contains(point) == true && innerRect.Contains(point) == false;
+        }
+
+        return outerRect.Contains(point) == true && innerRect.Contains(point) != true;
     }
 
     public static bool Contains(TerminalRect rect, TerminalThickness margin, TerminalThickness padding, TerminalPoint point)
@@ -99,18 +99,22 @@ public struct TerminalRect(TerminalPoint location, TerminalSize size) : IEquatab
         {
             rect.X = targetRect.Left;
         }
+
         if (rect.Top < targetRect.Top)
         {
             rect.Y = targetRect.Top;
         }
+
         if (rect.Right >= targetRect.Right)
         {
             rect.X = targetRect.Right - rect.Width;
         }
+
         if (rect.Bottom >= targetRect.Bottom)
         {
             rect.Y = targetRect.Bottom - rect.Height;
         }
+
         return rect;
     }
 
@@ -184,10 +188,6 @@ public struct TerminalRect(TerminalPoint location, TerminalSize size) : IEquatab
     public static TerminalRect operator *(TerminalRect rect, int value)
         => new(rect.Location.X * value, rect.Location.Y * value, rect.Size.Width * value, rect.Size.Height * value);
 
-    #region IEquatable
-
     readonly bool IEquatable<TerminalRect>.Equals(TerminalRect other)
         => Location == other.Location && Size == other.Size;
-
-    #endregion
 }

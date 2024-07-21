@@ -1,0 +1,18 @@
+{
+    "$schema": "https://raw.githubusercontent.com/DotNetAnalyzers/StyleCopAnalyzers/master/StyleCop.Analyzers/StyleCop.Analyzers/Settings/stylecop.schema.json",
+    "settings": {
+      "orderingRules": {
+        "usingDirectivesPlacement": "outsideNamespace"
+      },
+      "documentationRules": {
+        "companyName": "JSSoft",
+        "copyrightText": "  Copyright (c) {year} {author}. All Rights Reserved.\n  Licensed under the {licenseName} License. See {licenseFile} in the project root for license information.",
+        "variables": {
+          "licenseName": "MIT",
+          "licenseFile": "LICENSE.md",
+          "year": "2024",
+          "author": "Jeesu Choi"
+        }
+      }
+    }
+}

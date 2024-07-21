@@ -1,20 +1,7 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="CommandAnalyzer.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System.IO;
 
@@ -25,12 +12,12 @@ public abstract class CommandAnalyzer
     private readonly string _fullName;
     private readonly string _filename;
 
-    public CommandAnalyzer(string commandName, object instance)
-        : this(commandName, instance, CommandSettings.Default)
+    protected CommandAnalyzer(string commandName, object instance)
+        : this(commandName, instance, settings: default)
     {
     }
 
-    public CommandAnalyzer(string commandName, object instance, CommandSettings settings)
+    protected CommandAnalyzer(string commandName, object instance, CommandSettings settings)
     {
         ThrowUtility.ThrowIfEmpty(commandName, nameof(commandName));
         CommandName = commandName;
@@ -40,12 +27,12 @@ public abstract class CommandAnalyzer
         _filename = commandName;
     }
 
-    public CommandAnalyzer(Assembly assembly, object instance)
-        : this(assembly, instance, CommandSettings.Default)
+    protected CommandAnalyzer(Assembly assembly, object instance)
+        : this(assembly, instance, settings: default)
     {
     }
 
-    public CommandAnalyzer(Assembly assembly, object instance, CommandSettings settings)
+    protected CommandAnalyzer(Assembly assembly, object instance, CommandSettings settings)
     {
         _fullName = AssemblyUtility.GetAssemblyLocation(assembly);
         _filename = Path.GetFileName(_fullName);
@@ -87,20 +74,31 @@ public abstract class CommandAnalyzer
 
     internal void ThrowIfNotVerifyCommandName(string commandName)
     {
-        if (VerifyCommandName(commandName) == false)
+        if (VerifyCommandName(commandName) != true)
         {
-            throw new ArgumentException($"Command name '{commandName}' is not available.", nameof(commandName));
+            throw new ArgumentException(
+                message: $"Command name '{commandName}' is not available.",
+                paramName: nameof(commandName));
         }
     }
 
     internal bool VerifyCommandName(string commandName)
     {
         if (CommandName == commandName)
+        {
             return true;
+        }
+
         if (_fullName == commandName)
+        {
             return true;
+        }
+
         if (_filename == commandName)
+        {
             return true;
+        }
+
         return false;
     }
 }

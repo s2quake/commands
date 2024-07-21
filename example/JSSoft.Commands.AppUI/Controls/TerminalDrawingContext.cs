@@ -42,7 +42,7 @@ sealed class TerminalDrawingContext(DrawingContext context) : ITerminalDrawingCo
 
     public void DrawText(TerminalGlyphRun glyphRun)
     {
-        if (_runByOrigin.ContainsKey(glyphRun) == false)
+        if (_runByOrigin.ContainsKey(glyphRun) != true)
         {
             _runByOrigin.Add(glyphRun, Create(glyphRun));
             glyphRun.Disposed += (s, e) => _runByOrigin.Remove(glyphRun);
@@ -64,7 +64,7 @@ sealed class TerminalDrawingContext(DrawingContext context) : ITerminalDrawingCo
 
     public static Pen GetPen(TerminalColor color)
     {
-        if (_penByColor.ContainsKey(color) == false)
+        if (_penByColor.ContainsKey(color) != true)
         {
             _penByColor.Add(color, new Pen(TerminalMarshal.ToBrush(color)));
         }

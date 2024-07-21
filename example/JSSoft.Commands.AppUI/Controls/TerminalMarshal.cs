@@ -47,7 +47,7 @@ static class TerminalMarshal
     public static IBrush ToBrush(TerminalColor color)
     {
         var colorCode = color.ToUInt32();
-        if (_brushByColorCode.ContainsKey(colorCode) == false)
+        if (_brushByColorCode.ContainsKey(colorCode) != true)
         {
             _brushByColorCode.Add(colorCode, new ImmutableSolidColorBrush(colorCode));
         }

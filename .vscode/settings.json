@@ -1,11 +1,18 @@
 {
+    "[csharp]": {
+        "editor.rulers": [
+            100
+        ]
+    },
+    "[markdown]": {
+        "editor.rulers": [
+            80
+        ]
+    },
     "files.exclude": {
         "**/bin": true,
         "**/obj": true
     },
     "editor.codeLens": false,
-    "markdownlint.config": {
-        "MD046": false
-    },
     "dotnet.defaultSolution": "commands.sln"
 }

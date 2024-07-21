@@ -1,20 +1,7 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="TerminalIndex.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using JSSoft.Terminals.Extensions;
 
@@ -35,7 +22,9 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
     public TerminalIndex(TerminalCoord coord, int width)
     {
         if (width <= 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(width));
+        }
 
         Width = width;
         Value = coord.X + coord.Y * width;
@@ -49,7 +38,9 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
     public TerminalIndex(int index, int width)
     {
         if (width <= 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(width));
+        }
 
         Width = width;
         Value = index;
@@ -75,6 +66,7 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
         {
             return index.Value == Value;
         }
+
         return base.Equals(obj);
     }
 
@@ -87,16 +79,24 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
     public readonly TerminalIndex MoveToFirstOfString(ITerminal terminal)
     {
         if (terminal.GetInfo(this) is not { } characterInfo)
+        {
             return this.MoveToFirstOfLine();
+        }
 
         var group = characterInfo.Group;
         var index = this - 1;
         return index.MoveBackward(terminal, (i, v) =>
         {
             if (v is { } c2)
+            {
                 return c2.Group != group;
+            }
+
             if (v is not null)
+            {
                 return true;
+            }
+
             return false;
         }) + 1;
     }
@@ -104,16 +104,24 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
     public readonly TerminalIndex MoveForwardToEndOfString(ITerminal terminal)
     {
         if (terminal.GetInfo(this) is not { } ci)
+        {
             throw new InvalidOperationException();
+        }
 
         var group = ci.Group;
         var index = this + 1;
         return index.MoveForward(terminal, (i, v) =>
         {
             if (v is { } c2)
+            {
                 return c2.Group != group;
+            }
+
             if (v is not null)
+            {
                 return true;
+            }
+
             return false;
         }) - 1;
     }
@@ -124,9 +132,15 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
         return index.MoveBackward(terminal, (index, characterInfo) =>
         {
             if (characterInfo is { } info)
+            {
                 return info.Character == char.MinValue;
+            }
+
             if (characterInfo is null)
+            {
                 return true;
+            }
+
             return index.X != 0;
         }) + 1;
     }
@@ -142,6 +156,7 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
             c = (TerminalCoord)index;
             i = terminal.GetInfo(c);
         }
+
         return index;
     }
 
@@ -156,6 +171,7 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
             c = (TerminalCoord)index;
             i = terminal.GetInfo(c);
         }
+
         return index;
     }
 
@@ -173,6 +189,7 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
         {
             return this - Width;
         }
+
         var index = this;
         var value = index.Value % index.Width;
         index -= value;
@@ -191,6 +208,7 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
         {
             coord.X--;
         }
+
         return new TerminalIndex(coord, Width);
     }
 
@@ -232,7 +250,10 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
     public readonly TerminalIndex CursorToColumn(int column)
     {
         if (column < 0 || column >= Width)
+        {
             throw new ArgumentOutOfRangeException(nameof(column));
+        }
+
         var index = this.MoveToFirstOfLine();
         index += column;
         return index;
@@ -248,13 +269,17 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
         {
             // return this.Linefeed();
         }
+
         return this;
     }
 
     public static int DistanceOf(TerminalIndex index1, TerminalIndex index2)
     {
         if (index1.Width != index2.Width)
+        {
             throw new ArgumentException($"'{nameof(index1)}' and '{nameof(index2)}' do not have the same width value.", nameof(index2));
+        }
+
         return index2.Value - index1.Value;
     }
 
@@ -267,7 +292,9 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
     public static TerminalIndex operator +(TerminalIndex index1, TerminalIndex index2)
     {
         if (index1.Width != index2.Width)
+        {
             throw new ArgumentException($"'{nameof(index1)}' and '{nameof(index2)}' do not have the same width value.", nameof(index2));
+        }
 
         return new TerminalIndex(index1.Value + index2.Value, index1.Width);
     }
@@ -275,7 +302,9 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
     public static TerminalIndex operator -(TerminalIndex index1, TerminalIndex index2)
     {
         if (index1.Width != index2.Width)
+        {
             throw new ArgumentException($"'{nameof(index1)}' and '{nameof(index2)}' do not have the same width value.", nameof(index2));
+        }
 
         return new TerminalIndex(index1.Value - index2.Value, index1.Width);
     }
@@ -309,13 +338,7 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
 
     public static implicit operator int(TerminalIndex index) => index.Value;
 
-    #region IEquatable
-
     readonly bool IEquatable<TerminalIndex>.Equals(TerminalIndex other) => Value == other.Value;
-
-    #endregion
-
-    #region IComparable
 
     readonly int IComparable.CompareTo(object? obj)
     {
@@ -327,8 +350,7 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
         {
             return 1;
         }
+
         throw new ArgumentException($"Object is not a {nameof(TerminalIndex)}", nameof(obj));
     }
-
-    #endregion
 }

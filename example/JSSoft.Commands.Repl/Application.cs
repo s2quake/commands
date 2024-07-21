@@ -1,33 +1,20 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="Application.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System;
 using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
-using System.ComponentModel.Composition.Hosting;
 using JSSoft.Commands.Applications;
 
 namespace JSSoft.Commands.Repl;
 
-sealed class Application : IApplication, IDisposable
+internal sealed class Application : IApplication, IDisposable
 {
     private readonly CompositionContainer _container;
     private string _currentDirectory = Directory.GetCurrentDirectory();
@@ -42,49 +29,7 @@ sealed class Application : IApplication, IDisposable
         _container.ComposeExportedValue(this);
     }
 
-    public void Cancel()
-    {
-        _cancellationTokenSource?.Cancel();
-        _cancellationTokenSource = null;
-    }
-
-    public string? ReadString(string prompt, string command)
-    {
-        if (_terminal == null)
-            throw new InvalidOperationException("Application has not started.");
-
-        return _terminal.ReadString(prompt, command);
-    }
-
-    public SecureString? ReadSecureString(string prompt)
-    {
-        if (_terminal == null)
-            throw new InvalidOperationException("Application has not started.");
-
-        return _terminal.ReadSecureString(prompt);
-    }
-
-    public Task StartAsync()
-    {
-        if (_terminal != null)
-            throw new InvalidOperationException("Application has already been started.");
-
-        _terminal = _container.GetExportedValue<SystemTerminal>();
-        _cancellationTokenSource = new();
-        return _terminal.StartAsync(_cancellationTokenSource.Token);
-    }
-
-    public void Dispose()
-    {
-        if (_isDisposed == true)
-            throw new ObjectDisposedException($"{this}");
-
-        _cancellationTokenSource?.Cancel();
-        _cancellationTokenSource = null;
-        _terminal = null;
-        _container.Dispose();
-        _isDisposed = true;
-    }
+    public event EventHandler? DirectoryChanged;
 
     public string CurrentDirectory
     {
@@ -96,5 +41,57 @@ sealed class Application : IApplication, IDisposable
         }
     }
 
-    public event EventHandler? DirectoryChanged;
+    public void Cancel()
+    {
+        _cancellationTokenSource?.Cancel();
+        _cancellationTokenSource = null;
+    }
+
+    public string? ReadString(string prompt, string command)
+    {
+        if (_terminal is null)
+        {
+            throw new InvalidOperationException("Application has not started.");
+        }
+
+        return _terminal.ReadString(prompt, command);
+    }
+
+    public SecureString? ReadSecureString(string prompt)
+    {
+        if (_terminal is null)
+        {
+            throw new InvalidOperationException("Application has not started.");
+        }
+
+        return _terminal.ReadSecureString(prompt);
+    }
+
+    public Task StartAsync()
+    {
+        if (_terminal is not null)
+        {
+            throw new InvalidOperationException("Application has already been started.");
+        }
+
+        _terminal = _container.GetExportedValue<SystemTerminal>();
+        _cancellationTokenSource = new();
+        return _terminal.StartAsync(_cancellationTokenSource.Token);
+    }
+
+    public void Dispose()
+    {
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
+
+        if (_cancellationTokenSource is not null)
+        {
+            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource.Dispose();
+            _cancellationTokenSource = null;
+        }
+
+        _terminal = null;
+        _container.Dispose();
+        _isDisposed = true;
+    }
 }

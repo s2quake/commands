@@ -1,20 +1,7 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="ParseDescriptor.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 namespace JSSoft.Commands;
 
@@ -38,15 +25,29 @@ public sealed class ParseDescriptor(CommandMemberDescriptor memberDescriptor)
     {
         get
         {
-            if (_value is DBNull)
+            if (_value is not DBNull)
             {
-                if (MemberDescriptor.IsExplicit == true && IsOptionSet == true && MemberDescriptor.DefaultValue is not DBNull)
-                    return MemberDescriptor.DefaultValue;
-                if (MemberDescriptor.IsExplicit == false && MemberDescriptor.DefaultValue is not DBNull)
-                    return MemberDescriptor.DefaultValue;
-                if (MemberDescriptor.InitValue is not DBNull)
-                    return MemberDescriptor.InitValue;
+                return _value;
             }
+
+            if (MemberDescriptor.IsExplicit == true
+                && IsOptionSet == true
+                && MemberDescriptor.DefaultValue is not DBNull)
+            {
+                return MemberDescriptor.DefaultValue;
+            }
+
+            if (MemberDescriptor.IsExplicit != true
+                && MemberDescriptor.DefaultValue is not DBNull)
+            {
+                return MemberDescriptor.DefaultValue;
+            }
+
+            if (MemberDescriptor.InitValue is not DBNull)
+            {
+                return MemberDescriptor.InitValue;
+            }
+
             return _value;
         }
     }
@@ -58,20 +59,51 @@ public sealed class ParseDescriptor(CommandMemberDescriptor memberDescriptor)
         get
         {
             if (MemberDescriptor.InitValue is not DBNull)
+            {
                 return MemberDescriptor.InitValue;
+            }
+
             if (MemberDescriptor.IsNullable == true)
+            {
                 return null;
+            }
+
             if (MemberDescriptor.MemberType.IsArray == true)
+            {
                 return Array.CreateInstance(MemberDescriptor.MemberType.GetElementType()!, 0);
+            }
+
             if (MemberDescriptor.MemberType == typeof(string))
+            {
                 return string.Empty;
+            }
+
             if (MemberDescriptor.MemberType.IsValueType == true)
+            {
                 return Activator.CreateInstance(MemberDescriptor.MemberType);
+            }
+
             return null;
         }
     }
 
     public object? ActualValue => IsValueSet == true ? Value : InitValue;
+
+    internal void ThrowIfValueMissing()
+    {
+        if (HasValue != true && MemberDescriptor.DefaultValue is DBNull)
+        {
+            if (IsOptionSet == true)
+            {
+                CommandLineException.ThrowIfValueMissing(MemberDescriptor);
+            }
+
+            if (MemberDescriptor.IsRequired == true)
+            {
+                CommandLineException.ThrowIfValueMissing(MemberDescriptor);
+            }
+        }
+    }
 
     internal void SetValue(string textValue)
     {
@@ -82,10 +114,12 @@ public sealed class ParseDescriptor(CommandMemberDescriptor memberDescriptor)
 
     internal void SetVariablesValue(IReadOnlyList<string> args)
     {
-        var textVariables = args.Select(item => CommandUtility.TryWrapDoubleQuotes(item, out var s) == true ? s : item);
         _value = ParseUtility.ParseArray(MemberDescriptor, [.. args]);
-        TextValue = string.Join(" ", textVariables);
+        TextValue = string.Join(" ", args.Select(WrapDoubleQuotes));
         IsValueSet = true;
+
+        static string WrapDoubleQuotes(string text)
+            => CommandUtility.TryWrapDoubleQuotes(text, out var s) == true ? s : text;
     }
 
     internal void SetSwitchValue(bool value)

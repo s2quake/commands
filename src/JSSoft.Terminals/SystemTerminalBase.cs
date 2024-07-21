@@ -1,20 +1,7 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="SystemTerminalBase.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System.IO;
 using System.Reflection;
@@ -38,8 +25,10 @@ public abstract class SystemTerminalBase : IDisposable
 
     protected SystemTerminalBase()
     {
-        if (_instance != null)
+        if (_instance is not null)
+        {
             throw new InvalidOperationException("The instance can only be created once.");
+        }
 
         _instance = this;
         _terminal = new InternalSystemTerminalHost(this);
@@ -57,7 +46,7 @@ public abstract class SystemTerminalBase : IDisposable
     {
         OnInitialize(_out, _error);
 
-        while (cancellationToken.IsCancellationRequested == false)
+        while (cancellationToken.IsCancellationRequested != true)
         {
             var isEnabled = _terminal.IsEnabled;
             var prompt = Prompt;
@@ -78,7 +67,9 @@ public abstract class SystemTerminalBase : IDisposable
     public void Dispose()
     {
         if (_isDisposed == true)
+        {
             throw new ObjectDisposedException($"{this}");
+        }
 
         OnDispose();
 
@@ -97,7 +88,9 @@ public abstract class SystemTerminalBase : IDisposable
         {
             _prompt = value;
             if (_terminal.IsReading == true)
+            {
                 _terminal.Prompt = value;
+            }
         }
     }
 
@@ -129,19 +122,29 @@ public abstract class SystemTerminalBase : IDisposable
         var cancellationTokenSource = new CancellationTokenSource();
         try
         {
-            if (Console.IsInputRedirected == false)
+            if (Console.IsInputRedirected != true)
+            {
                 Console.TreatControlCAsInput = false;
+            }
+
             Console.CancelKeyPress += ConsoleCancelEventHandler;
-            if (OnCanExecute(text) == false)
+            if (OnCanExecute(text) != true)
+            {
                 return;
+            }
+
             var task = OnExecuteAsync(text, cancellationTokenSource.Token);
-            while (task.IsCompleted == false)
+            while (task.IsCompleted != true)
             {
                 _terminal.Update();
                 await Task.Delay(1);
             }
-            if (task.Exception != null)
+
+            if (task.Exception is not null)
+            {
                 throw task.Exception;
+            }
+
             OnExecuted(exception: null);
         }
         catch (Exception e)
@@ -150,8 +153,11 @@ public abstract class SystemTerminalBase : IDisposable
         }
         finally
         {
-            if (Console.IsInputRedirected == false)
+            if (Console.IsInputRedirected != true)
+            {
                 Console.TreatControlCAsInput = consoleControlC;
+            }
+
             Console.CancelKeyPress -= ConsoleCancelEventHandler;
             cancellationTokenSource = null;
         }
@@ -171,6 +177,7 @@ public abstract class SystemTerminalBase : IDisposable
             {
                 WriteException(error, item);
             }
+
             OnExecuted(e2);
         }
         else
@@ -188,9 +195,7 @@ public abstract class SystemTerminalBase : IDisposable
         error.WriteLine(formattedMessage);
     }
 
-    #region InternalSystemTerminalHost
-
-    sealed class InternalSystemTerminalHost(SystemTerminalBase terminalBase)
+    private sealed class InternalSystemTerminalHost(SystemTerminalBase terminalBase)
         : SystemTerminalHost
     {
         protected override string FormatPrompt(string prompt) => terminalBase.FormatPrompt(prompt);
@@ -203,11 +208,7 @@ public abstract class SystemTerminalBase : IDisposable
         }
     }
 
-    #endregion
-
-    #region TerminalTextWriter
-
-    sealed class TerminalTextWriter(SystemTerminalHost terminalHost, Encoding encoding)
+    private sealed class TerminalTextWriter(SystemTerminalHost terminalHost, Encoding encoding)
         : TextWriter
     {
         public override Encoding Encoding => encoding;
@@ -228,6 +229,4 @@ public abstract class SystemTerminalBase : IDisposable
 
         private Task WriteToStreamAsync(string? text) => terminalHost.EnqueueStringAsync(text ?? string.Empty);
     }
-
-    #endregion
 }

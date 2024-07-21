@@ -1,20 +1,7 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="ITerminalExtensions.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 namespace JSSoft.Terminals.Extensions;
 
@@ -152,6 +139,7 @@ public static class ITerminalExtensions
             @this.Selecting = TerminalSelectionUtility.GetSelection(@this, c1, c2);
             return true;
         }
+
         return false;
     }
 
@@ -161,6 +149,7 @@ public static class ITerminalExtensions
         {
             return @this.Selecting.Intersect(coord);
         }
+
         return false;
     }
 
@@ -175,8 +164,10 @@ public static class ITerminalExtensions
             {
                 rows[i - y1] = @this.View[i];
             }
+
             return rows;
         }
+
         return [];
     }
 
@@ -188,7 +179,10 @@ public static class ITerminalExtensions
     public static TerminalCharacterInfo? GetInfo(this ITerminal @this, TerminalIndex index)
     {
         if (index.Width != @this.BufferSize.Width)
+        {
             throw new ArgumentException("The width of index and the buffer width of terminal are different.", nameof(index));
+        }
+
         return @this.GetInfo((TerminalCoord)index);
     }
 
@@ -224,7 +218,10 @@ public static class ITerminalExtensions
         var b1 = displayInfo.IsInverse != true ? displayInfo.Background : displayInfo.Foreground;
         var b2 = displayInfo.IsInverse != true ? style.BackgroundColor : style.ForegroundColor;
         if (terminal.IsSelecting(coord) == true || terminal.Selections.IsSelected(coord) == true)
+        {
             return GetSelectionColor(style);
+        }
+
         return TerminalStyleUtility.GetColor(style, f1) ?? f2;
 
         TerminalColor GetSelectionColor(ITerminalStyle style) => style.SelectionForegroundColorSource switch
@@ -247,7 +244,10 @@ public static class ITerminalExtensions
         var b1 = displayInfo.IsInverse != true ? displayInfo.Background : displayInfo.Foreground;
         var b2 = displayInfo.IsInverse != true ? style.BackgroundColor : style.ForegroundColor;
         if (terminal.IsSelecting(coord) == true || terminal.Selections.IsSelected(coord) == true)
+        {
             return GetSelectionColor(style);
+        }
+
         return TerminalStyleUtility.GetColor(style, b1) ?? b2;
 
         TerminalColor GetSelectionColor(ITerminalStyle style) => style.SelectionBackgroundColorSource switch

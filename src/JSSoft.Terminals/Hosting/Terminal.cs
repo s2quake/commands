@@ -1,27 +1,14 @@
-﻿// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+﻿// <copyright file="Terminal.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System.ComponentModel;
-using JSSoft.Terminals.Input;
 using System.Diagnostics;
-using JSSoft.Terminals.Extensions;
-using System.Threading;
 using System.IO;
+using System.Threading;
+using JSSoft.Terminals.Extensions;
+using JSSoft.Terminals.Input;
 
 namespace JSSoft.Terminals.Hosting;
 
@@ -58,10 +45,11 @@ public class Terminal : ITerminal
 
     public Terminal(ITerminalStyle originStyle, ITerminalScroll scroll)
     {
-        if (SynchronizationContext.Current == null)
+        if (SynchronizationContext.Current is null)
         {
             SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
         }
+
         SynchronizationContext = SynchronizationContext.Current!;
         _setter = new TerminalFieldSetter(this, OnPropertyChanged);
         _originStyle = _actualStyle = originStyle;
@@ -127,7 +115,10 @@ public class Terminal : ITerminal
         set
         {
             if (value < 5 || value < _bufferSize.Height)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
             _setter.SetField(ref _maximumBufferHeight, value, nameof(MaximumBufferHeight));
         }
     }
@@ -191,13 +182,24 @@ public class Terminal : ITerminal
         set
         {
             if (value.X < 0)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
             if (value.Y < 0)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
             if (value.X >= BufferSize.Width)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
             if (value.Y >= BufferSize.Height)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
 
             _setter.SetField(ref _viewCoordinate, value, nameof(ViewCoordinate));
         }
@@ -311,6 +313,7 @@ public class Terminal : ITerminal
             scroll.PropertyChanged += Scroll_PropertyChanged;
             return true;
         }
+
         if (scroll.Value < topIndex)
         {
             var value = topIndex;
@@ -319,6 +322,7 @@ public class Terminal : ITerminal
             scroll.PropertyChanged += Scroll_PropertyChanged;
             return true;
         }
+
         return false;
     }
 
@@ -330,14 +334,21 @@ public class Terminal : ITerminal
     public void Resize(double width, double height)
     {
         if (width < 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(width));
+        }
+
         if (height < 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(height));
+        }
 
         var size = new TerminalSize((int)width, (int)height);
         var bufferSize = GetBufferSize(this, size);
         if (bufferSize == _bufferSize)
+        {
             return;
+        }
 
         using (var _ = _setter.LockEvent())
         {
@@ -356,6 +367,7 @@ public class Terminal : ITerminal
                 Scroll.PropertyChanged += Scroll_PropertyChanged;
             }
         }
+
         _view.Update(_lines);
         UpdateCursorCoordinate();
     }
@@ -432,18 +444,15 @@ public class Terminal : ITerminal
 
     private int GetScrollMaximum()
     {
-        if (ActualStyle.IsScrollForwardEnabled == false)
+        if (ActualStyle.IsScrollForwardEnabled != true)
         {
             return Math.Max(_originCoordinate.Y, _lines.Count - BufferSize.Height);
         }
+
         return Math.Max(_lines.Count, _maximumBufferHeight) - BufferSize.Height;
     }
 
     private void InvokeUpdatedEvent(ITerminalRow[] rows) => OnUpdated(new(rows));
 
-    #region ITerminal
-
     ITerminalScroll ITerminal.Scroll => Scroll;
-
-    #endregion
 }

@@ -17,8 +17,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\GlobalSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\HelpCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\ListDirectoryCommand.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Commands\StashCommand.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Commands\StashCommandExtension.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\TestCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\TestCommandExtension.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\VersionCommand.cs" />
@@ -31,7 +29,6 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Commands\FilterProperties.resx" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Commands\GlobalSettings.resx" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Commands\ListDirectoryCommand.resx" />
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Commands\StashCommand.resx" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Commands\StashCommandExtension.resx" />
   </ItemGroup>
 </Project>

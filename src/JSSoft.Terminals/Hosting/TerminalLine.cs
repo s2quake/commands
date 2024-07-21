@@ -1,26 +1,13 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="TerminalLine.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System.Text;
 
 namespace JSSoft.Terminals.Hosting;
 
-sealed class TerminalLine : IDisposable
+internal sealed class TerminalLine : IDisposable
 {
     private readonly TerminalArrayReference<TerminalCharacterInfo?> _items;
     private readonly List<TerminalLine> _children = [];
@@ -54,22 +41,26 @@ sealed class TerminalLine : IDisposable
         set
         {
             if (_parent == this)
+            {
                 throw new InvalidOperationException();
+            }
 
             if (_parent != value)
             {
-                if (_parent != null)
+                if (_parent is not null)
                 {
                     _parent._next = _next;
                     if (_next is not null)
                     {
                         _next._prev = _prev;
                     }
+
                     _parent._children.Remove(this);
                     _group = GetHashCode();
                 }
+
                 _parent = value;
-                if (_parent != null)
+                if (_parent is not null)
                 {
                     if (_parent.Children.Count == 0)
                     {
@@ -81,6 +72,7 @@ sealed class TerminalLine : IDisposable
                         _prev = _parent.Children[^1];
                         _prev._next = this;
                     }
+
                     _parent._children.Add(this);
                     _group = _parent.Group;
                 }
@@ -97,22 +89,30 @@ sealed class TerminalLine : IDisposable
         for (var i = 0; i < Length; i++)
         {
             if (this[i] is not { } item || item.Span <= 0)
+            {
                 continue;
+            }
+
             sb.Append(item.Character);
         }
+
         return sb.ToString();
     }
 #endif
 
     public void Update()
     {
-        if (IsModified == false)
+        if (IsModified != true)
+        {
             throw new InvalidOperationException($"'{this}' is not modified.");
+        }
 
         for (var i = Length - 1; i >= 0; i--)
         {
             if (_items[i] is not null)
+            {
                 continue;
+            }
 
             if (i + 1 == Length)
             {
@@ -128,13 +128,16 @@ sealed class TerminalLine : IDisposable
                 };
             }
         }
+
         IsModified = false;
     }
 
     public void SetCharacterInfo(TerminalIndex index, TerminalCharacterInfo characterInfo)
     {
         if (index.Y != _y)
+        {
             throw new ArgumentException("The Y of index is different from the Y of this.", nameof(index));
+        }
 
         SetCharacterInfo(index.X, characterInfo);
     }
@@ -142,9 +145,14 @@ sealed class TerminalLine : IDisposable
     public void SetEmpty(int index)
     {
         if (index < 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
         if (index >= _width)
+        {
             throw new ArgumentOutOfRangeException(nameof(index));
+        }
 
         _items[index] = new TerminalCharacterInfo
         {
@@ -159,7 +167,9 @@ sealed class TerminalLine : IDisposable
     public void SetEmpty(TerminalIndex index, int length)
     {
         if (index.Y != _y)
+        {
             throw new ArgumentException("The Y of index is different from the Y of this.", nameof(index));
+        }
 
         SetEmpty(index.X, length);
     }
@@ -167,9 +177,14 @@ sealed class TerminalLine : IDisposable
     public void SetEmpty(int index, int length)
     {
         if (index < 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
         if (index + length > _width)
+        {
             throw new ArgumentOutOfRangeException(nameof(length));
+        }
 
         var begin = index;
         var end = index + length;
@@ -182,6 +197,7 @@ sealed class TerminalLine : IDisposable
                 Group = _group,
             };
         }
+
         Length = Math.Max(Length, end);
         IsModified = true;
     }
@@ -189,11 +205,19 @@ sealed class TerminalLine : IDisposable
     public void SetCharacterInfo(int index, TerminalCharacterInfo characterInfo)
     {
         if (index < 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
         if (index >= _width)
+        {
             throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
         if (characterInfo.Group != 0)
+        {
             throw new ArgumentException($"The value of the property '{nameof(TerminalCharacterInfo.Group)}' of '{nameof(TerminalCharacterInfo)}' must be 0.", nameof(characterInfo));
+        }
 
         var i1 = index;
         var i2 = index + characterInfo.Span;
@@ -207,6 +231,7 @@ sealed class TerminalLine : IDisposable
                 Group = _group,
             };
         }
+
         IsModified = true;
         Length = Math.Max(Length, i1);
     }
@@ -214,7 +239,9 @@ sealed class TerminalLine : IDisposable
     public void InsertCharacter(int index, TerminalCharacterInfo characterInfo)
     {
         if (index < 0 || index >= _width)
+        {
             throw new ArgumentOutOfRangeException(nameof(index));
+        }
 
         ShiftRight(index, characterInfo.Span);
         _items[index] = characterInfo;
@@ -224,33 +251,44 @@ sealed class TerminalLine : IDisposable
     public void Delete(int index, int length)
     {
         if (index < 0 || index + length >= _width)
+        {
             throw new ArgumentOutOfRangeException(nameof(index));
+        }
 
         for (var i = index + length; i < Length; i++)
         {
             _items[i - length] = _items[i];
         }
+
         for (var i = Length - 1; i < Length; i++)
         {
             _items[i] = null;
         }
+
         Length -= length;
     }
 
     public TerminalIndex Backspace(TerminalIndex index)
     {
         if (index.Y != _y)
+        {
             throw new ArgumentException("The Y of index is different from the Y of this.", nameof(index));
+        }
+
         if (_parent is null && index.X <= 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(index));
+        }
 
         return index.Backspace();
     }
 
     public TerminalCharacterInfo[] GetCharacterInfos()
     {
-        if (_parent != null)
+        if (_parent is not null)
+        {
             throw new InvalidOperationException("This is not the first line.");
+        }
 
         TerminalLine[] lines = [this, .. _children];
         var capacity = lines.Sum(item => item.Length);
@@ -260,18 +298,24 @@ sealed class TerminalLine : IDisposable
             for (var i = 0; i < line.Length; i++)
             {
                 if (line[i] is not { } item || item.Span <= 0)
+                {
                     continue;
+                }
+
                 item.Group = 0;
                 itemList.Add(item);
             }
         }
+
         return [.. itemList];
     }
 
     public void Erase(TerminalIndex index, int length)
     {
         if (index.Y != _y)
+        {
             throw new ArgumentException("The Y of index is different from the Y of this.", nameof(index));
+        }
 
         Erase(index.X, length);
     }
@@ -279,9 +323,14 @@ sealed class TerminalLine : IDisposable
     public void Erase(int index, int length)
     {
         if (index < 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
         if (index + length > Length)
+        {
             throw new ArgumentOutOfRangeException(nameof(length));
+        }
 
         var begin = index;
         var end = index + length;
@@ -293,6 +342,7 @@ sealed class TerminalLine : IDisposable
                 Length = i;
             }
         }
+
         IsModified = true;
     }
 
@@ -302,6 +352,7 @@ sealed class TerminalLine : IDisposable
         {
             _items[i] = null;
         }
+
         Length = index;
         IsModified = true;
     }
@@ -309,24 +360,35 @@ sealed class TerminalLine : IDisposable
     public void CopyTo(TerminalLine line)
     {
         if (line == this)
+        {
             throw new ArgumentException("The line is same as this.", nameof(line));
+        }
+
         if (line._width != _width)
+        {
             throw new ArgumentException("The width of line is different from the width of this.", nameof(line));
+        }
 
         for (var i = 0; i < _width; i++)
         {
             line._items[i] = _items[i];
         }
+
         line.Length = Length;
         line.IsModified = true;
     }
 
     public void Dispose()
     {
-        if (_parent != null)
+        if (_parent is not null)
+        {
             throw new InvalidOperationException();
+        }
+
         if (_isDisposed == true)
+        {
             throw new ObjectDisposedException($"{this}");
+        }
 
         _isDisposed = true;
     }
@@ -334,9 +396,14 @@ sealed class TerminalLine : IDisposable
     private void ShiftRight(int index, int length)
     {
         if (index < 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
         if (length <= 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(length));
+        }
 
         for (var i = Length - length; i >= index; i--)
         {

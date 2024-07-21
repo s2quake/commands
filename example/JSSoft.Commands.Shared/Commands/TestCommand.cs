@@ -1,25 +1,14 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="TestCommand.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
+#pragma warning disable MEN002 // Line is too long
 #if JSSOFT_COMMANDS_REPL
 
 using System;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,11 +19,28 @@ namespace JSSoft.Commands.Applications.Commands;
 [Export(typeof(ICommand))]
 [CommandSummary("Test Command")]
 [method: ImportingConstructor]
-sealed class TestCommand(IApplication application) : CommandMethodBase(new string[] { "t" })
+internal sealed class TestCommand(IApplication application) : CommandMethodBase(["t"]), IDisposable
 {
     private readonly IApplication _application = application;
     private Task? _task;
     private CancellationTokenSource? _cancellationTokenSource;
+
+    public bool CanStart => true;
+
+    [CommandProperty]
+    public string P3 { get; set; } = string.Empty;
+
+    [CommandPropertyExplicitRequired]
+    public string P4 { get; set; } = string.Empty;
+
+    [CommandPropertyRequired]
+    public string P5 { get; set; } = string.Empty;
+
+    [CommandPropertySwitch("reverse", 'r')]
+    public bool IsReverse { get; set; }
+
+    [CommandPropertySwitch('p')]
+    public bool IsPrompt { get; set; }
 
     [CommandMethod]
     [CommandMethodProperty(nameof(IsPrompt))]
@@ -48,27 +54,28 @@ sealed class TestCommand(IApplication application) : CommandMethodBase(new strin
         _task = TestAsync();
     }
 
-    public bool CanStart => true;
-
     [CommandMethod]
     public async Task AsyncAsync(CancellationToken cancellationToken)
     {
-        Out.WriteLine("type control+c to cancel");
-        while (cancellationToken.IsCancellationRequested == false)
+        await Out.WriteLineAsync("type control+c to cancel");
+        while (cancellationToken.IsCancellationRequested != true)
         {
             await Task.Delay(100, cancellationToken);
         }
     }
-
 
     [CommandMethod]
     [CommandSummary("Stop async task")]
     [CommandExample("werwer")]
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        _cancellationTokenSource?.Cancel();
+        if (_cancellationTokenSource is not null)
+        {
+            await _cancellationTokenSource.CancelAsync();
+            _cancellationTokenSource = null;
+        }
+
         await _task!;
-        _cancellationTokenSource = null;
         _task = null;
     }
 
@@ -94,9 +101,9 @@ sealed class TestCommand(IApplication application) : CommandMethodBase(new strin
     [CommandMethodProperty(nameof(IsReverse))]
     public void ShowItem(string path = "123")
     {
-                Console.WriteLine(path);
+        Console.WriteLine(path);
         var items = new string[] { "a", "b", "c" };
-        if (IsReverse == false)
+        if (IsReverse != true)
         {
             var i = 0;
             foreach (var item in items)
@@ -119,6 +126,7 @@ sealed class TestCommand(IApplication application) : CommandMethodBase(new strin
     [CommandSummary("Order method")]
     public void Order([CommandParameterCompletion(nameof(GetNamesAsync))] string p1, string p2 = "123")
     {
+        Out.WriteLine($"{p1}, {p2}");
     }
 
     [CommandMethod("cmp")]
@@ -133,59 +141,18 @@ sealed class TestCommand(IApplication application) : CommandMethodBase(new strin
         await Task.Delay(10000, cancellationToken);
     }
 
-    [CommandProperty]
-    public string P3 { get; set; } = string.Empty;
-
-    [CommandPropertyExplicitRequired]
-    public string P4 { get; set; } = string.Empty;
-
-    [CommandPropertyRequired]
-    public string P5 { get; set; } = string.Empty;
-
     public string[] CompleteShowItem(CommandMemberDescriptor memberDescriptor, string find)
     {
         return [];
     }
 
-    [CommandPropertySwitch("reverse", 'r')]
-    public bool IsReverse { get; set; }
-
-    [CommandPropertySwitch('p')]
-    public bool IsPrompt { get; set; }
-
-    private async Task TestAsync()
+    public void Dispose()
     {
-        while (!_cancellationTokenSource!.IsCancellationRequested)
+        if (_cancellationTokenSource is not null)
         {
-            if (IsPrompt == true)
-            {
-                _application.CurrentDirectory = $"{DateTime.Now}";
-            }
-            else
-            {
-                Console.Write(DateTime.Now + Environment.NewLine + "wow" + Environment.NewLine + DateTime.Now + Environment.NewLine + "wow");
-                await Out.WriteAsync(DateTime.Now + Environment.NewLine + "wow" + Environment.NewLine + DateTime.Now + Environment.NewLine + "wow");
-                await Out.WriteAsync(TerminalStringBuilder.GetString("01234567890123456789012345678901234567890123456789012345678901234567890123456789", TerminalColorType.Red));
-                await Out.WriteAsync(DateTime.Now + Environment.NewLine + "wow" + Environment.NewLine + DateTime.Now + Environment.NewLine + "wow");
-                var v = DateTime.Now.Millisecond % 4;
-                // v = 2;
-                switch (v)
-                {
-                    case 0:
-                        await Out.WriteLineAsync(DateTime.Now + Environment.NewLine + "wow" + Environment.NewLine + "12093810938012");
-                        break;
-                    case 1:
-                        await Out.WriteAsync(DateTime.Now + Environment.NewLine + "wow" + Environment.NewLine + DateTime.Now + Environment.NewLine + "wow" + Environment.NewLine + DateTime.Now + Environment.NewLine + "wow" + Environment.NewLine + DateTime.Now + Environment.NewLine + "wow" + Environment.NewLine + DateTime.Now + Environment.NewLine + "wow");
-                        break;
-                    case 2:
-                        await Out.WriteAsync("01234567890123456789012345678901234567890123456789012345678901234567890123456789");
-                        break;
-                    case 3:
-                        await Out.WriteLineAsync($"{DateTime.Now}");
-                        break;
-                }
-            }
-            Thread.Sleep(1000);
+            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource.Dispose();
+            _cancellationTokenSource = null;
         }
     }
 
@@ -193,13 +160,50 @@ sealed class TestCommand(IApplication application) : CommandMethodBase(new strin
     {
         if (methodDescriptor.MethodName == nameof(Start))
         {
-            return _task == null;
+            return _task is null;
         }
         else if (methodDescriptor.MethodName == nameof(StopAsync))
         {
-            return _task != null && _cancellationTokenSource!.IsCancellationRequested == false;
+            return _task is not null && _cancellationTokenSource!.IsCancellationRequested != true;
         }
-        throw new NotImplementedException();
+
+        throw new NotSupportedException();
+    }
+
+    private async Task TestAsync()
+    {
+        while (!_cancellationTokenSource!.IsCancellationRequested)
+        {
+            if (IsPrompt == true)
+            {
+                _application.CurrentDirectory = $"{DateTime.UtcNow}";
+            }
+            else
+            {
+                Console.Write(DateTime.UtcNow + Environment.NewLine + "wow" + Environment.NewLine + DateTime.UtcNow + Environment.NewLine + "wow");
+                await Out.WriteAsync(DateTime.UtcNow + Environment.NewLine + "wow" + Environment.NewLine + DateTime.UtcNow + Environment.NewLine + "wow");
+                await Out.WriteAsync(TerminalStringBuilder.GetString("01234567890123456789012345678901234567890123456789012345678901234567890123456789", TerminalColorType.Red));
+                await Out.WriteAsync(DateTime.UtcNow + Environment.NewLine + "wow" + Environment.NewLine + DateTime.UtcNow + Environment.NewLine + "wow");
+                var v = DateTime.UtcNow.Millisecond % 4;
+                switch (v)
+                {
+                    case 0:
+                        await Out.WriteLineAsync(DateTime.UtcNow + Environment.NewLine + "wow" + Environment.NewLine + "12093810938012");
+                        break;
+                    case 1:
+                        await Out.WriteAsync(DateTime.UtcNow + Environment.NewLine + "wow" + Environment.NewLine + DateTime.UtcNow + Environment.NewLine + "wow" + Environment.NewLine + DateTime.UtcNow + Environment.NewLine + "wow" + Environment.NewLine + DateTime.UtcNow + Environment.NewLine + "wow" + Environment.NewLine + DateTime.UtcNow + Environment.NewLine + "wow");
+                        break;
+                    case 2:
+                        await Out.WriteAsync("01234567890123456789012345678901234567890123456789012345678901234567890123456789");
+                        break;
+                    case 3:
+                        await Out.WriteLineAsync($"{DateTime.UtcNow}");
+                        break;
+                }
+            }
+
+            Thread.Sleep(1000);
+        }
     }
 
     private async Task<string[]> GetNamesAsync()
@@ -208,7 +212,9 @@ sealed class TestCommand(IApplication application) : CommandMethodBase(new strin
         return ["a", "b", "c"];
     }
 
-    private async Task<string[]> CompleteCompareAsync(CommandMemberDescriptor memberDescriptor, string find, CancellationToken cancellationToken)
+    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Pre-execution for command")]
+    private async Task<string[]> CompleteCompareAsync(
+        CommandMemberDescriptor memberDescriptor, string find, CancellationToken cancellationToken)
     {
         await Task.Delay(1, cancellationToken);
         return ["a", "b", "c"];

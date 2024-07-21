@@ -1,26 +1,13 @@
-﻿// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+﻿// <copyright file="SequenceCollection.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System.Collections;
 
 namespace JSSoft.Terminals.Hosting.Ansi;
 
-class SequenceCollection(string sequenceString) : ISequenceCollection
+internal class SequenceCollection(string sequenceString) : ISequenceCollection
 {
     private readonly Dictionary<char, SortedSet<ISequence>> _sequencesByCharacter = [];
 
@@ -30,17 +17,20 @@ class SequenceCollection(string sequenceString) : ISequenceCollection
 
     public void Add(ISequence item)
     {
-        if (_sequencesByCharacter.ContainsKey(item.Character) == false)
+        if (_sequencesByCharacter.ContainsKey(item.Character) != true)
         {
             _sequencesByCharacter.Add(item.Character, []);
         }
+
         _sequencesByCharacter[item.Character].Add(item);
     }
 
     public (ISequence value, string parameter, int endIndex) GetValue(string text)
     {
         if (text.StartsWith(SequenceString) != true)
+        {
             throw new ArgumentException($"text does not start with: '{SequenceString}'", nameof(text));
+        }
 
         for (var i = SequenceString.Length; i < text.Length; i++)
         {
@@ -57,6 +47,7 @@ class SequenceCollection(string sequenceString) : ISequenceCollection
                         return (sequence, parameter, endIndex);
                     }
                 }
+
                 throw new NotFoundSequenceException(text[0..i]);
             }
             else if (Test(character) != true)
@@ -64,6 +55,7 @@ class SequenceCollection(string sequenceString) : ISequenceCollection
                 throw new NotFoundSequenceException(text[0..i]);
             }
         }
+
         throw new NotSupportedException();
     }
 
@@ -79,8 +71,6 @@ class SequenceCollection(string sequenceString) : ISequenceCollection
         '\x1b' => false,
         _ => true,
     };
-
-    #region IEnumerable
 
     IEnumerator<ISequence> IEnumerable<ISequence>.GetEnumerator()
     {
@@ -103,6 +93,4 @@ class SequenceCollection(string sequenceString) : ISequenceCollection
             }
         }
     }
-
-    #endregion
 }

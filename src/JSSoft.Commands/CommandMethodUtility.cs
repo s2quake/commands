@@ -1,28 +1,16 @@
-﻿// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+﻿// <copyright file="CommandMethodUtility.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using static JSSoft.Commands.AttributeUtility;
 
 namespace JSSoft.Commands;
 
-static class CommandMethodUtility
+internal static class CommandMethodUtility
 {
     private static readonly Type[] ProgressGenericArgumentTypes =
     [
@@ -45,17 +33,17 @@ static class CommandMethodUtility
         {
             return false;
         }
+
         if (IsProgressParameter(parameterInfo) == true)
         {
             return false;
         }
+
         return true;
     }
 
     public static bool IsCancellationTokenParameter(ParameterInfo parameterInfo)
-    {
-        return parameterInfo.ParameterType == typeof(CancellationToken);
-    }
+        => parameterInfo.ParameterType == typeof(CancellationToken);
 
     public static bool IsProgressParameter(ParameterInfo parameterInfo)
     {
@@ -69,43 +57,29 @@ static class CommandMethodUtility
             var argumentType = parameterType.GetGenericArguments()[0];
             return ProgressGenericArgumentTypes.Contains(argumentType) == true;
         }
+
         return false;
     }
 
     public static bool IsAsync(MethodInfo methodInfo)
-    {
-        return methodInfo.ReturnType.IsAssignableFrom(typeof(Task));
-    }
+        => methodInfo.ReturnType.IsAssignableFrom(typeof(Task));
 
     public static string GetName(MethodInfo methodInfo)
-    {
-        if (AttributeUtility.GetCustomAttribute<CommandMethodAttribute>(methodInfo) is { } commandMethodAttribute &&
-            commandMethodAttribute.Name != string.Empty)
-        {
-            return commandMethodAttribute.Name;
-        }
-        var methodName = GetPureName(methodInfo);
-        return CommandUtility.ToSpinalCase(methodName);
-    }
+        => GetValue<CommandMethodAttribute>(methodInfo, item => item.Name, GetDefaultName);
 
     public static string[] GetAliases(MethodInfo methodInfo)
-    {
-        if (AttributeUtility.GetCustomAttribute<CommandMethodAttribute>(methodInfo) is { } commandMethodAttribute)
-        {
-            return commandMethodAttribute.Aliases;
-        }
-        return [];
-    }
+        => GetValue<CommandMethodAttribute, string[]>(methodInfo, item => item.Aliases, []);
 
     public static string GetDisplayName(MethodInfo methodInfo)
     {
-        if (AttributeUtility.TryGetDisplayName(methodInfo, out var displayName) == true)
+        if (TryGetDisplayName(methodInfo, out var displayName) == true)
         {
             return displayName;
         }
+
         var name = GetName(methodInfo);
         var aliases = GetAliases(methodInfo);
-        return string.Join(", ", [name, .. aliases]);
+        return string.Join(", ", value: [name, .. aliases]);
     }
 
     public static string GetPureName(MethodInfo methodInfo)
@@ -113,26 +87,38 @@ static class CommandMethodUtility
         var isAsync = IsAsync(methodInfo);
         var methodName = methodInfo.Name;
         if (isAsync == true && methodName.EndsWith("Async") == true)
+        {
             methodName = methodName.Substring(0, methodName.Length - "Async".Length);
+        }
+
         return methodName;
     }
 
     public static PropertyInfo? GetValidationPropertyInfo(MethodInfo methodInfo)
     {
-        if (methodInfo.DeclaringType == null)
-            throw new ArgumentException($"Property '{nameof(MethodInfo.DeclaringType)}' of '{nameof(methodInfo)}' cannot be null.", nameof(methodInfo));
+        if (methodInfo.DeclaringType is null)
+        {
+            var message = $"""
+                Property '{nameof(MethodInfo.DeclaringType)}' of '{nameof(methodInfo)}' 
+                cannot be null.
+                """;
+            throw new ArgumentException(message, nameof(methodInfo));
+        }
 
-        if (methodInfo.GetCustomAttribute<CommandMethodValidationAttribute>() is CommandMethodValidationAttribute attribute)
+        if (methodInfo.GetCustomAttribute<CommandMethodValidationAttribute>() is { } attribute)
         {
             var instanceType = attribute.StaticType ?? methodInfo.DeclaringType;
             var propertyName = attribute.PropertyName;
-            var bindingFlags1 = attribute.StaticType != null ? BindingFlags.Static : BindingFlags.Instance;
+            var bindingFlags1 = attribute.StaticType is not null
+                ? BindingFlags.Static : BindingFlags.Instance;
             var bindingFlags2 = BindingFlags.Public | BindingFlags.NonPublic | bindingFlags1;
             var validationPropertyInfo = instanceType.GetProperty(propertyName, bindingFlags2);
             if (validationPropertyInfo is null)
             {
-                Trace.TraceWarning($"Type '{instanceType}' does not have property '{propertyName}'.");
+                var message = $"Type '{instanceType}' does not have property '{propertyName}'.";
+                Trace.TraceWarning(message);
             }
+
             return validationPropertyInfo;
         }
         else
@@ -146,31 +132,59 @@ static class CommandMethodUtility
 
     public static MethodInfo? GetCompletionMethodInfo(MethodInfo methodInfo)
     {
-        if (methodInfo.DeclaringType == null)
-            throw new ArgumentException($"Property '{nameof(MethodInfo.DeclaringType)}' of '{nameof(methodInfo)}' cannot be null.", nameof(methodInfo));
+        if (methodInfo.DeclaringType is null)
+        {
+            var message = $"""
+                Property '{nameof(MethodInfo.DeclaringType)}' of '{nameof(methodInfo)}' 
+                cannot be null.
+                """;
+            throw new ArgumentException(message, nameof(methodInfo));
+        }
 
-        if (methodInfo.GetCustomAttribute<CommandMethodCompletionAttribute>() is CommandMethodCompletionAttribute attribute)
+        if (methodInfo.GetCustomAttribute<CommandMethodCompletionAttribute>() is { } attribute)
         {
             var instanceType = attribute.StaticType ?? methodInfo.DeclaringType;
             var methodName = attribute.MethodName;
-            var bindingFlags1 = attribute.StaticType != null ? BindingFlags.Static : BindingFlags.Instance;
+            var bindingFlags1 = attribute.StaticType is not null
+                ? BindingFlags.Static : BindingFlags.Instance;
             var bindingFlags2 = BindingFlags.Public | BindingFlags.NonPublic | bindingFlags1;
             var completionMethodInfo = instanceType.GetMethod(methodName, bindingFlags2);
-            if (completionMethodInfo != null)
+            if (completionMethodInfo is not null)
             {
                 if (completionMethodInfo.ReturnType.IsSubclassOf(typeof(Task)) == true)
                 {
                     if (IsCompletionAsyncMethod(completionMethodInfo) == true)
+                    {
                         return completionMethodInfo;
-                    var preferredMethodName = GenerateMethodInfoName(methodName, typeof(Task<string[]>), parameterTypes: [typeof(CommandMemberDescriptor), typeof(string), typeof(CancellationToken)]);
-                    Trace.TraceWarning($"Method must have the following format: {preferredMethodName}");
+                    }
+
+                    var parameterTypes = new Type[]
+                    {
+                        typeof(CommandMemberDescriptor),
+                        typeof(string),
+                        typeof(CancellationToken),
+                    };
+                    var preferredMethodName = GenerateMethodInfoName(
+                        methodName, typeof(Task<string[]>), parameterTypes);
+                    var message = $"Method must have the following format: {preferredMethodName}.";
+                    Trace.TraceWarning(message);
                 }
                 else
                 {
                     if (IsCompletionMethod(completionMethodInfo) == true)
+                    {
                         return completionMethodInfo;
-                    var preferredMethodName = GenerateMethodInfoName(methodName, typeof(string[]), parameterTypes: [typeof(CommandMemberDescriptor), typeof(string)]);
-                    Trace.TraceWarning($"Method must have the following format: {preferredMethodName}");
+                    }
+
+                    var parameterTypes = new Type[]
+                    {
+                        typeof(CommandMemberDescriptor),
+                        typeof(string),
+                    };
+                    var preferredMethodName = GenerateMethodInfoName(
+                        methodName, typeof(string[]), parameterTypes);
+                    var message = $"Method must have the following format: {preferredMethodName}.";
+                    Trace.TraceWarning(message);
                 }
             }
             else
@@ -181,42 +195,83 @@ static class CommandMethodUtility
         else
         {
             var instanceType = methodInfo.DeclaringType;
-            var isAsync = IsAsync(methodInfo);
             var bindingFlags = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance;
+#pragma warning disable S1199 // Nested code blocks should not be used
             {
                 var asyncName = $"Complete{GetPureName(methodInfo)}Async";
                 var asyncMethod = instanceType.GetMethod(asyncName, bindingFlags);
-                if (asyncMethod != null)
+                if (asyncMethod is not null)
                 {
                     if (IsCompletionAsyncMethod(asyncMethod) == true)
+                    {
                         return asyncMethod;
-                    var preferredMethodName = GenerateMethodInfoName(asyncName, typeof(Task<string[]>), parameterTypes: [typeof(CommandMemberDescriptor), typeof(string), typeof(CancellationToken)]);
-                    Trace.TraceWarning($"Method must have the following format: {preferredMethodName}");
+                    }
+
+                    var parameterTypes = new Type[]
+                    {
+                        typeof(CommandMemberDescriptor),
+                        typeof(string),
+                        typeof(CancellationToken),
+                    };
+                    var preferredMethodName = GenerateMethodInfoName(
+                        asyncName, typeof(Task<string[]>), parameterTypes);
+                    var message = $"Method must have the following format: {preferredMethodName}.";
+                    Trace.TraceWarning(message);
                 }
             }
+
             {
                 var normalName = $"Complete{GetPureName(methodInfo)}";
                 var normalMethod = instanceType.GetMethod(normalName, bindingFlags);
-                if (normalMethod != null)
+                if (normalMethod is not null)
                 {
                     if (IsCompletionMethod(normalMethod) == true)
+                    {
                         return normalMethod;
-                    var preferredMethodName = GenerateMethodInfoName(normalName, typeof(string[]), parameterTypes: [typeof(CommandMemberDescriptor), typeof(string)]);
-                    Trace.TraceWarning($"Method must have the following format: {preferredMethodName}");
+                    }
+
+                    var parameterTypes = new Type[]
+                    {
+                        typeof(CommandMemberDescriptor),
+                        typeof(string),
+                    };
+                    var preferredMethodName = GenerateMethodInfoName(
+                        normalName, typeof(string[]), parameterTypes);
+                    var message = $"Method must have the following format: {preferredMethodName}.";
+                    Trace.TraceWarning(message);
                 }
             }
+#pragma warning restore S1199 // Nested code blocks should not be used
         }
+
         return null;
     }
 
     internal static void VerifyCommandMethod(MethodInfo methodInfo)
     {
-        if (CommandAttributeUtility.IsCommandMethod(methodInfo) == false)
-            throw new CommandDefinitionException($"MethodInfo '{methodInfo}' does not have attribute '{nameof(CommandMethodAttribute)}'.", methodInfo.DeclaringType!);
-        if (typeof(Task).IsAssignableFrom(methodInfo.ReturnType) == false && methodInfo.ReturnType != typeof(void))
-            throw new CommandDefinitionException($"Return type of a Method '{methodInfo}' must be void.", methodInfo.DeclaringType!);
-        if (typeof(Task).IsAssignableFrom(methodInfo.ReturnType) == true && typeof(Task) != methodInfo.ReturnType)
-            throw new CommandDefinitionException($"Return type of a Method '{methodInfo}' must be {typeof(Task)}.", methodInfo.DeclaringType!);
+        if (CommandAttributeUtility.IsCommandMethod(methodInfo) != true)
+        {
+            var message = $"""
+                MethodInfo '{methodInfo}' does not have attribute 
+                '{nameof(CommandMethodAttribute)}'.
+                """;
+            throw new CommandDefinitionException(message, methodInfo.DeclaringType!);
+        }
+
+        if (typeof(Task).IsAssignableFrom(methodInfo.ReturnType) != true
+            && methodInfo.ReturnType != typeof(void))
+        {
+            var message = $"Return type of a Method '{methodInfo}' must be void.";
+            throw new CommandDefinitionException(message, methodInfo.DeclaringType!);
+        }
+
+        if (typeof(Task).IsAssignableFrom(methodInfo.ReturnType) == true
+            && typeof(Task) != methodInfo.ReturnType)
+        {
+            var message = $"Return type of a Method '{methodInfo}' must be {typeof(Task)}.";
+            throw new CommandDefinitionException(message, methodInfo.DeclaringType!);
+        }
+
         VerifyCommandAsyncMethodWithParameter(methodInfo);
     }
 
@@ -224,59 +279,101 @@ static class CommandMethodUtility
     {
         if (methodInfo.ReturnType == typeof(Task))
         {
-            var parameters = methodInfo.GetParameters();
-            var parameterCancellationToken = parameters.SingleOrDefault(IsCancellationTokenParameter);
-            var parameterProgress = parameters.SingleOrDefault(IsProgressParameter);
-            var indexCancellationToken = IndexOf(parameters, parameterCancellationToken);
-            var indexProgress = IndexOf(parameters, parameterProgress);
+            var @params = methodInfo.GetParameters();
+            var paramsCancellationToken = @params.SingleOrDefault(IsCancellationTokenParameter);
+            var paramsProgress = @params.SingleOrDefault(IsProgressParameter);
+            var indexCancellationToken = IndexOf(@params, paramsCancellationToken);
+            var indexProgress = IndexOf(@params, paramsProgress);
             if (indexProgress >= 0)
             {
-                if (indexProgress != parameters.Length - 1)
-                    throw new CommandDefinitionException($"Parameter '{parameterProgress!.Name}' must be defined last.", methodInfo.DeclaringType!);
-                if (indexCancellationToken >= 0 && indexProgress != parameters.Length - 1)
-                    throw new CommandDefinitionException($"Parameter '{parameterCancellationToken!.Name}' must be defined before the parameter '{parameterProgress!.Name}'.", methodInfo.DeclaringType!);
-            }
-            if (indexProgress == -1 && indexCancellationToken >= 0)
-            {
-                if (indexCancellationToken != parameters.Length - 1)
-                    throw new CommandDefinitionException($"Parameter '{parameterCancellationToken!.Name}' must be defined last.", methodInfo.DeclaringType!);
-            }
-        }
+                if (indexProgress != @params.Length - 1)
+                {
+                    var message = $"""
+                        Parameter '{paramsProgress!.Name}' must be defined last.
+                        """;
+                    throw new CommandDefinitionException(message, methodInfo.DeclaringType!);
+                }
 
-        static int IndexOf(ParameterInfo[] parameters, ParameterInfo? parameterInfo)
-        {
-            for (var i = 0; i < parameters.Length; i++)
-            {
-                if (parameters[i] == parameterInfo)
-                    return i;
+                if (indexCancellationToken >= 0 && indexProgress != @params.Length - 1)
+                {
+                    var message = $"""
+                        Parameter '{paramsCancellationToken!.Name}' must be defined before 
+                        the parameter '{paramsProgress!.Name}'.
+                        """;
+                    throw new CommandDefinitionException(message, methodInfo.DeclaringType!);
+                }
             }
-            return -1;
+
+            if (indexProgress == -1 && indexCancellationToken >= 0
+                && indexCancellationToken != @params.Length - 1)
+            {
+                var message = $"""
+                    Parameter '{paramsCancellationToken!.Name}' must be defined last.
+                    """;
+                throw new CommandDefinitionException(message, methodInfo.DeclaringType!);
+            }
         }
     }
 
     private static bool IsCompletionMethod(MethodInfo methodInfo)
     {
-        if (methodInfo.ReturnType == typeof(string[]))
+        if (methodInfo.ReturnType != typeof(string[]))
         {
-            var parameters = methodInfo.GetParameters();
-            if (parameters.Length == 2 && parameters[0].ParameterType == typeof(CommandMemberDescriptor) && parameters[1].ParameterType == typeof(string))
-                return true;
+            return false;
         }
-        return false;
+
+        var parameters = methodInfo.GetParameters();
+        if (parameters.Length != 2)
+        {
+            return false;
+        }
+
+        if (parameters[0].ParameterType != typeof(CommandMemberDescriptor))
+        {
+            return false;
+        }
+
+        if (parameters[1].ParameterType != typeof(string))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     private static bool IsCompletionAsyncMethod(MethodInfo methodInfo)
     {
-        if (methodInfo.ReturnType == typeof(Task<string[]>))
+        if (methodInfo.ReturnType != typeof(Task<string[]>))
         {
-            var parameters = methodInfo.GetParameters();
-            if (parameters.Length == 3 && parameters[0].ParameterType == typeof(CommandMemberDescriptor) && parameters[1].ParameterType == typeof(string) && parameters[2].ParameterType == typeof(CancellationToken))
-                return true;
+            return false;
         }
-        return false;
+
+        var parameters = methodInfo.GetParameters();
+        if (parameters.Length != 3)
+        {
+            return false;
+        }
+
+        if (parameters[0].ParameterType != typeof(CommandMemberDescriptor))
+        {
+            return false;
+        }
+
+        if (parameters[1].ParameterType != typeof(string))
+        {
+            return false;
+        }
+
+        if (parameters[2].ParameterType != typeof(CancellationToken))
+        {
+            return false;
+        }
+
+        return true;
     }
 
-    private static string GenerateMethodInfoName(string methodName, Type returnType, params Type[] parameterTypes)
+    private static string GenerateMethodInfoName(
+        string methodName, Type returnType, params Type[] parameterTypes)
     {
         var sb = new System.Text.StringBuilder();
         sb.Append(returnType);
@@ -286,5 +383,28 @@ static class CommandMethodUtility
         sb.Append(string.Join(", ", parameterTypes.Select(item => $"{item}")));
         sb.Append(')');
         return sb.ToString();
+    }
+
+    private static string GetDefaultName(MemberInfo memberInfo)
+    {
+        if (memberInfo is MethodInfo methodInfo)
+        {
+            return CommandUtility.ToSpinalCase(GetPureName(methodInfo));
+        }
+
+        throw new UnreachableException();
+    }
+
+    private static int IndexOf(ParameterInfo[] parameters, ParameterInfo? parameterInfo)
+    {
+        for (var i = 0; i < parameters.Length; i++)
+        {
+            if (parameters[i] == parameterInfo)
+            {
+                return i;
+            }
+        }
+
+        return -1;
     }
 }

@@ -1,59 +1,46 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="SubCommandAsync.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace JSSoft.Commands;
 
-sealed class SubCommandAsync(CommandMethodBase commandMethod, CommandMethodDescriptor methodDescriptor)
-    : ICommand, ICommandCompleter, IAsyncExecutable, ICommandUsage, ICommandUsagePrinter, ICustomCommandDescriptor
+internal sealed class SubCommandAsync(
+    CommandMethodBase method, CommandMethodDescriptor methodDescriptor)
+    : ICommand, ICommandCompleter, IAsyncExecutable, ICommandUsage, ICommandUsagePrinter,
+    ICustomCommandDescriptor
 {
     public string Name => methodDescriptor.Name;
 
     public string[] Aliases => methodDescriptor.Aliases;
 
-    public CommandSettings Settings => commandMethod.CommandContext.Settings;
+    public CommandSettings Settings => method.CommandContext.Settings;
+
+    bool ICommand.IsEnabled => methodDescriptor.CanExecute(method);
+
+    string ICommandUsage.ExecutionName
+        => $"{method.ExecutionName} {CommandUtility.GetExecutionName(Name, Aliases)}";
+
+    string ICommandUsage.Summary => methodDescriptor.UsageDescriptor.Summary;
+
+    string ICommandUsage.Description => methodDescriptor.UsageDescriptor.Description;
+
+    string ICommandUsage.Example => methodDescriptor.UsageDescriptor.Example;
 
     public CommandMemberDescriptorCollection GetMembers() => methodDescriptor.Members;
 
-    public object GetMemberOwner(CommandMemberDescriptor memberDescriptor)
-    {
-        return commandMethod;
-    }
+    public object GetMemberOwner(CommandMemberDescriptor memberDescriptor) => method;
 
     public Task ExecuteAsync(CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
-    {
-        return methodDescriptor.InvokeAsync(commandMethod, methodDescriptor.Members, cancellationToken, progress);
-    }
+        => methodDescriptor.InvokeAsync(
+            method, methodDescriptor.Members, cancellationToken, progress);
 
     public string[] GetCompletions(CommandCompletionContext completionContext)
-    {
-        return commandMethod.GetCompletions(methodDescriptor, completionContext.MemberDescriptor, completionContext.Find);
-    }
-
-    #region ICommand
-
-    bool ICommand.IsEnabled => methodDescriptor.CanExecute(commandMethod);
-
-    #endregion
-
-    #region ICommandUsagePrinter
+        => method.GetCompletions(
+            methodDescriptor, completionContext.MemberDescriptor, completionContext.Find);
 
     void ICommandUsagePrinter.Print(bool isDetail)
     {
@@ -62,20 +49,6 @@ sealed class SubCommandAsync(CommandMethodBase commandMethod, CommandMethodDescr
         {
             IsDetail = isDetail,
         };
-        usagePrinter.Print(commandMethod.Out, methodDescriptor);
+        usagePrinter.Print(method.Out, methodDescriptor);
     }
-
-    #endregion
-
-    #region ICommandUsage
-
-    string ICommandUsage.ExecutionName => $"{commandMethod.ExecutionName} {CommandUtility.GetExecutionName(Name, Aliases)}";
-
-    string ICommandUsage.Summary => methodDescriptor.UsageDescriptor.Summary;
-
-    string ICommandUsage.Description => methodDescriptor.UsageDescriptor.Description;
-
-    string ICommandUsage.Example => methodDescriptor.UsageDescriptor.Example;
-
-    #endregion
 }

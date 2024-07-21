@@ -1,20 +1,7 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="CommandDefinitionException.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 namespace JSSoft.Commands;
 
@@ -44,53 +31,83 @@ public class CommandDefinitionException : SystemException
 
     public static void ThrowIfParameterUnsupportedType(ParameterInfo parameterInfo)
     {
-        if (CommandUtility.IsSupportedType(parameterInfo.ParameterType) == false)
+        if (CommandUtility.IsSupportedType(parameterInfo.ParameterType) != true)
         {
-            throw new CommandDefinitionException($"ParameterType '{nameof(ParameterInfo.ParameterType)}' is an unsupported type.")
+            var message = $"""
+                ParameterType '{nameof(ParameterInfo.ParameterType)}' is an unsupported type.
+                """;
+            throw new CommandDefinitionException(message)
             {
-                Source = parameterInfo.Member.DeclaringType!.AssemblyQualifiedName
+                Source = parameterInfo.Member.DeclaringType!.AssemblyQualifiedName,
             };
         }
     }
 
     public static void ThrowIfPropertyNotReadWrite(PropertyInfo propertyInfo)
     {
-        if (propertyInfo.CanRead == false)
+        if (propertyInfo.CanRead != true)
         {
-            throw new CommandDefinitionException($"Property '{nameof(PropertyInfo.CanRead)}' of '{nameof(PropertyInfo)}' must be '{true}'.")
+            var message = $"""
+                Property '{nameof(PropertyInfo.CanRead)}' of '{nameof(PropertyInfo)}' 
+                must be '{true}'.
+                """;
+            throw new CommandDefinitionException(message)
             {
-                Source = propertyInfo.DeclaringType!.AssemblyQualifiedName
+                Source = propertyInfo.DeclaringType!.AssemblyQualifiedName,
             };
         }
-        if (propertyInfo.CanWrite == false)
+
+        if (propertyInfo.CanWrite != true)
         {
-            throw new CommandDefinitionException($"Property '{nameof(PropertyInfo.CanWrite)}' of '{nameof(PropertyInfo)}' must be '{true}'.")
+            var message = $"""
+                Property '{nameof(PropertyInfo.CanWrite)}' of '{nameof(PropertyInfo)}' 
+                must be '{true}'.
+                """;
+            throw new CommandDefinitionException(message)
             {
-                Source = propertyInfo.DeclaringType!.AssemblyQualifiedName
+                Source = propertyInfo.DeclaringType!.AssemblyQualifiedName,
             };
         }
     }
 
     public static void ThrowIfPropertyUnsupportedType(PropertyInfo propertyInfo)
     {
-        if (CommandUtility.IsSupportedType(propertyInfo.PropertyType) == false)
+        if (CommandUtility.IsSupportedType(propertyInfo.PropertyType) != true)
         {
-            throw new CommandDefinitionException($"PropertyType '{propertyInfo.PropertyType}' of '{propertyInfo.DeclaringType}' is an unsupported type.")
+            var message = $"""
+                PropertyType '{propertyInfo.PropertyType}' of '{propertyInfo.DeclaringType}' is 
+                an unsupported type.
+                """;
+            throw new CommandDefinitionException(message)
             {
-                Source = propertyInfo.DeclaringType!.AssemblyQualifiedName
+                Source = propertyInfo.DeclaringType!.AssemblyQualifiedName,
             };
         }
     }
 
-    public static void ThrowIfPropertyNotRightTypeForSwitch(CommandType commandType, PropertyInfo propertyInfo)
+    public static void ThrowIfPropertyNotRightTypeForSwitch(
+        bool isSwitch, PropertyInfo propertyInfo)
     {
-        if (commandType == CommandType.Switch && propertyInfo.PropertyType != typeof(bool))
-            throw new CommandDefinitionException($"Attribute '{nameof(CommandPropertySwitchAttribute)}' is not available for property '{propertyInfo}'.", propertyInfo.DeclaringType!);
+        if (isSwitch == true && propertyInfo.PropertyType != typeof(bool))
+        {
+            var message = $"""
+                Attribute '{nameof(CommandPropertySwitchAttribute)}' is not available for 
+                property '{propertyInfo}'.
+                """;
+            throw new CommandDefinitionException(message, propertyInfo.DeclaringType!);
+        }
     }
 
-    public static void ThrowIfPropertyNotRightTypeForVariables(CommandType commandType, PropertyInfo propertyInfo)
+    public static void ThrowIfPropertyNotRightTypeForVariables(
+        bool isVariables, PropertyInfo propertyInfo)
     {
-        if (commandType == CommandType.Variables && propertyInfo.PropertyType.IsArray == false)
-            throw new CommandDefinitionException($"Attribute '{nameof(CommandPropertyArrayAttribute)}' is not available for property '{propertyInfo}'.", propertyInfo.DeclaringType!);
+        if (isVariables == true && propertyInfo.PropertyType.IsArray != true)
+        {
+            var message = $"""
+                Attribute '{nameof(CommandPropertyArrayAttribute)}' is not available for 
+                property '{propertyInfo}'.
+                """;
+            throw new CommandDefinitionException(message, propertyInfo.DeclaringType!);
+        }
     }
 }

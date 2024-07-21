@@ -1,20 +1,7 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="TerminalCommandUtility.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 #pragma warning disable SYSLIB1045
 
@@ -23,7 +10,7 @@ using System.Text.RegularExpressions;
 
 namespace JSSoft.Terminals;
 
-static class CommandUtility
+internal static class CommandUtility
 {
     public const char ItemSperator = ',';
     public const string Delimiter = "--";
@@ -95,6 +82,7 @@ static class CommandUtility
         {
             itemList.Add(item.Contains(' ') == true ? $"\"{item}\"" : item);
         }
+
         return string.Join(" ", itemList);
     }
 
@@ -112,6 +100,7 @@ static class CommandUtility
         catch
         {
         }
+
         commandName = string.Empty;
         commandArguments = [];
         return false;
@@ -164,6 +153,7 @@ static class CommandUtility
             wrappedText = WrapDoubleQuotes(text);
             return true;
         }
+
         wrappedText = text;
         return false;
     }
@@ -172,7 +162,7 @@ static class CommandUtility
 
     public static bool IsSupportedType(Type value)
     {
-        if (Nullable.GetUnderlyingType(value) != null &&
+        if (Nullable.GetUnderlyingType(value) is not null &&
             value.GenericTypeArguments.Length == 1 &&
             IsSupportedType(value.GenericTypeArguments[0]) == true)
         {
@@ -202,7 +192,10 @@ static class CommandUtility
     {
         var text = label.PadRight(labelWidth);
         if (labelWidth <= label.Length)
+        {
             return label.PadRight(label.Length + 1);
+        }
+
         var l = text.Length % indentSpaces;
         return text.PadRight(l);
     }
@@ -221,6 +214,7 @@ static class CommandUtility
         {
             sb.Append($"({string.Join(",", aliases)})");
         }
+
         return sb.ToString();
     }
 
@@ -239,9 +233,10 @@ static class CommandUtility
         {
             etc = etc.Remove(matches[i].Index, matches[i].Length);
         }
+
         if (etc.Trim() != string.Empty)
         {
-            throw new ArgumentException("", nameof(text));
+            throw new ArgumentException(string.Empty, nameof(text));
         }
 
         var itemList = new List<string>(matches.Count);
@@ -272,6 +267,7 @@ static class CommandUtility
                 }
             }
         }
+
         if (arrayList.Count > 0)
         {
             itemList.Add(JoinList(arrayList));
@@ -288,7 +284,7 @@ static class CommandUtility
 
     private static (string name, string value, int space, int array) GetMatchInfo(Match match)
     {
-        if (FindGroup(match, out var group, out var index) == false || group.Name == "etc")
+        if (FindGroup(match, out var group, out var index) != true || group.Name == "etc")
         {
             throw new ArgumentException($"‘{match.Value}’ is an invalid string.: [{match.Index} .. {match.Index + match.Length}]", nameof(match));
         }
@@ -311,6 +307,7 @@ static class CommandUtility
             var item = itemList[i];
             itemList[i] = item.Contains(' ') == true ? $"'{item}'" : item;
         }
+
         return string.Join(",", itemList);
     }
 
@@ -325,6 +322,7 @@ static class CommandUtility
                 return true;
             }
         }
+
         group = match.Groups[0];
         index = -1;
         return false;

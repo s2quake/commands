@@ -1,20 +1,7 @@
-﻿// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+﻿// <copyright file="TerminalInputHandlerContext.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +9,7 @@ using JSSoft.Terminals.Extensions;
 
 namespace JSSoft.Terminals.Input;
 
-sealed class TerminalInputHandlerContext(ITerminal terminal) : InputHandlerContext(terminal)
+internal sealed class TerminalInputHandlerContext(ITerminal terminal) : InputHandlerContext(terminal)
 {
     private const double ClickThreshold = 0.5;
     private TerminalPoint _downPosition;
@@ -124,7 +111,7 @@ sealed class TerminalInputHandlerContext(ITerminal terminal) : InputHandlerConte
             var position = terminal.ViewToWorld(eventData.Position);
             var newCoord = terminal.PositionToCoordinate(position);
             var oldCoord = _downCoord;
-            if (oldCoord == newCoord && _isDragging == false)
+            if (oldCoord == newCoord && _isDragging != true)
             {
                 if (downCount == 1)
                 {
@@ -137,6 +124,7 @@ sealed class TerminalInputHandlerContext(ITerminal terminal) : InputHandlerConte
                     terminal.Selecting = TerminalSelection.Empty;
                 }
             }
+
             _isDragging = false;
         }
     }
@@ -150,7 +138,7 @@ sealed class TerminalInputHandlerContext(ITerminal terminal) : InputHandlerConte
 
     private async void ObserveScroll()
     {
-        while (_cancellationTokenSource?.IsCancellationRequested == false)
+        while (_cancellationTokenSource?.IsCancellationRequested != true)
         {
             var terminal = Terminal;
             var dragTime = DateTime.Now;
@@ -164,6 +152,7 @@ sealed class TerminalInputHandlerContext(ITerminal terminal) : InputHandlerConte
             {
                 ScrollValue(terminal, timeSpan.Milliseconds / 100.0);
             }
+
             _dragTime = dragTime;
             await Task.Delay(100);
         }
@@ -191,7 +180,10 @@ sealed class TerminalInputHandlerContext(ITerminal terminal) : InputHandlerConte
     {
         var diffTime = newTime - oldTime;
         if (diffTime > ClickThreshold || oldPosition != newPosition)
+        {
             return 1;
+        }
+
         return count % 3 + 1;
     }
 }

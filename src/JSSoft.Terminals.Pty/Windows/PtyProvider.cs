@@ -83,7 +83,7 @@ internal class PtyProvider : IPtyProvider
 
     private static string GetAppOnPath(string app, string cwd, IReadOnlyDictionary<string, string> env)
     {
-        bool isWow64 = Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432") != null;
+        bool isWow64 = Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432") is not null;
         var windir = Environment.GetEnvironmentVariable("WINDIR")!;
         var sysnativePath = Path.Combine(windir, "Sysnative");
         var sysnativePathWithSlash = sysnativePath + Path.DirectorySeparatorChar;

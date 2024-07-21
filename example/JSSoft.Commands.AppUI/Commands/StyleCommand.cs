@@ -69,7 +69,7 @@ sealed class StyleCommand : CommandMethodBase
     [CommandMethodCompletion(nameof(CompletionApply))]
     public void Unset()
     {
-        if (_terminalControl.TerminalStyle == null)
+        if (_terminalControl.TerminalStyle is null)
             throw new InvalidOperationException("No style is set in the Terminal.");
         _terminalControl.TerminalStyle = null;
     }

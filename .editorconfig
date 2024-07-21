@@ -1,0 +1,95 @@
+﻿# https://editorconfig.org/
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+tab_width = 8
+trim_trailing_whitespace = true
+max_line_length = 80
+indent_style = space
+continuation_indent_size = 4
+indent_size = 4
+
+[*.{json,ps1,sh,yaml,yml}]
+indent_size = 2
+continuation_indent_size = 2
+
+[*.{csproj,xml}]
+indent_size = 2
+quote_type = double
+
+[*.cs]
+max_line_length = 100
+curly_bracket_next_line = true
+spaces_around_operators = true
+indent_brace_style = Allman
+dotnet_naming_rule.public_members_must_be_capitalized.symbols = public_symbols
+dotnet_naming_symbols.public_symbols.applicable_kinds = property,method,field,event,delegate
+dotnet_naming_symbols.public_symbols.applicable_accessibilities = public
+dotnet_naming_rule.public_members_must_be_capitalized.style = first_word_upper_case_style
+dotnet_naming_style.first_word_upper_case_style.capitalization = first_word_upper
+dotnet_naming_rule.public_members_must_be_capitalized.severity = warning
+
+# SA0001: XML comment analysis is disabled due to project configuration
+dotnet_diagnostic.SA0001.severity = none
+
+# SA1101: Prefix local calls with this
+dotnet_diagnostic.SA1101.severity = none
+
+# SA1309: Field names should not begin with underscore
+dotnet_diagnostic.SA1309.severity = none
+
+# SA1600: Elements should be documented
+dotnet_diagnostic.SA1600.severity = none
+
+# SA1602: Enumeration items should be documented
+dotnet_diagnostic.SA1602.severity = none
+
+# S1133: Deprecated code should be removed
+dotnet_diagnostic.S1133.severity = none
+
+# S1125: Boolean literals should not be redundant
+dotnet_diagnostic.S1125.severity = none
+
+# S2372: Exceptions should not be thrown from property getters
+dotnet_diagnostic.S2372.severity = none
+
+# S3881: "IDisposable" should be implemented correctly
+dotnet_diagnostic.S3881.severity = none
+
+# S3971: "GC.SuppressFinalize" should not be called
+dotnet_diagnostic.S3971.severity = none
+
+# S4143: Collection elements should not be replaced unconditionally
+dotnet_diagnostic.S4143.severity = none
+
+# S6605: Collection-specific "Exists" method should be used instead of the "Any" extension
+dotnet_diagnostic.S6605.severity = none
+
+# S6608: Prefer indexing instead of "Enumerable" methods on types implementing "IList"
+dotnet_diagnostic.S6608.severity = none
+
+# MEN007: Use a single return
+dotnet_diagnostic.MEN007.severity = none
+
+# MEN016: Avoid top-level statements
+dotnet_diagnostic.MEN016.severity = none
+
+# SA1601: Partial elements should be documented
+dotnet_diagnostic.SA1601.severity = none
+
+[*.csproj]
+quote_type = double
+
+[*.sln]
+indent_style = tab
+indent_size = 2
+
+[hooks/*]
+indent_size = 2
+continuation_indent_size = 2
+
+[stylecop.json]
+max_line_length =

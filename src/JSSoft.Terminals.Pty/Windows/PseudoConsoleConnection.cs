@@ -51,7 +51,7 @@ internal sealed class PseudoConsoleConnection : IPtyConnection
         _readerStream?.Dispose();
         _writerStream?.Dispose();
 
-        if (_handles != null)
+        if (_handles is not null)
         {
             _handles.PseudoConsoleHandle.Close();
             _handles.MainThreadHandle.Close();
@@ -179,8 +179,6 @@ internal sealed class PseudoConsoleConnection : IPtyConnection
         internal SafeThreadHandle MainThreadHandle { get; }
     }
 
-    #region IPtyConnection
-
     int IPtyConnection.Read(byte[] buffer, int count)
     {
         return _readerStream.Read(buffer, 0, count);
@@ -192,6 +190,4 @@ internal sealed class PseudoConsoleConnection : IPtyConnection
         _writerStream.Flush();
         return count;
     }
-
-    #endregion
 }

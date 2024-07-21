@@ -1,20 +1,7 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="TextWriterExtensions.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System.IO;
 
@@ -24,9 +11,10 @@ public static class TextWriterExtensions
 {
     public static void PrintItems<T>(this TextWriter @this, IEnumerable<T> items)
     {
-        var query = from item in typeof(T).GetProperties() ?? []
-                    where item.PropertyType.IsArray == false
-                    select item;
+        var propertyInfos = typeof(T).GetProperties();
+        var query = from propertyInfo in propertyInfos
+                    where propertyInfo.PropertyType.IsArray != true
+                    select propertyInfo;
 
         var headers = from item in query
                       let displayName = AttributeUtility.GetDisplayName(item)
@@ -42,12 +30,9 @@ public static class TextWriterExtensions
         @this.PrintTableData(dataBuilder.Data, true);
     }
 
-    public static void Print(this TextWriter writer, TableDataBuilder tableData)
-    {
-        PrintTableData(writer, tableData.Data, tableData.HasHeader);
-    }
-
+#pragma warning disable S2368 // Public methods should not have multidimensional array parameters
     public static void PrintTableData(this TextWriter @this, string[][] itemsArray, bool hasHeader)
+#pragma warning restore S2368 // Public methods should not have multidimensional array parameters
     {
         var count = itemsArray.First().Length;
 
@@ -60,6 +45,7 @@ public static class TextWriterExtensions
             {
                 len = Math.Max(GetLength(itemsArray[y][x]), len);
             }
+
             lengths[x] = len + (4 - (len % 4));
         }
 
@@ -72,10 +58,13 @@ public static class TextWriterExtensions
                 @this.Write(string.Empty.PadRight(pad));
                 @this.Write(" ");
             }
+
             @this.WriteLine();
 
-            if (y != 0 || hasHeader == false)
+            if (y != 0 || hasHeader != true)
+            {
                 continue;
+            }
 
             for (var x = 0; x < itemsArray[y].Length; x++)
             {
@@ -83,24 +72,26 @@ public static class TextWriterExtensions
                 @this.Write(string.Empty.PadRight(pad, '-'));
                 @this.Write(" ");
             }
+
             @this.WriteLine();
         }
     }
 
+    public static void Print(this TextWriter writer, TableDataBuilder tableData)
+        => PrintTableData(writer, tableData.Data, tableData.HasHeader);
+
     public static void Print<T>(this TextWriter @this, T[] items)
-    {
-        Print<T>(@this, items, (i, w, s) => w.Write(s), item => $"{item}");
-    }
+        => Print<T>(@this, items, (i, w, s) => w.Write(s), item => $"{item}");
 
-    public static void Print<T>(this TextWriter @this, T[] items, Action<T, TextWriter, string> action)
-    {
-        Print<T>(@this, items, action, item => $"{item}");
-    }
+    public static void Print<T>(
+        this TextWriter @this, T[] items, Action<T, TextWriter, string> action)
+        => Print<T>(@this, items, action, item => $"{item}");
 
-    // <summary>
-    // linux에 ls 명령처럼 단순 문자열을 위에서 아래로 좌에서 우로 정렬해서 출력하는 기능
-    // </summary>
-    public static void Print<T>(this TextWriter @this, T[] items, Action<T, TextWriter, string> action, Func<T, string> selector)
+    public static void Print<T>(
+        this TextWriter @this,
+        T[] items,
+        Action<T, TextWriter, string> action,
+        Func<T, string> selector)
     {
         var maxWidth = 80;
         var lineCount = 4;
@@ -116,7 +107,7 @@ public static class TextWriterExtensions
             {
                 var y = i % lineCount;
                 var item = selector(items[i]);
-                if (lines[y] == null)
+                if (lines[y] is null)
                 {
                     lines[y] = [];
                     objs[y] = [];
@@ -132,7 +123,9 @@ public static class TextWriterExtensions
                 objs[y].Add(items[i]);
 
                 if (columns.Count < lines[y].Count)
+                {
                     columns.Add(0);
+                }
 
                 columns[c] = Math.Max(columns[c], GetLength(item) + 2);
             }
@@ -140,18 +133,24 @@ public static class TextWriterExtensions
             var canPrint = true;
             for (var i = 0; i < lines.Length; i++)
             {
-                if (lines[i] == null)
+                if (lines[i] is null)
+                {
                     continue;
+                }
+
                 var c = 0;
                 for (var j = 0; j < lines[i].Count; j++)
                 {
                     c += columns[j];
                 }
+
                 if (c >= maxWidth)
+                {
                     canPrint = false;
+                }
             }
 
-            if (canPrint == false)
+            if (canPrint != true)
             {
                 lineCount++;
                 continue;
@@ -159,14 +158,18 @@ public static class TextWriterExtensions
 
             for (var i = 0; i < lines.Length; i++)
             {
-                if (lines[i] == null)
+                if (lines[i] is null)
+                {
                     continue;
+                }
+
                 for (var j = 0; j < lines[i].Count; j++)
                 {
                     var obj = objs[i][j];
                     var text = lines[i][j].PadRight(columns[j]);
                     action(obj, @this, text);
                 }
+
                 @this.WriteLine();
             }
 
@@ -175,19 +178,17 @@ public static class TextWriterExtensions
     }
 
     public static void Print<T>(this TextWriter @this, IDictionary<string, T> items)
-    {
-        Print<T>(@this, items, (o, a) => a(), item => $"{item}");
-    }
+        => Print<T>(@this, items, (o, a) => a(), item => $"{item}");
 
-    public static void Print<T>(this TextWriter @this, IDictionary<string, T> items, Action<T, Action> action)
-    {
-        Print<T>(@this, items, action, item => $"{item}");
-    }
+    public static void Print<T>(
+        this TextWriter @this, IDictionary<string, T> items, Action<T, Action> action)
+        => Print<T>(@this, items, action, item => $"{item}");
 
-    /// <summary>
-    /// 라벨과 값이 존재하는 아이템을 {0} : {1} 형태로 출력하는 기능
-    /// </summary>
-    public static void Print<T>(this TextWriter @this, IDictionary<string, T> items, Action<T, Action> action, Func<T, string> selector)
+    public static void Print<T>(
+        this TextWriter @this,
+        IDictionary<string, T> items,
+        Action<T, Action> action,
+        Func<T, string> selector)
     {
         var maxWidth = items.Keys.Max(item => item.Length);
 
@@ -199,8 +200,5 @@ public static class TextWriterExtensions
         }
     }
 
-    private static int GetLength(string s)
-    {
-        return s.Length;
-    }
+    private static int GetLength(string s) => s.Length;
 }

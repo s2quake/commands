@@ -1,140 +1,229 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="AttributeUtility.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
-using System;
-using System.Linq;
 using System.ComponentModel;
-using System.Reflection;
 
 namespace JSSoft.Commands;
 
-static class AttributeUtility
+internal static class AttributeUtility
 {
-    public static T? GetCustomAttribute<T>(MemberInfo memberInfo) where T : Attribute
-    {
-        if (Attribute.GetCustomAttribute(memberInfo, typeof(T)) is T attribute)
-        {
-            return attribute;
-        }
-        return default;
-    }
+    public static T? GetCustomAttribute<T>(Assembly assembly)
+        where T : Attribute
+        => Attribute.GetCustomAttribute(assembly, typeof(T)) is T attr ? attr : default;
 
-    public static T? GetCustomAttribute<T>(ParameterInfo parameterInfo) where T : Attribute
-    {
-        if (Attribute.GetCustomAttribute(parameterInfo, typeof(T)) is T attribute)
-        {
-            return attribute;
-        }
-        return default;
-    }
+    public static T? GetCustomAttribute<T>(MemberInfo memberInfo)
+        where T : Attribute
+        => Attribute.GetCustomAttribute(memberInfo, typeof(T)) is T attr ? attr : default;
 
-    public static T? GetCustomAttribute<T>(MemberInfo memberInfo, bool inherit) where T : Attribute
-    {
-        if (Attribute.GetCustomAttribute(memberInfo, typeof(T), inherit) is T attribute)
-        {
-            return attribute;
-        }
-        return default;
-    }
+    public static T? GetCustomAttribute<T>(ParameterInfo parameterInfo)
+        where T : Attribute
+        => Attribute.GetCustomAttribute(parameterInfo, typeof(T)) is T attr ? attr : default;
 
-    public static T[] GetCustomAttributes<T>(MemberInfo memberInfo) where T : Attribute
-    {
-        return Attribute.GetCustomAttributes(memberInfo, typeof(T)).OfType<T>().ToArray();
-    }
+    public static T? GetCustomAttribute<T>(MemberInfo memberInfo, bool inherit)
+        where T : Attribute
+        => Attribute.GetCustomAttribute(memberInfo, typeof(T), inherit) is T attr ? attr : default;
 
-    public static T[] GetCustomAttributes<T>(MemberInfo memberInfo, bool inherit) where T : Attribute
-    {
-        return Attribute.GetCustomAttributes(memberInfo, typeof(T), inherit).OfType<T>().ToArray();
-    }
+    public static T[] GetCustomAttributes<T>(MemberInfo memberInfo)
+        where T : Attribute
+        => Attribute.GetCustomAttributes(memberInfo, typeof(T)).OfType<T>().ToArray();
+
+    public static T[] GetCustomAttributes<T>(MemberInfo memberInfo, bool inherit)
+        where T : Attribute
+        => Attribute.GetCustomAttributes(memberInfo, typeof(T), inherit).OfType<T>().ToArray();
 
     public static object? GetDefaultValue(MemberInfo memberInfo)
-    {
-        if (Attribute.GetCustomAttribute(memberInfo, typeof(DefaultValueAttribute)) is DefaultValueAttribute defaultValueAttribute)
-        {
-            return defaultValueAttribute.Value;
-        }
-        return DBNull.Value;
-    }
+        => GetValue<DefaultValueAttribute, object?>(memberInfo, a => a.Value, DBNull.Value);
 
     public static object? GetDefaultValue(Type type)
-    {
-        if (Attribute.GetCustomAttribute(type, typeof(DefaultValueAttribute)) is DefaultValueAttribute defaultValueAttribute)
-        {
-            return defaultValueAttribute.Value;
-        }
-        return DBNull.Value;
-    }
+        => GetValue<DefaultValueAttribute, object?>(type, a => a.Value, DBNull.Value);
 
     public static string GetDescription(MemberInfo memberInfo)
-    {
-        if (Attribute.GetCustomAttribute(memberInfo, typeof(DescriptionAttribute)) is DescriptionAttribute descriptionAttribute)
-        {
-            return descriptionAttribute.Description;
-        }
-        return string.Empty;
-    }
+        => GetValue<DescriptionAttribute, string>(memberInfo, a => a.Description, string.Empty);
 
     public static string GetDisplayName(MemberInfo memberInfo)
-    {
-        if (Attribute.GetCustomAttribute(memberInfo, typeof(DisplayNameAttribute)) is DisplayNameAttribute displayNameAttribute)
-        {
-            return displayNameAttribute.DisplayName;
-        }
-        return string.Empty;
-    }
+        => GetValue<DisplayNameAttribute, string>(memberInfo, a => a.DisplayName, string.Empty);
 
     public static bool TryGetDisplayName(MemberInfo memberInfo, out string displayName)
     {
-        if (Attribute.GetCustomAttribute(memberInfo, typeof(DisplayNameAttribute)) is DisplayNameAttribute displayNameAttribute && displayNameAttribute.DisplayName != string.Empty)
+        var attribute = GetCustomAttribute<DisplayNameAttribute>(memberInfo);
+        if (attribute is not null && attribute.DisplayName != string.Empty)
         {
-            displayName = displayNameAttribute.DisplayName;
+            displayName = attribute.DisplayName;
             return true;
         }
+
         displayName = string.Empty;
         return false;
     }
 
-    public static bool GetBrowsable(MemberInfo memberInfo)
-    {
-        if (Attribute.GetCustomAttribute(memberInfo, typeof(BrowsableAttribute)) is BrowsableAttribute browsableAttribute)
-        {
-            return browsableAttribute.Browsable;
-        }
-        return true;
-    }
-
     public static string GetCategory(MemberInfo memberInfo)
-    {
-        if (Attribute.GetCustomAttribute(memberInfo, typeof(CategoryAttribute)) is CategoryAttribute categoryAttribute)
-        {
-            return categoryAttribute.Category;
-        }
-        return string.Empty;
-    }
+        => GetValue<CategoryAttribute, string>(memberInfo, a => a.Category, string.Empty);
 
 #if !JSSOFT_COMMANDS
     public static int GetOrder(MemberInfo memberInfo)
-    {
-        if (Attribute.GetCustomAttribute(memberInfo, typeof(OrderAttribute)) is OrderAttribute orderAttribute)
-        {
-            return orderAttribute.Order;
-        }
-        return 0;
-    }
+        => GetValue<OrderAttribute, int>(memberInfo, a => a.Order, 0);
 #endif // !JSSOFT_COMMANDS
+
+    public static TV GetValue<TA, TV>(
+        Assembly assembly, Func<TA, TV> getter, TV defaultValue)
+        where TA : Attribute
+        => GetCustomAttribute<TA>(assembly) is TA attr ? getter(attr) : defaultValue;
+
+    public static TV GetValue<TA, TV>(
+        Assembly assembly, Func<TA, TV> getter, Func<Assembly, TV> defaultGetter)
+        where TA : Attribute
+        => GetCustomAttribute<TA>(assembly) is TA attr ? getter(attr) : defaultGetter(assembly);
+
+    public static string GetValue<TA>(
+        Assembly assembly, Func<TA, string> getter)
+        where TA : Attribute
+        => GetValue(assembly, getter, string.Empty);
+
+    public static string GetValue<TA>(
+        Assembly assembly, Func<TA, string> getter, string defaultValue)
+        where TA : Attribute
+    {
+        if (Attribute.GetCustomAttribute(assembly, typeof(TA)) is TA attribute)
+        {
+            var value = getter(attribute);
+            if (value != string.Empty)
+            {
+                return value;
+            }
+        }
+
+        return defaultValue;
+    }
+
+    public static string GetValue<TA>(
+        Assembly assembly, Func<TA, string> getter, Func<Assembly, string> defaultGetter)
+        where TA : Attribute
+    {
+        if (Attribute.GetCustomAttribute(assembly, typeof(TA)) is TA attribute)
+        {
+            var value = getter(attribute);
+            if (value != string.Empty)
+            {
+                return value;
+            }
+        }
+
+        return defaultGetter(assembly);
+    }
+
+    public static TV GetValue<TA, TV>(
+        MemberInfo memberInfo, Func<TA, TV> getter, TV defaultValue)
+        where TA : Attribute
+        => GetCustomAttribute<TA>(memberInfo) is TA attr ? getter(attr) : defaultValue;
+
+    public static TV GetValue<TA, TV>(
+        MemberInfo memberInfo, Func<TA, TV> getter, Func<MemberInfo, TV> defaultGetter)
+        where TA : Attribute
+        => GetCustomAttribute<TA>(memberInfo) is TA attr ? getter(attr) : defaultGetter(memberInfo);
+
+    public static string GetValue<TA>(
+        MemberInfo memberInfo, Func<TA, string> getter)
+        where TA : Attribute
+        => GetValue(memberInfo, getter, string.Empty);
+
+    public static string GetValue<TA>(
+        MemberInfo memberInfo, Func<TA, string> getter, string defaultValue)
+        where TA : Attribute
+    {
+        if (Attribute.GetCustomAttribute(memberInfo, typeof(TA)) is TA attribute)
+        {
+            var value = getter(attribute);
+            if (value != string.Empty)
+            {
+                return value;
+            }
+        }
+
+        return defaultValue;
+    }
+
+    public static string GetValue<TA>(
+        MemberInfo memberInfo, Func<TA, string> getter, Func<MemberInfo, string> defaultGetter)
+        where TA : Attribute
+    {
+        if (Attribute.GetCustomAttribute(memberInfo, typeof(TA)) is TA attribute)
+        {
+            var value = getter(attribute);
+            if (value != string.Empty)
+            {
+                return value;
+            }
+        }
+
+        return defaultGetter(memberInfo);
+    }
+
+    public static TV GetValue<TA, TV>(
+        ParameterInfo parameterInfo, Func<TA, TV> getter, TV defaultValue)
+        where TA : Attribute
+        => GetCustomAttribute<TA>(parameterInfo) is TA attr ? getter(attr) : defaultValue;
+
+    public static TV GetValue<TA, TV>(
+        ParameterInfo parameterInfo, Func<TA, TV> getter, Func<ParameterInfo, TV> defaultGetter)
+        where TA : Attribute
+        => GetCustomAttribute<TA>(parameterInfo) is TA attr
+            ? getter(attr)
+            : defaultGetter(parameterInfo);
+
+    public static string GetValue<TA>(
+        ParameterInfo parameterInfo, Func<TA, string> getter)
+        where TA : Attribute
+        => GetValue(parameterInfo, getter, string.Empty);
+
+    public static string GetValue<TA>(
+        ParameterInfo parameterInfo, Func<TA, string> getter, string defaultValue)
+        where TA : Attribute
+    {
+        if (Attribute.GetCustomAttribute(parameterInfo, typeof(TA)) is TA attribute)
+        {
+            var value = getter(attribute);
+            if (value != string.Empty)
+            {
+                return value;
+            }
+        }
+
+        return defaultValue;
+    }
+
+    public static string GetValue<TA>(
+        ParameterInfo parameterInfo,
+        Func<TA, string> getter,
+        Func<ParameterInfo, string> defaultGetter)
+        where TA : Attribute
+    {
+        if (Attribute.GetCustomAttribute(parameterInfo, typeof(TA)) is TA attribute)
+        {
+            var value = getter(attribute);
+            if (value != string.Empty)
+            {
+                return value;
+            }
+        }
+
+        return defaultGetter(parameterInfo);
+    }
+
+    public static bool IsDefined<TA>(MemberInfo memberInfo)
+        where TA : Attribute
+        => Attribute.IsDefined(memberInfo, typeof(TA));
+
+    public static bool IsDefined<TA>(MemberInfo memberInfo, bool inherit)
+        where TA : Attribute
+        => Attribute.IsDefined(memberInfo, typeof(TA), inherit);
+
+    public static bool IsNotDefined<TA>(MemberInfo memberInfo)
+        where TA : Attribute
+        => !Attribute.IsDefined(memberInfo, typeof(TA));
+
+    public static bool IsNotDefined<TA>(MemberInfo memberInfo, bool inherit)
+        where TA : Attribute
+        => !Attribute.IsDefined(memberInfo, typeof(TA), inherit);
 }

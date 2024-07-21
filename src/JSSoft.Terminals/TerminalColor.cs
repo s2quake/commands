@@ -1,20 +1,7 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="TerminalColor.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 namespace JSSoft.Terminals;
 
@@ -31,6 +18,7 @@ public struct TerminalColor : IEquatable<TerminalColor>
         {
             return _a == color._a && _r == color._r && _g == color._g && _b == color._b;
         }
+
         return base.Equals(obj);
     }
 
@@ -47,6 +35,7 @@ public struct TerminalColor : IEquatable<TerminalColor>
         {
             return $"#{R:x2}{G:x2}{B:x2}";
         }
+
         return $"#{R:x2}{G:x2}{B:x2}{A:x2}";
     }
 
@@ -140,7 +129,10 @@ public struct TerminalColor : IEquatable<TerminalColor>
         set
         {
             if (value < 0 || value > 1.0f)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
             _a = (byte)(value * 255.0f);
             Name = string.Empty;
         }
@@ -152,7 +144,10 @@ public struct TerminalColor : IEquatable<TerminalColor>
         set
         {
             if (value < 0 || value > 1.0f)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
             _r = (byte)(value * 255.0f);
             Name = string.Empty;
         }
@@ -164,7 +159,10 @@ public struct TerminalColor : IEquatable<TerminalColor>
         set
         {
             if (value < 0 || value > 1.0f)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
             _g = (byte)(value * 255.0f);
             Name = string.Empty;
         }
@@ -176,7 +174,10 @@ public struct TerminalColor : IEquatable<TerminalColor>
         set
         {
             if (value < 0 || value > 1.0f)
+            {
                 throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
             _b = (byte)(value * 255.0f);
             Name = string.Empty;
         }
@@ -196,10 +197,6 @@ public struct TerminalColor : IEquatable<TerminalColor>
 
     public static implicit operator uint(TerminalColor color) => color.ToUInt32();
 
-    #region IEquatable
-
     readonly bool IEquatable<TerminalColor>.Equals(TerminalColor other)
         => _a == other._a && _r == other._r && _g == other._g && _b == other._b;
-
-    #endregion
 }

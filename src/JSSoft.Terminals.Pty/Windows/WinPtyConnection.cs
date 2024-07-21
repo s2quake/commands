@@ -82,8 +82,6 @@ internal class WinPtyConnection : IPtyConnection
         Exited?.Invoke(this, new PtyExitedEventArgs(_process.ExitCode));
     }
 
-    #region IPtyConnection
-
     int IPtyConnection.Read(byte[] buffer, int count)
     {
         return _readerStream.Read(buffer, 0, count);
@@ -95,6 +93,4 @@ internal class WinPtyConnection : IPtyConnection
         _writerStream.Flush();
         return count;
     }
-
-    #endregion
 }

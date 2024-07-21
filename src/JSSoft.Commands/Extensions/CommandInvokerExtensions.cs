@@ -1,20 +1,7 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="CommandInvokerExtensions.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,6 +10,8 @@ namespace JSSoft.Commands.Extensions;
 
 public static class CommandInvokerExtensions
 {
+    private static readonly Progress<ProgressInfo> EmptyProgress = new();
+
     public static void Invoke(this CommandInvoker @this, string argumentLine)
     {
         var args = CommandUtility.Split(argumentLine);
@@ -37,37 +26,41 @@ public static class CommandInvokerExtensions
     }
 
     public static Task InvokeAsync(this CommandInvoker @this, string[] args)
-    {
-        return @this.InvokeAsync(args, CancellationToken.None, new Progress<ProgressInfo>());
-    }
+        => @this.InvokeAsync(args, CancellationToken.None, EmptyProgress);
 
     public static Task InvokeAsync(this CommandInvoker @this, string argumentLine)
-    {
-        return @this.InvokeAsync(argumentLine, CancellationToken.None);
-    }
+        => @this.InvokeAsync(argumentLine, CancellationToken.None);
 
-    public static Task InvokeAsync(this CommandInvoker @this, string argumentLine, CancellationToken cancellationToken)
-    {
-        return InvokeAsync(@this, argumentLine, cancellationToken, new Progress<ProgressInfo>());
-    }
+    public static Task InvokeAsync(
+        this CommandInvoker @this,
+        string argumentLine,
+        CancellationToken cancellationToken)
+        => InvokeAsync(@this, argumentLine, cancellationToken, EmptyProgress);
 
-    public static Task InvokeAsync(this CommandInvoker @this, string argumentLine, CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
+    public static Task InvokeAsync(
+        this CommandInvoker @this,
+        string argumentLine,
+        CancellationToken cancellationToken,
+        IProgress<ProgressInfo> progress)
     {
         var args = CommandUtility.Split(argumentLine);
         return @this.InvokeAsync(args, cancellationToken, progress);
     }
 
     public static Task InvokeCommandLineAsync(this CommandInvoker @this, string commandLine)
-    {
-        return @this.InvokeCommandLineAsync(commandLine, CancellationToken.None);
-    }
+        => @this.InvokeCommandLineAsync(commandLine, CancellationToken.None);
 
-    public static Task InvokeCommandLineAsync(this CommandInvoker @this, string commandLine, CancellationToken cancellationToken)
-    {
-        return InvokeCommandLineAsync(@this, commandLine, cancellationToken, new Progress<ProgressInfo>());
-    }
+    public static Task InvokeCommandLineAsync(
+        this CommandInvoker @this,
+        string commandLine,
+        CancellationToken cancellationToken)
+        => InvokeCommandLineAsync(@this, commandLine, cancellationToken, EmptyProgress);
 
-    public static Task InvokeCommandLineAsync(this CommandInvoker @this, string commandLine, CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
+    public static Task InvokeCommandLineAsync(
+        this CommandInvoker @this,
+        string commandLine,
+        CancellationToken cancellationToken,
+        IProgress<ProgressInfo> progress)
     {
         var (commandName, commandArguments) = CommandUtility.SplitCommandLine(commandLine);
         @this.ThrowIfNotVerifyCommandName(commandName);
@@ -101,16 +94,19 @@ public static class CommandInvokerExtensions
     }
 
     public static Task<bool> TryInvokeAsync(this CommandInvoker @this, string[] args)
-    {
-        return @this.TryInvokeAsync(args, CancellationToken.None);
-    }
+        => @this.TryInvokeAsync(args, CancellationToken.None);
 
-    public static Task<bool> TryInvokeAsync(this CommandInvoker @this, string[] args, CancellationToken cancellationToken)
-    {
-        return TryInvokeAsync(@this, args, cancellationToken, new Progress<ProgressInfo>());
-    }
+    public static Task<bool> TryInvokeAsync(
+        this CommandInvoker @this,
+        string[] args,
+        CancellationToken cancellationToken)
+        => TryInvokeAsync(@this, args, cancellationToken, EmptyProgress);
 
-    public static async Task<bool> TryInvokeAsync(this CommandInvoker @this, string[] args, CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
+    public static async Task<bool> TryInvokeAsync(
+        this CommandInvoker @this,
+        string[] args,
+        CancellationToken cancellationToken,
+        IProgress<ProgressInfo> progress)
     {
         try
         {
@@ -123,12 +119,25 @@ public static class CommandInvokerExtensions
         }
     }
 
-    public static Task<bool> TryInvokeCommandLineAsync(this CommandInvoker @this, string commandLine)
+    public static Task<bool> TryInvokeAsync(this CommandInvoker @this, string argumentLine)
+        => @this.TryInvokeAsync(argumentLine, CancellationToken.None);
+
+    public static Task<bool> TryInvokeAsync(
+        this CommandInvoker @this, string argumentLine, CancellationToken cancellationToken)
     {
-        return @this.TryInvokeCommandLineAsync(commandLine, CancellationToken.None);
+        var args = CommandUtility.Split(argumentLine);
+        return @this.TryInvokeAsync(args, cancellationToken);
     }
 
-    public static async Task<bool> TryInvokeCommandLineAsync(this CommandInvoker @this, string commandLine, CancellationToken cancellationToken)
+    public static Task<bool> TryInvokeCommandLineAsync(
+        this CommandInvoker @this,
+        string commandLine)
+        => @this.TryInvokeCommandLineAsync(commandLine, CancellationToken.None);
+
+    public static async Task<bool> TryInvokeCommandLineAsync(
+        this CommandInvoker @this,
+        string commandLine,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -139,19 +148,5 @@ public static class CommandInvokerExtensions
         {
             return false;
         }
-        // var (commandName, commandArguments) = CommandUtility.SplitCommandLine(commandLine);
-        // ThrowIfNotVerifyCommandName(commandName);
-        // return @this.TryInvokeAsync(commandArguments, cancellationToken);
-    }
-
-    public static Task<bool> TryInvokeAsync(this CommandInvoker @this, string argumentLine)
-    {
-        return @this.TryInvokeAsync(argumentLine, CancellationToken.None);
-    }
-
-    public static Task<bool> TryInvokeAsync(this CommandInvoker @this, string argumentLine, CancellationToken cancellationToken)
-    {
-        var args = CommandUtility.Split(argumentLine);
-        return @this.TryInvokeAsync(args, cancellationToken);
     }
 }
