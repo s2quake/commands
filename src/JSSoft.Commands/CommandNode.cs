@@ -7,17 +7,18 @@ namespace JSSoft.Commands;
 
 internal sealed class CommandNode : ICommandNode
 {
+    private readonly ICommand? _command;
+
     public CommandNode(CommandContextBase commandContext)
     {
         CommandContext = commandContext;
-        Command = new EmptyCommand();
     }
 
     public CommandNode(CommandContextBase commandContext, ICommand command)
     {
         CommandContext = commandContext;
-        Command = command;
         Category = AttributeUtility.GetCategory(command.GetType());
+        _command = command;
     }
 
     public CommandNode? Parent { get; set; }
@@ -26,19 +27,17 @@ internal sealed class CommandNode : ICommandNode
 
     public CommandAliasNodeCollection ChildByAlias { get; } = [];
 
-    public ICommand Command { get; }
-
-    public ICommandUsage? Usage => Command as ICommandUsage;
+    public ICommandUsage? Usage => _command as ICommandUsage;
 
     public CommandContextBase CommandContext { get; }
 
     public List<ICommand> CommandList { get; } = [];
 
-    public string Name => Command.Name;
+    public string Name => _command?.Name ?? string.Empty;
 
     public string Category { get; } = string.Empty;
 
-    public string[] Aliases => Command is not null ? Command.Aliases : [];
+    public string[] Aliases => _command is not null ? _command.Aliases : [];
 
     public bool IsEnabled => CommandList.Any(item => item.IsEnabled);
 
@@ -53,13 +52,4 @@ internal sealed class CommandNode : ICommandNode
     ICommandContext ICommandNode.CommandContext => CommandContext;
 
     public override string ToString() => Name;
-
-    private sealed class EmptyCommand : ICommand
-    {
-        public string Name => throw new NotSupportedException("EmptyCommand.Name");
-
-        public string[] Aliases => throw new NotSupportedException("EmptyCommand.Aliases");
-
-        public bool IsEnabled => throw new NotSupportedException("EmptyCommand.IsEnabled");
-    }
 }

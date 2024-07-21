@@ -136,12 +136,12 @@ public abstract class CommandContextBase : ICommandContext
             && parentNode.TryGetEnabledCommand(commandName, out var commandNode) == true)
         {
             argList.RemoveAt(0);
-            if (argList.Count > 0 && commandNode.Children.Any())
+            if (argList.Count > 0 && commandNode.Children.Count != 0)
             {
                 return GetCommand(commandNode, argList);
             }
 
-            return commandNode.Command;
+            return commandNode.Commands.FirstOrDefault();
         }
 
         return null;

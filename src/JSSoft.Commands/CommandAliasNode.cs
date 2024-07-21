@@ -21,8 +21,6 @@ internal sealed class CommandAliasNode(ICommandNode commandNode, string alias) :
 
     public string Category => commandNode.Category;
 
-    public ICommand Command => commandNode.Command;
-
     public ICommandUsage? Usage => commandNode.Usage;
 
     public ICommandContext CommandContext => commandNode.CommandContext;

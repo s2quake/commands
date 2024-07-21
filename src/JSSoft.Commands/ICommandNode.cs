@@ -17,8 +17,6 @@ public interface ICommandNode
 
     string[] Aliases { get; }
 
-    ICommand Command { get; }
-
     ICommandUsage? Usage { get; }
 
     ICommandContext CommandContext { get; }
