@@ -113,10 +113,10 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
     protected static void PrintCommands(
         CommandTextWriter commandWriter, CommandMethodDescriptor[] methodDescriptors)
     {
-        var query = from item in methodDescriptors
-                    orderby item.Name
-                    orderby item.Category
-                    group item by item.Category into @group
+        var query = from methodDescriptor in methodDescriptors
+                    orderby methodDescriptor.Name
+                    orderby methodDescriptor.Category
+                    group methodDescriptor by methodDescriptor.Category into @group
                     select @group;
 
         foreach (var @group in query)
@@ -145,10 +145,10 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
     protected static void PrintCommandsInDetail(
         CommandTextWriter commandWriter, CommandMethodDescriptor[] methodDescriptors)
     {
-        var query = from item in methodDescriptors
-                    orderby item.Name
-                    orderby item.Category
-                    group item by item.Category into @group
+        var query = from methodDescriptor in methodDescriptors
+                    orderby methodDescriptor.Name
+                    orderby methodDescriptor.Category
+                    group methodDescriptor by methodDescriptor.Category into @group
                     select @group;
 
         foreach (var @group in query)

@@ -262,10 +262,11 @@ public abstract class CommandContextBase : ICommandContext
 
     private void Initialize(CommandNode commandNode, IEnumerable<ICommand> commands)
     {
-        var query = from item in commands
-                    orderby item.Name
-                    orderby item.GetType().GetCustomAttribute<PartialCommandAttribute>() is not null
-                    select item;
+        var query = from command in commands
+                    let commandType = command.GetType()
+                    orderby command.Name
+                    orderby AttributeUtility.IsDefined<PartialCommandAttribute>(commandType) == true
+                    select command;
 
         CollectCommands(commandNode, query);
         if (HelpCommand is ICommandHost helpCommandHost)
@@ -341,9 +342,9 @@ public abstract class CommandContextBase : ICommandContext
     {
         if (itemList.Count == 0)
         {
-            var query = from item in parentNode.Children.Values
-                        where item.IsEnabled
-                        from name in new string[] { item.Name }.Concat(item.Aliases)
+            var query = from child in parentNode.Children.Values
+                        where child.IsEnabled == true
+                        from name in new string[] { child.Name }.Concat(child.Aliases)
                         where name.StartsWith(find)
                         orderby name
                         select name;

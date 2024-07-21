@@ -283,9 +283,9 @@ public static class CommandDescriptor
             var methodStaticMemberDescriptors = GetMethodStaticMemberDescriptors(methodInfo);
             var capacity = parameterInfos.Length
                 + methodMemberDescriptors.Length + methodStaticMemberDescriptors.Length;
-            var query = from item in parameterInfos
-                        where IsCommandParameter(item) == true
-                        select item;
+            var query = from parameterInfo in parameterInfos
+                        where IsCommandParameter(parameterInfo) == true
+                        select parameterInfo;
             var items = query.ToArray();
             memberDescriptorList.Capacity = capacity;
             foreach (var item in items)
@@ -316,11 +316,11 @@ public static class CommandDescriptor
         if (GetBrowsable(type) == true)
         {
             var bindingFlags = CommandSettings.GetBindingFlags(type);
-            var properties = type.GetProperties(bindingFlags);
-            var query = from item in properties
-                        where IsCommandProperty(item) == true
-                        where GetBrowsable(item) == true
-                        select item;
+            var propertyInfos = type.GetProperties(bindingFlags);
+            var query = from propertyInfo in propertyInfos
+                        where IsCommandProperty(propertyInfo) == true
+                        where GetBrowsable(propertyInfo) == true
+                        select propertyInfo;
             var items = query.ToArray();
             var staticMemberDescriptors = GetStaticMemberDescriptors(requestType: type);
             var capacity = items.Length + staticMemberDescriptors.Length;
@@ -343,11 +343,11 @@ public static class CommandDescriptor
         if (GetBrowsable(type) == true)
         {
             var bindingFlags = CommandSettings.GetBindingFlags(type);
-            var methods = type.GetMethods(bindingFlags);
-            var query = from item in methods
-                        where IsCommandMethod(item) == true
-                        where GetBrowsable(item) == true
-                        select item;
+            var methodInfos = type.GetMethods(bindingFlags);
+            var query = from methodInfo in methodInfos
+                        where IsCommandMethod(methodInfo) == true
+                        where GetBrowsable(methodInfo) == true
+                        select methodInfo;
             var items = query.ToArray();
             var staticMethodDescriptors = GetStaticMethodDescriptors(type);
             methodDescriptorList.Capacity = items.Length + staticMethodDescriptors.Length;

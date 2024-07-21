@@ -28,13 +28,13 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
             throw new CommandDefinitionException(message, type);
         }
 
-        var query = from item in memberDescriptors
-                    orderby item.DefaultValue != DBNull.Value
-                    orderby item.IsGeneral descending
-                    orderby item.IsVariables descending
-                    orderby item.IsRequired && item.IsExplicit descending
-                    orderby item.IsRequired descending
-                    select item;
+        var query = from memberDescriptor in memberDescriptors
+                    orderby memberDescriptor.DefaultValue != DBNull.Value
+                    orderby memberDescriptor.IsGeneral descending
+                    orderby memberDescriptor.IsVariables descending
+                    orderby memberDescriptor.IsRequired && memberDescriptor.IsExplicit descending
+                    orderby memberDescriptor.IsRequired descending
+                    select memberDescriptor;
         var items = query.ToArray();
         _itemByMemberName = new(items.Length);
         _itemByName = new(items.Length);

@@ -11,9 +11,10 @@ public static class TextWriterExtensions
 {
     public static void PrintItems<T>(this TextWriter @this, IEnumerable<T> items)
     {
-        var query = from item in typeof(T).GetProperties() ?? []
-                    where item.PropertyType.IsArray != true
-                    select item;
+        var propertyInfos = typeof(T).GetProperties();
+        var query = from propertyInfo in propertyInfos
+                    where propertyInfo.PropertyType.IsArray != true
+                    select propertyInfo;
 
         var headers = from item in query
                       let displayName = AttributeUtility.GetDisplayName(item)
