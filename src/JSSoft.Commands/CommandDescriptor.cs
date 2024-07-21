@@ -3,6 +3,9 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
+// Reflection should not be used to increase accessibility of classes, methods, or fields
+#pragma warning disable S3011
+
 using static JSSoft.Commands.AttributeUtility;
 using static JSSoft.Commands.CommandAttributeUtility;
 using static JSSoft.Commands.CommandMethodUtility;
@@ -47,8 +50,7 @@ public static class CommandDescriptor
         {
             return usageDescriptor1;
         }
-        else if (parameterInfo.Member is not null
-            && GetUsageDescriptor(parameterInfo.Member, parameterInfo) is { } usageDescriptor2)
+        else if (GetUsageDescriptor(parameterInfo.Member, parameterInfo) is { } usageDescriptor2)
         {
             return usageDescriptor2;
         }
@@ -134,7 +136,7 @@ public static class CommandDescriptor
 
     private static CommandMethodDescriptor[] GetStaticMethodDescriptors(Type requestType)
     {
-        var attributes = AttributeUtility.GetCustomAttributes<CommandStaticMethodAttribute>(
+        var attributes = GetCustomAttributes<CommandStaticMethodAttribute>(
             requestType, inherit: true);
         if (attributes.Length > 0 && TypeUtility.IsStaticClass(requestType) == true)
         {
@@ -171,7 +173,7 @@ public static class CommandDescriptor
 
     private static CommandMemberDescriptor[] GetStaticMemberDescriptors(Type requestType)
     {
-        var attributes = AttributeUtility.GetCustomAttributes<CommandStaticPropertyAttribute>(
+        var attributes = GetCustomAttributes<CommandStaticPropertyAttribute>(
             requestType, inherit: true);
         if (attributes.Length > 0 && TypeUtility.IsStaticClass(requestType) == true)
         {
@@ -209,7 +211,7 @@ public static class CommandDescriptor
     private static CommandMemberDescriptor[] GetMethodMemberDescriptors(MethodInfo methodInfo)
     {
         var requestType = methodInfo.DeclaringType!;
-        var attributes = AttributeUtility.GetCustomAttributes<CommandMethodPropertyAttribute>(
+        var attributes = GetCustomAttributes<CommandMethodPropertyAttribute>(
             methodInfo, inherit: true);
         var memberDescriptorCollectionList = new List<CommandMemberDescriptorCollection>(
             attributes.Length);
@@ -236,7 +238,7 @@ public static class CommandDescriptor
     private static CommandMemberDescriptor[] GetMethodStaticMemberDescriptors(MethodInfo methodInfo)
     {
         var requestType = methodInfo.DeclaringType!;
-        var attributes = AttributeUtility.GetCustomAttributes<CommandMethodStaticPropertyAttribute>(
+        var attributes = GetCustomAttributes<CommandMethodStaticPropertyAttribute>(
             methodInfo, inherit: true);
         var memberDescriptorCollectionList = new List<CommandMemberDescriptorCollection>(
             attributes.Length);

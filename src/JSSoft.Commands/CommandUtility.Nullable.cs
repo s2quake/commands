@@ -7,6 +7,9 @@ using System.Collections.ObjectModel;
 
 namespace JSSoft.Commands;
 
+/// <summary>
+/// Provides several methods to check if a type is Nullable.
+/// </summary>
 // https://stackoverflow.com/questions/58453972/how-to-use-net-reflection-to-check-for-nullable-reference-type
 public static partial class CommandUtility
 {

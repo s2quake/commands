@@ -3,6 +3,9 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
+// Reflection should not be used to increase accessibility of classes, methods, or fields
+#pragma warning disable S3011
+
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,7 +17,7 @@ internal static class CommandMethodUtility
 {
     private static readonly Type[] ProgressGenericArgumentTypes =
     [
-       typeof(sbyte),
+        typeof(sbyte),
         typeof(byte),
         typeof(short),
         typeof(ushort),

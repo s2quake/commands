@@ -28,7 +28,7 @@ internal sealed class CommandInvocationHelp
     private sealed class HelpCommandParser(string commandName, object instance)
         : CommandParser(commandName, instance)
     {
-        protected override void OnValidate(string[] args)
+        protected override void OnVerify(string[] args)
         {
             // do nothing
         }

@@ -49,7 +49,7 @@ internal sealed class CommandParsingVersion
     private sealed class VersionCommandParser(string commandName, object instance)
         : CommandParser(commandName, instance)
     {
-        protected override void OnValidate(string[] args)
+        protected override void OnVerify(string[] args)
         {
             // do nothing
         }

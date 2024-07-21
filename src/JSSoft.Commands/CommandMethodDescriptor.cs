@@ -36,12 +36,12 @@ public abstract class CommandMethodDescriptor(MethodInfo methodInfo)
         object instance, string[] args, CommandMemberDescriptorCollection memberDescriptors)
     {
         var parseContext = new ParseContext(memberDescriptors, args);
-        var parameters = MethodInfo.GetParameters();
-        var valueList = new List<object?>(parameters.Length);
+        var parameterInfos = MethodInfo.GetParameters();
+        var valueList = new List<object?>(parameterInfos.Length);
         parseContext.SetValue(instance);
-        foreach (var item in parameters)
+        foreach (var parameterInfo in parameterInfos)
         {
-            var memberDescriptor = memberDescriptors[item.Name!];
+            var memberDescriptor = memberDescriptors[parameterInfo.Name!];
             var value = memberDescriptor.GetValueInternal(instance);
             valueList.Add(value);
         }
@@ -51,11 +51,11 @@ public abstract class CommandMethodDescriptor(MethodInfo methodInfo)
 
     internal object? Invoke(object instance, CommandMemberDescriptorCollection memberDescriptors)
     {
-        var parameters = MethodInfo.GetParameters();
-        var valueList = new List<object?>(parameters.Length);
-        foreach (var item in parameters)
+        var parameterInfos = MethodInfo.GetParameters();
+        var valueList = new List<object?>(parameterInfos.Length);
+        foreach (var parameterInfo in parameterInfos)
         {
-            var memberDescriptor = memberDescriptors[item.Name!];
+            var memberDescriptor = memberDescriptors[parameterInfo.Name!];
             var value = memberDescriptor.GetValueInternal(instance);
             valueList.Add(value);
         }
@@ -71,22 +71,22 @@ public abstract class CommandMethodDescriptor(MethodInfo methodInfo)
         IProgress<ProgressInfo> progress)
     {
         var parseContext = new ParseContext(memberDescriptors, args);
-        var parameters = MethodInfo.GetParameters();
-        var valueList = new List<object?>(parameters.Length);
+        var parameterInfos = MethodInfo.GetParameters();
+        var valueList = new List<object?>(parameterInfos.Length);
         parseContext.SetValue(instance);
-        foreach (var item in parameters)
+        foreach (var parameterInfo in parameterInfos)
         {
-            if (item.ParameterType == typeof(CancellationToken))
+            if (parameterInfo.ParameterType == typeof(CancellationToken))
             {
                 valueList.Add(cancellationToken);
             }
-            else if (CommandMethodUtility.IsProgressParameter(item) == true)
+            else if (CommandMethodUtility.IsProgressParameter(parameterInfo) == true)
             {
                 valueList.Add(new CommandProgress(progress));
             }
             else
             {
-                var memberDescriptor = memberDescriptors[item.Name!];
+                var memberDescriptor = memberDescriptors[parameterInfo.Name!];
                 var value = memberDescriptor.GetValueInternal(instance);
                 valueList.Add(value);
             }
@@ -106,21 +106,21 @@ public abstract class CommandMethodDescriptor(MethodInfo methodInfo)
         CancellationToken cancellationToken,
         IProgress<ProgressInfo> progress)
     {
-        var parameters = MethodInfo.GetParameters();
-        var valueList = new List<object?>(parameters.Length);
-        foreach (var item in parameters)
+        var parameterInfos = MethodInfo.GetParameters();
+        var valueList = new List<object?>(parameterInfos.Length);
+        foreach (var parameterInfo in parameterInfos)
         {
-            if (item.ParameterType == typeof(CancellationToken))
+            if (parameterInfo.ParameterType == typeof(CancellationToken))
             {
                 valueList.Add(cancellationToken);
             }
-            else if (CommandMethodUtility.IsProgressParameter(item) == true)
+            else if (CommandMethodUtility.IsProgressParameter(parameterInfo) == true)
             {
                 valueList.Add(new CommandProgress(progress));
             }
             else
             {
-                var memberDescriptor = memberDescriptors[item.Name!];
+                var memberDescriptor = memberDescriptors[parameterInfo.Name!];
                 var value = memberDescriptor.GetValueInternal(instance);
                 valueList.Add(value);
             }
@@ -147,10 +147,7 @@ public abstract class CommandMethodDescriptor(MethodInfo methodInfo)
 
     protected abstract object? OnInvoke(object instance, object?[] parameters);
 
-    protected virtual bool OnCanExecute(object instance)
-    {
-        return true;
-    }
+    protected virtual bool OnCanExecute(object instance) => true;
 
     protected virtual string[] GetCompletion(object instance, object?[] parameters) => [];
 }

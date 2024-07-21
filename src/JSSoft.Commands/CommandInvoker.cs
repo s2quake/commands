@@ -44,7 +44,7 @@ public class CommandInvoker : CommandAnalyzer
 
     public void Invoke(string[] args)
     {
-        OnValidate(args);
+        OnVerify(args);
 
         var commandName = args.Length > 0 ? args[0] : string.Empty;
         var commandArguments = args.Length > 1 ? args.Skip(1).ToArray() : [];
@@ -89,7 +89,7 @@ public class CommandInvoker : CommandAnalyzer
     public async Task InvokeAsync(
         string[] args, CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
     {
-        OnValidate(args);
+        OnVerify(args);
 
         var commandName = args.Length > 0 ? args[0] : string.Empty;
         var commandArguments = args.Length > 0 ? args.Skip(1).ToArray() : [];
@@ -132,7 +132,7 @@ public class CommandInvoker : CommandAnalyzer
         }
     }
 
-    protected virtual void OnValidate(string[] args)
+    protected virtual void OnVerify(string[] args)
     {
         if (CommandUtility.IsEmptyArgs(args) == true && Settings.AllowEmpty != true)
         {

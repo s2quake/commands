@@ -74,7 +74,7 @@ public abstract class CommandAnalyzer
 
     internal void ThrowIfNotVerifyCommandName(string commandName)
     {
-        if (VerifyCommandName(commandName) != true)
+        if (CheckCommandName(commandName) != true)
         {
             throw new ArgumentException(
                 message: $"Command name '{commandName}' is not available.",
@@ -82,7 +82,7 @@ public abstract class CommandAnalyzer
         }
     }
 
-    internal bool VerifyCommandName(string commandName)
+    internal bool CheckCommandName(string commandName)
     {
         if (CommandName == commandName)
         {

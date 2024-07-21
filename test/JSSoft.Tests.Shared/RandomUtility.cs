@@ -18,6 +18,9 @@ namespace JSSoft.Commands.Tests;
 namespace JSSoft.Terminals.Tests;
 #endif
 
+/// <summary>
+/// Provides methods for generating random values.
+/// </summary>
 public static partial class RandomUtility
 {
     public const int AttemptCount = 10;

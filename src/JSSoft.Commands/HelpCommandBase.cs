@@ -167,7 +167,7 @@ public abstract class HelpCommandBase : CommandBase
                         select name;
             return [.. query];
         }
-        else if (node.TryGetCommand(names.First(), out var childNode) == true)
+        else if (node.TryGetCommand(names[0], out var childNode) == true)
         {
             return GetCommandNames(childNode, [.. names.Skip(1)], find);
         }

@@ -3,8 +3,6 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
-#pragma warning disable SA1312 // Variable names should begin with lower-case letter
-
 using System.IO;
 using System.Text;
 using JSSoft.Commands.Extensions;
@@ -83,7 +81,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
     {
         var groupName = StringByName[TextSummary];
-        using var _ = commandWriter.Group(groupName);
+        using var groupScope = commandWriter.Group(groupName);
         var summary = methodDescriptor.UsageDescriptor.Summary;
         var width = commandWriter.Width - commandWriter.TotalIndentSpaces;
         var lines = CommandTextWriter.Wrap(summary, width);
@@ -94,7 +92,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
     {
         var groupName = StringByName[TextDescription];
-        using var _ = commandWriter.Group(groupName);
+        using var groupScope = commandWriter.Group(groupName);
         var description = methodDescriptor.UsageDescriptor.Description;
         var width = commandWriter.Width - commandWriter.TotalIndentSpaces;
         var lines = CommandTextWriter.Wrap(description, width);
@@ -105,7 +103,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
     {
         var groupName = StringByName[TextExample];
-        using var _ = commandWriter.Group(groupName);
+        using var groupScope = commandWriter.Group(groupName);
         var example = methodDescriptor.UsageDescriptor.Example;
         commandWriter.WriteLine(example);
     }
@@ -127,7 +125,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
                 StringByName[TextCommands],
             };
             var groupName = CommandUtility.Join(" ", itemList);
-            using var _ = commandWriter.Group(groupName);
+            using var groupScope = commandWriter.Group(groupName);
             PrintCommands(@group);
         }
 
@@ -159,7 +157,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
                 StringByName[TextCommands],
             };
             var groupName = CommandUtility.Join(" ", itemList);
-            using var _ = commandWriter.Group(groupName);
+            using var groupScope = commandWriter.Group(groupName);
             PrintCommandsInDetail(@group);
         }
 
@@ -180,7 +178,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
     protected static void PrintUsage(CommandTextWriter commandWriter, string executionName)
     {
         var groupName = StringByName[TextUsage];
-        using var _ = commandWriter.Group(groupName);
+        using var groupScope = commandWriter.Group(groupName);
         commandWriter.WriteLine($"{executionName} <command> [options...]");
     }
 
@@ -192,7 +190,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         {
             var requirementDescriptors = memberDescriptors.RequirementDescriptors;
             var groupName = StringByName[TextRequirements];
-            using var _ = commandWriter.Group(groupName);
+            using var groupScope = commandWriter.Group(groupName);
             PrintMany(commandWriter, requirementDescriptors, PrintRequirement);
             return true;
         }
@@ -208,7 +206,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         {
             var requirementDescriptors = memberDescriptors.RequirementDescriptors;
             var groupName = StringByName[TextRequirements];
-            using var _ = commandWriter.Group(groupName);
+            using var groupScope = commandWriter.Group(groupName);
             PrintMany(
                 commandWriter, requirementDescriptors, PrintRequirementInDetail, separatorCount: 1);
             return true;
@@ -223,7 +221,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         if (methodDescriptor.Members.VariablesDescriptor is { } variablesDescriptor)
         {
             var groupName = StringByName[TextVariables];
-            using var _ = commandWriter.Group(groupName);
+            using var groupScope = commandWriter.Group(groupName);
             PrintVariables(commandWriter, variablesDescriptor);
             return true;
         }
@@ -237,7 +235,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         if (methodDescriptor.Members.VariablesDescriptor is { } variablesDescriptor)
         {
             var groupName = StringByName[TextVariables];
-            using var _ = commandWriter.Group(groupName);
+            using var groupScope = commandWriter.Group(groupName);
             PrintVariablesInDetail(commandWriter, variablesDescriptor);
             return true;
         }
@@ -253,7 +251,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         {
             var optionDescriptors = memberDescriptors.OptionDescriptors;
             var groupName = StringByName[TextOptions];
-            using var _ = commandWriter.Group(groupName);
+            using var groupScope = commandWriter.Group(groupName);
             PrintMany(commandWriter, optionDescriptors, PrintOption, separatorCount: 1);
             return true;
         }
@@ -269,7 +267,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         {
             var optionDescriptors = memberDescriptors.OptionDescriptors;
             var groupName = StringByName[TextOptions];
-            using var _ = commandWriter.Group(groupName);
+            using var groupScope = commandWriter.Group(groupName);
             PrintMany(commandWriter, optionDescriptors, PrintOptionInDetail, separatorCount: 1);
             return true;
         }

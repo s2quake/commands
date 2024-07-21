@@ -8,7 +8,6 @@ using System.ComponentModel;
 namespace JSSoft.Commands;
 
 [AttributeUsage(AttributeTargets.All)]
-public class CommandDisplayNameAttribute(string displayName)
-    : DisplayNameAttribute(displayName)
+public class CommandDisplayNameAttribute(string displayName) : DisplayNameAttribute(displayName)
 {
 }

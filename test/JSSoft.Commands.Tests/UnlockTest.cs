@@ -40,7 +40,7 @@ public sealed class UnlockTest
     private sealed class TestCommandParser(string name, object instance)
         : CommandParser(name, instance)
     {
-        protected override void OnValidate(string[] args)
+        protected override void OnVerify(string[] args)
         {
         }
     }
