@@ -275,7 +275,7 @@ public abstract class CommandContextBase : ICommandContext
         }
         else
         {
-            var commandName = itemList.First();
+            var commandName = itemList[0];
             if (parentNode.TryGetCommand(commandName, out var commandNode) == true)
             {
                 if (commandNode.IsEnabled == true && commandNode.Children.Any() == true)

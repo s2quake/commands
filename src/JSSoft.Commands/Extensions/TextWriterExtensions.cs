@@ -34,7 +34,7 @@ public static class TextWriterExtensions
     public static void PrintTableData(this TextWriter @this, string[][] itemsArray, bool hasHeader)
 #pragma warning restore S2368 // Public methods should not have multidimensional array parameters
     {
-        var count = itemsArray.First().Length;
+        var count = itemsArray[0].Length;
 
         var lengths = new int[count];
 
