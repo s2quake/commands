@@ -21,7 +21,7 @@ public static class CommandContextBaseExtensions
             return null;
         }
 
-        if (@this.VerifyCommandName(commandName) != true)
+        if (@this.CheckCommandName(commandName) != true)
         {
             return null;
         }

@@ -149,14 +149,14 @@ public abstract class CommandContextBase : ICommandContext
 
     internal void ThrowIfNotVerifyCommandName(string commandName)
     {
-        if (VerifyCommandName(commandName) != true)
+        if (CheckCommandName(commandName) != true)
         {
             var message = $"Command name '{commandName}' is not available.";
             throw new ArgumentException(message, nameof(commandName));
         }
     }
 
-    internal bool VerifyCommandName(string commandName)
+    internal bool CheckCommandName(string commandName)
     {
         if (Name == commandName)
         {
@@ -260,6 +260,65 @@ public abstract class CommandContextBase : ICommandContext
     private static Assembly GetDefaultAssembly()
         => Assembly.GetEntryAssembly() ?? typeof(CommandParser).Assembly;
 
+    private static string[] GetCompletion(
+        ICommandNode parentNode, IList<string> itemList, string find)
+    {
+        if (itemList.Count == 0)
+        {
+            var query = from child in parentNode.Children
+                        where child.IsEnabled == true
+                        from name in new string[] { child.Name }.Concat(child.Aliases)
+                        where name.StartsWith(find)
+                        orderby name
+                        select name;
+            return query.ToArray();
+        }
+        else
+        {
+            var commandName = itemList.First();
+            if (parentNode.TryGetCommand(commandName, out var commandNode) == true)
+            {
+                if (commandNode.IsEnabled == true && commandNode.Children.Any() == true)
+                {
+                    itemList.RemoveAt(0);
+                    return GetCompletion(commandNode, itemList, find);
+                }
+                else
+                {
+                    var args = itemList.Skip(1).ToArray();
+                    foreach (var item in commandNode.Commands)
+                    {
+                        if (GetCompletion(item, args, find) is string[] completions)
+                        {
+                            return completions;
+                        }
+                    }
+                }
+            }
+
+            return [];
+        }
+    }
+
+    private static string[] GetCompletion(ICommand command, string[] args, string find)
+    {
+        if (command is ICommandCompleter completer)
+        {
+            var memberDescriptors = CommandDescriptor.GetMemberDescriptors(command);
+            var context = CommandCompletionContext.Create(command, memberDescriptors, args, find);
+            if (context is CommandCompletionContext completionContext)
+            {
+                return completer.GetCompletions(completionContext);
+            }
+            else if (context is string[] completions)
+            {
+                return completions;
+            }
+        }
+
+        return [];
+    }
+
     private void Initialize(CommandNode commandNode, IEnumerable<ICommand> commands)
     {
         var query = from command in commands
@@ -336,64 +395,6 @@ public abstract class CommandContextBase : ICommandContext
         {
             CollectCommands(commandNode, commandHierarchy.Commands);
         }
-    }
-
-    private string[] GetCompletion(ICommandNode parentNode, IList<string> itemList, string find)
-    {
-        if (itemList.Count == 0)
-        {
-            var query = from child in parentNode.Children
-                        where child.IsEnabled == true
-                        from name in new string[] { child.Name }.Concat(child.Aliases)
-                        where name.StartsWith(find)
-                        orderby name
-                        select name;
-            return query.ToArray();
-        }
-        else
-        {
-            var commandName = itemList.First();
-            if (parentNode.TryGetCommand(commandName, out var commandNode) == true)
-            {
-                if (commandNode.IsEnabled == true && commandNode.Children.Any() == true)
-                {
-                    itemList.RemoveAt(0);
-                    return GetCompletion(commandNode, itemList, find);
-                }
-                else
-                {
-                    var args = itemList.Skip(1).ToArray();
-                    foreach (var item in commandNode.Commands)
-                    {
-                        if (GetCompletion(item, args, find) is string[] completions)
-                        {
-                            return completions;
-                        }
-                    }
-                }
-            }
-
-            return [];
-        }
-    }
-
-    private string[] GetCompletion(ICommand command, string[] args, string find)
-    {
-        if (command is ICommandCompleter completer)
-        {
-            var memberDescriptors = CommandDescriptor.GetMemberDescriptors(command);
-            var context = CommandCompletionContext.Create(command, memberDescriptors, args, find);
-            if (context is CommandCompletionContext completionContext)
-            {
-                return completer.GetCompletions(completionContext);
-            }
-            else if (context is string[] completions)
-            {
-                return completions;
-            }
-        }
-
-        return [];
     }
 
     private void ExecuteInternal(string[] args)
