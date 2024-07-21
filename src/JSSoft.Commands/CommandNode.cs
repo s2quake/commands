@@ -39,7 +39,7 @@ internal sealed class CommandNode : ICommandNode
 
     public string[] Aliases => _command is not null ? _command.Aliases : [];
 
-    public bool IsEnabled => CommandList.Any(item => item.IsEnabled);
+    public bool IsEnabled => CommandList.Exists(item => item.IsEnabled);
 
     IEnumerable<ICommand> ICommandNode.Commands => CommandList;
 

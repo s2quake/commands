@@ -65,9 +65,6 @@ dotnet_diagnostic.S3971.severity = none
 # S4143: Collection elements should not be replaced unconditionally
 dotnet_diagnostic.S4143.severity = none
 
-# S6605: Collection-specific "Exists" method should be used instead of the "Any" extension
-dotnet_diagnostic.S6605.severity = none
-
 # MEN007: Use a single return
 dotnet_diagnostic.MEN007.severity = none
 
