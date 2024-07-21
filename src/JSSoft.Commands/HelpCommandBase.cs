@@ -75,11 +75,11 @@ public abstract class HelpCommandBase : CommandBase
         CommandTextWriter commandWriter, ICommandContext commandContext)
     {
         var rootNode = commandContext.Node;
-        var query = from childNode in rootNode.Children.Values
-                    where childNode.IsEnabled == true
-                    orderby childNode.Name
-                    orderby childNode.Category
-                    group childNode by childNode.Category into @group
+        var query = from child in rootNode.Children
+                    where child.IsEnabled == true
+                    orderby child.Name
+                    orderby child.Category
+                    group child by child.Category into @group
                     select @group;
 
         foreach (var @group in query)
@@ -158,9 +158,9 @@ public abstract class HelpCommandBase : CommandBase
     {
         if (names.Length == 0)
         {
-            var query = from childNode in node.Children.Values
-                        where childNode.IsEnabled == true
-                        from name in new string[] { childNode.Name }.Concat(childNode.Aliases)
+            var query = from child in node.Children
+                        where child.IsEnabled == true
+                        from name in new string[] { child.Name }.Concat(child.Aliases)
                         where name.StartsWith(find)
                         where name != Name
                         orderby name

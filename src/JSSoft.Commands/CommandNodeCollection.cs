@@ -3,33 +3,35 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
+using System.Collections;
+using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
-using KeyValuePair = System.Collections.Generic.KeyValuePair<string, JSSoft.Commands.ICommandNode>;
 
 namespace JSSoft.Commands;
 
-internal sealed class CommandNodeCollection
-    : Dictionary<string, CommandNode>, IReadOnlyDictionary<string, ICommandNode>
+internal sealed class CommandNodeCollection : ICommandNodeCollection
 {
-    public CommandNodeCollection()
-        : base(StringComparer.CurrentCulture)
+    private readonly OrderedDictionary _dictionary = [];
+
+    public int Count => _dictionary.Count;
+
+    public CommandNode this[int index] => (CommandNode)_dictionary[index]!;
+
+    public CommandNode this[string name] => (CommandNode)_dictionary[name]!;
+
+    ICommandNode ICommandNodeCollection.this[int index] => this[index];
+
+    ICommandNode ICommandNodeCollection.this[string name] => this[name];
+
+    public bool Contains(string name) => _dictionary.Contains(name);
+
+    public void Add(CommandNode node) => _dictionary.Add(node.Name, node);
+
+    public bool TryGetValue(string name, [MaybeNullWhen(false)] out CommandNode value)
     {
-    }
-
-    IEnumerable<string> IReadOnlyDictionary<string, ICommandNode>.Keys => Keys;
-
-    IEnumerable<ICommandNode> IReadOnlyDictionary<string, ICommandNode>.Values => Values;
-
-    ICommandNode IReadOnlyDictionary<string, ICommandNode>.this[string key] => this[key];
-
-    public void Add(CommandNode node) => Add(node.Name, node);
-
-    bool IReadOnlyDictionary<string, ICommandNode>.TryGetValue(
-        string key, [MaybeNullWhen(false)] out ICommandNode value)
-    {
-        if (TryGetValue(key, out var v) == true)
+        if (_dictionary.Contains(name) == true)
         {
-            value = v;
+            value = (CommandNode)_dictionary[name]!;
             return true;
         }
 
@@ -37,11 +39,26 @@ internal sealed class CommandNodeCollection
         return false;
     }
 
-    IEnumerator<KeyValuePair> IEnumerable<KeyValuePair>.GetEnumerator()
+    public IEnumerator<ICommandNode> GetEnumerator()
     {
-        foreach (var item in this)
+        foreach (DictionaryEntry item in _dictionary)
         {
-            yield return new KeyValuePair(item.Key, item.Value);
+            yield return (ICommandNode)item.Value!;
         }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => _dictionary.Values.GetEnumerator();
+
+    bool ICommandNodeCollection.TryGetValue(
+        string name, [MaybeNullWhen(false)] out ICommandNode value)
+    {
+        if (TryGetValue(name, out var v) == true)
+        {
+            value = v;
+            return true;
+        }
+
+        value = default!;
+        return false;
     }
 }

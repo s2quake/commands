@@ -46,9 +46,9 @@ internal sealed class CommandNode : ICommandNode
 
     ICommandNode? ICommandNode.Parent => Parent;
 
-    IReadOnlyDictionary<string, ICommandNode> ICommandNode.Children => Children;
+    ICommandNodeCollection ICommandNode.Children => Children;
 
-    IReadOnlyDictionary<string, ICommandNode> ICommandNode.ChildByAlias => ChildByAlias;
+    ICommandNodeCollection ICommandNode.ChildByAlias => ChildByAlias;
 
     ICommandContext ICommandNode.CommandContext => CommandContext;
 

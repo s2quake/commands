@@ -11,9 +11,9 @@ internal sealed class CommandAliasNode(ICommandNode commandNode, string alias) :
 
     public ICommandNode? Parent => commandNode.Parent;
 
-    public IReadOnlyDictionary<string, ICommandNode> Children => commandNode.Children;
+    public ICommandNodeCollection Children => commandNode.Children;
 
-    public IReadOnlyDictionary<string, ICommandNode> ChildByAlias => commandNode.ChildByAlias;
+    public ICommandNodeCollection ChildByAlias => commandNode.ChildByAlias;
 
     public string Name { get; } = alias;
 

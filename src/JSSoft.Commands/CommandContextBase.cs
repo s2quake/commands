@@ -293,13 +293,13 @@ public abstract class CommandContextBase : ICommandContext
         var commandName = command.Name;
         var commandType = command.GetType();
         var isPartialCommand = AttributeUtility.IsDefined<PartialCommandAttribute>(commandType);
-        if (parentNode.Children.ContainsKey(commandName) == true && isPartialCommand != true)
+        if (parentNode.Children.Contains(commandName) == true && isPartialCommand != true)
         {
             var message = $"Command '{commandName}' is already registered.";
             throw new CommandDefinitionException(message);
         }
 
-        if (parentNode.Children.ContainsKey(commandName) != true && isPartialCommand == true)
+        if (parentNode.Children.Contains(commandName) != true && isPartialCommand == true)
         {
             var message = $"""
                 Partial command cannot be registered because command '{commandName}' does not exist.
@@ -334,7 +334,7 @@ public abstract class CommandContextBase : ICommandContext
 
         if (command is ICommandHierarchy commandHierarchy)
         {
-            CollectCommands(commandNode, commandHierarchy.Commands.Values);
+            CollectCommands(commandNode, commandHierarchy.Commands);
         }
     }
 
@@ -342,7 +342,7 @@ public abstract class CommandContextBase : ICommandContext
     {
         if (itemList.Count == 0)
         {
-            var query = from child in parentNode.Children.Values
+            var query = from child in parentNode.Children
                         where child.IsEnabled == true
                         from name in new string[] { child.Name }.Concat(child.Aliases)
                         where name.StartsWith(find)

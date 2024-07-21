@@ -70,7 +70,7 @@ public abstract class CommandMethodBase
         set => _node = value;
     }
 
-    IReadOnlyDictionary<string, ICommand> ICommandHierarchy.Commands => _commands;
+    ICommandCollection ICommandHierarchy.Commands => _commands;
 
     string ICommandUsage.ExecutionName => ExecutionName;
 
@@ -112,7 +112,7 @@ public abstract class CommandMethodBase
     protected virtual void OnUsagePrint(bool isDetail)
     {
         var settings = CommandContext.Settings;
-        var commands = _node?.Commands ?? [];
+        var commands = _node?.Commands ?? CommandCollection.Empty;
         var query = from command in commands
                     from item in CommandDescriptor.GetMethodDescriptors(command.GetType())
                     where item.CanExecute(this)

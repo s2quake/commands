@@ -9,9 +9,9 @@ public interface ICommandNode
 {
     ICommandNode? Parent { get; }
 
-    IReadOnlyDictionary<string, ICommandNode> Children { get; }
+    ICommandNodeCollection Children { get; }
 
-    IReadOnlyDictionary<string, ICommandNode> ChildByAlias { get; }
+    ICommandNodeCollection ChildByAlias { get; }
 
     string Name { get; }
 

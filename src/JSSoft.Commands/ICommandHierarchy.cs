@@ -7,5 +7,5 @@ namespace JSSoft.Commands;
 
 public interface ICommandHierarchy
 {
-    IReadOnlyDictionary<string, ICommand> Commands { get; }
+    ICommandCollection Commands { get; }
 }
