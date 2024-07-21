@@ -3,6 +3,9 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
+// Reflection should not be used to increase accessibility of classes, methods, or fields
+#pragma warning disable S3011
+
 using static JSSoft.Commands.AttributeUtility;
 using static JSSoft.Commands.CommandAttributeUtility;
 using static JSSoft.Commands.CommandMethodUtility;

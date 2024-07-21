@@ -22,7 +22,6 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
   <PropertyGroup>
     <PublishName>commands</PublishName>
     <DefineConstants>JSSOFT_COMMANDS</DefineConstants>
-    <NoWarn>$(NoWarn);S3011</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
