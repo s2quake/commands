@@ -1,7 +1,7 @@
 Commands changes
 ===================
 
-6.0.2
+7.0.0
 -------------
 
 To be Released.
