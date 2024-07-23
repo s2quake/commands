@@ -6,9 +6,11 @@ Commands changes
 
 To be Released.
 
-* Add github action for CI.  [[#13]]
+* Added github action for CI.  [[#13]]
+* Fixed cursor not updating when buffer height changed.  [[#17]]
 
 [#13]: https://github.com/s2quake/commands/pull/13
+[#17]: https://github.com/s2quake/commands/pull/17
 
 
 6.0.1
