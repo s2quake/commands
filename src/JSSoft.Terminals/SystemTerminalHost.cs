@@ -1224,9 +1224,7 @@ public partial class SystemTerminalHost
     }
 
     private static string ConvertToPassword(string text)
-    {
-        return string.Empty.PadRight(text.Length, SystemTerminalHost.PasswordCharacter);
-    }
+        => string.Empty.PadRight(text.Length, PasswordCharacter);
 
     private bool IsRecordable => _flags.HasFlag(TerminalFlags.IsRecordable);
 
@@ -1248,12 +1246,22 @@ public partial class SystemTerminalHost
 
     internal void Update()
     {
-        if (Console.IsOutputRedirected != true && _width != Console.BufferWidth)
+        if (Console.IsOutputRedirected != true && IsLayoutChanged() == true)
         {
             UpdateLayout(Console.BufferWidth, Console.BufferHeight);
         }
 
         RenderStringQueue();
+
+        bool IsLayoutChanged()
+        {
+            if (_width != Console.BufferWidth || _height != Console.BufferHeight)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 
     internal static object LockedObject { get; } = new object();
@@ -1327,5 +1335,4 @@ public partial class SystemTerminalHost
 
         IsInputEnded = 16,
     }
-
 }
