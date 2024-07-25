@@ -32,23 +32,30 @@ internal static class ParseUtility
     }
 
     public static object ParseArray(CommandMemberDescriptor memberDescriptor, string[] args)
-        => ParseArray(memberDescriptor.MemberType, args);
-
-    public static object ParseArray(Type propertyType, string arg)
-        => ParseArray(propertyType, args: arg.Split(CommandUtility.ItemSperator));
-
-    public static object ParseArray(Type propertyType, string[] args)
     {
-        var itemType = GetItemType(propertyType);
-        var array = Array.CreateInstance(itemType, args.Length);
-        var converter = TypeDescriptor.GetConverter(itemType);
-        for (var i = 0; i < args.Length; i++)
+        try
         {
-            var value = converter.ConvertFromString(args[i]);
-            array.SetValue(value, i);
-        }
+            var propertyType = memberDescriptor.MemberType;
+            var itemType = GetItemType(propertyType);
+            var array = Array.CreateInstance(itemType, args.Length);
+            var converter = TypeDescriptor.GetConverter(itemType);
+            for (var i = 0; i < args.Length; i++)
+            {
+                var value = converter.ConvertFromString(args[i]);
+                array.SetValue(value, i);
+            }
 
-        return array;
+            return array;
+        }
+        catch (Exception e)
+        {
+            var error = CommandLineError.InvalidValue;
+            var items = string.Join(", ", args);
+            var message = $"""
+                Value '{items}' cannot be used for option '{memberDescriptor.Name}'.
+                """;
+            throw new CommandLineException(error, message, memberDescriptor, e);
+        }
     }
 
     private static object ParseArray(CommandMemberDescriptor memberDescriptor, string arg)

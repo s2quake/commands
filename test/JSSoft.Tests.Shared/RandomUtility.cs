@@ -163,7 +163,7 @@ public static partial class RandomUtility
         return new TimeSpan(System.Random.Shared.NextInt64(new TimeSpan(365, 0, 0, 0).Ticks));
     }
 
-    public static int Length() => Length(0, 10);
+    public static int Length() => Length(1, 10);
 
     public static int Length(int maxLength) => Length(1, maxLength);
 
@@ -190,10 +190,10 @@ public static partial class RandomUtility
     }
 
     public static T[] Array<T>(Func<T> generator)
-        => Array(generator, Length());
+        => Array(generator, 10);
 
     public static T[] Array<T>(Func<T> generator, int maxLength)
-        => Array(generator, Length(maxLength));
+        => Array(generator, 1, 10);
 
     public static T[] Array<T>(Func<T> generator, int minLength, int maxLength)
     {

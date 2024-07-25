@@ -5,6 +5,7 @@
 
 #pragma warning disable SYSLIB1045
 
+using System.ComponentModel;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -186,7 +187,8 @@ public static partial class CommandUtility
         }
         else
         {
-            return false;
+            var converter = TypeDescriptor.GetConverter(value);
+            return converter.CanConvertFrom(typeof(string));
         }
     }
 

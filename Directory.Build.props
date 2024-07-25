@@ -58,7 +58,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     <PackageVersion Condition="'$(VersionSuffix)'==''">$(FileVersion)</PackageVersion>
     <PackageVersion Condition="'$(VersionSuffix)'!=''">$(FileVersion)-$(VersionSuffix)</PackageVersion>
     <Version>$(PackageVersion)</Version>
-    <PackageProjectUrl>https://github.com/s2quake/communication</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/s2quake/commands</PackageProjectUrl>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>command-line, console, REPL, terminal</PackageTags>

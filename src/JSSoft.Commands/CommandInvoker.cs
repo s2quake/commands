@@ -155,7 +155,8 @@ public class CommandInvoker : CommandAnalyzer
         string commandName,
         [MaybeNullWhen(false)] out CommandMethodDescriptor methodDescriptor)
     {
-        var methodDescriptors = CommandDescriptor.GetMethodDescriptors(instance.GetType());
+        var instanceType = instance is Type type ? type : instance.GetType();
+        var methodDescriptors = CommandDescriptor.GetMethodDescriptors(instanceType);
         methodDescriptor = methodDescriptors.FindByName(commandName)!;
         return methodDescriptor is not null;
     }
