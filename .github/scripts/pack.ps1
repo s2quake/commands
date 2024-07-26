@@ -21,7 +21,7 @@ if ($null -eq $result) {
 }
 $fileVersion = $result.Node.InnerText
 
-$packageProjectUrlPath = "/ns:Project/ns:PropertyGroup/ns:PackageProjectUrl"
+$packageProjectUrlPath = "/ns:Project/ns:PropertyGroup/ns:RepositoryUrl"
 $result = Select-Xml -Path $propsPath -Namespace $namespaces -XPath $packageProjectUrlPath
 if ($null -eq $result) {
     Write-Host "Package project URL not found"
@@ -39,7 +39,7 @@ $options = @(
     $PullRequestNumber ? "--version-suffix pr.$PullRequestNumber" : ""
     $keyPathExits ? "-p:TreatWarningsAsErrors=true" : ""
     $keyPathExits ? "-p:AssemblyOriginatorKeyFile='$KeyPath'" : ""
-    $CommitSHA ? "-p:PackageProjectUrl='$packageProjectUrl/tree/$CommitSHA'" : ""
+    $CommitSHA ? "-p:RepositoryUrl='$packageProjectUrl/tree/$CommitSHA'" : ""
 ) | Where-Object { $_ }
 
 Invoke-Expression -Command "dotnet pack $($options -join " ")"
