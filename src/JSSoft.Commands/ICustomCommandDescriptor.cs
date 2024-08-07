@@ -7,7 +7,7 @@ namespace JSSoft.Commands;
 
 public interface ICustomCommandDescriptor
 {
-    CommandMemberDescriptorCollection GetMembers();
+    CommandMemberDescriptorCollection Members { get; }
 
     object GetMemberOwner(CommandMemberDescriptor memberDescriptor);
 }

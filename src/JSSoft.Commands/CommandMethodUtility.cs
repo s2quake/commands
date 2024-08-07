@@ -278,6 +278,35 @@ internal static class CommandMethodUtility
         VerifyCommandAsyncMethodWithParameter(methodInfo);
     }
 
+    internal static string[] GetMethodParameterNames(MethodInfo methodInfo)
+    {
+        var parameterInfoByName = methodInfo.GetParameters().ToDictionary(item => item.Name);
+        var names = GetValue<CommandMethodParameterAttribute, string[]>(
+                memberInfo: methodInfo,
+                getter: item => item.ParameterNames,
+                defaultValue: []);
+        foreach (var name in names)
+        {
+            if (parameterInfoByName.TryGetValue(name, out var parameterInfo) != true)
+            {
+                var message = $"""
+                    Parameter '{name}' does not exist in the method '{methodInfo}'.
+                    """;
+                throw new CommandDefinitionException(message, methodInfo.DeclaringType!);
+            }
+
+            if (IsCommandParameter(parameterInfo) != true)
+            {
+                var message = $"""
+                    Parameter '{name}' of the method '{methodInfo}' is not a command parameter.
+                    """;
+                throw new CommandDefinitionException(message, methodInfo.DeclaringType!);
+            }
+        }
+
+        return names;
+    }
+
     private static void VerifyCommandAsyncMethodWithParameter(MethodInfo methodInfo)
     {
         if (methodInfo.ReturnType == typeof(Task))

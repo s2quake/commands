@@ -79,7 +79,7 @@ public static class CommandDescriptor
     {
         if (obj is ICustomCommandDescriptor customCommandDescriptor)
         {
-            return customCommandDescriptor.GetMembers();
+            return customCommandDescriptor.Members;
         }
         else if (obj is Type type)
         {
@@ -280,6 +280,7 @@ public static class CommandDescriptor
         var memberDescriptorList = new List<CommandMemberDescriptor>();
         if (GetBrowsable(methodInfo.DeclaringType) == true && GetBrowsable(methodInfo) == true)
         {
+            var methodParameterNames = GetMethodParameterNames(methodInfo);
             var parameterInfos = methodInfo.GetParameters();
             var methodMemberDescriptors = GetMethodMemberDescriptors(methodInfo);
             var methodStaticMemberDescriptors = GetMethodStaticMemberDescriptors(methodInfo);
@@ -292,17 +293,14 @@ public static class CommandDescriptor
             memberDescriptorList.Capacity = capacity;
             foreach (var item in items)
             {
-                memberDescriptorList.Add(CreateParameterDescriptor(item));
-            }
-
-            static CommandMemberDescriptor CreateParameterDescriptor(ParameterInfo parameterInfo)
-            {
-                if (parameterInfo.GetCustomAttribute<ParamArrayAttribute>() is not null)
+                if (methodParameterNames.Contains(item.Name) == true)
                 {
-                    return new CommandParameterArrayDescriptor(parameterInfo);
+                    memberDescriptorList.AddRange(GetMemberDescriptors(item.ParameterType));
                 }
-
-                return new CommandParameterDescriptor(parameterInfo);
+                else
+                {
+                    memberDescriptorList.Add(CreateParameterDescriptor(item));
+                }
             }
 
             memberDescriptorList.AddRange(methodMemberDescriptors);
@@ -362,6 +360,16 @@ public static class CommandDescriptor
         }
 
         return new(type, methodDescriptorList);
+    }
+
+    private static CommandMemberDescriptor CreateParameterDescriptor(ParameterInfo parameterInfo)
+    {
+        if (parameterInfo.GetCustomAttribute<ParamArrayAttribute>() is not null)
+        {
+            return new CommandParameterArrayDescriptor(parameterInfo);
+        }
+
+        return new CommandParameterDescriptor(parameterInfo);
     }
 
     private static CommandUsageDescriptorBase CreateUsageDescriptor(

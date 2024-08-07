@@ -14,7 +14,10 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
     private readonly CommandPropertyCompletionAttribute? _completionAttribute;
 
     public CommandPropertyDescriptor(PropertyInfo propertyInfo)
-        : base(GetCustomAttribute<CommandPropertyBaseAttribute>(propertyInfo)!, propertyInfo.Name)
+        : base(
+            owner: propertyInfo,
+            attribute: GetCustomAttribute<CommandPropertyBaseAttribute>(propertyInfo)!,
+            memberName: propertyInfo.Name)
     {
         CommandDefinitionException.ThrowIfPropertyNotReadWrite(propertyInfo);
         CommandDefinitionException.ThrowIfPropertyUnsupportedType(propertyInfo);

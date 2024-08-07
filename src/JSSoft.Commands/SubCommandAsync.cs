@@ -10,8 +10,8 @@ namespace JSSoft.Commands;
 
 internal sealed class SubCommandAsync(
     CommandMethodBase method, CommandMethodDescriptor methodDescriptor)
-    : ICommand, ICommandCompleter, IAsyncExecutable, ICommandUsage, ICommandUsagePrinter,
-    ICustomCommandDescriptor
+    : CommandMethodInstance(methodDescriptor),
+    ICommand, ICommandCompleter, IAsyncExecutable, ICommandUsage, ICommandUsagePrinter
 {
     public string Name => methodDescriptor.Name;
 
@@ -30,13 +30,13 @@ internal sealed class SubCommandAsync(
 
     string ICommandUsage.Example => methodDescriptor.UsageDescriptor.Example;
 
-    public CommandMemberDescriptorCollection GetMembers() => methodDescriptor.Members;
+    public CommandMemberDescriptorCollection Members => methodDescriptor.Members;
 
     public object GetMemberOwner(CommandMemberDescriptor memberDescriptor) => method;
 
     public Task ExecuteAsync(CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
         => methodDescriptor.InvokeAsync(
-            method, methodDescriptor.Members, cancellationToken, progress);
+            method, this, cancellationToken, progress);
 
     public string[] GetCompletions(CommandCompletionContext completionContext)
         => method.GetCompletions(

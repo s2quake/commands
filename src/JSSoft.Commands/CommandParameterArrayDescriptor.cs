@@ -10,7 +10,7 @@ public sealed class CommandParameterArrayDescriptor : CommandMemberDescriptor
     private object? _value;
 
     internal CommandParameterArrayDescriptor(ParameterInfo parameterInfo)
-        : base(new CommandPropertyArrayAttribute(), parameterInfo.Name!)
+        : base(parameterInfo, new CommandPropertyArrayAttribute(), parameterInfo.Name!)
     {
         ThrowUtility.ThrowIfParameterInfoNameNull(parameterInfo);
 

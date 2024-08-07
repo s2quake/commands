@@ -13,8 +13,12 @@ namespace JSSoft.Commands;
 
 public abstract class CommandMemberDescriptor
 {
-    protected CommandMemberDescriptor(CommandPropertyBaseAttribute attribute, string memberName)
+    protected CommandMemberDescriptor(
+        object owner,
+        CommandPropertyBaseAttribute attribute,
+        string memberName)
     {
+        Owner = owner;
         Attribute = attribute;
         MemberName = memberName;
         Name = attribute.GetName(defaultName: memberName);
@@ -31,6 +35,8 @@ public abstract class CommandMemberDescriptor
         InitValue = GetInitValue(attribute);
         DisplayName = GenerateDisplayName(this);
     }
+
+    public object Owner { get; }
 
     public string Name { get; }
 

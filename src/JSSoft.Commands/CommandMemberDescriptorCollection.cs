@@ -146,7 +146,7 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
         }
         else
         {
-            return _itemByName.TryGetValue(optionName, out var value) == true ? value : null;
+            return null;
         }
     }
 

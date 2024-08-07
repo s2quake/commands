@@ -13,7 +13,7 @@ public sealed class CommandParameterDescriptor : CommandMemberDescriptor
     private object? _value;
 
     internal CommandParameterDescriptor(ParameterInfo parameterInfo)
-        : base(new CommandPropertyRequiredAttribute(), parameterInfo.Name!)
+        : base(parameterInfo, new CommandPropertyRequiredAttribute(), parameterInfo.Name!)
     {
         ThrowUtility.ThrowIfParameterInfoNameNull(parameterInfo);
         CommandDefinitionException.ThrowIfParameterUnsupportedType(parameterInfo);
