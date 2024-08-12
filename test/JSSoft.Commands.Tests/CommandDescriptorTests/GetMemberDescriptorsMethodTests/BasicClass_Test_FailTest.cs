@@ -4,6 +4,7 @@
 // </copyright>
 
 #pragma warning disable CA1822
+using System.Reflection;
 using static JSSoft.Commands.CommandDescriptor;
 
 namespace JSSoft.Commands.Tests.CommandDescriptorTests.GetMemberDescriptorsMethodTests;
@@ -28,32 +29,10 @@ public sealed class BasicClass_Test_FailTest
         return 0;
     }
 
-    [Fact]
-    public void GetMemberDescriptors_Arg0_Method_WithReturnType_FailTest()
-    {
-        var exception = Assert.Throws<CommandDefinitionException>(() =>
-        {
-            GetMemberDescriptors(this, nameof(Method_WithReturnType));
-        });
-
-        Assert.Equal(GetType().AssemblyQualifiedName!, exception.Source);
-    }
-
     [CommandMethod]
     [CommandMethodProperty("abc")]
     internal void Method_WithNotFoundProperty()
     {
-    }
-
-    [Fact]
-    public void GetMemberDescriptors_Arg0_Method_WithNotFoundProperty_FailTest()
-    {
-        var exception = Assert.Throws<CommandDefinitionException>(() =>
-        {
-            GetMemberDescriptors(this, nameof(Method_WithNotFoundProperty));
-        });
-
-        Assert.Equal(GetType().AssemblyQualifiedName!, exception.Source);
     }
 
     [CommandMethod]
@@ -62,32 +41,10 @@ public sealed class BasicClass_Test_FailTest
     {
     }
 
-    [Fact]
-    public void GetMemberDescriptors_Arg0_Method_WithNotFoundStaticClass_FailTest()
-    {
-        var exception = Assert.Throws<CommandDefinitionException>(() =>
-        {
-            GetMemberDescriptors(this, nameof(Method_WithNotFoundStaticClass));
-        });
-
-        Assert.Equal(GetType().AssemblyQualifiedName!, exception.Source);
-    }
-
     [CommandMethod]
     [CommandMethodStaticProperty(typeof(StaticClass), "abc")]
     internal void Method_WithStaticClass_WithNotFoundProperty()
     {
-    }
-
-    [Fact]
-    public void GetMemberDescriptors_Arg0_Method_WithStaticClass_WithNotFoundProperty_FailTest()
-    {
-        var exception = Assert.Throws<CommandDefinitionException>(() =>
-        {
-            GetMemberDescriptors(this, nameof(Method_WithStaticClass_WithNotFoundProperty));
-        });
-
-        Assert.Equal(GetType().AssemblyQualifiedName!, exception.Source);
     }
 
     [CommandMethod]
@@ -96,32 +53,10 @@ public sealed class BasicClass_Test_FailTest
     {
     }
 
-    [Fact]
-    public void GetMemberDescriptors_Arg0_Method_WithStaticClass_WithStaticPropertyArray_FailTest()
-    {
-        var exception = Assert.Throws<CommandDefinitionException>(() =>
-        {
-            GetMemberDescriptors(this, nameof(Method_WithStaticClass_WithStaticPropertyArray));
-        });
-
-        Assert.Equal(GetType().AssemblyQualifiedName!, exception.Source);
-    }
-
     [CommandMethod]
     internal static string StaticMethod_WithReturnType()
     {
         return string.Empty;
-    }
-
-    [Fact]
-    public void GetMemberDescriptors_Arg0_StaticMethod_WithReturnType_FailTest()
-    {
-        var exception = Assert.Throws<CommandDefinitionException>(() =>
-        {
-            GetMemberDescriptors(this, nameof(StaticMethod_WithReturnType));
-        });
-
-        Assert.Equal(GetType().AssemblyQualifiedName!, exception.Source);
     }
 
     [CommandMethod]
@@ -130,32 +65,10 @@ public sealed class BasicClass_Test_FailTest
     {
     }
 
-    [Fact]
-    public void GetMemberDescriptors_Arg0_StaticMethod_WithNotFoundProperty_FailTest()
-    {
-        var exception = Assert.Throws<CommandDefinitionException>(() =>
-        {
-            GetMemberDescriptors(this, nameof(StaticMethod_WithNotFoundProperty));
-        });
-
-        Assert.Equal(GetType().AssemblyQualifiedName!, exception.Source);
-    }
-
     [CommandMethod]
     [CommandMethodStaticProperty("abc")]
     internal static void StaticMethod_WithNotFoundStaticClass()
     {
-    }
-
-    [Fact]
-    public void GetMemberDescriptors_Arg0_StaticMethod_WithNotFoundStaticClass_FailTest()
-    {
-        var exception = Assert.Throws<CommandDefinitionException>(() =>
-        {
-            GetMemberDescriptors(this, nameof(StaticMethod_WithNotFoundStaticClass));
-        });
-
-        Assert.Equal(GetType().AssemblyQualifiedName!, exception.Source);
     }
 
     [CommandMethod]
@@ -164,36 +77,46 @@ public sealed class BasicClass_Test_FailTest
     {
     }
 
-    [Fact]
-#pragma warning disable MEN002 // Line is too long
-    public void GetMemberDescriptors_Arg0_StaticMethod_WithStaticClass_WithNotFoundProperty_FailTest()
-#pragma warning restore MEN002 // Line is too long
-    {
-        var exception = Assert.Throws<CommandDefinitionException>(() =>
-        {
-            GetMemberDescriptors(this, nameof(StaticMethod_WithStaticClass_WithNotFoundProperty));
-        });
-
-        Assert.Equal(GetType().AssemblyQualifiedName!, exception.Source);
-    }
-
     [CommandMethod]
     [CommandMethodStaticProperty(typeof(StaticClassPropertyArray))]
     internal static void StaticMethod_WithStaticClass_WithStaticPropertyArray(params string[] args)
     {
     }
 
-    [Fact]
-#pragma warning disable MEN002 // Line is too long
-    public void GetMemberDescriptors_Arg0_StaticMethod_WithStaticClass_WithStaticPropertyArray_FailTest()
-#pragma warning restore MEN002 // Line is too long
+    [Theory]
+    [InlineData(nameof(Method_WithReturnType))]
+    [InlineData(nameof(Method_WithNotFoundProperty))]
+    [InlineData(nameof(Method_WithStaticClass_WithNotFoundProperty))]
+    [InlineData(nameof(Method_WithStaticClass_WithStaticPropertyArray))]
+    public void InvalidMethod_ThrowTest(string methodName)
     {
+        var bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
+        var methodInfo = GetType().GetMethod(methodName, bindingFlags)!;
+        var expectedValue = new CommandMemberInfo(methodInfo).ToString();
         var exception = Assert.Throws<CommandDefinitionException>(() =>
         {
-            var methodName = nameof(StaticMethod_WithStaticClass_WithStaticPropertyArray);
             GetMemberDescriptors(this, methodName);
         });
 
-        Assert.Equal(GetType().AssemblyQualifiedName!, exception.Source);
+        Assert.Equal(expectedValue, exception.Source);
+    }
+
+    [Theory]
+    [InlineData(nameof(StaticMethod_WithReturnType))]
+    [InlineData(nameof(StaticMethod_WithNotFoundProperty))]
+    [InlineData(nameof(StaticMethod_WithNotFoundStaticClass))]
+    [InlineData(nameof(StaticMethod_WithStaticClass_WithNotFoundProperty))]
+    [InlineData(nameof(StaticMethod_WithStaticClass_WithStaticPropertyArray))]
+    public void InvalidStaticMethod_ThrowTest(string methodName)
+    {
+        var bindingFlags = BindingFlags.Static | BindingFlags.NonPublic;
+        var methodInfo = GetType().GetMethod(methodName, bindingFlags)!;
+        var expectedValue = new CommandMemberInfo(methodInfo).ToString();
+        var exception = Assert.Throws<CommandDefinitionException>(() =>
+        {
+            GetMemberDescriptors(this, methodName);
+        });
+
+        Assert.Equal(expectedValue, exception.Source);
     }
 }

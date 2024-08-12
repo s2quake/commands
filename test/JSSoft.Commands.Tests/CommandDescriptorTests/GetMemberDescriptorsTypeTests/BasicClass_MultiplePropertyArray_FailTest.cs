@@ -24,7 +24,9 @@ public sealed class BasicClass_MultiplePropertyArray_FailTest
         {
             CommandDescriptor.GetMemberDescriptors(obj.GetType());
         });
-        Assert.Equal(typeof(BasicClass).AssemblyQualifiedName, exception.Source);
+        var expectedValue = new CommandMemberInfo(obj.GetType()).ToString();
+
+        Assert.Equal(expectedValue, exception.Source);
     }
 
     [Fact]
@@ -34,6 +36,8 @@ public sealed class BasicClass_MultiplePropertyArray_FailTest
         {
             CommandDescriptor.GetMemberDescriptors(typeof(BasicClass));
         });
-        Assert.Equal(typeof(BasicClass).AssemblyQualifiedName, exception.Source);
+        var expectedValue = new CommandMemberInfo(typeof(BasicClass)).ToString();
+
+        Assert.Equal(expectedValue, exception.Source);
     }
 }

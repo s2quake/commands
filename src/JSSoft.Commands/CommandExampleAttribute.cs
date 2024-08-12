@@ -12,5 +12,5 @@ namespace JSSoft.Commands;
     | AttributeTargets.Parameter)]
 public class CommandExampleAttribute(string example) : Attribute
 {
-    public virtual string Example { get; } = example;
+    public string Example { get; } = example;
 }

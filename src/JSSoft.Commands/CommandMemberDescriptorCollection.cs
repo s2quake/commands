@@ -17,15 +17,13 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
     private readonly Dictionary<char, CommandMemberDescriptor> _itemByShortName;
 
     public CommandMemberDescriptorCollection(
-        Type type, IEnumerable<CommandMemberDescriptor> memberDescriptors)
+        CommandMemberInfo owner, IEnumerable<CommandMemberDescriptor> memberDescriptors)
     {
         if (memberDescriptors.Count(item => item.IsVariables) > 1)
         {
-            var message = $"""
-                Attribute '{nameof(CommandPropertyArrayAttribute)}' can be defined in only one 
-                property.
-                """;
-            throw new CommandDefinitionException(message, type);
+            var message = $"Attribute '{nameof(CommandPropertyArrayAttribute)}' can be defined " +
+                          $"in only one property.";
+            throw new CommandDefinitionException(message, owner);
         }
 
         var query = from memberDescriptor in memberDescriptors
@@ -43,11 +41,9 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
         {
             if (_itemByMemberName.Contains(item.MemberName) == true)
             {
-                var message = $"""
-                    {nameof(CommandMemberDescriptor)} '{item.MemberName}' cannot be added because 
-                    it already exists.
-                    """;
-                throw new CommandDefinitionException(message, type);
+                var message = $"{nameof(CommandMemberDescriptor)} '{item.MemberName}' cannot be " +
+                              $"added because it already exists.";
+                throw new CommandDefinitionException(message, owner);
             }
 
             _itemByMemberName.Add(item.MemberName, item);
@@ -62,11 +58,9 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
 
             if (_itemByName.ContainsKey(item.Name) == true)
             {
-                var message = $"""
-                    {nameof(CommandMemberDescriptor)} '{item.Name}' cannot be added because it 
-                    already exists.
-                    """;
-                throw new CommandDefinitionException(message, type);
+                var message = $"{nameof(CommandMemberDescriptor)} '{item.Name}' cannot be added " +
+                              $"because it already exists.";
+                throw new CommandDefinitionException(message, owner);
             }
 
             _itemByName.Add(item.Name, item);
@@ -81,17 +75,15 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
 
             if (_itemByShortName.ContainsKey(item.ShortName) == true)
             {
-                var message = $"""
-                    {nameof(CommandMemberDescriptor)} '{item.ShortName}' cannot be added because it 
-                    already exists.
-                    """;
-                throw new CommandDefinitionException(message, type);
+                var message = $"{nameof(CommandMemberDescriptor)} '{item.ShortName}' cannot be " +
+                              $"added because it already exists.";
+                throw new CommandDefinitionException(message, owner);
             }
 
             _itemByShortName.Add(item.ShortName, item);
         }
 
-        Type = type;
+        Owner = owner;
         RequirementDescriptors = [.. Enumerable.Where(this, IsRequiredDescriptor)];
         VariablesDescriptor = memberDescriptors.SingleOrDefault(IsVariableDescriptor);
         OptionDescriptors = [.. Enumerable.Where(this, IsOptionDescriptor)];
@@ -99,7 +91,7 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
 
     public int Count => _itemByMemberName.Count;
 
-    public Type Type { get; }
+    public CommandMemberInfo Owner { get; }
 
     public CommandMemberDescriptor? VariablesDescriptor { get; }
 
@@ -146,7 +138,7 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
         }
         else
         {
-            return _itemByName.TryGetValue(optionName, out var value) == true ? value : null;
+            return null;
         }
     }
 
@@ -175,7 +167,8 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
         }
     }
 
-    internal IEnumerable<CommandMemberDescriptor> Filter(Type requestType, string[] memberNames)
+    internal IEnumerable<CommandMemberDescriptor> Filter(
+        CommandMemberInfo memberInfo, string[] memberNames)
     {
         if (memberNames.Length == 0)
         {
@@ -186,13 +179,13 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
         }
         else
         {
-            var type = Type;
+            var type = Owner;
             foreach (var item in memberNames)
             {
                 if (Contains(item) != true)
                 {
                     var message = $"Type '{type}' does not have property '{item}'.";
-                    throw new CommandDefinitionException(message, requestType);
+                    throw new CommandDefinitionException(message, memberInfo);
                 }
 
                 yield return this[item];

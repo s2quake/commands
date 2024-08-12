@@ -51,9 +51,7 @@ internal static class ParseUtility
         {
             var error = CommandLineError.InvalidValue;
             var items = string.Join(", ", args);
-            var message = $"""
-                Value '{items}' cannot be used for option '{memberDescriptor.Name}'.
-                """;
+            var message = $"Value '{items}' cannot be used for option '{memberDescriptor.Name}'.";
             throw new CommandLineException(error, message, memberDescriptor, e);
         }
     }
@@ -93,9 +91,8 @@ internal static class ParseUtility
         catch (Exception e)
         {
             var error = CommandLineError.InvalidValue;
-            var message = $"""
-                Value '{arg}' cannot be used for option '{memberDescriptor.DisplayName}'.
-                """;
+            var message = $"Value '{arg}' cannot be used for option " +
+                          $"'{memberDescriptor.DisplayName}'.";
             throw new CommandLineException(error, message, memberDescriptor, e);
         }
     }
@@ -106,9 +103,8 @@ internal static class ParseUtility
         {
             if (propertyType.HasElementType != true)
             {
-                var message = $"""
-                    Property '{nameof(Type.HasElementType)}' of '{nameof(Type)}' must be true.
-                    """;
+                var message = $"Property '{nameof(Type.HasElementType)}' of '{nameof(Type)}' " +
+                              $"must be true.";
                 throw new ArgumentException(message, nameof(propertyType));
             }
 

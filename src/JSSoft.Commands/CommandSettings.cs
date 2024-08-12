@@ -51,9 +51,7 @@ public struct CommandSettings
 
             if (value >= BufferWidth)
             {
-                var message = $"""
-                    Value must be less than BufferWidth({BufferWidth}).
-                    """;
+                var message = $"Value must be less than BufferWidth({BufferWidth}).";
                 Trace.TraceWarning(message);
             }
 

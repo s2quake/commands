@@ -17,13 +17,13 @@ public static class CommandAttributeUtility
     public static bool IsCommandMethod(MethodInfo methodInfo)
         => IsDefined<CommandMethodAttribute>(methodInfo);
 
-    public static bool GetBrowsable(MemberInfo memberInfo)
+    public static bool IsBrowsable(MemberInfo memberInfo)
     {
-        var browsable = GetValue<BrowsableAttribute, bool>(
+        var isBrowsable = GetValue<BrowsableAttribute, bool>(
             memberInfo: memberInfo,
             getter: memberInfo => memberInfo.Browsable,
             defaultValue: true);
-        if (browsable != true)
+        if (isBrowsable != true)
         {
             return false;
         }
@@ -35,22 +35,4 @@ public static class CommandAttributeUtility
 
         return true;
     }
-
-    public static string GetSummary(MemberInfo memberInfo)
-        => GetValue<CommandSummaryAttribute>(memberInfo, memberInfo => memberInfo.Summary);
-
-    public static string GetSummary(ParameterInfo parameterInfo)
-        => GetValue<CommandSummaryAttribute>(parameterInfo, memberInfo => memberInfo.Summary);
-
-    public static string GetDescription(MemberInfo memberInfo)
-        => GetValue<DescriptionAttribute>(memberInfo, memberInfo => memberInfo.Description);
-
-    public static string GetDescription(ParameterInfo parameterInfo)
-        => GetValue<DescriptionAttribute>(parameterInfo, memberInfo => memberInfo.Description);
-
-    public static string GetExample(MemberInfo memberInfo)
-        => GetValue<CommandExampleAttribute>(memberInfo, memberInfo => memberInfo.Example);
-
-    public static string GetExample(ParameterInfo parameterInfo)
-        => GetValue<CommandExampleAttribute>(parameterInfo, parameterInfo => parameterInfo.Example);
 }

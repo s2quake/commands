@@ -3,6 +3,7 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
+using JSSoft.Commands.Exceptions;
 using static JSSoft.Commands.AttributeUtility;
 
 namespace JSSoft.Commands;
@@ -14,14 +15,35 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
     private readonly CommandPropertyCompletionAttribute? _completionAttribute;
 
     public CommandPropertyDescriptor(PropertyInfo propertyInfo)
-        : base(GetCustomAttribute<CommandPropertyBaseAttribute>(propertyInfo)!, propertyInfo.Name)
+        : base(
+            memberInfo: propertyInfo,
+            attribute: GetCustomAttribute<CommandPropertyBaseAttribute>(propertyInfo)!,
+            memberName: propertyInfo.Name)
     {
-        CommandDefinitionException.ThrowIfPropertyNotReadWrite(propertyInfo);
-        CommandDefinitionException.ThrowIfPropertyUnsupportedType(propertyInfo);
-        CommandDefinitionException.ThrowIfPropertyNotRightTypeForVariables(
-            IsVariables, propertyInfo);
-        CommandDefinitionException.ThrowIfPropertyNotRightTypeForSwitch(
-            IsSwitch, propertyInfo);
+        if (propertyInfo.CanWrite != true)
+        {
+            throw new CommandPropertyNotWritableException(propertyInfo);
+        }
+
+        if (propertyInfo.CanRead != true)
+        {
+            throw new CommandPropertyNotReadableException(propertyInfo);
+        }
+
+        if (CommandUtility.IsSupportedType(propertyInfo.PropertyType) != true)
+        {
+            throw new CommandPropertyNotSupportedTypeException(propertyInfo);
+        }
+
+        if (IsVariables == true && propertyInfo.PropertyType.IsArray != true)
+        {
+            throw new CommandPropertyCannotBeUsedAsVariablesTypeException(propertyInfo);
+        }
+
+        if (IsSwitch == true && propertyInfo.PropertyType != typeof(bool))
+        {
+            throw new CommandPropertyCannotBeUsedAsSwitchTypeException(propertyInfo);
+        }
 
         _propertyInfo = propertyInfo;
         _conditionsAttributes = GetCustomAttributes<CommandPropertyConditionAttribute>(
@@ -98,18 +120,15 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
                     {
                         if (memberDescriptor.IsSwitch == true)
                         {
-                            var message = $"""
-                                '{DisplayName}' cannot be used. Cannot be used with switch 
-                                '{memberDescriptor.DisplayName}'.
-                                """;
+                            var message = $"'{DisplayName}' cannot be used. Cannot be used with " +
+                                          $"switch '{memberDescriptor.DisplayName}'.";
                             throw new CommandPropertyConditionException(message, this);
                         }
                         else
                         {
-                            var message = $"""
-                                '{DisplayName}' can not use. property 
-                                '{memberDescriptor.DisplayName}' value must be '{value2:R}'.
-                                """;
+                            var message = $"'{DisplayName}' can not use. property " +
+                                          $"'{memberDescriptor.DisplayName}' value must be " +
+                                          $"'{value2:R}'.";
                             throw new CommandPropertyConditionException(message, this);
                         }
                     }
@@ -120,18 +139,15 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
                     {
                         if (memberDescriptor.IsSwitch == true)
                         {
-                            var message = $"""
-                                '{DisplayName}' cannot be used because switch 
-                                '{memberDescriptor.DisplayName}' is not specified.
-                                """;
+                            var message = $"'{DisplayName}' cannot be used because switch " +
+                                          $"'{memberDescriptor.DisplayName}' is not specified.";
                             throw new CommandPropertyConditionException(message, this);
                         }
                         else
                         {
-                            var message = $"""
-                                '{DisplayName}' can not use. property 
-                                '{memberDescriptor.DisplayName}' value must be not '{value2:R}'.
-                                """;
+                            var message = $"'{DisplayName}' can not use. property " +
+                                          $"'{memberDescriptor.DisplayName}' value must be not " +
+                                          $"'{value2:R}'.";
                             throw new CommandPropertyConditionException(message, this);
                         }
                     }

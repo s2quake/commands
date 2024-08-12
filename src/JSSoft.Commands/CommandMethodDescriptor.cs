@@ -36,31 +36,15 @@ public abstract class CommandMethodDescriptor(MethodInfo methodInfo)
         object instance, string[] args, CommandMemberDescriptorCollection memberDescriptors)
     {
         var parseContext = new ParseContext(memberDescriptors, args);
-        var parameterInfos = MethodInfo.GetParameters();
-        var valueList = new List<object?>(parameterInfos.Length);
-        parseContext.SetValue(instance);
-        foreach (var parameterInfo in parameterInfos)
-        {
-            var memberDescriptor = memberDescriptors[parameterInfo.Name!];
-            var value = memberDescriptor.GetValueInternal(instance);
-            valueList.Add(value);
-        }
-
-        return OnInvoke(instance, [.. valueList]);
+        var methodInstance = new CommandMethodInstance(this, instance);
+        parseContext.SetValue(methodInstance);
+        return Invoke(instance, methodInstance);
     }
 
-    internal object? Invoke(object instance, CommandMemberDescriptorCollection memberDescriptors)
+    internal object? Invoke(object instance, CommandMethodInstance methodInstance)
     {
-        var parameterInfos = MethodInfo.GetParameters();
-        var valueList = new List<object?>(parameterInfos.Length);
-        foreach (var parameterInfo in parameterInfos)
-        {
-            var memberDescriptor = memberDescriptors[parameterInfo.Name!];
-            var value = memberDescriptor.GetValueInternal(instance);
-            valueList.Add(value);
-        }
-
-        return OnInvoke(instance, [.. valueList]);
+        var parameters = methodInstance.GetParameters();
+        return OnInvoke(instance, parameters);
     }
 
     internal Task InvokeAsync(
@@ -71,62 +55,20 @@ public abstract class CommandMethodDescriptor(MethodInfo methodInfo)
         IProgress<ProgressInfo> progress)
     {
         var parseContext = new ParseContext(memberDescriptors, args);
-        var parameterInfos = MethodInfo.GetParameters();
-        var valueList = new List<object?>(parameterInfos.Length);
+        var methodInstance = new CommandMethodInstance(this, instance);
         parseContext.SetValue(instance);
-        foreach (var parameterInfo in parameterInfos)
-        {
-            if (parameterInfo.ParameterType == typeof(CancellationToken))
-            {
-                valueList.Add(cancellationToken);
-            }
-            else if (CommandMethodUtility.IsProgressParameter(parameterInfo) == true)
-            {
-                valueList.Add(new CommandProgress(progress));
-            }
-            else
-            {
-                var memberDescriptor = memberDescriptors[parameterInfo.Name!];
-                var value = memberDescriptor.GetValueInternal(instance);
-                valueList.Add(value);
-            }
-        }
-
-        if (OnInvoke(instance, [.. valueList]) is Task task)
-        {
-            return task;
-        }
-
-        throw new UnreachableException();
+        return InvokeAsync(instance, methodInstance, cancellationToken, progress);
     }
 
     internal Task InvokeAsync(
         object instance,
-        CommandMemberDescriptorCollection memberDescriptors,
+        CommandMethodInstance methodInstance,
         CancellationToken cancellationToken,
         IProgress<ProgressInfo> progress)
     {
-        var parameterInfos = MethodInfo.GetParameters();
-        var valueList = new List<object?>(parameterInfos.Length);
-        foreach (var parameterInfo in parameterInfos)
-        {
-            if (parameterInfo.ParameterType == typeof(CancellationToken))
-            {
-                valueList.Add(cancellationToken);
-            }
-            else if (CommandMethodUtility.IsProgressParameter(parameterInfo) == true)
-            {
-                valueList.Add(new CommandProgress(progress));
-            }
-            else
-            {
-                var memberDescriptor = memberDescriptors[parameterInfo.Name!];
-                var value = memberDescriptor.GetValueInternal(instance);
-                valueList.Add(value);
-            }
-        }
+        var parameters = methodInstance.GetParameters(cancellationToken, progress);
 
-        if (OnInvoke(instance, [.. valueList]) is Task task)
+        if (OnInvoke(instance, parameters) is Task task)
         {
             return task;
         }

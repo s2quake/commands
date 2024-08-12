@@ -19,7 +19,7 @@ public class Property_General_FailTest
     [Fact]
     public void CancellationTokenClass_FailTest()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMemberDescriptors(typeof(CancellationTokenClass)));
     }
 
@@ -32,7 +32,7 @@ public class Property_General_FailTest
     [Fact]
     public void EnumerableClass_FailTest()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMemberDescriptors(typeof(EnumerableClass)));
     }
 
@@ -45,7 +45,7 @@ public class Property_General_FailTest
     [Fact]
     public void ListClass_FailTest()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMemberDescriptors(typeof(ListClass)));
     }
 
@@ -58,7 +58,7 @@ public class Property_General_FailTest
     [Fact]
     public void DictionaryClass_FailTest()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMemberDescriptors(typeof(DictionaryClass)));
     }
 }

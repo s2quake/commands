@@ -63,9 +63,8 @@ public sealed class CommandLineException : SystemException
     public static void ThrowIfInvalidValue(CommandMemberDescriptor memberDescriptor, string value)
     {
         var error = CommandLineError.InvalidValue;
-        var message = $"""
-            Value '{value}' cannot be used for option '{memberDescriptor.DisplayName}'.
-            """;
+        var message = $"Value '{value}' cannot be used for option " +
+                      $"'{memberDescriptor.DisplayName}'.";
         throw new CommandLineException(error, message, memberDescriptor);
     }
 }

@@ -24,7 +24,7 @@ public class AsyncMethod_FailTest
     [Fact]
     public void Base_Method1_Test()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMethodDescriptors(typeof(Method1Class)));
     }
 
@@ -40,7 +40,7 @@ public class AsyncMethod_FailTest
     [Fact]
     public void Base_Method2_Test()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMethodDescriptors(typeof(Method2Class)));
     }
 
@@ -56,7 +56,7 @@ public class AsyncMethod_FailTest
     [Fact]
     public void Base_Method3_Test()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMethodDescriptors(typeof(Method3Class)));
     }
 
@@ -72,7 +72,7 @@ public class AsyncMethod_FailTest
     [Fact]
     public void Base_Method4_Test()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMethodDescriptors(typeof(Method4Class)));
     }
 
@@ -88,7 +88,7 @@ public class AsyncMethod_FailTest
     [Fact]
     public void Base_Method5_Test()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMethodDescriptors(typeof(Method5Class)));
     }
 
@@ -104,7 +104,7 @@ public class AsyncMethod_FailTest
     [Fact]
     public void Base_Method6_Test()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMethodDescriptors(typeof(Method6Class)));
     }
 
@@ -120,7 +120,7 @@ public class AsyncMethod_FailTest
     [Fact]
     public void Base_Method7_Test()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMethodDescriptors(typeof(Method7Class)));
     }
 
@@ -136,7 +136,7 @@ public class AsyncMethod_FailTest
     [Fact]
     public void Base_Method8_Test()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMethodDescriptors(typeof(Method8Class)));
     }
 
@@ -152,7 +152,7 @@ public class AsyncMethod_FailTest
     [Fact]
     public void Base_Method9_Test()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMethodDescriptors(typeof(Method9Class)));
     }
 }

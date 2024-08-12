@@ -27,6 +27,7 @@ public sealed class StaticClass_With_StaticClass_FailTest
         {
             CommandDescriptor.GetMemberDescriptors(typeof(StaticClass1));
         });
-        Assert.Equal(typeof(StaticClass1).AssemblyQualifiedName!, exception.Source);
+        var expectedValue = new CommandMemberInfo(typeof(StaticClass1)).ToString();
+        Assert.Equal(expectedValue, exception.Source);
     }
 }

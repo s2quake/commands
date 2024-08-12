@@ -13,17 +13,21 @@ namespace JSSoft.Commands;
 
 public abstract class CommandMemberDescriptor
 {
-    protected CommandMemberDescriptor(CommandPropertyBaseAttribute attribute, string memberName)
+    protected CommandMemberDescriptor(
+        CommandMemberInfo memberInfo,
+        CommandPropertyBaseAttribute attribute,
+        string memberName)
     {
+        Owner = memberInfo;
         Attribute = attribute;
         MemberName = memberName;
-        Name = attribute.GetName(defaultName: memberName);
-        ShortName = attribute.ShortName;
+        Name = attribute.GetName(memberInfo, defaultName: memberName);
+        ShortName = attribute.GetShortName(memberInfo);
         IsRequired = attribute is CommandPropertyRequiredAttribute
-                        || attribute is CommandPropertyExplicitRequiredAttribute;
+            || attribute is CommandPropertyExplicitRequiredAttribute;
         IsExplicit = attribute is CommandPropertyExplicitRequiredAttribute
-                        || attribute is CommandPropertyAttribute
-                        || attribute is CommandPropertySwitchAttribute;
+            || attribute is CommandPropertyAttribute
+            || attribute is CommandPropertySwitchAttribute;
         IsSwitch = attribute is CommandPropertySwitchAttribute;
         IsVariables = attribute is CommandPropertyArrayAttribute;
         IsGeneral = attribute is CommandPropertyAttribute;
@@ -31,6 +35,8 @@ public abstract class CommandMemberDescriptor
         InitValue = GetInitValue(attribute);
         DisplayName = GenerateDisplayName(this);
     }
+
+    public CommandMemberInfo Owner { get; }
 
     public string Name { get; }
 

@@ -27,10 +27,8 @@ public sealed class CommandMethodDescriptorCollection : IEnumerable<CommandMetho
         {
             if (_methodDescriptorByMethodName.Contains(item.MethodName) == true)
             {
-                var message = $"""
-                    {nameof(CommandMethodDescriptor)} '{item.MethodName}' cannot be added 
-                    because it already exists.
-                    """;
+                var message = $"{nameof(CommandMethodDescriptor)} '{item.MethodName}' cannot be " +
+                              $"added because it already exists.";
                 throw new CommandDefinitionException(message, type);
             }
 
@@ -42,19 +40,15 @@ public sealed class CommandMethodDescriptorCollection : IEnumerable<CommandMetho
         {
             if (_methodDescriptorByMethodName.Contains(alias) == true)
             {
-                var message = $"""
-                    {nameof(CommandMethodDescriptor)} '{alias}' cannot be added because it 
-                    already exists.
-                    """;
+                var message = $"{nameof(CommandMethodDescriptor)} '{alias}' cannot be added " +
+                              $"because it already exists.";
                 throw new CommandDefinitionException(message, type);
             }
 
             if (_methodDescriptorByName.ContainsKey(alias) == true)
             {
-                var message = $"""
-                    {nameof(CommandMethodDescriptor)} '{alias}' cannot be added because it 
-                    already exists.
-                    """;
+                var message = $"{nameof(CommandMethodDescriptor)} '{alias}' cannot be added " +
+                              $"because it already exists.";
                 throw new CommandDefinitionException(message, type);
             }
 

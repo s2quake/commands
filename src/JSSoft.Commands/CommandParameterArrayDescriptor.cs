@@ -3,6 +3,8 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
+using JSSoft.Commands.Exceptions;
+
 namespace JSSoft.Commands;
 
 public sealed class CommandParameterArrayDescriptor : CommandMemberDescriptor
@@ -10,9 +12,12 @@ public sealed class CommandParameterArrayDescriptor : CommandMemberDescriptor
     private object? _value;
 
     internal CommandParameterArrayDescriptor(ParameterInfo parameterInfo)
-        : base(new CommandPropertyArrayAttribute(), parameterInfo.Name!)
+        : base(parameterInfo, new CommandPropertyArrayAttribute(), parameterInfo.Name!)
     {
-        ThrowUtility.ThrowIfParameterInfoNameNull(parameterInfo);
+        if (parameterInfo.Name is null)
+        {
+            throw new CommandParameterNameNullException(parameterInfo);
+        }
 
         _value = parameterInfo.DefaultValue;
         InitValue = Array.CreateInstance(parameterInfo.ParameterType.GetElementType()!, 0);

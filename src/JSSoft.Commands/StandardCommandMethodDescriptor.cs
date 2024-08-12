@@ -5,6 +5,7 @@
 
 using System.Diagnostics;
 using System.Threading.Tasks;
+using JSSoft.Commands.Exceptions;
 
 namespace JSSoft.Commands;
 
@@ -16,7 +17,10 @@ internal sealed class StandardCommandMethodDescriptor : CommandMethodDescriptor
     public StandardCommandMethodDescriptor(MethodInfo methodInfo)
         : base(methodInfo)
     {
-        ThrowUtility.ThrowIfDeclaringTypeNull(methodInfo);
+        if (methodInfo.DeclaringType is null)
+        {
+            throw new CommandDeclaringTypeNullException(methodInfo);
+        }
 
         MethodName = methodInfo.Name;
         IsAsync = CommandMethodUtility.IsAsync(methodInfo);

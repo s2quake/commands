@@ -23,6 +23,8 @@ public sealed class StaticClass_MultiplePropertyArray_FailTest
         {
             CommandDescriptor.GetMemberDescriptors(typeof(StaticClass));
         });
-        Assert.Equal(typeof(StaticClass).AssemblyQualifiedName, exception.Source);
+        var expectedValue = new CommandMemberInfo(typeof(StaticClass)).ToString();
+
+        Assert.Equal(expectedValue, exception.Source);
     }
 }

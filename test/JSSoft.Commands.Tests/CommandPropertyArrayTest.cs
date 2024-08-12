@@ -11,13 +11,11 @@ public class CommandPropertyArrayTest
     public void Test1()
     {
         var parser = new CommandParser(this);
-        var commandLine = """
-            get database=a port=123 userid=abc password=1234 
-            comment=\"connect database to \\\"a\\\"\"
-            """;
+        var commandLine = "get database=a port=123 userid=abc password=1234 " +
+                          "comment=\"connect database to \\\"a\\\"\"";
         parser.Parse(commandLine);
         Assert.Equal("get", Command);
-        Assert.Equal(8, Arguments.Length);
+        Assert.Equal(5, Arguments.Length);
     }
 
     [Fact]

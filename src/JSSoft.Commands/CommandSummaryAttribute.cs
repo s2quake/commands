@@ -12,6 +12,4 @@ namespace JSSoft.Commands;
 public class CommandSummaryAttribute(string summary) : Attribute
 {
     public virtual string Summary { get; } = summary;
-
-    public string Locale { get; set; } = string.Empty;
 }

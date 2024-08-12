@@ -3,6 +3,8 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
+using JSSoft.Commands.Exceptions;
+
 namespace JSSoft.Commands;
 
 [AttributeUsage(AttributeTargets.Property)]
@@ -15,16 +17,11 @@ public abstract class CommandPropertyBaseAttribute : Attribute
 
     private protected CommandPropertyBaseAttribute(string name)
     {
-        ThrowUtility.ThrowIfInvalidName(name);
-
         Name = name;
     }
 
     private protected CommandPropertyBaseAttribute(string name, char shortName)
     {
-        ThrowUtility.ThrowIfInvalidName(name);
-        ThrowUtility.ThrowIfInvalidShortName(shortName);
-
         Name = name;
         ShortName = shortName;
     }
@@ -36,8 +33,6 @@ public abstract class CommandPropertyBaseAttribute : Attribute
 
     private protected CommandPropertyBaseAttribute(char shortName, bool useName)
     {
-        ThrowUtility.ThrowIfInvalidShortName(shortName);
-
         ShortName = shortName;
         AllowName = useName;
     }
@@ -48,7 +43,22 @@ public abstract class CommandPropertyBaseAttribute : Attribute
 
     public bool AllowName { get; }
 
-    internal string GetName(string defaultName)
+    internal char GetShortName(CommandMemberInfo memberInfo)
+    {
+        if (ShortName != char.MinValue)
+        {
+            if (CommandUtility.IsShortName(ShortName) != true)
+            {
+                throw new CommandInvalidShortNameException(memberInfo, ShortName);
+            }
+
+            return ShortName;
+        }
+
+        return char.MinValue;
+    }
+
+    internal string GetName(CommandMemberInfo memberInfo, string defaultName)
     {
         if (Name != string.Empty)
         {

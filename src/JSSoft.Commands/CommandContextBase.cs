@@ -36,11 +36,11 @@ public abstract class CommandContextBase : ICommandContext
         Assembly assembly, IEnumerable<ICommand> commands, CommandSettings settings)
     {
         Settings = settings;
-        _fullName = AssemblyUtility.GetAssemblyLocation(assembly);
+        _fullName = assembly.GetAssemblyLocation();
         _filename = Path.GetFileName(_fullName);
         Name = Path.GetFileNameWithoutExtension(_fullName);
-        Version = AssemblyUtility.GetAssemblyVersion(assembly);
-        Copyright = AssemblyUtility.GetAssemblyCopyright(assembly);
+        Version = assembly.GetAssemblyVersion();
+        Copyright = assembly.GetAssemblyCopyright();
         _commandNode = new CommandNode(this);
         Initialize(_commandNode, commands);
     }
@@ -53,7 +53,11 @@ public abstract class CommandContextBase : ICommandContext
     protected CommandContextBase(
         string name, IEnumerable<ICommand> commands, CommandSettings settings)
     {
-        ThrowUtility.ThrowIfEmpty(name, nameof(name));
+        if (name == string.Empty)
+        {
+            throw new ArgumentException("Empty string is not allowed.", nameof(name));
+        }
+
         Settings = settings;
         _fullName = name;
         _filename = name;
@@ -360,9 +364,8 @@ public abstract class CommandContextBase : ICommandContext
 
         if (parentNode.Children.Contains(commandName) != true && isPartialCommand == true)
         {
-            var message = $"""
-                Partial command cannot be registered because command '{commandName}' does not exist.
-                """;
+            var message = $"Partial command cannot be registered because command " +
+                          $"'{commandName}' does not exist.";
             throw new CommandDefinitionException(message);
         }
 

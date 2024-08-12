@@ -291,9 +291,8 @@ public abstract class CommandUsagePrinterBase(ICommandUsage commandUsage, Comman
         }
         else if (memberDescriptor.DefaultValue is not DBNull)
         {
-            return $"""
-                {memberDescriptor.DisplayName} [value, default='{memberDescriptor.DefaultValue:R}']
-                """;
+            return $"{memberDescriptor.DisplayName} " +
+                   $"[value, default='{memberDescriptor.DefaultValue:R}']";
         }
         else
         {
