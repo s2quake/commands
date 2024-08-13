@@ -74,11 +74,13 @@ public sealed class BasicClass_Test
     [Fact]
     public void GetMemberDescriptors_Arg0_MultiplePropertyArrayInvalidClass_FailTest()
     {
+        var type = typeof(MultiplePropertyArrayInvalidClass);
         var exception = Assert.Throws<CommandDefinitionException>(() =>
         {
-            CommandDescriptor.GetMemberDescriptors(typeof(MultiplePropertyArrayInvalidClass));
+            CommandDescriptor.GetMemberDescriptors(type);
         });
-        Assert.Equal(
-            typeof(MultiplePropertyArrayInvalidClass).AssemblyQualifiedName, exception.Source);
+        var expectedValue = new CommandMemberInfo(type).ToString();
+
+        Assert.Equal(expectedValue, exception.Source);
     }
 }

@@ -21,7 +21,7 @@ public class Property_General_WriteOnly_FailTest
     [Fact]
     public void InstanceClass_FailTest()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMemberDescriptors(typeof(InstanceClass)));
     }
 }

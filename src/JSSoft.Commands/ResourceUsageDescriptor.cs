@@ -18,58 +18,27 @@ public class ResourceUsageDescriptor : CommandUsageDescriptorBase
     private static readonly Dictionary<string, ResourceManager> _resourceManagers = [];
     private readonly Type? _resourceType;
     private readonly string _resourceName;
-    private readonly Type _declaringType;
+    private readonly Type _declaredType;
+    private readonly CommandMemberInfo _memberInfo;
+    private string? _summary;
+    private string? _description;
+    private string? _example;
 
-    public ResourceUsageDescriptor(CommandUsageAttribute usageAttribute, object target)
-        : base(usageAttribute, target)
+    public ResourceUsageDescriptor(
+        CommandUsageAttribute usageAttribute, CommandMemberInfo memberInfo)
+        : base(usageAttribute, memberInfo)
     {
         _resourceType = ((ResourceUsageAttribute)Attribute).ResourceType;
         _resourceName = ((ResourceUsageAttribute)Attribute).ResourceName;
-        if (target is Type type)
-        {
-            _declaringType = GetDeclaringType(type, usageAttribute);
-            Summary = GetSummary();
-            Description = GetDescription();
-            Example = GetExample();
-        }
-        else if (target is PropertyInfo propertyInfo)
-        {
-            ThrowUtility.ThrowIfDeclaringTypeNull(propertyInfo);
-            _declaringType = GetDeclaringType(propertyInfo.DeclaringType!, usageAttribute);
-            Summary = GetSummary(propertyInfo);
-            Description = GetDescription(propertyInfo);
-            Example = string.Empty;
-        }
-        else if (target is MethodInfo methodInfo)
-        {
-            ThrowUtility.ThrowIfDeclaringTypeNull(methodInfo);
-
-            _declaringType = GetDeclaringType(methodInfo.DeclaringType!, usageAttribute);
-            Summary = GetSummary(methodInfo);
-            Description = GetDescription(methodInfo);
-            Example = GetExample(methodInfo);
-        }
-        else if (target is ParameterInfo parameterInfo)
-        {
-            ThrowUtility.ThrowIfParameterInfoNameNull(parameterInfo);
-            ThrowUtility.ThrowIfDeclaringTypeNull(parameterInfo);
-
-            _declaringType = GetDeclaringType(parameterInfo.Member.DeclaringType!, usageAttribute);
-            Summary = GetSummary(parameterInfo);
-            Description = GetDescription(parameterInfo);
-            Example = string.Empty;
-        }
-        else
-        {
-            throw new UnreachableException();
-        }
+        _declaredType = GetDeclaredType(memberInfo.DeclaringType, usageAttribute);
+        _memberInfo = memberInfo;
     }
 
-    public override string Summary { get; }
+    public override string Summary => _summary ??= GetSummary();
 
-    public override string Description { get; }
+    public override string Description => _description ??= GetDescription();
 
-    public override string Example { get; }
+    public override string Example => _example ??= GetExample();
 
     public static string GetString(Assembly assembly, string resourceName, string id)
     {
@@ -135,10 +104,14 @@ public class ResourceUsageDescriptor : CommandUsageDescriptorBase
 
     private static ResourceManager? GetResourceManager(string resourceName, Type resourceType)
     {
-        ThrowUtility.ThrowIfTypeFullNameIsNull(resourceType, paramName: nameof(resourceName));
+        if (resourceType.FullName is null)
+        {
+            var message = $"Property '{nameof(Type.FullName)}' of '{nameof(Type)}' cannot be null.";
+            throw new ArgumentException(message, nameof(resourceType));
+        }
 
         var resourceNames = resourceType.Assembly.GetManifestResourceNames();
-        var baseName = resourceName == string.Empty ? resourceType.FullName! : resourceName;
+        var baseName = resourceName == string.Empty ? resourceType.FullName : resourceName;
 
         if (resourceNames.Contains(baseName + Extension) != true)
         {
@@ -189,7 +162,7 @@ public class ResourceUsageDescriptor : CommandUsageDescriptorBase
         return null;
     }
 
-    private static Type GetDeclaringType(Type type, Attribute attribute)
+    private static Type GetDeclaredType(Type type, Attribute attribute)
     {
         var typeItem = type;
         while (typeItem is not null)
@@ -208,98 +181,24 @@ public class ResourceUsageDescriptor : CommandUsageDescriptorBase
     private string GetSummary()
     {
         var resourceName = _resourceName;
-        var resourceType = _resourceType ?? _declaringType;
-        var id = _declaringType.Name;
-        return GetResourceSummary(resourceType, resourceName, id);
-    }
-
-    private string GetSummary(PropertyInfo propertyInfo)
-    {
-        var resourceName = _resourceName;
-        var resourceType = _resourceType ?? _declaringType;
-        var id = $"{propertyInfo.DeclaringType!.Name}.{propertyInfo.Name}";
-        return GetResourceSummary(resourceType, resourceName, id);
-    }
-
-    private string GetSummary(MethodInfo methodInfo)
-    {
-        var resourceName = _resourceName;
-        var resourceType = _resourceType ?? _declaringType;
-        var id = $"{methodInfo.DeclaringType!.Name}.{methodInfo.Name}";
-        return GetResourceSummary(resourceType, resourceName, id);
-    }
-
-    private string GetSummary(ParameterInfo parameterInfo)
-    {
-        ThrowUtility.ThrowIfDeclaringTypeNull(parameterInfo.Member);
-        ThrowUtility.ThrowIfParameterInfoNameNull(parameterInfo);
-
-        var resourceName = _resourceName;
-        var resourceType = _resourceType ?? _declaringType;
-        string[] items =
-        [
-            parameterInfo.Member.DeclaringType!.Name,
-            parameterInfo.Member.Name,
-            parameterInfo.Name!,
-        ];
-        var id = string.Join(".", items);
+        var resourceType = _resourceType ?? _declaredType;
+        var id = _memberInfo.Name;
         return GetResourceSummary(resourceType, resourceName, id);
     }
 
     private string GetDescription()
     {
         var resourceName = _resourceName;
-        var resourceType = _resourceType ?? _declaringType;
-        var id = _declaringType.Name;
-        return GetResourceDescription(resourceType, resourceName, id);
-    }
-
-    private string GetDescription(PropertyInfo propertyInfo)
-    {
-        var resourceName = _resourceName;
-        var resourceType = _resourceType ?? _declaringType;
-        var id = $"{propertyInfo.DeclaringType!.Name}.{propertyInfo.Name}";
-        return GetResourceDescription(resourceType, resourceName, id);
-    }
-
-    private string GetDescription(ParameterInfo parameterInfo)
-    {
-        ThrowUtility.ThrowIfDeclaringTypeNull(parameterInfo.Member);
-        ThrowUtility.ThrowIfParameterInfoNameNull(parameterInfo);
-
-        var resourceName = _resourceName;
-        var resourceType = _resourceType ?? _declaringType;
-        string[] items =
-        [
-            parameterInfo.Member.DeclaringType!.Name,
-            parameterInfo.Member.Name,
-            parameterInfo.Name!,
-        ];
-        var id = string.Join(".", items);
-        return GetResourceDescription(resourceType, resourceName, id);
-    }
-
-    private string GetDescription(MethodInfo methodInfo)
-    {
-        var resourceName = _resourceName;
-        var resourceType = _resourceType ?? _declaringType;
-        var id = $"{methodInfo.DeclaringType!.Name}.{methodInfo.Name}";
+        var resourceType = _resourceType ?? _declaredType;
+        var id = _memberInfo.Name;
         return GetResourceDescription(resourceType, resourceName, id);
     }
 
     private string GetExample()
     {
         var resourceName = _resourceName;
-        var resourceType = _resourceType ?? _declaringType;
-        var id = _declaringType.Name;
-        return GetResourceExample(resourceType, resourceName, id);
-    }
-
-    private string GetExample(MethodInfo methodInfo)
-    {
-        var resourceName = _resourceName;
-        var resourceType = _resourceType ?? _declaringType;
-        var id = $"{methodInfo.DeclaringType!.Name}.{methodInfo.Name}";
+        var resourceType = _resourceType ?? _declaredType;
+        var id = _memberInfo.Name;
         return GetResourceExample(resourceType, resourceName, id);
     }
 }

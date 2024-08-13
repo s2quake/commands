@@ -27,8 +27,9 @@ public sealed class BasicClass_With_StaticClass_FailTest
         {
             CommandDescriptor.GetMemberDescriptors(typeof(BasicClass_PropertyArray));
         });
+        var expectedValue = new CommandMemberInfo(typeof(BasicClass_PropertyArray)).ToString();
 
-        Assert.Equal(typeof(BasicClass_PropertyArray).AssemblyQualifiedName!, exception.Source);
+        Assert.Equal(expectedValue, exception.Source);
     }
 
     [CommandStaticProperty(typeof(StaticClass_SameProperty))]
@@ -51,8 +52,9 @@ public sealed class BasicClass_With_StaticClass_FailTest
         {
             CommandDescriptor.GetMemberDescriptors(typeof(BasicClass_SameProperty));
         });
+        var expectedValue = new CommandMemberInfo(typeof(BasicClass_SameProperty)).ToString();
 
-        Assert.Equal(typeof(BasicClass_SameProperty).AssemblyQualifiedName!, exception.Source);
+        Assert.Equal(expectedValue, exception.Source);
     }
 
     [CommandStaticProperty(typeof(StaticClass_SameProperty))]
@@ -75,8 +77,9 @@ public sealed class BasicClass_With_StaticClass_FailTest
         {
             CommandDescriptor.GetMemberDescriptors(typeof(BasicClass_SameMemberName));
         });
+        var expectedValue = new CommandMemberInfo(typeof(BasicClass_SameMemberName)).ToString();
 
-        Assert.Equal(typeof(BasicClass_SameMemberName).AssemblyQualifiedName!, exception.Source);
+        Assert.Equal(expectedValue, exception.Source);
     }
 
     [CommandStaticProperty(typeof(StaticClass_SameProperty))]
@@ -99,8 +102,9 @@ public sealed class BasicClass_With_StaticClass_FailTest
         {
             CommandDescriptor.GetMemberDescriptors(typeof(BasicClass_SameShortName));
         });
+        var expectedValue = new CommandMemberInfo(typeof(BasicClass_SameShortName)).ToString();
 
-        Assert.Equal(typeof(BasicClass_SameShortName).AssemblyQualifiedName!, exception.Source);
+        Assert.Equal(expectedValue, exception.Source);
     }
 
     [CommandStaticProperty(typeof(StaticClass_NotFoundProperty), "Data")]
@@ -123,8 +127,9 @@ public sealed class BasicClass_With_StaticClass_FailTest
         {
             CommandDescriptor.GetMemberDescriptors(typeof(BasicClass_NotFoundProperty));
         });
+        var expectedValue = new CommandMemberInfo(typeof(BasicClass_NotFoundProperty)).ToString();
 
-        Assert.Equal(typeof(BasicClass_NotFoundProperty).AssemblyQualifiedName!, exception.Source);
+        Assert.Equal(expectedValue, exception.Source);
     }
 
     [CommandStaticProperty("")]
@@ -141,8 +146,9 @@ public sealed class BasicClass_With_StaticClass_FailTest
         {
             CommandDescriptor.GetMemberDescriptors(typeof(BasicClass_EmptyStaticClass));
         });
+        var expectedValue = new CommandMemberInfo(typeof(BasicClass_EmptyStaticClass)).ToString();
 
-        Assert.Equal(typeof(BasicClass_EmptyStaticClass).AssemblyQualifiedName!, exception.Source);
+        Assert.Equal(expectedValue, exception.Source);
     }
 
     [CommandStaticProperty("abc")]
@@ -155,12 +161,13 @@ public sealed class BasicClass_With_StaticClass_FailTest
     [Fact]
     public void GetMemberDescriptors_Arg0_BasicClass_NotFoundStaticClass_FailTest()
     {
+        var type = typeof(BasicClass_NotFoundStaticClass);
         var exception = Assert.Throws<CommandDefinitionException>(() =>
         {
-            CommandDescriptor.GetMemberDescriptors(typeof(BasicClass_NotFoundStaticClass));
+            CommandDescriptor.GetMemberDescriptors(type);
         });
+        var expectedValue = new CommandMemberInfo(type).ToString();
 
-        Assert.Equal(
-            typeof(BasicClass_NotFoundStaticClass).AssemblyQualifiedName!, exception.Source);
+        Assert.Equal(expectedValue, exception.Source);
     }
 }

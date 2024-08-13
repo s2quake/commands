@@ -41,66 +41,6 @@ internal static class TypeUtility
         }
     }
 
-    public static void ThrowIfTypeDoesNotHaveInterface(Type type, Type interfaceType)
-    {
-        if (interfaceType.IsInterface != true)
-        {
-            var message = $"Type '{interfaceType}' must be a interface.";
-            throw new ArgumentException(message, nameof(interfaceType));
-        }
-
-        if (interfaceType.IsAssignableFrom(type) != true)
-        {
-            var message = $"Type '{type}' does not have interface '{interfaceType}' implemented.";
-            throw new ArgumentException(message, nameof(type));
-        }
-    }
-
-    public static void ThrowIfTypeDoesNotHaveInterface(string typeName, Type interfaceType)
-    {
-        if (Type.GetType(typeName) is null)
-        {
-            var message = $"'{typeName}' is not a valid type name.";
-            throw new ArgumentException(message, nameof(typeName));
-        }
-
-        if (interfaceType.IsInterface != true)
-        {
-            var message = $"Type '{interfaceType}' must be a interface.";
-            throw new ArgumentException(message, nameof(interfaceType));
-        }
-
-        if (Type.GetType(typeName) is { } type && interfaceType.IsAssignableFrom(type) != true)
-        {
-            var message = $"Type '{type}' does not have interface '{interfaceType}' implemented.";
-            throw new ArgumentException(message, nameof(typeName));
-        }
-    }
-
-    public static void ThrowIfTypeDoesNotHavePublicConstructor(Type type)
-    {
-        if (type.GetConstructor(Type.EmptyTypes) is null)
-        {
-            var message = $"Type '{type}' does not have a default constructor of public.";
-            throw new ArgumentException(message, nameof(type));
-        }
-    }
-
-    public static void ThrowIfTypeDoesNotHavePublicConstructor(string typeName)
-    {
-        if (Type.GetType(typeName) is null)
-        {
-            var message = $"'{typeName}' is not a valid type name.";
-            throw new ArgumentException(message, nameof(typeName));
-        }
-
-        if (Type.GetType(typeName) is { } type && type.GetConstructor(Type.EmptyTypes) is null)
-        {
-            var message = $"Type '{type}' does not have a default constructor of public.";
-            throw new ArgumentException(message, nameof(typeName));
-        }
-    }
-
     public static void ThrowIfTypeDoesNotHavePublicConstructor(Type type, Type[] argumentTypes)
     {
         if (type.GetConstructor(argumentTypes) is null)

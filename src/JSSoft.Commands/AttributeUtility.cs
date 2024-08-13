@@ -13,17 +13,25 @@ internal static class AttributeUtility
         where T : Attribute
         => Attribute.GetCustomAttribute(assembly, typeof(T)) is T attr ? attr : default;
 
+    public static T? GetCustomAttribute<T>(Assembly assembly, bool inherit)
+        where T : Attribute
+        => Attribute.GetCustomAttribute(assembly, typeof(T), inherit) is T attr ? attr : default;
+
     public static T? GetCustomAttribute<T>(MemberInfo memberInfo)
         where T : Attribute
         => Attribute.GetCustomAttribute(memberInfo, typeof(T)) is T attr ? attr : default;
+
+    public static T? GetCustomAttribute<T>(MemberInfo memberInfo, bool inherit)
+        where T : Attribute
+        => Attribute.GetCustomAttribute(memberInfo, typeof(T), inherit) is T attr ? attr : default;
 
     public static T? GetCustomAttribute<T>(ParameterInfo parameterInfo)
         where T : Attribute
         => Attribute.GetCustomAttribute(parameterInfo, typeof(T)) is T attr ? attr : default;
 
-    public static T? GetCustomAttribute<T>(MemberInfo memberInfo, bool inherit)
+    public static T? GetCustomAttribute<T>(ParameterInfo parameterInfo, bool inherit)
         where T : Attribute
-        => Attribute.GetCustomAttribute(memberInfo, typeof(T), inherit) is T attr ? attr : default;
+        => Attribute.GetCustomAttribute(parameterInfo, typeof(T), inherit) is T v ? v : default;
 
     public static T[] GetCustomAttributes<T>(MemberInfo memberInfo)
         where T : Attribute
@@ -32,6 +40,14 @@ internal static class AttributeUtility
     public static T[] GetCustomAttributes<T>(MemberInfo memberInfo, bool inherit)
         where T : Attribute
         => Attribute.GetCustomAttributes(memberInfo, typeof(T), inherit).OfType<T>().ToArray();
+
+    public static T[] GetCustomAttributes<T>(ParameterInfo parameterInfo)
+        where T : Attribute
+        => Attribute.GetCustomAttributes(parameterInfo, typeof(T)).OfType<T>().ToArray();
+
+    public static T[] GetCustomAttributes<T>(ParameterInfo parameterInfo, bool inherit)
+        where T : Attribute
+        => Attribute.GetCustomAttributes(parameterInfo, typeof(T), inherit).OfType<T>().ToArray();
 
     public static object? GetDefaultValue(MemberInfo memberInfo)
         => GetValue<DefaultValueAttribute, object?>(memberInfo, a => a.Value, DBNull.Value);
@@ -219,6 +235,14 @@ internal static class AttributeUtility
         where TA : Attribute
         => Attribute.IsDefined(memberInfo, typeof(TA), inherit);
 
+    public static bool IsDefined<TA>(ParameterInfo parameterInfo)
+        where TA : Attribute
+        => Attribute.IsDefined(parameterInfo, typeof(TA));
+
+    public static bool IsDefined<TA>(ParameterInfo parameterInfo, bool inherit)
+        where TA : Attribute
+        => Attribute.IsDefined(parameterInfo, typeof(TA), inherit);
+
     public static bool IsNotDefined<TA>(MemberInfo memberInfo)
         where TA : Attribute
         => !Attribute.IsDefined(memberInfo, typeof(TA));
@@ -226,4 +250,12 @@ internal static class AttributeUtility
     public static bool IsNotDefined<TA>(MemberInfo memberInfo, bool inherit)
         where TA : Attribute
         => !Attribute.IsDefined(memberInfo, typeof(TA), inherit);
+
+    public static bool IsNotDefined<TA>(ParameterInfo parameterInfo)
+        where TA : Attribute
+        => !Attribute.IsDefined(parameterInfo, typeof(TA));
+
+    public static bool IsNotDefined<TA>(ParameterInfo parameterInfo, bool inherit)
+        where TA : Attribute
+        => !Attribute.IsDefined(parameterInfo, typeof(TA), inherit);
 }

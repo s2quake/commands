@@ -10,37 +10,43 @@ namespace JSSoft.Commands;
 
 internal sealed class SubCommandAsync(
     CommandMethodBase method, CommandMethodDescriptor methodDescriptor)
-    : ICommand, ICommandCompleter, IAsyncExecutable, ICommandUsage, ICommandUsagePrinter,
-    ICustomCommandDescriptor
+    : CommandMethodInstance(methodDescriptor),
+    ICommand,
+    ICommandCompleter,
+    IAsyncExecutable,
+    ICommandUsage,
+    ICommandUsagePrinter
 {
-    public string Name => methodDescriptor.Name;
+    private readonly CommandMethodDescriptor _methodDescriptor = methodDescriptor;
 
-    public string[] Aliases => methodDescriptor.Aliases;
+    public string Name => _methodDescriptor.Name;
+
+    public string[] Aliases => _methodDescriptor.Aliases;
 
     public CommandSettings Settings => method.CommandContext.Settings;
 
-    bool ICommand.IsEnabled => methodDescriptor.CanExecute(method);
+    bool ICommand.IsEnabled => _methodDescriptor.CanExecute(method);
 
     string ICommandUsage.ExecutionName
         => $"{method.ExecutionName} {CommandUtility.GetExecutionName(Name, Aliases)}";
 
-    string ICommandUsage.Summary => methodDescriptor.UsageDescriptor.Summary;
+    string ICommandUsage.Summary => _methodDescriptor.UsageDescriptor.Summary;
 
-    string ICommandUsage.Description => methodDescriptor.UsageDescriptor.Description;
+    string ICommandUsage.Description => _methodDescriptor.UsageDescriptor.Description;
 
-    string ICommandUsage.Example => methodDescriptor.UsageDescriptor.Example;
+    string ICommandUsage.Example => _methodDescriptor.UsageDescriptor.Example;
 
-    public CommandMemberDescriptorCollection GetMembers() => methodDescriptor.Members;
+    public CommandMemberDescriptorCollection Members => _methodDescriptor.Members;
 
     public object GetMemberOwner(CommandMemberDescriptor memberDescriptor) => method;
 
     public Task ExecuteAsync(CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
-        => methodDescriptor.InvokeAsync(
-            method, methodDescriptor.Members, cancellationToken, progress);
+        => _methodDescriptor.InvokeAsync(
+            method, this, cancellationToken, progress);
 
     public string[] GetCompletions(CommandCompletionContext completionContext)
         => method.GetCompletions(
-            methodDescriptor, completionContext.MemberDescriptor, completionContext.Find);
+            _methodDescriptor, completionContext.MemberDescriptor, completionContext.Find);
 
     void ICommandUsagePrinter.Print(bool isDetail)
     {
@@ -49,6 +55,6 @@ internal sealed class SubCommandAsync(
         {
             IsDetail = isDetail,
         };
-        usagePrinter.Print(method.Out, methodDescriptor);
+        usagePrinter.Print(method.Out, _methodDescriptor);
     }
 }

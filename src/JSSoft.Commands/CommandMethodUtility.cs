@@ -9,6 +9,7 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using JSSoft.Commands.Exceptions;
 using static JSSoft.Commands.AttributeUtility;
 
 namespace JSSoft.Commands;
@@ -42,6 +43,13 @@ internal static class CommandMethodUtility
             return false;
         }
 
+        if (CommandUtility.IsSupportedType(parameterInfo.ParameterType) != true)
+        {
+            var parameterNames = GetValue<CommandMethodParameterAttribute, string[]>(
+                parameterInfo.Member, item => item.ParameterNames, []);
+            return parameterNames.Contains(parameterInfo.Name);
+        }
+
         return true;
     }
 
@@ -66,6 +74,18 @@ internal static class CommandMethodUtility
 
     public static bool IsAsync(MethodInfo methodInfo)
         => methodInfo.ReturnType.IsAssignableFrom(typeof(Task));
+
+    public static bool IsBrowsable(MethodInfo methodInfo)
+    {
+        var declaringType = methodInfo.DeclaringType;
+        if (declaringType is not null)
+        {
+            return CommandAttributeUtility.IsBrowsable(declaringType) == true
+                && CommandAttributeUtility.IsBrowsable(methodInfo) == true;
+        }
+
+        return false;
+    }
 
     public static string GetName(MethodInfo methodInfo)
         => GetValue<CommandMethodAttribute>(methodInfo, item => item.Name, GetDefaultName);
@@ -101,10 +121,8 @@ internal static class CommandMethodUtility
     {
         if (methodInfo.DeclaringType is null)
         {
-            var message = $"""
-                Property '{nameof(MethodInfo.DeclaringType)}' of '{nameof(methodInfo)}' 
-                cannot be null.
-                """;
+            var message = $"Property '{nameof(MethodInfo.DeclaringType)}' of " +
+                          $"'{nameof(methodInfo)}' cannot be null.";
             throw new ArgumentException(message, nameof(methodInfo));
         }
 
@@ -137,10 +155,8 @@ internal static class CommandMethodUtility
     {
         if (methodInfo.DeclaringType is null)
         {
-            var message = $"""
-                Property '{nameof(MethodInfo.DeclaringType)}' of '{nameof(methodInfo)}' 
-                cannot be null.
-                """;
+            var message = $"Property '{nameof(MethodInfo.DeclaringType)}' of " +
+                          $"'{nameof(methodInfo)}' cannot be null.";
             throw new ArgumentException(message, nameof(methodInfo));
         }
 
@@ -252,71 +268,95 @@ internal static class CommandMethodUtility
 
     internal static void VerifyCommandMethod(MethodInfo methodInfo)
     {
+        if (methodInfo.DeclaringType is null)
+        {
+            throw new CommandDeclaringTypeNullException(methodInfo);
+        }
+
         if (CommandAttributeUtility.IsCommandMethod(methodInfo) != true)
         {
-            var message = $"""
-                MethodInfo '{methodInfo}' does not have attribute 
-                '{nameof(CommandMethodAttribute)}'.
-                """;
-            throw new CommandDefinitionException(message, methodInfo.DeclaringType!);
+            throw new CommandMemberMissingAttributeException(
+                methodInfo: methodInfo,
+                attributeType: typeof(CommandMethodAttribute));
         }
 
         if (typeof(Task).IsAssignableFrom(methodInfo.ReturnType) != true
             && methodInfo.ReturnType != typeof(void))
         {
-            var message = $"Return type of a Method '{methodInfo}' must be void.";
-            throw new CommandDefinitionException(message, methodInfo.DeclaringType!);
+            var message = $"Method '{methodInfo}' must have a return type of '{typeof(void)}'.";
+            throw new CommandDefinitionException(message, methodInfo);
         }
 
         if (typeof(Task).IsAssignableFrom(methodInfo.ReturnType) == true
             && typeof(Task) != methodInfo.ReturnType)
         {
-            var message = $"Return type of a Method '{methodInfo}' must be {typeof(Task)}.";
-            throw new CommandDefinitionException(message, methodInfo.DeclaringType!);
+            var message = $"Method '{methodInfo}' must have a return type of '{typeof(Task)}'.";
+            throw new CommandDefinitionException(message, methodInfo);
         }
 
-        VerifyCommandAsyncMethodWithParameter(methodInfo);
-    }
-
-    private static void VerifyCommandAsyncMethodWithParameter(MethodInfo methodInfo)
-    {
         if (methodInfo.ReturnType == typeof(Task))
         {
             var @params = methodInfo.GetParameters();
             var paramsCancellationToken = @params.SingleOrDefault(IsCancellationTokenParameter);
             var paramsProgress = @params.SingleOrDefault(IsProgressParameter);
-            var indexCancellationToken = IndexOf(@params, paramsCancellationToken);
-            var indexProgress = IndexOf(@params, paramsProgress);
-            if (indexProgress >= 0)
+
+            if (paramsProgress is not null)
             {
+                var indexProgress = IndexOf(@params, paramsProgress);
                 if (indexProgress != @params.Length - 1)
                 {
-                    var message = $"""
-                        Parameter '{paramsProgress!.Name}' must be defined last.
-                        """;
-                    throw new CommandDefinitionException(message, methodInfo.DeclaringType!);
-                }
-
-                if (indexCancellationToken >= 0 && indexProgress != @params.Length - 1)
-                {
-                    var message = $"""
-                        Parameter '{paramsCancellationToken!.Name}' must be defined before 
-                        the parameter '{paramsProgress!.Name}'.
-                        """;
-                    throw new CommandDefinitionException(message, methodInfo.DeclaringType!);
+                    var message = $"Parameter '{paramsProgress.Name}' " +
+                                  $"of the method '{methodInfo}' must be defined last.";
+                    throw new CommandDefinitionException(message, paramsProgress);
                 }
             }
 
-            if (indexProgress == -1 && indexCancellationToken >= 0
-                && indexCancellationToken != @params.Length - 1)
+            if (paramsProgress is not null && paramsCancellationToken is not null)
             {
-                var message = $"""
-                    Parameter '{paramsCancellationToken!.Name}' must be defined last.
-                    """;
-                throw new CommandDefinitionException(message, methodInfo.DeclaringType!);
+                var indexProgress = IndexOf(@params, paramsProgress);
+                var indexCancellationToken = IndexOf(@params, paramsCancellationToken);
+                if (indexCancellationToken >= 0 && indexProgress != @params.Length - 1)
+                {
+                    var message = $"Parameter '{paramsCancellationToken.Name}' " +
+                                  $"of the method '{methodInfo}' must be defined before " +
+                                  $"the parameter '{paramsProgress.Name}'.";
+                    throw new CommandDefinitionException(message, methodInfo);
+                }
+            }
+
+            if (paramsProgress is null && paramsCancellationToken is not null)
+            {
+                var indexCancellationToken = IndexOf(@params, paramsCancellationToken);
+                if (indexCancellationToken != @params.Length - 1)
+                {
+                    var message = $"Parameter '{paramsCancellationToken.Name}' " +
+                                  $"of the method '{methodInfo}' must be defined last.";
+                    throw new CommandDefinitionException(message, methodInfo);
+                }
+            }
+        }
+
+        var parameterInfos = methodInfo.GetParameters()
+            .Where(item => IsCancellationTokenParameter(item) != true)
+            .Where(item => IsProgressParameter(item) != true)
+            .Where(item => CommandUtility.IsSupportedType(item.ParameterType) != true);
+        var parameterNames = GetValue<CommandMethodParameterAttribute, string[]>(
+            methodInfo, item => item.ParameterNames, []);
+
+        foreach (var parameterInfo in parameterInfos)
+        {
+            if (parameterNames.Contains(parameterInfo.Name) != true)
+            {
+                throw new CommandParameterNotSupportedTypeException(parameterInfo);
             }
         }
     }
+
+    internal static string[] GetMethodParameterNames(MethodInfo methodInfo)
+        => GetValue<CommandMethodParameterAttribute, string[]>(
+            memberInfo: methodInfo,
+            getter: item => item.ParameterNames,
+            defaultValue: []);
 
     private static bool IsCompletionMethod(MethodInfo methodInfo)
     {

@@ -10,9 +10,8 @@ public class CommandDescriptorTest
     [Fact]
     public void Test1()
     {
-        var argumentLine = """
-            get database=a port=123 userid=abc password=1234 comment=\"connect database to \"a\"\"
-            """;
+        var argumentLine = "get database=a port=123 userid=abc password=1234 " +
+                           "comment=\"connect database to \"a\"\"";
         var parser = new CommandParser(this);
         Assert.Throws<CommandLineException>(() => parser.Parse(argumentLine));
     }

@@ -12,13 +12,11 @@ namespace JSSoft.Commands.Repl;
 [Export(typeof(CommandContext))]
 [CommandSummary("Provides a prompt for input and execution of commands.")]
 [CommandDescription(
-"""
-Provides a REPL environment to execute certain commands with user input and output the results of 
-the execution.
-This project provides examples of various commands that can be utilized with a command string, 
-so be sure to compare the functionality of each command with your own code to see how it can be 
-utilized.
-""")]
+    "Provides a REPL environment to execute certain commands with user input and output the " +
+    "results of the execution\n." +
+    "This project provides examples of various commands that can be utilized with a command " +
+    "string, so be sure to compare the functionality of each command with your own code to see " +
+    "how it can be utilized.")]
 [method: ImportingConstructor]
 internal sealed class CommandContext(
     [ImportMany] IEnumerable<ICommand> commands,

@@ -25,6 +25,8 @@ public static partial class CommandUtility
     public const char ItemSperator = ',';
     public const string Delimiter = "--";
     public const string ShortDelimiter = "-";
+    public const string ShortNamePattern = "[a-zA-Z]";
+    public const string NamePattern = "[a-zA-Z][-_a-zA-Z0-9]+";
     public const string OptionPattern = "[a-zA-Z](?:(?<!-)-(?!$)|[a-zA-Z0-9])+";
     public const string ShortOptionPattern = "[a-zA-Z]";
     private const string DoubleQuotesPattern
@@ -192,6 +194,12 @@ public static partial class CommandUtility
         }
     }
 
+    public static bool IsName(string name)
+        => new Regex(NamePattern).IsMatch(name) == true;
+
+    public static bool IsShortName(char value)
+        => new Regex(ShortNamePattern).IsMatch(value.ToString()) == true;
+
     internal static string ToSpinalCase(Type type)
     {
         var name = Regex.Replace(type.Name, @"(Command)$", string.Empty);
@@ -277,10 +285,8 @@ public static partial class CommandUtility
     {
         if (FindGroup(match, out var group, out var index) != true || group.Name == "etc")
         {
-            var message = $"""
-                '{match.Value}' is an invalid string.: 
-                [{match.Index} .. {match.Index + match.Length}]
-                """;
+            var message = $"'{match.Value}' is an invalid string.: " +
+                          $"[{match.Index} .. {match.Index + match.Length}]";
             throw new ArgumentException(message, nameof(match));
         }
 

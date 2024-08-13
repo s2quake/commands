@@ -4,6 +4,7 @@
 // </copyright>
 
 using System.IO;
+using JSSoft.Commands.Extensions;
 
 namespace JSSoft.Commands;
 
@@ -19,7 +20,11 @@ public abstract class CommandAnalyzer
 
     protected CommandAnalyzer(string commandName, object instance, CommandSettings settings)
     {
-        ThrowUtility.ThrowIfEmpty(commandName, nameof(commandName));
+        if (commandName == string.Empty)
+        {
+            throw new ArgumentException("Empty string is not allowed.", nameof(commandName));
+        }
+
         CommandName = commandName;
         Instance = instance;
         Settings = settings;
@@ -34,13 +39,13 @@ public abstract class CommandAnalyzer
 
     protected CommandAnalyzer(Assembly assembly, object instance, CommandSettings settings)
     {
-        _fullName = AssemblyUtility.GetAssemblyLocation(assembly);
+        _fullName = assembly.GetAssemblyLocation();
         _filename = Path.GetFileName(_fullName);
         CommandName = Path.GetFileNameWithoutExtension(_fullName);
         Instance = instance;
         Settings = settings;
-        Version = AssemblyUtility.GetAssemblyVersion(assembly);
-        Copyright = AssemblyUtility.GetAssemblyCopyright(assembly);
+        Version = assembly.GetAssemblyVersion();
+        Copyright = assembly.GetAssemblyCopyright();
     }
 
     public string CommandName { get; }

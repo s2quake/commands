@@ -16,7 +16,7 @@ public class Property_Switch_FailTest
     [Fact]
     public void StringClass_FailTest()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMemberDescriptors(typeof(StringClass)));
     }
 
@@ -29,7 +29,7 @@ public class Property_Switch_FailTest
     [Fact]
     public void ByteClass_FailTest()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMemberDescriptors(typeof(ByteClass)));
     }
 
@@ -42,7 +42,7 @@ public class Property_Switch_FailTest
     [Fact]
     public void SByteClass_FailTest()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMemberDescriptors(typeof(SByteClass)));
     }
 
@@ -55,7 +55,7 @@ public class Property_Switch_FailTest
     [Fact]
     public void ShortClass_FailTest()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMemberDescriptors(typeof(ShortClass)));
     }
 
@@ -68,7 +68,7 @@ public class Property_Switch_FailTest
     [Fact]
     public void UShortClass_FailTest()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMemberDescriptors(typeof(UShortClass)));
     }
 
@@ -81,7 +81,7 @@ public class Property_Switch_FailTest
     [Fact]
     public void IntClass_FailTest()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMemberDescriptors(typeof(IntClass)));
     }
 
@@ -94,7 +94,7 @@ public class Property_Switch_FailTest
     [Fact]
     public void UIntClass_FailTest()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMemberDescriptors(typeof(UIntClass)));
     }
 
@@ -107,7 +107,7 @@ public class Property_Switch_FailTest
     [Fact]
     public void LongClass_FailTest()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMemberDescriptors(typeof(LongClass)));
     }
 
@@ -120,7 +120,7 @@ public class Property_Switch_FailTest
     [Fact]
     public void ULongClass_FailTest()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMemberDescriptors(typeof(ULongClass)));
     }
 
@@ -133,7 +133,7 @@ public class Property_Switch_FailTest
     [Fact]
     public void FloatClass_FailTest()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMemberDescriptors(typeof(FloatClass)));
     }
 
@@ -146,7 +146,7 @@ public class Property_Switch_FailTest
     [Fact]
     public void DoubleClass_FailTest()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMemberDescriptors(typeof(DoubleClass)));
     }
 
@@ -159,7 +159,7 @@ public class Property_Switch_FailTest
     [Fact]
     public void DecimalClass_FailTest()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMemberDescriptors(typeof(DecimalClass)));
     }
 
@@ -172,7 +172,7 @@ public class Property_Switch_FailTest
     [Fact]
     public void BoolArrayClass_FailTest()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMemberDescriptors(typeof(BoolArrayClass)));
     }
 }

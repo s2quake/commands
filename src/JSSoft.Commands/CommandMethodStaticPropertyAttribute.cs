@@ -49,7 +49,7 @@ public class CommandMethodStaticPropertyAttribute : Attribute
 
     public Type? StaticType { get; }
 
-    internal Type GetStaticType(Type requestType)
+    internal Type GetStaticType(CommandMemberInfo memberInfo)
     {
         try
         {
@@ -57,7 +57,7 @@ public class CommandMethodStaticPropertyAttribute : Attribute
         }
         catch (Exception e)
         {
-            throw new CommandDefinitionException(e.Message, requestType, innerException: e);
+            throw new CommandDefinitionException(e.Message, memberInfo, innerException: e);
         }
 
         return StaticType!;

@@ -37,7 +37,7 @@ public class Method_FailTest
     [Fact]
     public void Base_Method5_Test()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMethodDescriptors(typeof(Method5Class)));
     }
 }

@@ -11,11 +11,13 @@ To be Released.
 * Fix an error where the system terminal fails to catch a TaskCanceledException.
   [[#19]]
 * Added the feature to parse custom types.  [[#20]]
+* Added Allows custom types to be used for method parameters  [[#22]]
 
 [#13]: https://github.com/s2quake/commands/pull/13
 [#17]: https://github.com/s2quake/commands/pull/17
 [#19]: https://github.com/s2quake/commands/pull/19
 [#20]: https://github.com/s2quake/commands/pull/20
+[#22]: https://github.com/s2quake/commands/pull/22
 
 
 6.0.1

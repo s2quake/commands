@@ -3,6 +3,7 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
+using JSSoft.Commands.Exceptions;
 using static JSSoft.Commands.AttributeUtility;
 
 namespace JSSoft.Commands;
@@ -13,10 +14,12 @@ public sealed class CommandParameterDescriptor : CommandMemberDescriptor
     private object? _value;
 
     internal CommandParameterDescriptor(ParameterInfo parameterInfo)
-        : base(new CommandPropertyRequiredAttribute(), parameterInfo.Name!)
+        : base(parameterInfo, new CommandPropertyRequiredAttribute(), parameterInfo.Name!)
     {
-        ThrowUtility.ThrowIfParameterInfoNameNull(parameterInfo);
-        CommandDefinitionException.ThrowIfParameterUnsupportedType(parameterInfo);
+        if (parameterInfo.Name is null)
+        {
+            throw new CommandParameterNameNullException(parameterInfo);
+        }
 
         _value = parameterInfo.DefaultValue;
         _completionAttribute

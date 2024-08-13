@@ -18,7 +18,7 @@ public class Property_General_ReadOnly_FailTest
     [Fact]
     public void InstanceClass_FailTest()
     {
-        Assert.Throws<CommandDefinitionException>(
+        Assert.ThrowsAny<CommandDefinitionException>(
             () => GetMemberDescriptors(typeof(InstanceClass)));
     }
 }
