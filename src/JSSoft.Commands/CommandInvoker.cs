@@ -50,8 +50,8 @@ public class CommandInvoker : CommandAnalyzer
         var commandArguments = args.Length > 1 ? args.Skip(1).ToArray() : [];
         var instance = Instance;
 
-        if (instance is ICommandHierarchy hierarchy
-            && hierarchy.Commands.TryGetValue(commandName, out var command) == true)
+        if (instance is ICommand hierarchy
+            && hierarchy.TryGetCommand(commandName, out var command) == true)
         {
             var parser = new CommandParser(commandName, command);
             parser.Parse(commandArguments);
@@ -64,15 +64,6 @@ public class CommandInvoker : CommandAnalyzer
                 throw new InvalidOperationException("Use InvokeAsync instead.");
             }
         }
-        else if (instance is IExecutable executable)
-        {
-            Parse(args);
-            executable.Execute();
-        }
-        else if (instance is IAsyncExecutable)
-        {
-            throw new InvalidOperationException("Use InvokeAsync instead.");
-        }
         else if (TryGetMethodDescriptor(instance, commandName, out var methodDescriptor) == true)
         {
             if (methodDescriptor.IsAsync == true)
@@ -84,6 +75,20 @@ public class CommandInvoker : CommandAnalyzer
                 Invoke(methodDescriptor, instance, commandArguments);
             }
         }
+        else if (instance is IExecutable executable)
+        {
+            Parse(args);
+            executable.Execute();
+        }
+        else if (instance is IAsyncExecutable)
+        {
+            throw new InvalidOperationException("Use InvokeAsync instead.");
+        }
+        else
+        {
+            throw new InvalidOperationException(
+                "Instance '{instance.GetType().Name}' must implement IExecutable.");
+        }
     }
 
     public async Task InvokeAsync(
@@ -94,7 +99,7 @@ public class CommandInvoker : CommandAnalyzer
         var commandName = args.Length > 0 ? args[0] : string.Empty;
         var commandArguments = args.Length > 0 ? args.Skip(1).ToArray() : [];
         var instance = Instance;
-        if (instance is ICommandHierarchy hierarchy
+        if (instance is ICommand hierarchy
             && hierarchy.TryGetCommand(commandName, out var command) == true)
         {
             var parser = new CommandParser(commandName, command);
@@ -108,16 +113,6 @@ public class CommandInvoker : CommandAnalyzer
                 await commandAsyncExecutable1.ExecuteAsync(cancellationToken, progress);
             }
         }
-        else if (instance is IExecutable executable)
-        {
-            Parse(args);
-            executable.Execute();
-        }
-        else if (instance is IAsyncExecutable asyncExecutable)
-        {
-            Parse(args);
-            await asyncExecutable.ExecuteAsync(cancellationToken, progress);
-        }
         else if (TryGetMethodDescriptor(instance, commandName, out var methodDescriptor) == true)
         {
             if (methodDescriptor.IsAsync == true)
@@ -129,6 +124,22 @@ public class CommandInvoker : CommandAnalyzer
             {
                 Invoke(methodDescriptor, instance, commandArguments);
             }
+        }
+        else if (instance is IExecutable executable)
+        {
+            Parse(args);
+            executable.Execute();
+        }
+        else if (instance is IAsyncExecutable asyncExecutable)
+        {
+            Parse(args);
+            await asyncExecutable.ExecuteAsync(cancellationToken, progress);
+        }
+        else
+        {
+            throw new InvalidOperationException(
+                $"Instance '{instance.GetType().Name}' must implement IExecutable or " +
+                $"IAsyncExecutable.");
         }
     }
 

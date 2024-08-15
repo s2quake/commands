@@ -11,7 +11,7 @@ using JSSoft.Commands.Extensions;
 
 namespace JSSoft.Commands;
 
-public abstract class CommandUsagePrinterBase(ICommandUsage commandUsage, CommandSettings settings)
+public abstract class CommandUsagePrinterBase(CommandSettings settings)
 {
     public const string TextSummary = "Summary";
     public const string TextDescription = "Description";
@@ -37,8 +37,6 @@ public abstract class CommandUsagePrinterBase(ICommandUsage commandUsage, Comman
     public CommandSettings Settings { get; } = settings;
 
     public bool IsDetail { get; set; }
-
-    public ICommandUsage CommandUsage { get; } = commandUsage;
 
     protected static bool PrintSummary(CommandTextWriter commandWriter, string summary)
     {

@@ -13,7 +13,7 @@
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/example/JSSoft.Commands.Parse/bin/Debug/net8.0/parse.dll",
-            "args": "--version",
+            "args": "--help",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/example/JSSoft.Commands.Parse/bin/Debug/net8.0",
             "stopAtEntry": false,

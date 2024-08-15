@@ -12,13 +12,13 @@ namespace JSSoft.Commands;
 public class CommandTextWriter(TextWriter writer, int width, string tabString)
     : IndentedTextWriter(writer, tabString)
 {
-    private readonly CommandSettings _settings = default;
+    private readonly CommandSettings _settings = CommandSettings.Default;
     private readonly string _tabString = tabString;
     private int _indent = -1;
     private string _indentString = string.Empty;
 
     public CommandTextWriter()
-        : this(new StringWriter(), settings: default)
+        : this(new StringWriter(), settings: CommandSettings.Default)
     {
     }
 

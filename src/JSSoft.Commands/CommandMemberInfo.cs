@@ -51,6 +51,12 @@ public sealed record class CommandMemberInfo
 
     public CommandMemberInfo(ParameterInfo parameterInfo)
     {
+        if (parameterInfo.Member is not MethodInfo)
+        {
+            throw new ArgumentException(
+                $"{parameterInfo.Member} is not a method.", nameof(parameterInfo));
+        }
+
         if (parameterInfo.Member.DeclaringType is null)
         {
             throw new ArgumentException(
@@ -109,6 +115,17 @@ public sealed record class CommandMemberInfo
         => new(parameterInfo);
 
     public override string? ToString() => $"[{Type}] {FullName}";
+
+    public CommandMemberInfo? GetParent()
+    {
+        return Value switch
+        {
+            PropertyInfo propertyInfo => new(propertyInfo.DeclaringType!),
+            MethodInfo methodInfo => new(methodInfo.DeclaringType!),
+            ParameterInfo parameterInfo => new((MethodInfo)parameterInfo.Member),
+            _ => null,
+        };
+    }
 
     public T? GetAttribute<T>()
         where T : Attribute

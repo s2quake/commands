@@ -3,6 +3,9 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
+using System.IO;
+using System.Runtime.CompilerServices;
+
 namespace JSSoft.Commands;
 
 public class CommandParsingException(
@@ -33,4 +36,89 @@ public class CommandParsingException(
     string ICommandUsage.Description => _usageDescriptor.Description;
 
     string ICommandUsage.Example => _usageDescriptor.Example;
+
+    public void Print(TextWriter writer)
+    {
+        var action = GetAction(Error);
+        action.Invoke(writer, this);
+    }
+
+    private static Action<TextWriter, CommandParsingException> GetAction(CommandParsingError error)
+        => error switch
+        {
+            CommandParsingError.Empty => PrintSummary,
+            CommandParsingError.Help => PrintHelp,
+            CommandParsingError.Version => PrintVersion,
+            _ => throw new SwitchExpressionException(),
+        };
+
+    private static void PrintSummary(
+        TextWriter writer, CommandParsingException e)
+    {
+        var parser = e.Parser;
+        var executionName = parser.ExecutionName;
+        var settings = parser.Settings;
+        var helpNames = GetHelpNames(settings);
+        var versionNames = GetVersionNames(settings);
+        if (helpNames != string.Empty)
+        {
+            writer.WriteLine($"Type '{executionName} {helpNames}' for usage.");
+        }
+
+        if (versionNames != string.Empty)
+        {
+            writer.WriteLine($"Type '{executionName} {versionNames}' for version.");
+        }
+
+        static string GetHelpNames(CommandSettings settings)
+        {
+            var itemList = new List<string>(2);
+            if (settings.HelpName != string.Empty)
+            {
+                itemList.Add($"{CommandUtility.Delimiter}{settings.HelpName}");
+            }
+
+            if (settings.HelpShortName != char.MinValue)
+            {
+                itemList.Add($"{CommandUtility.ShortDelimiter}{settings.HelpShortName}");
+            }
+
+            return string.Join(" | ", itemList);
+        }
+
+        static string GetVersionNames(CommandSettings settings)
+        {
+            var itemList = new List<string>(2);
+            if (settings.VersionName != string.Empty)
+            {
+                itemList.Add($"{CommandUtility.Delimiter}{settings.VersionName}");
+            }
+
+            if (settings.VersionShortName != char.MinValue)
+            {
+                itemList.Add($"{CommandUtility.ShortDelimiter}{settings.VersionShortName}");
+            }
+
+            return string.Join(" | ", itemList);
+        }
+    }
+
+    private static void PrintHelp(TextWriter writer, CommandParsingException e)
+    {
+        var settings = e.Parser.Settings;
+        var parsingHelp = CommandParsingHelp.Create(e);
+        var memberDescriptors = e.MemberDescriptors;
+        var usagePrinter = new CommandParsingUsagePrinter(e, settings)
+        {
+            IsDetail = parsingHelp.IsDetail,
+        };
+        usagePrinter.Print(writer, memberDescriptors);
+    }
+
+    private static void PrintVersion(TextWriter writer, CommandParsingException e)
+    {
+        var settings = CommandParsingVersion.Create(e);
+        var text = settings.GetVersionString();
+        writer.WriteLine(text);
+    }
 }

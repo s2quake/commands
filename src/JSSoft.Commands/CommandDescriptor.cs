@@ -7,9 +7,8 @@
 #pragma warning disable S3011
 
 using System.Diagnostics;
+using JSSoft.Commands.Extensions;
 using static JSSoft.Commands.AttributeUtility;
-using static JSSoft.Commands.CommandAttributeUtility;
-using static JSSoft.Commands.CommandMethodUtility;
 
 namespace JSSoft.Commands;
 
@@ -21,7 +20,7 @@ public static class CommandDescriptor
     private static readonly Dictionary<MemberInfo, CommandMethodDescriptorCollection>
         MethodDescriptorsByMemberInfo = [];
 
-    private static readonly Dictionary<object, CommandUsageDescriptorBase>
+    private static readonly Dictionary<CommandMemberInfo, CommandUsageDescriptorBase>
         UsageDescriptorByMemberInfo = [];
 
     public static CommandUsageDescriptorBase GetUsageDescriptor(CommandMemberInfo memberInfo)
@@ -29,11 +28,6 @@ public static class CommandDescriptor
         if (GetUsageDescriptor(memberInfo, memberInfo) is { } usageDescriptor1)
         {
             return usageDescriptor1;
-        }
-        else if (memberInfo.DeclaringType is not null
-            && GetUsageDescriptor(memberInfo.DeclaringType, memberInfo) is { } usageDescriptor2)
-        {
-            return usageDescriptor2;
         }
 
         if (UsageDescriptorByMemberInfo.TryGetValue(memberInfo, out var value) != true)
@@ -119,7 +113,7 @@ public static class CommandDescriptor
     {
         var attributes = GetCustomAttributes<CommandStaticMethodAttribute>(
             requestType, inherit: true);
-        if (attributes.Length > 0 && TypeUtility.IsStaticClass(requestType) == true)
+        if (attributes.Length > 0 && requestType.IsStaticClass() == true)
         {
             var message = $"Attribute '{nameof(CommandStaticMethodAttribute)}' is not available " +
                           $"because type '{requestType}' is a static type.";
@@ -154,7 +148,7 @@ public static class CommandDescriptor
     {
         var attributes = GetCustomAttributes<CommandStaticPropertyAttribute>(
             requestType, inherit: true);
-        if (attributes.Length > 0 && TypeUtility.IsStaticClass(requestType) == true)
+        if (attributes.Length > 0 && requestType.IsStaticClass() == true)
         {
             var message = $"Attribute '{nameof(CommandStaticPropertyAttribute)}' is not " +
                           $"available because type '{requestType}' is a static type.";
@@ -242,21 +236,20 @@ public static class CommandDescriptor
 
     private static CommandMemberDescriptorCollection CreateMemberDescriptors(MethodInfo methodInfo)
     {
-        VerifyCommandMethod(methodInfo);
+        methodInfo.VerifyCommandMethod();
 
         var memberInfo = new CommandMemberInfo(methodInfo);
-        var declaringType = memberInfo.DeclaringType;
         var memberDescriptorList = new List<CommandMemberDescriptor>();
-        if (IsBrowsable(declaringType) == true && IsBrowsable((MemberInfo)methodInfo) == true)
+        if (methodInfo.IsBrowsable() == true)
         {
-            var methodParameterNames = GetMethodParameterNames(methodInfo);
+            var methodParameterNames = methodInfo.GetMethodParameterNames();
             var parameterInfos = methodInfo.GetParameters();
             var methodMemberDescriptors = GetMethodMemberDescriptors(methodInfo);
             var methodStaticMemberDescriptors = GetMethodStaticMemberDescriptors(methodInfo);
             var capacity = parameterInfos.Length
                 + methodMemberDescriptors.Length + methodStaticMemberDescriptors.Length;
             var query = from parameterInfo in parameterInfos
-                        where IsCommandParameter(parameterInfo) == true
+                        where parameterInfo.IsCommandParameter() == true
                         select parameterInfo;
             var items = query.ToArray();
             memberDescriptorList.Capacity = capacity;
@@ -286,13 +279,13 @@ public static class CommandDescriptor
     private static CommandMemberDescriptorCollection CreateMemberDescriptors(Type type)
     {
         var memberDescriptorList = new List<CommandMemberDescriptor>();
-        if (IsBrowsable(type) == true)
+        if (type.IsBrowsable() == true)
         {
             var bindingFlags = CommandSettings.GetBindingFlags(type);
             var propertyInfos = type.GetProperties(bindingFlags);
             var query = from propertyInfo in propertyInfos
-                        where IsCommandProperty(propertyInfo) == true
-                        where IsBrowsable(propertyInfo) == true
+                        where propertyInfo.IsCommandProperty() == true
+                        where propertyInfo.IsBrowsable() == true
                         select propertyInfo;
             var items = query.ToArray();
             var staticMemberDescriptors = GetStaticMemberDescriptors(requestType: type);
@@ -313,13 +306,13 @@ public static class CommandDescriptor
     private static CommandMethodDescriptorCollection CreateMethodDescriptors(Type type)
     {
         var methodDescriptorList = new List<CommandMethodDescriptor>();
-        if (IsBrowsable(type) == true)
+        if (type.IsBrowsable() == true)
         {
             var bindingFlags = CommandSettings.GetBindingFlags(type);
             var methodInfos = type.GetMethods(bindingFlags);
             var query = from methodInfo in methodInfos
-                        where IsCommandMethod(methodInfo) == true
-                        where IsBrowsable((MemberInfo)methodInfo) == true
+                        where methodInfo.IsCommandMethod() == true
+                        where methodInfo.IsBrowsable() == true
                         select methodInfo;
             var items = query.ToArray();
             var staticMethodDescriptors = GetStaticMethodDescriptors(type);
@@ -346,30 +339,29 @@ public static class CommandDescriptor
     }
 
     private static CommandUsageDescriptorBase CreateUsageDescriptor(
-        CommandUsageAttribute usageAttribute, object target)
+        CommandUsageAttribute usageAttribute, CommandMemberInfo memberInfo)
     {
-        var usageDescriptorType = usageAttribute.UsageDescriptorType;
-        var args = new object[] { usageAttribute, target };
+        var usageDescriptorType = usageAttribute.GetUsageDescriptorType(memberInfo);
+        var args = new object[] { usageAttribute, memberInfo };
         return (CommandUsageDescriptorBase)Activator.CreateInstance(usageDescriptorType, args)!;
     }
 
     private static CommandUsageDescriptorBase? GetUsageDescriptor(
-        CommandMemberInfo memberInfo, object target)
+        CommandMemberInfo attributeOwner, CommandMemberInfo memberInfo)
     {
-        if (memberInfo.GetAttribute<CommandUsageAttribute>() is { } usageAttribute)
+        if (attributeOwner.GetAttribute<CommandUsageAttribute>() is { } usageAttribute)
         {
-            if (UsageDescriptorByMemberInfo.TryGetValue(target, out var value) != true)
+            if (UsageDescriptorByMemberInfo.TryGetValue(memberInfo, out var value) != true)
             {
-                value = CreateUsageDescriptor(usageAttribute, target);
-                UsageDescriptorByMemberInfo.Add(target, value);
+                value = CreateUsageDescriptor(usageAttribute, memberInfo);
+                UsageDescriptorByMemberInfo.Add(memberInfo, value);
             }
 
             return value;
         }
-        else if (Equals(memberInfo.DeclaringType, memberInfo.Value) != true
-            && GetUsageDescriptor(memberInfo.DeclaringType, target) is { } usageDescriptor)
+        else if (attributeOwner.GetParent() is { } parent)
         {
-            return usageDescriptor;
+            return GetUsageDescriptor(parent, memberInfo);
         }
 
         return null;

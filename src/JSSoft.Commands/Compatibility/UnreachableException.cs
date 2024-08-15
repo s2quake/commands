@@ -4,18 +4,12 @@
 // </copyright>
 
 #if !NET7_0_OR_GREATER
+#pragma warning disable
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace JSSoft.Commands;
 
-public sealed class UnreachableException : SystemException
+internal sealed class UnreachableException : SystemException
 {
     public UnreachableException()
     {
@@ -26,4 +20,4 @@ public sealed class UnreachableException : SystemException
     {
     }
 }
-#endif // !NET6_0_OR_GREATER
+#endif // !NET7_0_OR_GREATER

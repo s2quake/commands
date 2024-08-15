@@ -5,51 +5,46 @@
 
 namespace JSSoft.Commands;
 
-internal sealed class CommandNode : ICommandNode
+internal sealed class CommandNode(CommandContextBase commandContext) : ICommand
 {
-    private readonly ICommand? _command;
+    private readonly CommandContextBase _commandContext = commandContext;
+    private readonly CommandCollection _commands = [];
 
-    public CommandNode(CommandContextBase commandContext)
-    {
-        CommandContext = commandContext;
-    }
+    public string Name => _commandContext.ExecutionName;
 
-    public CommandNode(CommandContextBase commandContext, ICommand command)
-    {
-        CommandContext = commandContext;
-        Category = AttributeUtility.GetCategory(command.GetType());
-        _command = command;
-    }
+    public string[] Aliases { get; } = [];
 
-    public CommandNode? Parent { get; set; }
+    public bool IsEnabled => true;
 
-    public CommandNodeCollection Children { get; } = [];
+    public bool AllowsSubCommands => true;
 
-    public CommandAliasNodeCollection ChildByAlias { get; } = [];
+    public string Summary { get; } = string.Empty;
 
-    public ICommandUsage? Usage => _command as ICommandUsage;
+    public string Description { get; } = string.Empty;
 
-    public CommandContextBase CommandContext { get; }
-
-    public List<ICommand> CommandList { get; } = [];
-
-    public string Name => _command?.Name ?? string.Empty;
+    public string Example { get; } = string.Empty;
 
     public string Category { get; } = string.Empty;
 
-    public string[] Aliases => _command is not null ? _command.Aliases : [];
+    public ICommand? Parent { get; }
 
-    public bool IsEnabled => CommandList.Exists(item => item.IsEnabled);
+    public CommandCollection Commands => _commands;
 
-    IEnumerable<ICommand> ICommandNode.Commands => CommandList;
+    public ICommandContext? Node => _commandContext;
 
-    ICommandNode? ICommandNode.Parent => Parent;
+    ICommandContext? ICommand.Context
+    {
+        get => _commandContext;
+        set => throw new NotSupportedException();
+    }
 
-    ICommandNodeCollection ICommandNode.Children => Children;
+    ICommand? ICommand.Parent
+    {
+        get => null;
+        set => throw new NotSupportedException();
+    }
 
-    ICommandNodeCollection ICommandNode.ChildByAlias => ChildByAlias;
+    public string[] GetCompletions(CommandCompletionContext completionContext) => [];
 
-    ICommandContext ICommandNode.CommandContext => CommandContext;
-
-    public override string ToString() => Name;
+    public string GetUsage(bool isDetail) => string.Empty;
 }

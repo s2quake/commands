@@ -18,7 +18,7 @@ public abstract class CommandContextBase : ICommandContext
     private readonly string _filename;
 
     protected CommandContextBase(IEnumerable<ICommand> commands)
-        : this(GetDefaultAssembly(), commands, settings: default)
+        : this(GetDefaultAssembly(), commands, settings: CommandSettings.Default)
     {
     }
 
@@ -28,7 +28,7 @@ public abstract class CommandContextBase : ICommandContext
     }
 
     protected CommandContextBase(Assembly assembly, IEnumerable<ICommand> commands)
-        : this(assembly, commands, settings: default)
+        : this(assembly, commands, settings: CommandSettings.Default)
     {
     }
 
@@ -46,7 +46,7 @@ public abstract class CommandContextBase : ICommandContext
     }
 
     protected CommandContextBase(string name, IEnumerable<ICommand> commands)
-        : this(name, commands, settings: default)
+        : this(name, commands, settings: CommandSettings.Default)
     {
     }
 
@@ -78,7 +78,7 @@ public abstract class CommandContextBase : ICommandContext
 
     public string Copyright { get; set; } = string.Empty;
 
-    public ICommandNode Node => _commandNode;
+    public ICommand Node => _commandNode;
 
     public string ExecutionName
     {
@@ -134,18 +134,18 @@ public abstract class CommandContextBase : ICommandContext
     public string[] GetCompletion(string[] items, string find)
         => GetCompletion(_commandNode, new List<string>(items), find);
 
-    internal static ICommand? GetCommand(ICommandNode parentNode, IList<string> argList)
+    internal static ICommand? GetCommand(ICommand parent, IList<string> argList)
     {
         if (argList.FirstOrDefault() is { } commandName
-            && parentNode.TryGetEnabledCommand(commandName, out var commandNode) == true)
+            && parent.TryGetCommand(commandName, out var command) == true)
         {
             argList.RemoveAt(0);
-            if (argList.Count > 0 && commandNode.Children.Count != 0)
+            if (argList.Count > 0 && command.Commands.Count != 0)
             {
-                return GetCommand(commandNode, argList);
+                return GetCommand(command, argList);
             }
 
-            return commandNode.Commands.FirstOrDefault();
+            return command;
         }
 
         return null;
@@ -265,11 +265,11 @@ public abstract class CommandContextBase : ICommandContext
         => Assembly.GetEntryAssembly() ?? typeof(CommandParser).Assembly;
 
     private static string[] GetCompletion(
-        ICommandNode parentNode, IList<string> itemList, string find)
+        ICommand parent, IList<string> itemList, string find)
     {
         if (itemList.Count == 0)
         {
-            var query = from child in parentNode.Children
+            var query = from child in parent.Commands
                         where child.IsEnabled == true
                         from name in new string[] { child.Name }.Concat(child.Aliases)
                         where name.StartsWith(find)
@@ -280,22 +280,19 @@ public abstract class CommandContextBase : ICommandContext
         else
         {
             var commandName = itemList[0];
-            if (parentNode.TryGetCommand(commandName, out var commandNode) == true)
+            if (parent.TryGetCommand(commandName, out var command) == true)
             {
-                if (commandNode.IsEnabled == true && commandNode.Children.Any() == true)
+                if (command.IsEnabled == true && command.Commands.Any() == true)
                 {
                     itemList.RemoveAt(0);
-                    return GetCompletion(commandNode, itemList, find);
+                    return GetCompletion(command, itemList, find);
                 }
                 else
                 {
                     var args = itemList.Skip(1).ToArray();
-                    foreach (var item in commandNode.Commands)
+                    if (GetCompletion(command, args, find) is string[] completions)
                     {
-                        if (GetCompletion(item, args, find) is string[] completions)
-                        {
-                            return completions;
-                        }
+                        return completions;
                     }
                 }
             }
@@ -306,97 +303,59 @@ public abstract class CommandContextBase : ICommandContext
 
     private static string[] GetCompletion(ICommand command, string[] args, string find)
     {
-        if (command is ICommandCompleter completer)
+        var memberDescriptors = CommandDescriptor.GetMemberDescriptors(command);
+        var context = CommandCompletionContext.Create(command, memberDescriptors, args, find);
+        if (context is CommandCompletionContext completionContext)
         {
-            var memberDescriptors = CommandDescriptor.GetMemberDescriptors(command);
-            var context = CommandCompletionContext.Create(command, memberDescriptors, args, find);
-            if (context is CommandCompletionContext completionContext)
-            {
-                return completer.GetCompletions(completionContext);
-            }
-            else if (context is string[] completions)
-            {
-                return completions;
-            }
+            return command.GetCompletions(completionContext);
+        }
+        else if (context is string[] completions)
+        {
+            return completions;
         }
 
         return [];
     }
 
+    private static void AttachContext(ICommand command, ICommandContext commandContext)
+    {
+        if (command.Context is not null)
+        {
+            throw new CommandDefinitionException(
+                message: "The command context is already attached.",
+                memberInfo: command.GetType());
+        }
+
+        var parent = command.Parent;
+        if (parent?.Commands.Contains(command) != true)
+        {
+            throw new CommandDefinitionException(
+                message: $"Command '{command}' does not contain the commands of parent '{parent}'.",
+                memberInfo: command.GetType());
+        }
+
+        command.Context = commandContext;
+        foreach (var item in command.Commands)
+        {
+            AttachContext(item, commandContext);
+        }
+    }
+
     private void Initialize(CommandNode commandNode, IEnumerable<ICommand> commands)
     {
-        var query = from command in commands
-                    let commandType = command.GetType()
+        var query = from command in commands.Concat([HelpCommand, VersionCommand]).Distinct()
+                    where command.Parent is null
                     orderby command.Name
-                    orderby AttributeUtility.IsDefined<PartialCommandAttribute>(commandType) == true
                     select command;
 
-        CollectCommands(commandNode, query);
-        if (HelpCommand is ICommandHost helpCommandHost)
+        foreach (var command in query)
         {
-            helpCommandHost.Node ??= new CommandNode(this);
+            command.SetParent(commandNode);
         }
 
-        if (VersionCommand is ICommandHost versionCommandHost)
+        foreach (var command in commandNode.Commands)
         {
-            versionCommandHost.Node ??= new CommandNode(this);
-        }
-    }
-
-    private void CollectCommands(CommandNode parentNode, IEnumerable<ICommand> commands)
-    {
-        foreach (var item in commands)
-        {
-            CollectCommands(parentNode, item);
-        }
-    }
-
-    private void CollectCommands(CommandNode parentNode, ICommand command)
-    {
-        var commandName = command.Name;
-        var commandType = command.GetType();
-        var isPartialCommand = AttributeUtility.IsDefined<PartialCommandAttribute>(commandType);
-        if (parentNode.Children.Contains(commandName) == true && isPartialCommand != true)
-        {
-            var message = $"Command '{commandName}' is already registered.";
-            throw new CommandDefinitionException(message);
-        }
-
-        if (parentNode.Children.Contains(commandName) != true && isPartialCommand == true)
-        {
-            var message = $"Partial command cannot be registered because command " +
-                          $"'{commandName}' does not exist.";
-            throw new CommandDefinitionException(message);
-        }
-
-        if (isPartialCommand == true && command.Aliases.Length != 0)
-        {
-            var message = $"Partial command '{commandName}' cannot have alias.";
-            throw new CommandDefinitionException(message);
-        }
-
-        if (parentNode.Children.TryGetValue(commandName, out var commandNode) != true)
-        {
-            commandNode = new CommandNode(this, command)
-            {
-                Parent = parentNode,
-            };
-            parentNode.Children.Add(commandNode);
-            foreach (var item in command.Aliases)
-            {
-                parentNode.ChildByAlias.Add(new CommandAliasNode(commandNode, item));
-            }
-        }
-
-        commandNode.CommandList.Add(command);
-        if (command is ICommandHost commandHost)
-        {
-            commandHost.Node = commandNode;
-        }
-
-        if (command is ICommandHierarchy commandHierarchy)
-        {
-            CollectCommands(commandNode, commandHierarchy.Commands);
+            AttachContext(command, this);
         }
     }
 

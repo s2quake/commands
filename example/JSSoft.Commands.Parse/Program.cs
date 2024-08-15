@@ -32,6 +32,6 @@ try
 }
 catch (CommandParsingException e)
 {
-    CommandUsageUtility.Print(Console.Out, e);
+    e.Print(Console.Out);
     Environment.Exit(1);
 }

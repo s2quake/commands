@@ -43,7 +43,7 @@ public abstract class HelpCommandBase : CommandBase
                 commandNames = items;
             }
 
-            return GetCommandNames(CommandContext.Node, commandNames, completionContext.Find);
+            return GetCommandNames(Context.Node, commandNames, completionContext.Find);
         }
 
         return base.GetCompletions(completionContext);
@@ -75,7 +75,7 @@ public abstract class HelpCommandBase : CommandBase
         CommandTextWriter commandWriter, ICommandContext commandContext)
     {
         var rootNode = commandContext.Node;
-        var query = from child in rootNode.Children
+        var query = from child in rootNode.Commands
                     where child.IsEnabled == true
                     orderby child.Name
                     orderby child.Category
@@ -94,18 +94,18 @@ public abstract class HelpCommandBase : CommandBase
             PrintCommands(@group);
         }
 
-        void PrintCommands(IEnumerable<ICommandNode> nodes)
+        void PrintCommands(IEnumerable<ICommand> nodes)
         {
             foreach (var node in nodes)
             {
                 var label = GetCommandNames(node);
-                var summary = node.Usage?.Summary ?? string.Empty;
+                var summary = node.Summary;
                 commandWriter.WriteLine(label: label, summary: summary);
             }
         }
     }
 
-    private static string GetCommandNames(ICommandNode node)
+    private static string GetCommandNames(ICommand node)
     {
         var sb = new StringBuilder();
         sb.Append(node.Name);
@@ -116,36 +116,29 @@ public abstract class HelpCommandBase : CommandBase
 
     private void PrintHelp()
     {
-        var settings = CommandContext.Settings;
+        var settings = Context.Settings;
         using var commandWriter = new CommandTextWriter(settings);
-        var commandUsageDescriptor = CommandDescriptor.GetUsageDescriptor(CommandContext.GetType());
+        var commandUsageDescriptor = CommandDescriptor.GetUsageDescriptor(Context.GetType());
 
         PrintSummary(commandWriter, commandUsageDescriptor.Summary);
-        PrintUsage(commandWriter, CommandContext.ExecutionName);
+        PrintUsage(commandWriter, Context.ExecutionName);
         if (IsDetail == true)
         {
             PrintDescription(commandWriter, commandUsageDescriptor.Description);
         }
 
-        PrintCommands(commandWriter, CommandContext);
+        PrintCommands(commandWriter, Context);
         Out.Write(commandWriter.ToString());
     }
 
     private void PrintCommandHelp()
     {
         var argList = new List<string>(CommandNames);
-        var command = CommandContextBase.GetCommand(CommandContext.Node, argList);
+        var command = CommandContextBase.GetCommand(Context.Node, argList);
         if (command is not null && argList.Count == 0)
         {
-            if (command is ICommandUsagePrinter usagePrinter)
-            {
-                usagePrinter.Print(IsDetail);
-            }
-            else
-            {
-                var message = $"Command '{command.Name}' does not support help.";
-                throw new InvalidOperationException(message);
-            }
+            var usage = command.GetUsage(IsDetail);
+            Out.WriteLine(usage);
         }
         else
         {
@@ -154,11 +147,11 @@ public abstract class HelpCommandBase : CommandBase
         }
     }
 
-    private string[] GetCommandNames(ICommandNode node, string[] names, string find)
+    private string[] GetCommandNames(ICommand node, string[] names, string find)
     {
         if (names.Length == 0)
         {
-            var query = from child in node.Children
+            var query = from child in node.Commands
                         where child.IsEnabled == true
                         from name in new string[] { child.Name }.Concat(child.Aliases)
                         where name.StartsWith(find)

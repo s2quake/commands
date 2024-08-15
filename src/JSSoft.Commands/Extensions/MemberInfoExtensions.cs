@@ -1,4 +1,4 @@
-// <copyright file="CommandAttributeUtility.cs" company="JSSoft">
+// <copyright file="MemberInfoExtensions.cs" company="JSSoft">
 //   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
@@ -7,20 +7,14 @@ using System.ComponentModel;
 using static JSSoft.Commands.AttributeUtility;
 using static JSSoft.Commands.CommandSettings;
 
-namespace JSSoft.Commands;
+namespace JSSoft.Commands.Extensions;
 
-public static class CommandAttributeUtility
+public static class MemberInfoExtensions
 {
-    public static bool IsCommandProperty(PropertyInfo propertyInfo)
-        => IsDefined<CommandPropertyBaseAttribute>(propertyInfo, inherit: true);
-
-    public static bool IsCommandMethod(MethodInfo methodInfo)
-        => IsDefined<CommandMethodAttribute>(methodInfo);
-
-    public static bool IsBrowsable(MemberInfo memberInfo)
+    public static bool IsBrowsable(this MemberInfo @this)
     {
         var isBrowsable = GetValue<BrowsableAttribute, bool>(
-            memberInfo: memberInfo,
+            memberInfo: @this,
             getter: memberInfo => memberInfo.Browsable,
             defaultValue: true);
         if (isBrowsable != true)
@@ -28,9 +22,14 @@ public static class CommandAttributeUtility
             return false;
         }
 
-        if (IsConsoleMode == true && IsDefined<ConsoleModeOnlyAttribute>(memberInfo) == true)
+        if (IsConsoleMode != true && IsDefined<ConsoleModeOnlyAttribute>(@this) != true)
         {
             return false;
+        }
+
+        if (@this.DeclaringType is { } declaringType)
+        {
+            return IsBrowsable(declaringType);
         }
 
         return true;

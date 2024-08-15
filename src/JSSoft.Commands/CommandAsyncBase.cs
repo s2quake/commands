@@ -6,38 +6,63 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using JSSoft.Commands.Extensions;
 
 namespace JSSoft.Commands;
 
-public abstract class CommandAsyncBase
-    : ICommand, IAsyncExecutable, ICommandHost, ICommandUsage, ICommandUsagePrinter
+public abstract class CommandAsyncBase : ICommand, IAsyncExecutable
 {
     private readonly CommandUsageDescriptorBase _usageDescriptor;
-    private ICommandNode? _node;
+    private readonly CommandCollection _commands = [];
+    private ICommandContext? _context;
     private IProgress<ProgressInfo>? _progress;
 
     protected CommandAsyncBase()
-        : this(aliases: [])
+        : this(parent: (object?)null, name: null, aliases: [])
     {
     }
 
     protected CommandAsyncBase(string[] aliases)
+        : this(parent: (object?)null, name: null, aliases)
     {
-        Name = CommandUtility.ToSpinalCase(GetType());
-        Aliases = aliases;
-        _usageDescriptor = CommandDescriptor.GetUsageDescriptor(GetType());
     }
 
     protected CommandAsyncBase(string name)
-        : this(name, [])
+        : this(parent: (object?)null, name, aliases: [])
     {
     }
 
     protected CommandAsyncBase(string name, string[] aliases)
+        : this(parent: (object?)null, name, aliases)
     {
-        Name = name;
+    }
+
+    protected CommandAsyncBase(ICommand parent)
+        : this((object)parent, name: null, aliases: [])
+    {
+    }
+
+    protected CommandAsyncBase(ICommand parent, string[] aliases)
+        : this((object)parent, name: null, aliases)
+    {
+    }
+
+    protected CommandAsyncBase(ICommand parent, string name)
+        : this((object)parent, name, aliases: [])
+    {
+    }
+
+    protected CommandAsyncBase(ICommand parent, string name, string[] aliases)
+        : this((object)parent, name, aliases)
+    {
+    }
+
+    private CommandAsyncBase(object? parent, string? name, string[] aliases)
+    {
+        Name = name ?? CommandUtility.ToSpinalCase(GetType());
         Aliases = aliases;
         _usageDescriptor = CommandDescriptor.GetUsageDescriptor(GetType());
+        this.SetParent(parent as ICommand);
     }
 
     public string Name { get; }
@@ -46,41 +71,45 @@ public abstract class CommandAsyncBase
 
     public virtual bool IsEnabled => true;
 
-    public TextWriter Out => CommandContext.Out;
+    bool ICommand.AllowsSubCommands => false;
 
-    public TextWriter Error => CommandContext.Error;
+    public TextWriter Out => Context.Out;
 
-    public ICommandContext CommandContext
-        => _node is not null
-            ? _node.CommandContext
-            : throw new InvalidOperationException("The command node is not available.");
+    public TextWriter Error => Context.Error;
+
+    public ICommandContext Context
+        => _context ?? throw new InvalidOperationException("The command node is not available.");
+
+    ICommand? ICommand.Parent { get; set; }
+
+    CommandCollection ICommand.Commands => _commands;
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Minor Code Smell",
         "S2292:Trivial properties should be auto-implemented",
         Justification = "This property does not need to be public.")]
-    ICommandNode? ICommandHost.Node
+    ICommandContext? ICommand.Context
     {
-        get => _node;
-        set => _node = value;
+        get => _context;
+        set => _context = value;
     }
 
-    string ICommandUsage.ExecutionName => ExecutionName;
+    string ICommand.Summary => _usageDescriptor.Summary;
 
-    string ICommandUsage.Summary => _usageDescriptor.Summary;
+    string ICommand.Description => _usageDescriptor.Description;
 
-    string ICommandUsage.Description => _usageDescriptor.Description;
+    string ICommand.Example => _usageDescriptor.Example;
 
-    string ICommandUsage.Example => _usageDescriptor.Example;
+    string ICommand.Category => AttributeUtility.GetCategory(GetType());
 
     internal string ExecutionName
     {
         get
         {
             var executionName = CommandUtility.GetExecutionName(Name, Aliases);
-            if (CommandContext.ExecutionName != string.Empty)
+            if (Context.ExecutionName != string.Empty)
             {
-                return $"{CommandContext.ExecutionName} {executionName}";
+                return $"{Context.ExecutionName} {executionName}";
             }
 
             return executionName;
@@ -106,21 +135,22 @@ public abstract class CommandAsyncBase
         }
     }
 
-    void ICommandUsagePrinter.Print(bool isDetail) => OnUsagePrint(isDetail);
+    string ICommand.GetUsage(bool isDetail) => OnUsagePrint(isDetail);
 
     protected abstract Task OnExecuteAsync(CancellationToken cancellationToken);
 
     protected CommandMemberDescriptor GetDescriptor(string propertyName)
         => CommandDescriptor.GetMemberDescriptors(GetType())[propertyName];
 
-    protected virtual void OnUsagePrint(bool isDetail)
+    protected virtual string OnUsagePrint(bool isDetail)
     {
-        var settings = CommandContext.Settings;
-        var memberDescriptors = CommandDescriptor.GetMemberDescriptors(GetType());
-        var usagePrinter = new CommandParsingUsagePrinter(this, settings)
+        var settings = Context.Settings;
+        var usagePrinter = new CommandUsagePrinter(this, settings)
         {
             IsDetail = isDetail,
         };
-        usagePrinter.Print(Out, memberDescriptors);
+        using var sw = new StringWriter();
+        usagePrinter.Print(sw);
+        return sw.ToString();
     }
 }

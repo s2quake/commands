@@ -104,20 +104,13 @@ public abstract class CommandMemberDescriptor
         object instance, string find, CommandMemberCompletionAttribute attribute)
     {
         var methodName = attribute.MethodName;
-        var type = attribute.StaticType ?? instance.GetType();
-        var obj = attribute.StaticType is not null ? null : instance;
-        var flag = attribute.StaticType is not null ? BindingFlags.Static : BindingFlags.Instance;
-        var bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | flag;
-        var method = type.GetMethod(methodName, bindingFlags, null, [], null);
-        if (method is null)
-        {
-            throw new ArgumentException($"Cannot found method '{methodName}'.", nameof(attribute));
-        }
+        var methodInfo = attribute.GetMethodInfo(instance.GetType(), methodName);
+        var obj = methodInfo.DeclaringType == instance.GetType() ? instance : null;
 
         try
         {
             var arrayType = MemberType.MakeArrayType();
-            var value = method.Invoke(obj, null);
+            var value = methodInfo.Invoke(obj, null);
             if (value?.GetType() == arrayType && value is Array @array)
             {
                 var itemList = new List<string>(@array.Length);
