@@ -14,7 +14,7 @@ public abstract class CommandAnalyzer
     private readonly string _filename;
 
     protected CommandAnalyzer(string commandName, object instance)
-        : this(commandName, instance, settings: default)
+        : this(commandName, instance, settings: CommandSettings.Default)
     {
     }
 
@@ -33,7 +33,7 @@ public abstract class CommandAnalyzer
     }
 
     protected CommandAnalyzer(Assembly assembly, object instance)
-        : this(assembly, instance, settings: default)
+        : this(assembly, instance, settings: CommandSettings.Default)
     {
     }
 

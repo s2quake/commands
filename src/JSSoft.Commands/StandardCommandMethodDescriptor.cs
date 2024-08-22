@@ -6,6 +6,7 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using JSSoft.Commands.Exceptions;
+using JSSoft.Commands.Extensions;
 
 namespace JSSoft.Commands;
 
@@ -23,14 +24,14 @@ internal sealed class StandardCommandMethodDescriptor : CommandMethodDescriptor
         }
 
         MethodName = methodInfo.Name;
-        IsAsync = CommandMethodUtility.IsAsync(methodInfo);
-        Name = CommandMethodUtility.GetName(methodInfo);
-        Aliases = CommandMethodUtility.GetAliases(methodInfo);
-        DisplayName = CommandMethodUtility.GetDisplayName(methodInfo);
+        IsAsync = methodInfo.IsAsync();
+        Name = methodInfo.GetName();
+        Aliases = methodInfo.GetAliases();
+        DisplayName = methodInfo.GetDisplayName();
         Members = CommandDescriptor.GetMemberDescriptorsByMethodInfo(methodInfo);
         Category = AttributeUtility.GetCategory(methodInfo);
-        _validationPropertyInfo = CommandMethodUtility.GetValidationPropertyInfo(methodInfo);
-        _completionMethodInfo = CommandMethodUtility.GetCompletionMethodInfo(methodInfo);
+        _validationPropertyInfo = methodInfo.GetValidationPropertyInfo();
+        _completionMethodInfo = methodInfo.GetCompletionMethodInfo();
     }
 
     public override string MethodName { get; }

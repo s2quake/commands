@@ -4,23 +4,24 @@
 // </copyright>
 
 using System.IO;
+using JSSoft.Commands.Extensions;
 
 namespace JSSoft.Commands;
 
 public abstract class CommandMethodBase
-    : ICommand,
-    ICommandHost,
-    ICommandHierarchy,
-    ICommandCompleter,
-    ICommandUsage,
-    ICommandUsagePrinter
+    : ICommand
 {
     private readonly CommandCollection _commands;
     private readonly CommandUsageDescriptorBase _usageDescriptor;
-    private ICommandNode? _node;
+    private ICommandContext? _context;
 
     protected CommandMethodBase()
         : this(aliases: [])
+    {
+    }
+
+    protected CommandMethodBase(ICommand parent)
+        : this(parent, aliases: [])
     {
     }
 
@@ -28,6 +29,15 @@ public abstract class CommandMethodBase
     {
         Name = CommandUtility.ToSpinalCase(GetType());
         Aliases = aliases;
+        _commands = CreateCommands(this);
+        _usageDescriptor = CommandDescriptor.GetUsageDescriptor(GetType());
+    }
+
+    protected CommandMethodBase(ICommand parent, string[] aliases)
+    {
+        Name = CommandUtility.ToSpinalCase(GetType());
+        Aliases = aliases;
+        this.SetParent(parent);
         _commands = CreateCommands(this);
         _usageDescriptor = CommandDescriptor.GetUsageDescriptor(GetType());
     }
@@ -51,43 +61,45 @@ public abstract class CommandMethodBase
 
     public virtual bool IsEnabled => true;
 
-    public TextWriter Out => CommandContext.Out;
+    bool ICommand.AllowsSubCommands => true;
 
-    public TextWriter Error => CommandContext.Error;
+    public TextWriter Out => Context.Out;
 
-    public ICommandContext CommandContext
-        => _node is not null
-            ? _node.CommandContext
-            : throw new InvalidOperationException("The command node is not available.");
+    public TextWriter Error => Context.Error;
+
+    public ICommandContext Context
+        => _context ?? throw new InvalidOperationException("The command node is not available.");
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Minor Code Smell",
         "S2292:Trivial properties should be auto-implemented",
         Justification = "This property does not need to be public.")]
-    ICommandNode? ICommandHost.Node
+    ICommandContext? ICommand.Context
     {
-        get => _node;
-        set => _node = value;
+        get => _context;
+        set => _context = value;
     }
 
-    ICommandCollection ICommandHierarchy.Commands => _commands;
+    ICommand? ICommand.Parent { get; set; }
 
-    string ICommandUsage.ExecutionName => ExecutionName;
+    CommandCollection ICommand.Commands => _commands;
 
-    string ICommandUsage.Summary => _usageDescriptor.Summary;
+    string ICommand.Summary => _usageDescriptor.Summary;
 
-    string ICommandUsage.Description => _usageDescriptor.Description;
+    string ICommand.Description => _usageDescriptor.Description;
 
-    string ICommandUsage.Example => _usageDescriptor.Example;
+    string ICommand.Example => _usageDescriptor.Example;
+
+    string ICommand.Category => AttributeUtility.GetCategory(GetType());
 
     internal string ExecutionName
     {
         get
         {
             var executionName = CommandUtility.GetExecutionName(Name, Aliases);
-            if (CommandContext.ExecutionName != string.Empty)
+            if (Context.ExecutionName != string.Empty)
             {
-                return $"{CommandContext.ExecutionName} {executionName}";
+                return $"{Context.ExecutionName} {executionName}";
             }
 
             return executionName;
@@ -100,28 +112,31 @@ public abstract class CommandMethodBase
         string find)
         => methodDescriptor.GetCompletionInternal(this, memberDescriptor, find);
 
-    string[] ICommandCompleter.GetCompletions(CommandCompletionContext completionContext) => [];
+    string[] ICommand.GetCompletions(CommandCompletionContext completionContext) => [];
 
-    void ICommandUsagePrinter.Print(bool isDetail) => OnUsagePrint(isDetail);
+    string ICommand.GetUsage(bool isDetail) => OnUsagePrint(isDetail);
 
     internal bool InvokeIsMethodEnabled(CommandMethodDescriptor memberDescriptor)
         => IsMethodEnabled(memberDescriptor);
 
     protected virtual bool IsMethodEnabled(CommandMethodDescriptor methodDescriptor) => true;
 
-    protected virtual void OnUsagePrint(bool isDetail)
+    protected virtual string OnUsagePrint(bool isDetail)
     {
-        var settings = CommandContext.Settings;
-        var commands = _node?.Commands ?? CommandCollection.Empty;
-        var query = from command in commands
-                    from item in CommandDescriptor.GetMethodDescriptors(command.GetType())
-                    where item.CanExecute(this)
-                    select item;
-        var usagePrinter = new CommandInvocationUsagePrinter(this, settings)
+        if (_context is null)
+        {
+            throw new InvalidOperationException(
+                "This command is not in the CommandContext.");
+        }
+
+        var settings = Context.Settings;
+        var usagePrinter = new CommandUsagePrinter(this, settings)
         {
             IsDetail = isDetail,
         };
-        usagePrinter.Print(Out, [.. query]);
+        using var sw = new StringWriter();
+        usagePrinter.Print(sw);
+        return sw.ToString();
     }
 
     private static CommandCollection CreateCommands(CommandMethodBase obj)
@@ -129,7 +144,8 @@ public abstract class CommandMethodBase
         var methodDescriptors = CommandDescriptor.GetMethodDescriptors(obj.GetType());
         var query = from methodDescriptor in methodDescriptors
                     select CreateCommand(obj, methodDescriptor);
-        return new CommandCollection(query);
+        var commands = query.ToArray();
+        return new CommandCollection(commands);
 
         static ICommand CreateCommand(
             CommandMethodBase obj, CommandMethodDescriptor methodDescriptor)

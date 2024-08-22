@@ -5,6 +5,7 @@
 
 using System.ComponentModel;
 using System.Threading;
+using JSSoft.Commands.Extensions;
 
 namespace JSSoft.Commands;
 
@@ -27,7 +28,7 @@ internal class CommandMethodInstance : ICustomCommandDescriptor, ISupportInitial
     {
         var methodInfo = methodDescriptor.MethodInfo;
         var parameterInfos = methodInfo.GetParameters();
-        var methodParameterNames = CommandMethodUtility.GetMethodParameterNames(methodInfo);
+        var methodParameterNames = methodInfo.GetMethodParameterNames();
         _parameterInfos = parameterInfos;
         _methodParameterNames = methodParameterNames;
         _methodDescriptor = methodDescriptor;
@@ -71,7 +72,7 @@ internal class CommandMethodInstance : ICustomCommandDescriptor, ISupportInitial
             {
                 valueList.Add(cancellationToken);
             }
-            else if (CommandMethodUtility.IsProgressParameter(parameterInfo) == true)
+            else if (parameterInfo.IsProgressParameter() == true)
             {
                 valueList.Add(new CommandProgress(progress));
             }

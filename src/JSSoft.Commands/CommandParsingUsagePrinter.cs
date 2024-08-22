@@ -8,7 +8,7 @@ using System.IO;
 namespace JSSoft.Commands;
 
 public class CommandParsingUsagePrinter(ICommandUsage commandUsage, CommandSettings settings)
-    : CommandUsagePrinterBase(commandUsage, settings)
+    : CommandUsagePrinterBase(settings)
 {
     public virtual void Print(
         TextWriter writer, CommandMemberDescriptorCollection memberDescriptors)
@@ -16,19 +16,19 @@ public class CommandParsingUsagePrinter(ICommandUsage commandUsage, CommandSetti
         using var commandWriter = new CommandTextWriter(writer, Settings);
         if (IsDetail == true)
         {
-            PrintSummary(commandWriter, CommandUsage.Summary);
-            PrintUsage(commandWriter, CommandUsage.ExecutionName, memberDescriptors);
-            PrintDescription(commandWriter, CommandUsage.Description);
-            PrintExample(commandWriter, CommandUsage.Example);
+            PrintSummary(commandWriter, commandUsage.Summary);
+            PrintUsage(commandWriter, commandUsage.ExecutionName, memberDescriptors);
+            PrintDescription(commandWriter, commandUsage.Description);
+            PrintExample(commandWriter, commandUsage.Example);
             PrintRequirementsInDetail(commandWriter, memberDescriptors);
             PrintVariablesInDetail(commandWriter, memberDescriptors);
             PrintOptionsInDetail(commandWriter, memberDescriptors);
         }
         else
         {
-            PrintSummary(commandWriter, CommandUsage.Summary);
-            PrintUsage(commandWriter, CommandUsage.ExecutionName, memberDescriptors);
-            PrintExample(commandWriter, CommandUsage.Example);
+            PrintSummary(commandWriter, commandUsage.Summary);
+            PrintUsage(commandWriter, commandUsage.ExecutionName, memberDescriptors);
+            PrintExample(commandWriter, commandUsage.Example);
             PrintRequirements(commandWriter, memberDescriptors);
             PrintVariables(commandWriter, memberDescriptors);
             PrintOptions(commandWriter, memberDescriptors);

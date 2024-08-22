@@ -3,6 +3,7 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,10 +13,7 @@ internal sealed class SubCommandAsync(
     CommandMethodBase method, CommandMethodDescriptor methodDescriptor)
     : CommandMethodInstance(methodDescriptor),
     ICommand,
-    ICommandCompleter,
-    IAsyncExecutable,
-    ICommandUsage,
-    ICommandUsagePrinter
+    IAsyncExecutable
 {
     private readonly CommandMethodDescriptor _methodDescriptor = methodDescriptor;
 
@@ -23,20 +21,31 @@ internal sealed class SubCommandAsync(
 
     public string[] Aliases => _methodDescriptor.Aliases;
 
-    public CommandSettings Settings => method.CommandContext.Settings;
+    public CommandSettings Settings => method.Context.Settings;
+
+    public ICommandContext? Context { get; set; }
 
     bool ICommand.IsEnabled => _methodDescriptor.CanExecute(method);
 
-    string ICommandUsage.ExecutionName
-        => $"{method.ExecutionName} {CommandUtility.GetExecutionName(Name, Aliases)}";
+    bool ICommand.AllowsSubCommands => false;
 
-    string ICommandUsage.Summary => _methodDescriptor.UsageDescriptor.Summary;
+    string ICommand.Summary => _methodDescriptor.UsageDescriptor.Summary;
 
-    string ICommandUsage.Description => _methodDescriptor.UsageDescriptor.Description;
+    string ICommand.Description => _methodDescriptor.UsageDescriptor.Description;
 
-    string ICommandUsage.Example => _methodDescriptor.UsageDescriptor.Example;
+    string ICommand.Example => _methodDescriptor.UsageDescriptor.Example;
+
+    string ICommand.Category => _methodDescriptor.Category;
 
     public CommandMemberDescriptorCollection Members => _methodDescriptor.Members;
+
+    ICommand? ICommand.Parent
+    {
+        get => method;
+        set => throw new NotSupportedException();
+    }
+
+    CommandCollection ICommand.Commands { get; } = CommandCollection.Empty;
 
     public object GetMemberOwner(CommandMemberDescriptor memberDescriptor) => method;
 
@@ -48,13 +57,15 @@ internal sealed class SubCommandAsync(
         => method.GetCompletions(
             _methodDescriptor, completionContext.MemberDescriptor, completionContext.Find);
 
-    void ICommandUsagePrinter.Print(bool isDetail)
+    string ICommand.GetUsage(bool isDetail)
     {
         var settings = Settings;
-        var usagePrinter = new CommandInvocationUsagePrinter(this, settings)
+        var usagePrinter = new CommandUsagePrinter(this, settings)
         {
             IsDetail = isDetail,
         };
-        usagePrinter.Print(method.Out, _methodDescriptor);
+        using var sw = new StringWriter();
+        usagePrinter.Print(sw);
+        return sw.ToString();
     }
 }

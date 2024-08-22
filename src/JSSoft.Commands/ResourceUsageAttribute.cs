@@ -24,7 +24,7 @@ public class ResourceUsageAttribute : CommandUsageAttribute
         : base(typeof(ResourceUsageDescriptor))
     {
         ResourceType = resourceType;
-        ResourceTypeName = resourceType.AssemblyQualifiedName!;
+        ResourceTypeName = resourceType.AssemblyQualifiedName ?? string.Empty;
     }
 
     public string ResourceTypeName { get; } = string.Empty;

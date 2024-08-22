@@ -4,60 +4,95 @@
 // </copyright>
 
 using System.Collections;
-using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 
 namespace JSSoft.Commands;
 
-internal sealed class CommandCollection : ICommandCollection
+public sealed class CommandCollection : IEnumerable<ICommand>
 {
-    private readonly OrderedDictionary _dictionary;
+    private readonly Dictionary<string, ICommand> _commandByName = [];
+    private readonly List<ICommand> _commandList = [];
 
     public CommandCollection()
     {
-        _dictionary = [];
     }
 
     public CommandCollection(IEnumerable<ICommand> commands)
     {
-        _dictionary = new OrderedDictionary(commands.Count());
+        var capacity = commands.Count() + commands.SelectMany(item => item.Aliases).Count();
+        _commandByName = new(capacity);
         foreach (var command in commands)
         {
             Add(command);
         }
+
+        _commandList = new List<ICommand>(commands);
     }
 
-    public static CommandCollection Empty { get; } = [];
+    public static CommandCollection Empty { get; } = new() { IsLocked = true };
 
-    public int Count => _dictionary.Count;
+    public int Count => _commandList.Count;
 
-    public ICommand this[int index] => (ICommand)_dictionary[index]!;
+    internal bool IsLocked { get; set; }
 
-    public ICommand this[string name] => (ICommand)_dictionary[name]!;
+    public ICommand this[int index] => _commandList[index];
 
-    public void Add(ICommand command) => _dictionary.Add(command.Name, command);
+    public ICommand this[string name] => _commandByName[name];
 
-    public bool Contains(string name) => _dictionary.Contains(name);
+    public void Add(ICommand command)
+    {
+        if (IsLocked == true)
+        {
+            throw new InvalidOperationException("Collection is locked.");
+        }
+
+        if (command.AllowsSubCommands != true
+            && command is not IExecutable
+            && command is not IAsyncExecutable)
+        {
+            throw new CommandDefinitionException(
+                $"Command '{command.Name}' must implement IExecutable or " +
+                $"IAsyncExecutable if it does not allow subcommands.");
+        }
+
+        if (CommandUtility.IsName(command.Name) != true)
+        {
+            throw new CommandDefinitionException("Invalid command name.");
+        }
+
+        _commandByName.Add(command.Name, command);
+        foreach (var alias in command.Aliases)
+        {
+            _commandByName.Add(alias, command);
+        }
+
+        _commandList.Add(command);
+    }
+
+    public void Remove(ICommand command)
+    {
+        if (IsLocked == true)
+        {
+            throw new InvalidOperationException("Collection is locked.");
+        }
+
+        _commandByName.Remove(command.Name);
+        foreach (var alias in command.Aliases)
+        {
+            _commandByName.Remove(alias);
+        }
+
+        _commandList.Remove(command);
+    }
+
+    public bool Contains(string name) => _commandByName.ContainsKey(name);
+
+    public bool Contains(ICommand command) => _commandList.Contains(command);
 
     public bool TryGetValue(string name, [MaybeNullWhen(false)] out ICommand value)
-    {
-        if (_dictionary.Contains(name) == true)
-        {
-            value = (ICommand)_dictionary[name]!;
-            return true;
-        }
+        => _commandByName.TryGetValue(name, out value);
 
-        value = default!;
-        return false;
-    }
+    public IEnumerator<ICommand> GetEnumerator() => _commandList.GetEnumerator();
 
-    public IEnumerator<ICommand> GetEnumerator()
-    {
-        foreach (DictionaryEntry item in _dictionary)
-        {
-            yield return (ICommand)item.Value!;
-        }
-    }
-
-    IEnumerator IEnumerable.GetEnumerator() => _dictionary.Values.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => _commandList.GetEnumerator();
 }

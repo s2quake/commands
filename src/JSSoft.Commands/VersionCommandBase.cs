@@ -16,7 +16,7 @@ public abstract class VersionCommandBase : CommandBase
 
     protected override void OnExecute()
     {
-        var settings = CommandContext.Settings;
+        var settings = Context.Settings;
         using var writer = new CommandTextWriter(Out, settings);
         var text = IsQuiet == true ? GetQuietString() : GetDetailedString();
         writer.WriteLine(text);
@@ -25,10 +25,10 @@ public abstract class VersionCommandBase : CommandBase
     protected string GetDetailedString()
     {
         var sb = new StringBuilder();
-        sb.AppendLine($"{CommandContext.Name} {CommandContext.Version}");
-        sb.AppendIf(CommandContext.Copyright, item => item != string.Empty);
+        sb.AppendLine($"{Context.Name} {Context.Version}");
+        sb.AppendIf(Context.Copyright, item => item != string.Empty);
         return sb.ToString();
     }
 
-    protected string GetQuietString() => CommandContext.Version;
+    protected string GetQuietString() => Context.Version;
 }

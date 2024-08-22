@@ -15,7 +15,7 @@ public interface ICommandContext
 
     string ExecutionName { get; }
 
-    ICommandNode Node { get; }
+    ICommand Node { get; }
 
     string Name { get; }
 

@@ -3,8 +3,6 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
-using System.Diagnostics;
-
 namespace JSSoft.Commands;
 
 [AttributeUsage(
@@ -13,44 +11,40 @@ namespace JSSoft.Commands;
 public class CommandUsageAttribute : Attribute
 {
     public CommandUsageAttribute(string usageDescriptorTypeName)
-    {
-        try
-        {
-            TypeUtility.ThrowIfTypeIsNotSubclassOf(
-                typeName: usageDescriptorTypeName,
-                baseType: typeof(CommandUsageDescriptorBase));
-            TypeUtility.ThrowIfTypeDoesNotHavePublicConstructor(
-                typeName: usageDescriptorTypeName,
-                argumentTypes: [typeof(CommandUsageAttribute), typeof(object)]);
-        }
-        catch (Exception e)
-        {
-            Trace.TraceWarning(e.Message);
-        }
-
-        UsageDescriptorType = Type.GetType(usageDescriptorTypeName)!;
-    }
+        => UsageDescriptorTypeName = usageDescriptorTypeName;
 
     public CommandUsageAttribute(Type usageDescriptorType)
+        => UsageDescriptorTypeName = usageDescriptorType.AssemblyQualifiedName ?? string.Empty;
+
+    internal CommandUsageAttribute()
+        => UsageDescriptorTypeName
+            = typeof(CommandUsageDescriptor).AssemblyQualifiedName ?? string.Empty;
+
+    public string UsageDescriptorTypeName { get; } = string.Empty;
+
+    internal Type GetUsageDescriptorType(CommandMemberInfo memberInfo)
     {
-        try
+        if (Type.GetType(UsageDescriptorTypeName) is not { } type)
         {
-            TypeUtility.ThrowIfTypeIsNotSubclassOf(
-                type: usageDescriptorType,
-                baseType: typeof(CommandUsageDescriptorBase));
-            TypeUtility.ThrowIfTypeDoesNotHavePublicConstructor(
-                type: usageDescriptorType,
-                argumentTypes: [typeof(CommandUsageAttribute), typeof(object)]);
-        }
-        catch (Exception e)
-        {
-            Trace.TraceWarning(e.Message);
+            var message = $"'{UsageDescriptorTypeName}' is not a valid type name.";
+            throw new CommandDefinitionException(message, memberInfo);
         }
 
-        UsageDescriptorType = usageDescriptorType;
+        if (typeof(CommandUsageDescriptorBase).IsAssignableFrom(type) != true)
+        {
+            var message = $"Type '{type}' is not subclass of " +
+                          $"'{typeof(CommandUsageDescriptorBase)}'.";
+            throw new CommandDefinitionException(message, memberInfo);
+        }
+
+        var argumentTypes = new Type[] { typeof(CommandUsageAttribute), typeof(CommandMemberInfo) };
+        if (type.GetConstructor(argumentTypes) is null)
+        {
+            var args = string.Join(", ", argumentTypes.Select(item => item.Name));
+            var message = $"Type '{type}' does not have a public constructor with args ({args}).";
+            throw new CommandDefinitionException(message, memberInfo);
+        }
+
+        return type;
     }
-
-    internal CommandUsageAttribute() => UsageDescriptorType = typeof(CommandUsageDescriptor);
-
-    public Type UsageDescriptorType { get; }
 }

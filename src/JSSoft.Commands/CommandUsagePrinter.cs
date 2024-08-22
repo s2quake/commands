@@ -1,4 +1,4 @@
-// <copyright file="CommandInvocationUsagePrinter.cs" company="JSSoft">
+// <copyright file="CommandUsagePrinter.cs" company="JSSoft">
 //   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
@@ -9,71 +9,46 @@ using JSSoft.Commands.Extensions;
 
 namespace JSSoft.Commands;
 
-public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSettings settings)
+public class CommandUsagePrinter(ICommand command, CommandSettings settings)
     : CommandUsagePrinterBase(settings)
 {
-    public virtual void Print(TextWriter writer, CommandMethodDescriptor[] methodDescriptors)
+    public virtual void Print(TextWriter writer)
     {
         using var commandWriter = new CommandTextWriter(writer, Settings);
         if (IsDetail == true)
         {
-            PrintSummary(commandWriter, commandUsage.Summary);
-            PrintUsage(commandWriter, commandUsage.ExecutionName);
-            PrintDescription(commandWriter, commandUsage.Description);
-            PrintExample(commandWriter, commandUsage.Example);
-            PrintCommandsInDetail(commandWriter, methodDescriptors);
+            PrintSummary(commandWriter, command.Summary);
+            PrintUsage(commandWriter, command.GetExecutionName());
+            PrintDescription(commandWriter, command.Description);
+            PrintExample(commandWriter, command.Example);
+            if (command.AllowsSubCommands == true)
+            {
+                PrintCommandsInDetail(commandWriter, command.Commands);
+            }
+            else
+            {
+                var memberDescriptors = CommandDescriptor.GetMemberDescriptors(command.GetType());
+                PrintRequirementsInDetail(commandWriter, memberDescriptors);
+                PrintVariablesInDetail(commandWriter, memberDescriptors);
+                PrintOptionsInDetail(commandWriter, memberDescriptors);
+            }
         }
         else
         {
-            PrintSummary(commandWriter, commandUsage.Summary);
-            PrintUsage(commandWriter, commandUsage.ExecutionName);
-            PrintExample(commandWriter, commandUsage.Example);
-            PrintCommands(commandWriter, methodDescriptors);
-        }
-    }
-
-    public virtual void Print(TextWriter writer, CommandMethodDescriptor methodDescriptor)
-    {
-        using var commandWriter = new CommandTextWriter(writer, Settings);
-        if (IsDetail == true)
-        {
-            PrintMethodSummary(commandWriter, methodDescriptor);
-            PrintUsage(commandWriter, commandUsage.ExecutionName, methodDescriptor.Members);
-            PrintMethodDescription(commandWriter, methodDescriptor);
-            PrintMethodExample(commandWriter, methodDescriptor);
-            PrintRequirementsInDetail(commandWriter, methodDescriptor);
-            PrintVariablesInDetail(commandWriter, methodDescriptor);
-            PrintOptionsInDetail(commandWriter, methodDescriptor);
-        }
-        else
-        {
-            PrintMethodSummary(commandWriter, methodDescriptor);
-            PrintUsage(commandWriter, commandUsage.ExecutionName, methodDescriptor.Members);
-            PrintMethodExample(commandWriter, methodDescriptor);
-            PrintRequirements(commandWriter, methodDescriptor);
-            PrintVariables(commandWriter, methodDescriptor);
-            PrintOptions(commandWriter, methodDescriptor);
-        }
-    }
-
-    public virtual void Print(
-        TextWriter writer,
-        CommandMethodDescriptor methodDescriptor,
-        CommandMemberDescriptor memberDescriptor)
-    {
-        using var commandWriter = new CommandTextWriter(writer, Settings);
-        if (IsDetail == true)
-        {
-            PrintMemberSummary(commandWriter, memberDescriptor);
-            PrintMemberUsage(commandWriter, memberDescriptor);
-            PrintMemberDescription(commandWriter, memberDescriptor);
-            PrintMemberExample(commandWriter, memberDescriptor);
-        }
-        else
-        {
-            PrintMemberSummary(commandWriter, memberDescriptor);
-            PrintMemberUsage(commandWriter, memberDescriptor);
-            PrintMemberExample(commandWriter, memberDescriptor);
+            PrintSummary(commandWriter, command.Summary);
+            PrintUsage(commandWriter, command.GetExecutionName());
+            PrintExample(commandWriter, command.Example);
+            if (command.AllowsSubCommands == true)
+            {
+                PrintCommands(commandWriter, command.Commands);
+            }
+            else
+            {
+                var memberDescriptors = CommandDescriptor.GetMemberDescriptors(command.GetType());
+                PrintRequirements(commandWriter, memberDescriptors);
+                PrintVariables(commandWriter, memberDescriptors);
+                PrintOptions(commandWriter, memberDescriptors);
+            }
         }
     }
 
@@ -109,12 +84,12 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
     }
 
     protected static void PrintCommands(
-        CommandTextWriter commandWriter, CommandMethodDescriptor[] methodDescriptors)
+        CommandTextWriter commandWriter, IEnumerable<ICommand> commands)
     {
-        var query = from methodDescriptor in methodDescriptors
-                    orderby methodDescriptor.Name
-                    orderby methodDescriptor.Category
-                    group methodDescriptor by methodDescriptor.Category into @group
+        var query = from command in commands
+                    orderby command.Name
+                    orderby command.Category
+                    group command by command.Category into @group
                     select @group;
 
         foreach (var @group in query)
@@ -125,28 +100,17 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
                 StringByName[TextCommands],
             };
             var groupName = CommandUtility.Join(" ", itemList);
-            using var groupScope = commandWriter.Group(groupName);
-            PrintCommands(@group);
-        }
-
-        void PrintCommands(IEnumerable<CommandMethodDescriptor> methodDescriptors)
-        {
-            foreach (var item in methodDescriptors)
-            {
-                var label = GetMethodString(item);
-                var summary = item.UsageDescriptor.Summary;
-                commandWriter.WriteLine(label: label, summary: summary);
-            }
+            PrintCommandsByGroup(groupName, commandWriter, @group);
         }
     }
 
     protected static void PrintCommandsInDetail(
-        CommandTextWriter commandWriter, CommandMethodDescriptor[] methodDescriptors)
+        CommandTextWriter commandWriter, IEnumerable<ICommand> commands)
     {
-        var query = from methodDescriptor in methodDescriptors
-                    orderby methodDescriptor.Name
-                    orderby methodDescriptor.Category
-                    group methodDescriptor by methodDescriptor.Category into @group
+        var query = from command in commands
+                    orderby command.Name
+                    orderby command.Category
+                    group command by command.Category into @group
                     select @group;
 
         foreach (var @group in query)
@@ -157,21 +121,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
                 StringByName[TextCommands],
             };
             var groupName = CommandUtility.Join(" ", itemList);
-            using var groupScope = commandWriter.Group(groupName);
-            PrintCommandsInDetail(@group);
-        }
-
-        void PrintCommandsInDetail(IEnumerable<CommandMethodDescriptor> methodDescriptors)
-        {
-            foreach (var item in methodDescriptors)
-            {
-                var label = GetMethodString(item);
-                var description = item.UsageDescriptor.Description;
-                var isLast = item == methodDescriptors.Last();
-                commandWriter.WriteLine(label);
-                commandWriter.WriteLineIndent(description, commandWriter.Indent + 1);
-                commandWriter.WriteLineIf(condition: isLast != true);
-            }
+            PrintCommandsInDetailByGroup(groupName, commandWriter, @group);
         }
     }
 
@@ -275,15 +225,42 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         return false;
     }
 
-    protected static string GetMethodString(CommandMethodDescriptor methodDescriptor)
+    protected static string GetCommandString(ICommand command)
     {
         var sb = new StringBuilder();
-        sb.Append(methodDescriptor.Name);
-        foreach (var item in methodDescriptor.Aliases)
+        sb.Append(command.Name);
+        foreach (var item in command.Aliases)
         {
             sb.Append($", {item}");
         }
 
         return sb.ToString();
+    }
+
+    private static void PrintCommandsByGroup(
+        string groupName, CommandTextWriter commandWriter, IEnumerable<ICommand> commands)
+    {
+        using var groupScope = commandWriter.Group(groupName);
+        foreach (var command in commands)
+        {
+            var label = GetCommandString(command);
+            var summary = command.Summary;
+            commandWriter.WriteLine(label: label, summary: summary);
+        }
+    }
+
+    private static void PrintCommandsInDetailByGroup(
+        string groupName, CommandTextWriter commandWriter, IEnumerable<ICommand> commands)
+    {
+        using var groupScope = commandWriter.Group(groupName);
+        foreach (var command in commands)
+        {
+            var label = GetCommandString(command);
+            var description = command.Description;
+            var isLast = command == commands.Last();
+            commandWriter.WriteLine(label);
+            commandWriter.WriteLineIndent(description, commandWriter.Indent + 1);
+            commandWriter.WriteLineIf(condition: isLast != true);
+        }
     }
 }

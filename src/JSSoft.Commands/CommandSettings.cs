@@ -7,11 +7,12 @@
 #pragma warning disable S3011
 
 using System.Diagnostics;
+using JSSoft.Commands.Extensions;
 using static JSSoft.Commands.CommandUtility;
 
 namespace JSSoft.Commands;
 
-public struct CommandSettings
+public sealed record class CommandSettings
 {
     public const int DefaultIndentSpaces = 2;
     public const int DefaultLabelWidth = 15;
@@ -19,29 +20,21 @@ public struct CommandSettings
     public const char DefaultHelpShortName = 'h';
     public const string DefaultVersionName = "version";
     public const char DefaultVersionShortName = 'v';
+    private int _labelWith = DefaultLabelWidth;
+    private int _indentSpaces = DefaultIndentSpaces;
 
-    private bool? _isAnsiSupported;
-    private int? _labelWith;
-    private int? _indentSpaces;
-    private string? _helpName;
-    private char? _helpShortName;
-    private string? _versionName;
-    private char? _versionShortName;
+    public static CommandSettings Default { get; } = new();
 
     public static bool IsConsoleMode { get; set; } = true;
 
-    public bool IsPublicOnly { get; set; }
+    public bool IsPublicOnly { get; init; }
 
-    public bool IsAnsiSupported
-    {
-        readonly get => _isAnsiSupported ?? true;
-        set => _isAnsiSupported = value;
-    }
+    public bool IsAnsiSupported { get; init; } = true;
 
     public int LabelWidth
     {
-        readonly get => _labelWith ?? DefaultLabelWidth;
-        set
+        get => _labelWith;
+        init
         {
             if (value < 5)
             {
@@ -61,8 +54,8 @@ public struct CommandSettings
 
     public int IndentSpaces
     {
-        readonly get => _indentSpaces ?? DefaultIndentSpaces;
-        set
+        get => _indentSpaces;
+        init
         {
             if (value == 0)
             {
@@ -74,39 +67,23 @@ public struct CommandSettings
         }
     }
 
-    public readonly string IndentString => string.Empty.PadRight(IndentSpaces);
+    public string IndentString => string.Empty.PadRight(IndentSpaces);
 
-    public string HelpName
-    {
-        readonly get => _helpName ?? DefaultHelpName;
-        set => _helpName = value;
-    }
+    public string HelpName { get; init; } = DefaultHelpName;
 
-    public char HelpShortName
-    {
-        readonly get => _helpShortName ?? DefaultHelpShortName;
-        set => _helpShortName = value;
-    }
+    public char HelpShortName { get; init; } = DefaultHelpShortName;
 
-    public string VersionName
-    {
-        readonly get => _versionName ?? DefaultVersionName;
-        set => _versionName = value;
-    }
+    public string VersionName { get; init; } = DefaultVersionName;
 
-    public char VersionShortName
-    {
-        readonly get => _versionShortName ?? DefaultVersionShortName;
-        set => _versionShortName = value;
-    }
+    public char VersionShortName { get; init; } = DefaultVersionShortName;
 
-    public bool AllowEmpty { get; set; }
+    public bool AllowEmpty { get; init; }
 
     internal static TimeSpan AsyncTimeout { get; } = TimeSpan.FromSeconds(1);
 
     internal static BindingFlags GetBindingFlags(Type type)
     {
-        var instanceFlag = TypeUtility.IsStaticClass(type) == true
+        var instanceFlag = type.IsStaticClass() == true
             ? BindingFlags.Static
             : BindingFlags.Static | BindingFlags.Instance;
         var accessFlag = BindingFlags.Public | BindingFlags.NonPublic;
@@ -125,7 +102,7 @@ public struct CommandSettings
         return text.PadRight(l);
     }
 
-    internal readonly bool IsHelpArg(string arg)
+    internal bool IsHelpArg(string arg)
     {
         if (HelpName != string.Empty && arg == $"{Delimiter}{HelpName}")
         {
@@ -140,7 +117,7 @@ public struct CommandSettings
         return false;
     }
 
-    internal readonly bool IsVersionArg(string arg)
+    internal bool IsVersionArg(string arg)
     {
         if (VersionName != string.Empty && arg == $"{Delimiter}{VersionName}")
         {
@@ -155,7 +132,7 @@ public struct CommandSettings
         return false;
     }
 
-    internal readonly bool ContainsHelpOption(string[] args)
+    internal bool ContainsHelpOption(string[] args)
     {
         if (HelpName != string.Empty
             && args.Contains($"{Delimiter}{HelpName}") == true)
@@ -172,7 +149,7 @@ public struct CommandSettings
         return false;
     }
 
-    internal readonly bool ContainsVersionOption(string[] args)
+    internal bool ContainsVersionOption(string[] args)
     {
         if (VersionName != string.Empty
             && args.Contains($"{Delimiter}{VersionName}") == true)
@@ -189,6 +166,6 @@ public struct CommandSettings
         return false;
     }
 
-    internal readonly string GetLabelString(string label)
+    internal string GetLabelString(string label)
         => GetLabelString(label, LabelWidth, IndentSpaces);
 }

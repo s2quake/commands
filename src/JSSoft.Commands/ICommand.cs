@@ -12,4 +12,24 @@ public interface ICommand
     string[] Aliases { get; }
 
     bool IsEnabled { get; }
+
+    bool AllowsSubCommands { get; }
+
+    string Summary { get; }
+
+    string Description { get; }
+
+    string Example { get; }
+
+    string Category { get; }
+
+    ICommand? Parent { get; set; }
+
+    CommandCollection Commands { get; }
+
+    ICommandContext? Context { get; set; }
+
+    string[] GetCompletions(CommandCompletionContext completionContext);
+
+    string GetUsage(bool isDetail);
 }
