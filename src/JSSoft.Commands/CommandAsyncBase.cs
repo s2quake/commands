@@ -18,51 +18,46 @@ public abstract class CommandAsyncBase : ICommand, IAsyncExecutable
     private IProgress<ProgressInfo>? _progress;
 
     protected CommandAsyncBase()
-        : this(parent: (object?)null, name: null, aliases: [])
+        : this(parent: null!, name: string.Empty, aliases: [])
     {
     }
 
     protected CommandAsyncBase(string[] aliases)
-        : this(parent: (object?)null, name: null, aliases)
+        : this(parent: null!, name: string.Empty, aliases)
     {
     }
 
     protected CommandAsyncBase(string name)
-        : this(parent: (object?)null, name, aliases: [])
+        : this(parent: null!, name, aliases: [])
     {
     }
 
     protected CommandAsyncBase(string name, string[] aliases)
-        : this(parent: (object?)null, name, aliases)
+        : this(parent: null!, name, aliases)
     {
     }
 
     protected CommandAsyncBase(ICommand parent)
-        : this((object)parent, name: null, aliases: [])
+        : this(parent, name: string.Empty, aliases: [])
     {
     }
 
     protected CommandAsyncBase(ICommand parent, string[] aliases)
-        : this((object)parent, name: null, aliases)
+        : this(parent, name: string.Empty, aliases)
     {
     }
 
     protected CommandAsyncBase(ICommand parent, string name)
-        : this((object)parent, name, aliases: [])
+        : this(parent, name, aliases: [])
     {
     }
 
     protected CommandAsyncBase(ICommand parent, string name, string[] aliases)
-        : this((object)parent, name, aliases)
     {
-    }
-
-    private CommandAsyncBase(object? parent, string? name, string[] aliases)
-    {
-        Name = name ?? CommandUtility.ToSpinalCase(GetType());
+        Name = name == string.Empty ? CommandUtility.ToSpinalCase(GetType()) : name;
         Aliases = aliases;
         _usageDescriptor = CommandDescriptor.GetUsageDescriptor(GetType());
-        this.SetParent(parent as ICommand);
+        ICommandExtensions.SetParent(this, parent);
     }
 
     public string Name { get; }

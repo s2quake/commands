@@ -8,49 +8,52 @@ using JSSoft.Commands.Extensions;
 
 namespace JSSoft.Commands;
 
-public abstract class CommandMethodBase
-    : ICommand
+public abstract class CommandMethodBase : ICommand
 {
     private readonly CommandCollection _commands;
     private readonly CommandUsageDescriptorBase _usageDescriptor;
     private ICommandContext? _context;
 
     protected CommandMethodBase()
-        : this(aliases: [])
+        : this(parent: null!, name: string.Empty, aliases: [])
     {
     }
 
     protected CommandMethodBase(ICommand parent)
-        : this(parent, aliases: [])
+        : this(parent, name: string.Empty, aliases: [])
     {
     }
 
     protected CommandMethodBase(string[] aliases)
+        : this(parent: null!, name: string.Empty, aliases)
     {
-        Name = CommandUtility.ToSpinalCase(GetType());
-        Aliases = aliases;
-        _commands = CreateCommands(this);
-        _usageDescriptor = CommandDescriptor.GetUsageDescriptor(GetType());
     }
 
     protected CommandMethodBase(ICommand parent, string[] aliases)
+        : this(parent, name: string.Empty, aliases)
     {
-        Name = CommandUtility.ToSpinalCase(GetType());
-        Aliases = aliases;
-        this.SetParent(parent);
-        _commands = CreateCommands(this);
-        _usageDescriptor = CommandDescriptor.GetUsageDescriptor(GetType());
     }
 
     protected CommandMethodBase(string name)
-        : this(name, [])
+        : this(parent: null!, name, aliases: [])
+    {
+    }
+
+    protected CommandMethodBase(ICommand parent, string name)
+        : this(parent, name, aliases: [])
     {
     }
 
     protected CommandMethodBase(string name, string[] aliases)
+        : this(parent: null!, name, aliases)
     {
-        Name = name;
+    }
+
+    protected CommandMethodBase(ICommand parent, string name, string[] aliases)
+    {
+        Name = name == string.Empty ? CommandUtility.ToSpinalCase(GetType()) : name;
         Aliases = aliases;
+        ICommandExtensions.SetParent(this, parent);
         _commands = CreateCommands(this);
         _usageDescriptor = CommandDescriptor.GetUsageDescriptor(GetType());
     }

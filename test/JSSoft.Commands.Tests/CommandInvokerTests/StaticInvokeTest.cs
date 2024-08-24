@@ -75,8 +75,8 @@ public class StaticInvokeTest
         Assert.Equal(nameof(InstanceClass.Test0), raised.Arguments.MethodName);
     }
 
-    public static IEnumerable<object[]> TestData => new object[][]
-    {
+    public static IEnumerable<object[]> TestData =>
+    [
         [nameof(InstanceClass.Boolean), RandomUtility.Boolean()],
         [nameof(InstanceClass.String), RandomUtility.Word()],
         [nameof(InstanceClass.SByte), RandomUtility.SByte()],
@@ -90,7 +90,7 @@ public class StaticInvokeTest
         [nameof(InstanceClass.Single), RandomUtility.Single()],
         [nameof(InstanceClass.Double), RandomUtility.Double()],
         [nameof(InstanceClass.Decimal), RandomUtility.Decimal()],
-    };
+    ];
 
     [Theory]
     [MemberData(nameof(TestData))]
