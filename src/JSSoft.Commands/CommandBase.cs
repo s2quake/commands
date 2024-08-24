@@ -15,51 +15,46 @@ public abstract class CommandBase : ICommand, IExecutable
     private ICommandContext? _context;
 
     protected CommandBase()
-        : this(parent: (object?)null, name: null, aliases: [])
+        : this(parent: null!, name: string.Empty, aliases: [])
     {
     }
 
     protected CommandBase(string[] aliases)
-        : this(parent: (object?)null, name: null, aliases)
+        : this(parent: null!, name: string.Empty, aliases)
     {
     }
 
     protected CommandBase(string name)
-        : this(parent: (object?)null, name, aliases: [])
+        : this(parent: null!, name, aliases: [])
     {
     }
 
     protected CommandBase(string name, string[] aliases)
-        : this(parent: (object?)null, name, aliases)
+        : this(parent: null!, name, aliases)
     {
     }
 
     protected CommandBase(ICommand parent)
-        : this((object)parent, name: null, aliases: [])
+        : this(parent, name: string.Empty, aliases: [])
     {
     }
 
     protected CommandBase(ICommand parent, string[] aliases)
-        : this((object)parent, name: null, aliases)
+        : this(parent, name: string.Empty, aliases)
     {
     }
 
     protected CommandBase(ICommand parent, string name)
-        : this((object)parent, name, aliases: [])
+        : this(parent, name, aliases: [])
     {
     }
 
     protected CommandBase(ICommand parent, string name, string[] aliases)
-        : this((object)parent, name, aliases)
     {
-    }
-
-    private CommandBase(object? parent, string? name, string[] aliases)
-    {
-        Name = name ?? CommandUtility.ToSpinalCase(GetType());
+        Name = name == string.Empty ? CommandUtility.ToSpinalCase(GetType()) : name;
         Aliases = aliases;
         _usageDescriptor = CommandDescriptor.GetUsageDescriptor(GetType());
-        this.SetParent(parent as ICommand);
+        ICommandExtensions.SetParent(this, parent);
     }
 
     public string Name { get; }
