@@ -330,7 +330,12 @@ public static class CommandDescriptor
 
     private static CommandMemberDescriptor CreateParameterDescriptor(ParameterInfo parameterInfo)
     {
-        if (parameterInfo.GetCustomAttribute<ParamArrayAttribute>() is not null)
+        if (parameterInfo.IsDefined(typeof(ParamArrayAttribute)) == true)
+        {
+            return new CommandParameterArrayDescriptor(parameterInfo);
+        }
+
+        if (parameterInfo.IsDefined(typeof(CommandParameterArrayAttribute)) == true)
         {
             return new CommandParameterArrayDescriptor(parameterInfo);
         }

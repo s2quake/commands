@@ -253,6 +253,14 @@ public static class MethodInfoExtensions
             .Where(item => CommandUtility.IsSupportedType(item.ParameterType) != true);
         var parameterNames = GetValue<CommandMethodParameterAttribute, string[]>(
             @this, item => item.ParameterNames, []);
+        var arrayCount
+            = parameterInfos.Count(IsDefined<ParamArrayAttribute>)
+            + parameterInfos.Count(IsDefined<CommandParameterArrayAttribute>);
+        if (arrayCount > 1)
+        {
+            var message = $"Method '{@this}' can only have one parameter array.";
+            throw new CommandDefinitionException(message, @this);
+        }
 
         foreach (var parameterInfo in parameterInfos)
         {
