@@ -102,7 +102,6 @@ public class Property_CustomArray_Test
         Assert.True(memberDescriptor.IsExplicit);
         Assert.False(memberDescriptor.IsSwitch);
         Assert.False(memberDescriptor.IsVariables);
-        Assert.False(memberDescriptor.IsUnhandled);
         Assert.Equal(typeof(CustomType[]), memberDescriptor.MemberType);
         Assert.Equal(nameof(ParseClass.Member1), memberDescriptor.MemberName);
         Assert.True(memberDescriptor.IsGeneral);

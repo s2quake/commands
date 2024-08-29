@@ -28,7 +28,6 @@ public class Property_Variables_Test
         Assert.False(memberDescriptor.IsExplicit);
         Assert.False(memberDescriptor.IsSwitch);
         Assert.True(memberDescriptor.IsVariables);
-        Assert.False(memberDescriptor.IsUnhandled);
         Assert.Equal(typeof(string[]), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member1), memberDescriptor.MemberName);
     }

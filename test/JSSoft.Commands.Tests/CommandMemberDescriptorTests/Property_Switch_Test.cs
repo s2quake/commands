@@ -43,7 +43,6 @@ public class Property_Switch_Test
         Assert.True(memberDescriptor.IsExplicit);
         Assert.True(memberDescriptor.IsSwitch);
         Assert.False(memberDescriptor.IsVariables);
-        Assert.False(memberDescriptor.IsUnhandled);
         Assert.Equal(typeof(bool), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member1), memberDescriptor.MemberName);
     }
@@ -63,7 +62,6 @@ public class Property_Switch_Test
         Assert.True(memberDescriptor.IsExplicit);
         Assert.True(memberDescriptor.IsSwitch);
         Assert.False(memberDescriptor.IsVariables);
-        Assert.False(memberDescriptor.IsUnhandled);
         Assert.Equal(typeof(bool), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member2), memberDescriptor.MemberName);
     }
@@ -83,7 +81,6 @@ public class Property_Switch_Test
         Assert.True(memberDescriptor.IsExplicit);
         Assert.True(memberDescriptor.IsSwitch);
         Assert.False(memberDescriptor.IsVariables);
-        Assert.False(memberDescriptor.IsUnhandled);
         Assert.Equal(typeof(bool), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member3), memberDescriptor.MemberName);
     }
@@ -103,7 +100,6 @@ public class Property_Switch_Test
         Assert.True(memberDescriptor.IsExplicit);
         Assert.True(memberDescriptor.IsSwitch);
         Assert.False(memberDescriptor.IsVariables);
-        Assert.False(memberDescriptor.IsUnhandled);
         Assert.Equal(typeof(bool), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member4), memberDescriptor.MemberName);
     }
@@ -123,7 +119,6 @@ public class Property_Switch_Test
         Assert.True(memberDescriptor.IsExplicit);
         Assert.True(memberDescriptor.IsSwitch);
         Assert.False(memberDescriptor.IsVariables);
-        Assert.False(memberDescriptor.IsUnhandled);
         Assert.Equal(typeof(bool), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member5), memberDescriptor.MemberName);
     }
@@ -143,7 +138,6 @@ public class Property_Switch_Test
         Assert.True(memberDescriptor.IsExplicit);
         Assert.True(memberDescriptor.IsSwitch);
         Assert.False(memberDescriptor.IsVariables);
-        Assert.False(memberDescriptor.IsUnhandled);
         Assert.Equal(typeof(bool), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member6), memberDescriptor.MemberName);
     }

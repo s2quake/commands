@@ -8,27 +8,18 @@ using System.Threading.Tasks;
 
 namespace JSSoft.Commands;
 
-public abstract class CommandMemberDescriptor
+public abstract class CommandMemberDescriptor(
+    CommandMemberInfo memberInfo,
+    CommandMemberBaseAttribute attribute,
+    string memberName)
 {
     private string? _displayName;
 
-    protected CommandMemberDescriptor(
-        CommandMemberInfo memberInfo,
-        CommandMemberBaseAttribute attribute,
-        string memberName)
-    {
-        Owner = memberInfo;
-        Attribute = attribute;
-        MemberName = memberName;
-        Name = attribute.GetName(memberInfo, defaultName: memberName);
-        ShortName = attribute.GetShortName(memberInfo);
-    }
+    public CommandMemberInfo Owner { get; } = memberInfo;
 
-    public CommandMemberInfo Owner { get; }
+    public string Name { get; } = attribute.GetName(memberInfo, defaultName: memberName);
 
-    public string Name { get; }
-
-    public char ShortName { get; }
+    public char ShortName { get; } = attribute.GetShortName(memberInfo);
 
     public string DisplayName => _displayName ??= GenerateDisplayName(this);
 
@@ -46,17 +37,15 @@ public abstract class CommandMemberDescriptor
 
     public abstract bool IsGeneral { get; }
 
-    public abstract bool IsUnhandled { get; }
-
     public abstract bool IsNullable { get; }
 
     public abstract Type MemberType { get; }
 
-    public string MemberName { get; }
+    public string MemberName { get; } = memberName;
 
     public abstract CommandUsageDescriptorBase UsageDescriptor { get; }
 
-    protected CommandMemberBaseAttribute Attribute { get; }
+    protected CommandMemberBaseAttribute Attribute { get; } = attribute;
 
     public override string ToString() => $"{MemberName} [{DisplayName}]";
 

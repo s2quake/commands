@@ -27,14 +27,12 @@ public sealed class CommandParameterDescriptor : CommandMemberDescriptor
             = GetAttribute<CommandParameterCompletionAttribute>(parameterInfo);
         MemberType = parameterInfo.ParameterType;
         UsageDescriptor = CommandDescriptor.GetUsageDescriptor(parameterInfo);
-        IsRequired = attribute is not CommandParameterArrayAttribute
-            && attribute is not CommandParameterUnhandledAttribute;
+        IsRequired = attribute is not CommandParameterArrayAttribute;
         IsSwitch = parameterInfo.HasDefaultValue is true
             && parameterInfo.ParameterType == typeof(bool);
         IsExplicit = IsSwitch;
         IsVariables = attribute is CommandParameterArrayAttribute;
         IsGeneral = false;
-        IsUnhandled = attribute is CommandParameterUnhandledAttribute;
         IsNullable = CommandUtility.IsNullable(parameterInfo);
         DefaultValue = parameterInfo.DefaultValue;
         InitValue = GetInitValue(parameterInfo, attribute);
@@ -55,8 +53,6 @@ public sealed class CommandParameterDescriptor : CommandMemberDescriptor
     public override bool IsVariables { get; }
 
     public override bool IsGeneral { get; }
-
-    public override bool IsUnhandled { get; }
 
     public override bool IsNullable { get; }
 

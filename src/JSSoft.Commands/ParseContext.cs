@@ -57,7 +57,6 @@ internal sealed class ParseContext(
         var parseDescriptors = new ParseDescriptorCollection(memberDescriptors);
         var implicitParseDescriptors = parseDescriptors.CreateQueue();
         var variablesDescriptor = memberDescriptors.VariablesDescriptor;
-        var unhandledDescriptor = memberDescriptors.UnhandledDescriptor;
         var argQueue = CreateQueue(args);
         var variableList = new List<string>(argQueue.Count);
 
@@ -136,23 +135,14 @@ internal sealed class ParseContext(
 
         if (variableList.Count != 0)
         {
-            if (unhandledDescriptor is not null)
+            var sb = new StringBuilder();
+            sb.AppendLine("There are unhandled arguments.");
+            foreach (var item in variableList)
             {
-                var unhandledParseDescriptor = parseDescriptors[unhandledDescriptor];
-                unhandledParseDescriptor.SetVariablesValue(variableList);
-                variableList.Clear();
+                sb.AppendLine($"    {item}");
             }
-            else
-            {
-                var sb = new StringBuilder();
-                sb.AppendLine("There are unprocessed arguments.");
-                foreach (var item in variableList)
-                {
-                    sb.AppendLine($"    {item}");
-                }
 
-                throw new CommandLineException(sb.ToString());
-            }
+            throw new CommandLineException(sb.ToString());
         }
 
         return parseDescriptors;

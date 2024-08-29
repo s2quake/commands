@@ -43,7 +43,6 @@ public class Property_General_Test
         Assert.True(memberDescriptor.IsExplicit);
         Assert.False(memberDescriptor.IsSwitch);
         Assert.False(memberDescriptor.IsVariables);
-        Assert.False(memberDescriptor.IsUnhandled);
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member1), memberDescriptor.MemberName);
         Assert.True(memberDescriptor.IsGeneral);
@@ -64,7 +63,6 @@ public class Property_General_Test
         Assert.True(memberDescriptor.IsExplicit);
         Assert.False(memberDescriptor.IsSwitch);
         Assert.False(memberDescriptor.IsVariables);
-        Assert.False(memberDescriptor.IsUnhandled);
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member2), memberDescriptor.MemberName);
         Assert.True(memberDescriptor.IsGeneral);
@@ -85,7 +83,6 @@ public class Property_General_Test
         Assert.True(memberDescriptor.IsExplicit);
         Assert.False(memberDescriptor.IsSwitch);
         Assert.False(memberDescriptor.IsVariables);
-        Assert.False(memberDescriptor.IsUnhandled);
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member3), memberDescriptor.MemberName);
         Assert.True(memberDescriptor.IsGeneral);
@@ -106,7 +103,6 @@ public class Property_General_Test
         Assert.True(memberDescriptor.IsExplicit);
         Assert.False(memberDescriptor.IsSwitch);
         Assert.False(memberDescriptor.IsVariables);
-        Assert.False(memberDescriptor.IsUnhandled);
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member4), memberDescriptor.MemberName);
         Assert.True(memberDescriptor.IsGeneral);
@@ -127,7 +123,6 @@ public class Property_General_Test
         Assert.True(memberDescriptor.IsExplicit);
         Assert.False(memberDescriptor.IsSwitch);
         Assert.False(memberDescriptor.IsVariables);
-        Assert.False(memberDescriptor.IsUnhandled);
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member5), memberDescriptor.MemberName);
         Assert.True(memberDescriptor.IsGeneral);
@@ -148,7 +143,6 @@ public class Property_General_Test
         Assert.True(memberDescriptor.IsExplicit);
         Assert.False(memberDescriptor.IsSwitch);
         Assert.False(memberDescriptor.IsVariables);
-        Assert.False(memberDescriptor.IsUnhandled);
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member6), memberDescriptor.MemberName);
         Assert.True(memberDescriptor.IsGeneral);

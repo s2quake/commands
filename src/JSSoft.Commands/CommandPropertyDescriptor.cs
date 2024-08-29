@@ -44,7 +44,6 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
         IsSwitch = CommandPropertyBaseAttribute.IsSwitch(attribute, propertyInfo);
         IsVariables = CommandPropertyBaseAttribute.IsVariables(attribute, propertyInfo);
         IsGeneral = CommandPropertyBaseAttribute.IsGeneral(attribute, propertyInfo);
-        IsUnhandled = CommandPropertyBaseAttribute.IsUnhandled(attribute, propertyInfo);
         IsNullable = CommandUtility.IsNullable(propertyInfo);
         DefaultValue = GetDefaultValue(attribute);
         InitValue = GetInitValue(attribute);
@@ -65,8 +64,6 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
     public override bool IsVariables { get; }
 
     public override bool IsGeneral { get; }
-
-    public override bool IsUnhandled { get; }
 
     public override bool IsNullable { get; }
 
