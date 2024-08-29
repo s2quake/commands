@@ -33,8 +33,7 @@ public class CustomParameterFailTest
 
         [CommandMethod]
         [CommandMethodProperty(nameof(String))]
-        [CommandMethodParameter(nameof(customParameter))]
-        public void Method1(CustomParameter customParameter)
+        public void Method1([CommandParameter] CustomParameter customParameter)
         {
         }
     }
@@ -42,8 +41,7 @@ public class CustomParameterFailTest
     private sealed class Test2Command : CommandMethodBase
     {
         [CommandMethod]
-        [CommandMethodParameter(nameof(id))]
-        public void Method1(CustomParameter customParameter, string id)
+        public void Method1(CustomParameter customParameter, [CommandParameter]string id)
         {
         }
     }

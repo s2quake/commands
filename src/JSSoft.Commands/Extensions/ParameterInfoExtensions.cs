@@ -39,9 +39,7 @@ public static class ParameterInfoExtensions
 
         if (CommandUtility.IsSupportedType(@this.ParameterType) != true)
         {
-            var parameterNames = GetValue<CommandMethodParameterAttribute, string[]>(
-                @this.Member, item => item.ParameterNames, []);
-            return parameterNames.Contains(@this.Name);
+            return IsDefined<CommandParameterAttribute>(@this);
         }
 
         return true;

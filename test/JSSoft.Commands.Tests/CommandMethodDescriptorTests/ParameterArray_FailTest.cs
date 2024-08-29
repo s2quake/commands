@@ -110,4 +110,23 @@ public class ParameterArray_FailTest
 
         Assert.Equal(expectedValue, exception.Source);
     }
+
+    [CommandMethod]
+    internal void Method6(
+        [CommandParameterArray] string value)
+    {
+    }
+
+    [Fact]
+    public void Method6_FailTest()
+    {
+        var bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+        var declaringType = typeof(ParameterArray_FailTest);
+        var methodInfo = declaringType.GetMethod(nameof(Method6), bindingFlags)!;
+        var exception = Assert.Throws<CommandDefinitionException>(
+            () => CommandDescriptor.GetMemberDescriptors(declaringType, nameof(Method6)));
+        var expectedValue = new CommandMemberInfo(methodInfo).ToString();
+
+        Assert.Equal(expectedValue, exception.Source);
+    }
 }

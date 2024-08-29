@@ -242,7 +242,6 @@ public static class CommandDescriptor
         var memberDescriptorList = new List<CommandMemberDescriptor>();
         if (methodInfo.IsBrowsable() == true)
         {
-            var methodParameterNames = methodInfo.GetMethodParameterNames();
             var parameterInfos = methodInfo.GetParameters();
             var methodMemberDescriptors = GetMethodMemberDescriptors(methodInfo);
             var methodStaticMemberDescriptors = GetMethodStaticMemberDescriptors(methodInfo);
@@ -259,7 +258,7 @@ public static class CommandDescriptor
                 {
                     memberDescriptorList.Add(CreateParameterDescriptor(item));
                 }
-                else if (methodParameterNames.Contains(item.Name) == true)
+                else if (IsDefined<CommandParameterAttribute>(item) == true)
                 {
                     memberDescriptorList.AddRange(GetMemberDescriptors(item.ParameterType));
                 }

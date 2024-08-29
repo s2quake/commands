@@ -22,10 +22,11 @@ public class AsyncMethod_FailTest
     }
 
     [Fact]
-    public void Base_Method1_Test()
+    public void Method1_Test()
     {
+        var declaringType = typeof(Method1Class);
         Assert.ThrowsAny<CommandDefinitionException>(
-            () => CommandDescriptor.GetMethodDescriptors(typeof(Method1Class)));
+            () => CommandDescriptor.GetMethodDescriptors(declaringType));
     }
 
     private sealed class Method2Class
@@ -38,10 +39,11 @@ public class AsyncMethod_FailTest
     }
 
     [Fact]
-    public void Base_Method2_Test()
+    public void Method2_Test()
     {
+        var declaringType = typeof(Method2Class);
         Assert.ThrowsAny<CommandDefinitionException>(
-            () => CommandDescriptor.GetMethodDescriptors(typeof(Method2Class)));
+            () => CommandDescriptor.GetMethodDescriptors(declaringType));
     }
 
     private sealed class Method3Class
@@ -54,10 +56,11 @@ public class AsyncMethod_FailTest
     }
 
     [Fact]
-    public void Base_Method3_Test()
+    public void Method3_Test()
     {
+        var declaringType = typeof(Method3Class);
         Assert.ThrowsAny<CommandDefinitionException>(
-            () => CommandDescriptor.GetMethodDescriptors(typeof(Method3Class)));
+            () => CommandDescriptor.GetMethodDescriptors(declaringType));
     }
 
     private sealed class Method4Class
@@ -70,10 +73,11 @@ public class AsyncMethod_FailTest
     }
 
     [Fact]
-    public void Base_Method4_Test()
+    public void Method4_Test()
     {
+        var declaringType = typeof(Method4Class);
         Assert.ThrowsAny<CommandDefinitionException>(
-            () => CommandDescriptor.GetMethodDescriptors(typeof(Method4Class)));
+            () => CommandDescriptor.GetMethodDescriptors(declaringType));
     }
 
     private sealed class Method5Class
@@ -86,10 +90,11 @@ public class AsyncMethod_FailTest
     }
 
     [Fact]
-    public void Base_Method5_Test()
+    public void Method5_Test()
     {
+        var declaringType = typeof(Method5Class);
         Assert.ThrowsAny<CommandDefinitionException>(
-            () => CommandDescriptor.GetMethodDescriptors(typeof(Method5Class)));
+            () => CommandDescriptor.GetMethodDescriptors(declaringType));
     }
 
     private sealed class Method6Class
@@ -102,10 +107,11 @@ public class AsyncMethod_FailTest
     }
 
     [Fact]
-    public void Base_Method6_Test()
+    public void Method6_Test()
     {
+        var declaringType = typeof(Method6Class);
         Assert.ThrowsAny<CommandDefinitionException>(
-            () => CommandDescriptor.GetMethodDescriptors(typeof(Method6Class)));
+            () => CommandDescriptor.GetMethodDescriptors(declaringType));
     }
 
     private sealed class Method7Class
@@ -118,10 +124,11 @@ public class AsyncMethod_FailTest
     }
 
     [Fact]
-    public void Base_Method7_Test()
+    public void Method7_Test()
     {
+        var declaringType = typeof(Method7Class);
         Assert.ThrowsAny<CommandDefinitionException>(
-            () => CommandDescriptor.GetMethodDescriptors(typeof(Method7Class)));
+            () => CommandDescriptor.GetMethodDescriptors(declaringType));
     }
 
     private sealed class Method8Class
@@ -134,10 +141,11 @@ public class AsyncMethod_FailTest
     }
 
     [Fact]
-    public void Base_Method8_Test()
+    public void Method8_Test()
     {
+        var declaringType = typeof(Method8Class);
         Assert.ThrowsAny<CommandDefinitionException>(
-            () => CommandDescriptor.GetMethodDescriptors(typeof(Method8Class)));
+            () => CommandDescriptor.GetMethodDescriptors(declaringType));
     }
 
     private sealed class Method9Class
@@ -150,9 +158,10 @@ public class AsyncMethod_FailTest
     }
 
     [Fact]
-    public void Base_Method9_Test()
+    public void Method9_Test()
     {
+        var declaringType = typeof(Method9Class);
         Assert.ThrowsAny<CommandDefinitionException>(
-            () => CommandDescriptor.GetMethodDescriptors(typeof(Method9Class)));
+            () => CommandDescriptor.GetMethodDescriptors(declaringType));
     }
 }
