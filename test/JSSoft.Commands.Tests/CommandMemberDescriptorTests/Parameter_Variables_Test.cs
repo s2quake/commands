@@ -32,10 +32,10 @@ public class Parameter_Variables_Test
             type: typeof(InstanceClass),
             methodName: nameof(InstanceClass.Test1));
         var memberDescriptor = memberDescriptors["args"];
-        Assert.IsType<CommandParameterArrayDescriptor>(memberDescriptor);
+        Assert.IsType<CommandParameterDescriptor>(memberDescriptor);
         Assert.Equal("args", memberDescriptor.Name);
         Assert.Equal(char.MinValue, memberDescriptor.ShortName);
-        Assert.Equal("args", memberDescriptor.DisplayName);
+        Assert.Equal("args...", memberDescriptor.DisplayName);
         Assert.Equivalent(Array.Empty<string>(), memberDescriptor.InitValue);
         Assert.Equal(DBNull.Value, memberDescriptor.DefaultValue);
         Assert.False(memberDescriptor.IsRequired);
@@ -54,10 +54,10 @@ public class Parameter_Variables_Test
             type: typeof(InstanceClass),
             methodName: nameof(InstanceClass.Test2));
         var memberDescriptor = memberDescriptors["Args"];
-        Assert.IsType<CommandParameterArrayDescriptor>(memberDescriptor);
+        Assert.IsType<CommandParameterDescriptor>(memberDescriptor);
         Assert.Equal("args", memberDescriptor.Name);
         Assert.Equal(char.MinValue, memberDescriptor.ShortName);
-        Assert.Equal("args", memberDescriptor.DisplayName);
+        Assert.Equal("args...", memberDescriptor.DisplayName);
         Assert.Equivalent(Array.Empty<string>(), memberDescriptor.InitValue);
         Assert.Equal(DBNull.Value, memberDescriptor.DefaultValue);
         Assert.False(memberDescriptor.IsRequired);

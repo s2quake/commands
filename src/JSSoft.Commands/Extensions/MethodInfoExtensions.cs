@@ -94,9 +94,9 @@ public static class MethodInfoExtensions
 
                 var parameterTypes = new Type[]
                 {
-                        typeof(CommandMemberDescriptor),
-                        typeof(string),
-                        typeof(CancellationToken),
+                    typeof(CommandMemberDescriptor),
+                    typeof(string),
+                    typeof(CancellationToken),
                 };
                 var preferredMethodName = GenerateMethodInfoName(
                     methodName, typeof(Task<string[]>), parameterTypes);
@@ -112,8 +112,8 @@ public static class MethodInfoExtensions
 
                 var parameterTypes = new Type[]
                 {
-                        typeof(CommandMemberDescriptor),
-                        typeof(string),
+                    typeof(CommandMemberDescriptor),
+                    typeof(string),
                 };
                 var preferredMethodName = GenerateMethodInfoName(
                     methodName, typeof(string[]), parameterTypes);
@@ -255,8 +255,8 @@ public static class MethodInfoExtensions
             .Where(item => item.IsCommandParameter() == true)
             .ToArray();
         var hasParamArray = Array.Exists(availableParamInfos, IsDefined<ParamArrayAttribute>);
-        var commandParamsArray = availableParamInfos.Where(IsDefined<CommandParameterArrayAttribute>)
-            .ToArray();
+        var commandParamsArray
+            = availableParamInfos.Where(IsDefined<CommandParameterArrayAttribute>).ToArray();
 
         if (Array.Exists(commandParamsArray, item => item.ParameterType.IsArray != true))
         {

@@ -5,7 +5,6 @@
 
 namespace JSSoft.Commands;
 
-[AttributeUsage(AttributeTargets.Parameter)]
-public sealed class CommandParameterAttribute : Attribute
+public sealed class CommandParameterAttribute : CommandParameterBaseAttribute
 {
 }

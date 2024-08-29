@@ -27,6 +27,7 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
         }
 
         var query = from memberDescriptor in memberDescriptors
+                    orderby memberDescriptor.IsUnhandled descending
                     orderby memberDescriptor.DefaultValue != DBNull.Value
                     orderby memberDescriptor.IsGeneral descending
                     orderby memberDescriptor.IsVariables descending

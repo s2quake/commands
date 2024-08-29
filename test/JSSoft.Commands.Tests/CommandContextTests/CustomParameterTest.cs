@@ -38,7 +38,7 @@ public class CustomParameterTest
         };
         var commandContext = new TestCommandContext(commands);
         await commandContext.ExecuteAsync(
-                "test method2 hello2 --boolean --name world2", CancellationToken.None);
+            "test method2 hello2 --boolean --name world2", CancellationToken.None);
         var customParameter = testCommand.CustomParameter;
         Assert.NotNull(customParameter);
         Assert.Equal("hello2", customParameter.String);
@@ -76,7 +76,7 @@ public class CustomParameterTest
         };
         var commandContext = new TestCommandContext(commands);
         await commandContext.ExecuteAsync(
-                "test method4 id4 hello4 --boolean --name world4", CancellationToken.None);
+            "test method4 id4 hello4 --boolean --name world4", CancellationToken.None);
         var customParameter = testCommand.CustomParameter;
         Assert.NotNull(customParameter);
         Assert.Equal("id4", testCommand.Value);

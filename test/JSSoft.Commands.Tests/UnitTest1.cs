@@ -57,7 +57,7 @@ public class UnitTest1
     {
         var commands = new Commands();
         var invoker = new CommandInvoker(commands);
-        invoker.Invoke("push-many a b");
+        invoker.Invoke("push-many -- a b");
         Assert.Equal("push-many", commands.Result);
     }
 

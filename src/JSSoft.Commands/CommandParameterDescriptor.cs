@@ -13,8 +13,9 @@ public sealed class CommandParameterDescriptor : CommandMemberDescriptor
     private readonly CommandParameterCompletionAttribute? _completionAttribute;
     private object? _value;
 
-    internal CommandParameterDescriptor(ParameterInfo parameterInfo)
-        : base(parameterInfo, new CommandPropertyRequiredAttribute(), parameterInfo.Name!)
+    internal CommandParameterDescriptor(
+        ParameterInfo parameterInfo, CommandParameterBaseAttribute attribute)
+        : base(parameterInfo, attribute, parameterInfo.Name!)
     {
         if (parameterInfo.Name is null)
         {
@@ -23,16 +24,39 @@ public sealed class CommandParameterDescriptor : CommandMemberDescriptor
 
         _value = parameterInfo.DefaultValue;
         _completionAttribute
-            = GetCustomAttribute<CommandParameterCompletionAttribute>(parameterInfo);
-        DefaultValue = parameterInfo.DefaultValue;
+            = GetAttribute<CommandParameterCompletionAttribute>(parameterInfo);
         MemberType = parameterInfo.ParameterType;
         UsageDescriptor = CommandDescriptor.GetUsageDescriptor(parameterInfo);
+        IsRequired = attribute is not CommandParameterArrayAttribute
+            && attribute is not CommandParameterUnhandledAttribute;
+        IsSwitch = parameterInfo.HasDefaultValue is true
+            && parameterInfo.ParameterType == typeof(bool);
+        IsExplicit = IsSwitch;
+        IsVariables = attribute is CommandParameterArrayAttribute;
+        IsGeneral = false;
+        IsUnhandled = attribute is CommandParameterUnhandledAttribute;
         IsNullable = CommandUtility.IsNullable(parameterInfo);
+        DefaultValue = parameterInfo.DefaultValue;
+        InitValue = GetInitValue(parameterInfo, attribute);
     }
+
+    public override Type MemberType { get; }
+
+    public override object? InitValue { get; } = DBNull.Value;
 
     public override object? DefaultValue { get; }
 
-    public override Type MemberType { get; }
+    public override bool IsRequired { get; }
+
+    public override bool IsExplicit { get; }
+
+    public override bool IsSwitch { get; }
+
+    public override bool IsVariables { get; }
+
+    public override bool IsGeneral { get; }
+
+    public override bool IsUnhandled { get; }
 
     public override bool IsNullable { get; }
 
@@ -50,5 +74,16 @@ public sealed class CommandParameterDescriptor : CommandMemberDescriptor
         }
 
         return base.GetCompletion(instance, find);
+    }
+
+    private static object GetInitValue(
+        ParameterInfo parameterInfo, CommandParameterBaseAttribute attribute)
+    {
+        if (attribute is CommandParameterArrayAttribute)
+        {
+            return Array.CreateInstance(parameterInfo.ParameterType.GetElementType()!, 0);
+        }
+
+        return DBNull.Value;
     }
 }

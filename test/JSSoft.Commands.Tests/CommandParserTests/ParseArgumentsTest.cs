@@ -91,8 +91,8 @@ public class ParseArgumentsTest()
         public decimal[] Arguments { get; set; } = [];
     }
 
-    public static IEnumerable<object[]> TestData => new object[][]
-    {
+    public static IEnumerable<object[]> TestData =>
+    [
         [typeof(BooleanClass), RandomUtility.Array(RandomUtility.Boolean, 1, 10)],
         [typeof(StringClass), RandomUtility.Array(RandomUtility.Word, 1, 10)],
         [typeof(SByteClass), RandomUtility.Array(RandomUtility.SByte, 1, 10)],
@@ -106,7 +106,7 @@ public class ParseArgumentsTest()
         [typeof(SingleClass), RandomUtility.Array(RandomUtility.Single, 1, 10)],
         [typeof(DoubleClass), RandomUtility.Array(RandomUtility.Double, 1, 10)],
         [typeof(DecimalClass), RandomUtility.Array(RandomUtility.Decimal, 1, 10)],
-    };
+    ];
 
     [Theory]
     [MemberData(nameof(TestData))]

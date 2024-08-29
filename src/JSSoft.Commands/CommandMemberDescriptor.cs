@@ -3,9 +3,6 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
-// Reflection should not be used to increase accessibility of classes, methods, or fields
-#pragma warning disable S3011
-
 using System.Diagnostics;
 using System.Threading.Tasks;
 
@@ -13,9 +10,11 @@ namespace JSSoft.Commands;
 
 public abstract class CommandMemberDescriptor
 {
+    private string? _displayName;
+
     protected CommandMemberDescriptor(
         CommandMemberInfo memberInfo,
-        CommandPropertyBaseAttribute attribute,
+        CommandMemberBaseAttribute attribute,
         string memberName)
     {
         Owner = memberInfo;
@@ -23,17 +22,6 @@ public abstract class CommandMemberDescriptor
         MemberName = memberName;
         Name = attribute.GetName(memberInfo, defaultName: memberName);
         ShortName = attribute.GetShortName(memberInfo);
-        IsRequired = attribute is CommandPropertyRequiredAttribute
-            || attribute is CommandPropertyExplicitRequiredAttribute;
-        IsExplicit = attribute is CommandPropertyExplicitRequiredAttribute
-            || attribute is CommandPropertyAttribute
-            || attribute is CommandPropertySwitchAttribute;
-        IsSwitch = attribute is CommandPropertySwitchAttribute;
-        IsVariables = attribute is CommandPropertyArrayAttribute;
-        IsGeneral = attribute is CommandPropertyAttribute;
-        DefaultValue = GetDefaultValue(attribute);
-        InitValue = GetInitValue(attribute);
-        DisplayName = GenerateDisplayName(this);
     }
 
     public CommandMemberInfo Owner { get; }
@@ -42,21 +30,23 @@ public abstract class CommandMemberDescriptor
 
     public char ShortName { get; }
 
-    public virtual string DisplayName { get; }
+    public string DisplayName => _displayName ??= GenerateDisplayName(this);
 
-    public virtual object? InitValue { get; }
+    public abstract object? InitValue { get; }
 
-    public virtual object? DefaultValue { get; }
+    public abstract object? DefaultValue { get; }
 
-    public bool IsRequired { get; }
+    public abstract bool IsRequired { get; }
 
-    public bool IsExplicit { get; }
+    public abstract bool IsExplicit { get; }
 
-    public bool IsSwitch { get; }
+    public abstract bool IsSwitch { get; }
 
-    public bool IsVariables { get; }
+    public abstract bool IsVariables { get; }
 
-    public bool IsGeneral { get; }
+    public abstract bool IsGeneral { get; }
+
+    public abstract bool IsUnhandled { get; }
 
     public abstract bool IsNullable { get; }
 
@@ -66,7 +56,7 @@ public abstract class CommandMemberDescriptor
 
     public abstract CommandUsageDescriptorBase UsageDescriptor { get; }
 
-    protected CommandPropertyBaseAttribute Attribute { get; }
+    protected CommandMemberBaseAttribute Attribute { get; }
 
     public override string ToString() => $"{MemberName} [{DisplayName}]";
 
@@ -146,6 +136,17 @@ public abstract class CommandMemberDescriptor
 
     private static string GenerateDisplayName(CommandMemberDescriptor memberDescriptor)
     {
+        var memberInfo = memberDescriptor.Owner;
+        if (memberInfo.TryGetDisplayName(out var displayName) == true)
+        {
+            return displayName;
+        }
+
+        if (memberDescriptor.IsVariables is true)
+        {
+            return $"{memberDescriptor.Name}...";
+        }
+
         var itemList = new List<string>(2)
         {
             GetNamePattern(),
@@ -187,40 +188,5 @@ public abstract class CommandMemberDescriptor
 
             return $"{memberDescriptor.ShortName}";
         }
-    }
-
-    private static object GetDefaultValue(CommandPropertyBaseAttribute attribute)
-    {
-        if (attribute is CommandPropertyExplicitRequiredAttribute explicitAttribute)
-        {
-            return explicitAttribute.DefaultValue;
-        }
-
-        if (attribute is CommandPropertyRequiredAttribute requiredAttribute)
-        {
-            return requiredAttribute.DefaultValue;
-        }
-
-        if (attribute is CommandPropertyAttribute generalAttribute)
-        {
-            return generalAttribute.DefaultValue;
-        }
-
-        return DBNull.Value;
-    }
-
-    private static object GetInitValue(CommandPropertyBaseAttribute attribute)
-    {
-        if (attribute is CommandPropertyArrayAttribute arrayAttribute)
-        {
-            return arrayAttribute.InitValue;
-        }
-
-        if (attribute is CommandPropertyAttribute generalAttribute)
-        {
-            return generalAttribute.InitValue;
-        }
-
-        return DBNull.Value;
     }
 }
