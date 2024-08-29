@@ -13,7 +13,7 @@ public class CommandParsingException(
     : Exception(innerException?.Message, innerException), ICommandUsage
 {
     private readonly CommandUsageDescriptorBase _usageDescriptor
-        = CommandDescriptor.GetUsageDescriptor(parser.Instance.GetType());
+        = CommandDescriptor.GetUsageDescriptor(parser.InstanceType);
 
     public CommandParsingException(CommandParser parser, CommandParsingError error, string[] args)
         : this(parser, error, args, innerException: null)
@@ -27,7 +27,7 @@ public class CommandParsingException(
     public CommandParser Parser { get; } = parser;
 
     public CommandMemberDescriptorCollection MemberDescriptors
-        => CommandDescriptor.GetMemberDescriptors(Parser.Instance);
+        => CommandDescriptor.GetMemberDescriptors(Parser.InstanceType);
 
     string ICommandUsage.ExecutionName => Parser.ExecutionName;
 

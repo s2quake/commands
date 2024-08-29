@@ -52,6 +52,8 @@ public abstract class CommandAnalyzer
 
     public object Instance { get; }
 
+    public Type InstanceType => Instance is Type type ? type : Instance.GetType();
+
     public string Version { get; set; } = $"{new Version(1, 0)}";
 
     public string Copyright { get; set; } = string.Empty;
