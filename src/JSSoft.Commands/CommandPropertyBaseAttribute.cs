@@ -83,5 +83,18 @@ public abstract class CommandPropertyBaseAttribute : CommandMemberBaseAttribute
 
     internal static bool IsUnhandled(
         CommandPropertyBaseAttribute attribute, PropertyInfo propertyInfo)
-        => attribute is CommandPropertyUnhandledAttribute;
+    {
+        if (attribute is CommandPropertyUnhandledAttribute)
+        {
+            if (propertyInfo.PropertyType != typeof(string[]))
+            {
+                var message = $"The property type of '{propertyInfo.Name}' must be string[].";
+                throw new CommandDefinitionException(message, propertyInfo);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
 }

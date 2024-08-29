@@ -86,7 +86,8 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
 
         Owner = owner;
         RequirementDescriptors = [.. Enumerable.Where(this, IsRequiredDescriptor)];
-        VariablesDescriptor = memberDescriptors.SingleOrDefault(IsVariableDescriptor);
+        VariablesDescriptor = memberDescriptors.SingleOrDefault(IsVariablesDescriptor);
+        UnhandledDescriptor = memberDescriptors.SingleOrDefault(IsUnhandledDescriptor);
         OptionDescriptors = [.. Enumerable.Where(this, IsOptionDescriptor)];
     }
 
@@ -95,6 +96,8 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
     public CommandMemberInfo Owner { get; }
 
     public CommandMemberDescriptor? VariablesDescriptor { get; }
+
+    public CommandMemberDescriptor? UnhandledDescriptor { get; }
 
     public bool HasOptions => OptionDescriptors.Length > 0;
 
@@ -200,6 +203,9 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
     private static bool IsOptionDescriptor(CommandMemberDescriptor memberDescriptor)
         => memberDescriptor.IsGeneral == true || memberDescriptor.IsSwitch == true;
 
-    private static bool IsVariableDescriptor(CommandMemberDescriptor memberDescriptor)
+    private static bool IsVariablesDescriptor(CommandMemberDescriptor memberDescriptor)
         => memberDescriptor.IsVariables;
+
+    private static bool IsUnhandledDescriptor(CommandMemberDescriptor memberDescriptor)
+        => memberDescriptor.IsUnhandled;
 }
