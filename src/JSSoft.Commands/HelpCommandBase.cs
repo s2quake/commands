@@ -12,6 +12,11 @@ namespace JSSoft.Commands;
 [ResourceUsage]
 public abstract class HelpCommandBase : CommandBase
 {
+    protected HelpCommandBase()
+        : base("help")
+    {
+    }
+
     [CommandPropertyArray]
     public string[] CommandNames { get; set; } = [];
 
