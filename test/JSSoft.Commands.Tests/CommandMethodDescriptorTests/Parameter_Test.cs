@@ -1,4 +1,4 @@
-// <copyright file="CustomParameter_Test.cs" company="JSSoft">
+// <copyright file="Parameter_Test.cs" company="JSSoft">
 //   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
@@ -7,13 +7,12 @@
 
 namespace JSSoft.Commands.Tests.CommandMethodDescriptorTests;
 
-public class CustomParameter_Test
+public class Parameter_Test
 {
     private CustomParameter? _customParameter;
 
     [CommandMethod]
-    [CommandMethodParameter(nameof(customParameter))]
-    internal void Method1(CustomParameter customParameter)
+    internal void Method1([CommandParameter] CustomParameter customParameter)
     {
         _customParameter = customParameter;
     }
@@ -21,7 +20,7 @@ public class CustomParameter_Test
     [Fact]
     public void Base_Method1_CustomParameterTest()
     {
-        var declaringType = typeof(CustomParameter_Test);
+        var declaringType = typeof(Parameter_Test);
         var methodDescriptors = CommandDescriptor.GetMethodDescriptors(declaringType);
         var methodDescriptor = methodDescriptors[nameof(Method1)];
         var index = 0;

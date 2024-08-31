@@ -17,7 +17,7 @@ public class Method_Test
     }
 
     [Fact]
-    public void Base_Method1_Test()
+    public void Method1_Test()
     {
         var methodDescriptors = CommandDescriptor.GetMethodDescriptors(typeof(Method_Test));
         var methodDescriptor = methodDescriptors[nameof(Method1)];
@@ -37,7 +37,7 @@ public class Method_Test
     }
 
     [Fact]
-    public void Base_Method2_Test()
+    public void Method2_Test()
     {
         var methodDescriptors = CommandDescriptor.GetMethodDescriptors(typeof(Method_Test));
         var methodDescriptor = methodDescriptors[nameof(Method2)];
@@ -57,7 +57,7 @@ public class Method_Test
     }
 
     [Fact]
-    public void Base_Method3_Test()
+    public void Method3_Test()
     {
         var methodDescriptors = CommandDescriptor.GetMethodDescriptors(typeof(Method_Test));
         var methodDescriptor = methodDescriptors[nameof(Method3)];
@@ -78,7 +78,7 @@ public class Method_Test
     }
 
     [Fact]
-    public void Base_Method4_Test()
+    public void Method4_Test()
     {
         var methodDescriptors = CommandDescriptor.GetMethodDescriptors(typeof(Method_Test));
         var methodDescriptor = methodDescriptors[nameof(Method4)];
@@ -99,7 +99,7 @@ public class Method_Test
     }
 
     [Fact]
-    public void Base_Method5_Test()
+    public void Method5_Test()
     {
         var methodDescriptors = CommandDescriptor.GetMethodDescriptors(typeof(Method_Test));
         var methodDescriptor = methodDescriptors[nameof(Method5)];

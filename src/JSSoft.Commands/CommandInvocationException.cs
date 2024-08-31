@@ -13,7 +13,7 @@ public class CommandInvocationException(
     : Exception(innerException?.Message, innerException), ICommandUsage
 {
     private readonly CommandUsageDescriptorBase _usageDescriptor
-        = CommandDescriptor.GetUsageDescriptor(invoker.Instance.GetType());
+        = CommandDescriptor.GetUsageDescriptor(invoker.InstanceType);
 
     public CommandInvocationException(
         CommandInvoker invoker, CommandInvocationError error, string[] args)
@@ -28,7 +28,7 @@ public class CommandInvocationException(
     public CommandInvoker Invoker { get; } = invoker;
 
     public CommandMethodDescriptorCollection MethodDescriptors
-        => CommandDescriptor.GetMethodDescriptors(Invoker.Instance.GetType());
+        => CommandDescriptor.GetMethodDescriptors(Invoker.InstanceType);
 
     string ICommandUsage.ExecutionName => Invoker.ExecutionName;
 

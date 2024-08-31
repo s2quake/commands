@@ -8,63 +8,76 @@ using JSSoft.Commands.Exceptions;
 namespace JSSoft.Commands;
 
 [AttributeUsage(AttributeTargets.Property)]
-public abstract class CommandPropertyBaseAttribute : Attribute
+public abstract class CommandPropertyBaseAttribute : CommandMemberBaseAttribute
 {
     private protected CommandPropertyBaseAttribute()
     {
-        AllowName = true;
     }
 
     private protected CommandPropertyBaseAttribute(string name)
+        : base(name)
     {
-        Name = name;
     }
 
     private protected CommandPropertyBaseAttribute(string name, char shortName)
+        : base(name, shortName)
     {
-        Name = name;
-        ShortName = shortName;
     }
 
     private protected CommandPropertyBaseAttribute(char shortName)
-        : this(shortName, useName: false)
+        : base(shortName)
     {
     }
 
     private protected CommandPropertyBaseAttribute(char shortName, bool useName)
+        : base(shortName, useName)
     {
-        ShortName = shortName;
-        AllowName = useName;
     }
 
-    public string Name { get; } = string.Empty;
+    internal static bool IsRequired(
+        CommandPropertyBaseAttribute attribute, PropertyInfo propertyInfo)
+        => attribute is CommandPropertyRequiredAttribute
+            or CommandPropertyExplicitRequiredAttribute;
 
-    public char ShortName { get; }
+    internal static bool IsExplicit(
+        CommandPropertyBaseAttribute attribute, PropertyInfo propertyInfo)
+        => attribute is CommandPropertyExplicitRequiredAttribute
+            or CommandPropertyAttribute
+            or CommandPropertySwitchAttribute;
 
-    public bool AllowName { get; }
-
-    internal char GetShortName(CommandMemberInfo memberInfo)
+    internal static bool IsSwitch(
+        CommandPropertyBaseAttribute attribute, PropertyInfo propertyInfo)
     {
-        if (ShortName != char.MinValue)
+        if (attribute is CommandPropertySwitchAttribute)
         {
-            if (CommandUtility.IsShortName(ShortName) != true)
+            if (propertyInfo.PropertyType != typeof(bool))
             {
-                throw new CommandInvalidShortNameException(memberInfo, ShortName);
+                throw new CommandPropertyCannotBeUsedAsSwitchTypeException(propertyInfo);
             }
 
-            return ShortName;
+            return true;
         }
 
-        return char.MinValue;
+        return false;
     }
 
-    internal string GetName(CommandMemberInfo memberInfo, string defaultName)
+    internal static bool IsVariables(
+        CommandPropertyBaseAttribute attribute, PropertyInfo propertyInfo)
     {
-        if (Name != string.Empty)
+        if (attribute is CommandPropertyArrayAttribute)
         {
-            return Name;
+            if (propertyInfo.PropertyType.IsArray != true)
+            {
+                throw new CommandPropertyCannotBeUsedAsVariablesTypeException(propertyInfo);
+            }
+
+            return true;
         }
 
-        return AllowName == true ? CommandUtility.ToSpinalCase(defaultName) : string.Empty;
+        return false;
     }
+
+    internal static bool IsGeneral(
+        CommandPropertyBaseAttribute attribute, PropertyInfo propertyInfo)
+        => attribute is CommandPropertyAttribute;
 }

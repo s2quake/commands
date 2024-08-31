@@ -20,7 +20,7 @@ public class AsyncMethod_Test
     }
 
     [Fact]
-    public void Base_Method1Async_Test()
+    public void Method1Async_Test()
     {
         var methodDescriptors = CommandDescriptor.GetMethodDescriptors(typeof(AsyncMethod_Test));
         var methodDescriptor = methodDescriptors[nameof(Method1Async)];
@@ -41,7 +41,7 @@ public class AsyncMethod_Test
     }
 
     [Fact]
-    public void Base_Method2Async_Test()
+    public void Method2Async_Test()
     {
         var methodDescriptors = CommandDescriptor.GetMethodDescriptors(typeof(AsyncMethod_Test));
         var methodDescriptor = methodDescriptors[nameof(Method2Async)];
@@ -62,7 +62,7 @@ public class AsyncMethod_Test
     }
 
     [Fact]
-    public void Base_Method3Async_Test()
+    public void Method3Async_Test()
     {
         var methodDescriptors = CommandDescriptor.GetMethodDescriptors(typeof(AsyncMethod_Test));
         var methodDescriptor = methodDescriptors[nameof(Method3Async)];
@@ -84,7 +84,7 @@ public class AsyncMethod_Test
     }
 
     [Fact]
-    public void Base_Method4Async_Test()
+    public void Method4Async_Test()
     {
         var methodDescriptors = CommandDescriptor.GetMethodDescriptors(typeof(AsyncMethod_Test));
         var methodDescriptor = methodDescriptors[nameof(Method4Async)];
@@ -106,7 +106,7 @@ public class AsyncMethod_Test
     }
 
     [Fact]
-    public void Base_Method5Async_Test()
+    public void Method5Async_Test()
     {
         var methodDescriptors = CommandDescriptor.GetMethodDescriptors(typeof(AsyncMethod_Test));
         var methodDescriptor = methodDescriptors[nameof(Method5Async)];
@@ -127,7 +127,7 @@ public class AsyncMethod_Test
     }
 
     [Fact]
-    public void Base_Method6_Test()
+    public void Method6_Test()
     {
         var methodDescriptors = CommandDescriptor.GetMethodDescriptors(typeof(AsyncMethod_Test));
         var methodDescriptor = methodDescriptors[nameof(Method6Async)];
@@ -148,7 +148,7 @@ public class AsyncMethod_Test
     }
 
     [Fact]
-    public void Base_Method7_Test()
+    public void Method7_Test()
     {
         var methodDescriptors = CommandDescriptor.GetMethodDescriptors(typeof(AsyncMethod_Test));
         var methodDescriptor = methodDescriptors[nameof(Method7Async)];
@@ -169,7 +169,7 @@ public class AsyncMethod_Test
     }
 
     [Fact]
-    public void Base_Method8_Test()
+    public void Method8_Test()
     {
         var methodDescriptors = CommandDescriptor.GetMethodDescriptors(typeof(AsyncMethod_Test));
         var methodDescriptor = methodDescriptors[nameof(Method8Async)];
@@ -190,7 +190,7 @@ public class AsyncMethod_Test
     }
 
     [Fact]
-    public void Base_Method9_Test()
+    public void Method9_Test()
     {
         var methodDescriptors = CommandDescriptor.GetMethodDescriptors(typeof(AsyncMethod_Test));
         var methodDescriptor = methodDescriptors[nameof(Method9Async)];
@@ -254,7 +254,7 @@ public class AsyncMethod_Test
         => Task.CompletedTask;
 
     [Fact]
-    public void Base_Method_10_20_Test()
+    public void Method_10_20_Test()
     {
         var methodDescriptors = CommandDescriptor.GetMethodDescriptors(typeof(AsyncMethod_Test));
         var methodDescriptor10 = methodDescriptors[nameof(Method10Async)];

@@ -131,10 +131,10 @@ public sealed record class CommandMemberInfo
         where T : Attribute
         => Value switch
         {
-            Type type => GetCustomAttribute<T>(type),
-            PropertyInfo propertyInfo => GetCustomAttribute<T>(propertyInfo),
-            MethodInfo methodInfo => GetCustomAttribute<T>(methodInfo),
-            ParameterInfo parameterInfo => GetCustomAttribute<T>(parameterInfo),
+            Type type => AttributeUtility.GetAttribute<T>(type),
+            PropertyInfo propertyInfo => AttributeUtility.GetAttribute<T>(propertyInfo),
+            MethodInfo methodInfo => AttributeUtility.GetAttribute<T>(methodInfo),
+            ParameterInfo parameterInfo => AttributeUtility.GetAttribute<T>(parameterInfo),
             _ => default,
         };
 
@@ -142,10 +142,10 @@ public sealed record class CommandMemberInfo
         where T : Attribute
         => Value switch
         {
-            Type type => GetCustomAttribute<T>(type, inherit),
-            PropertyInfo propertyInfo => GetCustomAttribute<T>(propertyInfo, inherit),
-            MethodInfo methodInfo => GetCustomAttribute<T>(methodInfo, inherit),
-            ParameterInfo parameterInfo => GetCustomAttribute<T>(parameterInfo, inherit),
+            Type type => AttributeUtility.GetAttribute<T>(type, inherit),
+            PropertyInfo propertyInfo => AttributeUtility.GetAttribute<T>(propertyInfo, inherit),
+            MethodInfo methodInfo => AttributeUtility.GetAttribute<T>(methodInfo, inherit),
+            ParameterInfo parameterInfo => AttributeUtility.GetAttribute<T>(parameterInfo, inherit),
             _ => default,
         };
 
@@ -153,10 +153,10 @@ public sealed record class CommandMemberInfo
         where T : Attribute
         => Value switch
         {
-            Type type => GetCustomAttributes<T>(type),
-            PropertyInfo propertyInfo => GetCustomAttributes<T>(propertyInfo),
-            MethodInfo methodInfo => GetCustomAttributes<T>(methodInfo),
-            ParameterInfo parameterInfo => GetCustomAttributes<T>(parameterInfo),
+            Type type => AttributeUtility.GetAttributes<T>(type),
+            PropertyInfo propertyInfo => AttributeUtility.GetAttributes<T>(propertyInfo),
+            MethodInfo methodInfo => AttributeUtility.GetAttributes<T>(methodInfo),
+            ParameterInfo parameterInfo => AttributeUtility.GetAttributes<T>(parameterInfo),
             _ => [],
         };
 
@@ -164,10 +164,11 @@ public sealed record class CommandMemberInfo
         where T : Attribute
         => Value switch
         {
-            Type type => GetCustomAttributes<T>(type, inherit),
-            PropertyInfo propertyInfo => GetCustomAttributes<T>(propertyInfo, inherit),
-            MethodInfo methodInfo => GetCustomAttributes<T>(methodInfo, inherit),
-            ParameterInfo parameterInfo => GetCustomAttributes<T>(parameterInfo, inherit),
+            Type type => AttributeUtility.GetAttributes<T>(type, inherit),
+            PropertyInfo propertyInfo => AttributeUtility.GetAttributes<T>(propertyInfo, inherit),
+            MethodInfo methodInfo => AttributeUtility.GetAttributes<T>(methodInfo, inherit),
+            ParameterInfo parameterInfo
+                => AttributeUtility.GetAttributes<T>(parameterInfo, inherit),
             _ => [],
         };
 
@@ -214,6 +215,19 @@ public sealed record class CommandMemberInfo
             ParameterInfo parameterInfo => GetValue(parameterInfo, getter, defaultValue),
             _ => defaultValue,
         };
+
+    public bool TryGetDisplayName(out string displayName)
+    {
+        var attribute = GetAttribute<DisplayNameAttribute>();
+        if (attribute is not null && attribute.DisplayName != string.Empty)
+        {
+            displayName = attribute.DisplayName;
+            return true;
+        }
+
+        displayName = string.Empty;
+        return false;
+    }
 
     private static string GetFullName(Type type) => $"{type.Namespace}.{type.Name}";
 

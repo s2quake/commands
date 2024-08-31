@@ -136,7 +136,7 @@ internal sealed class ParseContext(
         if (variableList.Count != 0)
         {
             var sb = new StringBuilder();
-            sb.AppendLine("There are unprocessed arguments.");
+            sb.AppendLine("There are unhandled arguments.");
             foreach (var item in variableList)
             {
                 sb.AppendLine($"    {item}");

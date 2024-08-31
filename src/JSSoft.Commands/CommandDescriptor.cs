@@ -111,7 +111,7 @@ public static class CommandDescriptor
 
     private static CommandMethodDescriptor[] GetStaticMethodDescriptors(Type requestType)
     {
-        var attributes = GetCustomAttributes<CommandStaticMethodAttribute>(
+        var attributes = GetAttributes<CommandStaticMethodAttribute>(
             requestType, inherit: true);
         if (attributes.Length > 0 && requestType.IsStaticClass() == true)
         {
@@ -146,7 +146,7 @@ public static class CommandDescriptor
 
     private static CommandMemberDescriptor[] GetStaticMemberDescriptors(Type requestType)
     {
-        var attributes = GetCustomAttributes<CommandStaticPropertyAttribute>(
+        var attributes = GetAttributes<CommandStaticPropertyAttribute>(
             requestType, inherit: true);
         if (attributes.Length > 0 && requestType.IsStaticClass() == true)
         {
@@ -182,7 +182,7 @@ public static class CommandDescriptor
     private static CommandMemberDescriptor[] GetMethodMemberDescriptors(MethodInfo methodInfo)
     {
         var requestType = methodInfo.DeclaringType!;
-        var attributes = GetCustomAttributes<CommandMethodPropertyAttribute>(
+        var attributes = GetAttributes<CommandMethodPropertyAttribute>(
             methodInfo, inherit: true);
         var memberDescriptorCollectionList = new List<CommandMemberDescriptorCollection>(
             attributes.Length);
@@ -208,7 +208,7 @@ public static class CommandDescriptor
 
     private static CommandMemberDescriptor[] GetMethodStaticMemberDescriptors(MethodInfo methodInfo)
     {
-        var attributes = GetCustomAttributes<CommandMethodStaticPropertyAttribute>(
+        var attributes = GetAttributes<CommandMethodStaticPropertyAttribute>(
             methodInfo, inherit: true);
         var memberDescriptorCollectionList = new List<CommandMemberDescriptorCollection>(
             attributes.Length);
@@ -242,7 +242,6 @@ public static class CommandDescriptor
         var memberDescriptorList = new List<CommandMemberDescriptor>();
         if (methodInfo.IsBrowsable() == true)
         {
-            var methodParameterNames = methodInfo.GetMethodParameterNames();
             var parameterInfos = methodInfo.GetParameters();
             var methodMemberDescriptors = GetMethodMemberDescriptors(methodInfo);
             var methodStaticMemberDescriptors = GetMethodStaticMemberDescriptors(methodInfo);
@@ -259,7 +258,7 @@ public static class CommandDescriptor
                 {
                     memberDescriptorList.Add(CreateParameterDescriptor(item));
                 }
-                else if (methodParameterNames.Contains(item.Name) == true)
+                else if (IsDefined<CommandParameterAttribute>(item) == true)
                 {
                     memberDescriptorList.AddRange(GetMemberDescriptors(item.ParameterType));
                 }
@@ -293,7 +292,8 @@ public static class CommandDescriptor
             memberDescriptorList.Capacity = capacity;
             foreach (var item in items)
             {
-                memberDescriptorList.Add(new CommandPropertyDescriptor(item));
+                var propertyAttribute = GetAttribute<CommandPropertyBaseAttribute>(item)!;
+                memberDescriptorList.Add(new CommandPropertyDescriptor(item, propertyAttribute));
             }
 
             memberDescriptorList.AddRange(staticMemberDescriptors);
@@ -330,12 +330,19 @@ public static class CommandDescriptor
 
     private static CommandMemberDescriptor CreateParameterDescriptor(ParameterInfo parameterInfo)
     {
-        if (parameterInfo.GetCustomAttribute<ParamArrayAttribute>() is not null)
+        if (IsDefined<ParamArrayAttribute>(parameterInfo) == true)
         {
-            return new CommandParameterArrayDescriptor(parameterInfo);
+            var attribute1 = new CommandParameterArrayAttribute();
+            return new CommandParameterDescriptor(parameterInfo, attribute1);
         }
 
-        return new CommandParameterDescriptor(parameterInfo);
+        if (GetAttribute<CommandParameterBaseAttribute>(parameterInfo) is { } attribute2)
+        {
+            return new CommandParameterDescriptor(parameterInfo, attribute2);
+        }
+
+        var attribute3 = new CommandParameterAttribute();
+        return new CommandParameterDescriptor(parameterInfo, attribute3);
     }
 
     private static CommandUsageDescriptorBase CreateUsageDescriptor(

@@ -14,11 +14,9 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
     private readonly CommandPropertyConditionAttribute[] _conditionsAttributes;
     private readonly CommandPropertyCompletionAttribute? _completionAttribute;
 
-    public CommandPropertyDescriptor(PropertyInfo propertyInfo)
-        : base(
-            memberInfo: propertyInfo,
-            attribute: GetCustomAttribute<CommandPropertyBaseAttribute>(propertyInfo)!,
-            memberName: propertyInfo.Name)
+    public CommandPropertyDescriptor(
+        PropertyInfo propertyInfo, CommandPropertyBaseAttribute attribute)
+        : base(propertyInfo, attribute, propertyInfo.Name)
     {
         if (propertyInfo.CanWrite != true)
         {
@@ -35,51 +33,47 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
             throw new CommandPropertyNotSupportedTypeException(propertyInfo);
         }
 
-        if (IsVariables == true && propertyInfo.PropertyType.IsArray != true)
-        {
-            throw new CommandPropertyCannotBeUsedAsVariablesTypeException(propertyInfo);
-        }
-
-        if (IsSwitch == true && propertyInfo.PropertyType != typeof(bool))
-        {
-            throw new CommandPropertyCannotBeUsedAsSwitchTypeException(propertyInfo);
-        }
-
         _propertyInfo = propertyInfo;
-        _conditionsAttributes = GetCustomAttributes<CommandPropertyConditionAttribute>(
+        _conditionsAttributes = GetAttributes<CommandPropertyConditionAttribute>(
             propertyInfo, inherit: true);
-        _completionAttribute = GetCustomAttribute<CommandPropertyCompletionAttribute>(propertyInfo);
+        _completionAttribute = GetAttribute<CommandPropertyCompletionAttribute>(propertyInfo);
         MemberType = propertyInfo.PropertyType;
         UsageDescriptor = CommandDescriptor.GetUsageDescriptor(propertyInfo);
+        IsRequired = CommandPropertyBaseAttribute.IsRequired(attribute, propertyInfo);
+        IsExplicit = CommandPropertyBaseAttribute.IsExplicit(attribute, propertyInfo);
+        IsSwitch = CommandPropertyBaseAttribute.IsSwitch(attribute, propertyInfo);
+        IsVariables = CommandPropertyBaseAttribute.IsVariables(attribute, propertyInfo);
+        IsGeneral = CommandPropertyBaseAttribute.IsGeneral(attribute, propertyInfo);
         IsNullable = CommandUtility.IsNullable(propertyInfo);
-    }
-
-    public override string DisplayName
-    {
-        get
-        {
-            var propertyInfo = _propertyInfo;
-            var displayName
-                = TryGetDisplayName(propertyInfo, out var value) == true ? value : base.DisplayName;
-            return IsVariables == true ? $"{displayName}..." : displayName;
-        }
+        DefaultValue = GetDefaultValue(attribute);
+        InitValue = GetInitValue(attribute);
     }
 
     public override Type MemberType { get; }
+
+    public override object? InitValue { get; }
+
+    public override object? DefaultValue { get; }
+
+    public override bool IsRequired { get; }
+
+    public override bool IsExplicit { get; }
+
+    public override bool IsSwitch { get; }
+
+    public override bool IsVariables { get; }
+
+    public override bool IsGeneral { get; }
 
     public override bool IsNullable { get; }
 
     public override CommandUsageDescriptorBase UsageDescriptor { get; }
 
     protected override void SetValue(object instance, object? value)
-    {
-        _propertyInfo.SetValue(instance, value, null);
-    }
+        => _propertyInfo.SetValue(instance, value, null);
 
     protected override object? GetValue(object instance)
-    {
-        return _propertyInfo.GetValue(instance, null);
-    }
+        => _propertyInfo.GetValue(instance, null);
 
     protected override void OnVerifyTrigger(ParseDescriptorCollection parseDescriptors)
     {
@@ -164,5 +158,40 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
         }
 
         return base.GetCompletion(instance, find);
+    }
+
+    private static object GetDefaultValue(CommandPropertyBaseAttribute attribute)
+    {
+        if (attribute is CommandPropertyExplicitRequiredAttribute explicitAttribute)
+        {
+            return explicitAttribute.DefaultValue;
+        }
+
+        if (attribute is CommandPropertyRequiredAttribute requiredAttribute)
+        {
+            return requiredAttribute.DefaultValue;
+        }
+
+        if (attribute is CommandPropertyAttribute generalAttribute)
+        {
+            return generalAttribute.DefaultValue;
+        }
+
+        return DBNull.Value;
+    }
+
+    private static object GetInitValue(CommandPropertyBaseAttribute attribute)
+    {
+        if (attribute is CommandPropertyArrayAttribute arrayAttribute)
+        {
+            return arrayAttribute.InitValue;
+        }
+
+        if (attribute is CommandPropertyAttribute generalAttribute)
+        {
+            return generalAttribute.InitValue;
+        }
+
+        return DBNull.Value;
     }
 }

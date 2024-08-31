@@ -85,7 +85,7 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
 
         Owner = owner;
         RequirementDescriptors = [.. Enumerable.Where(this, IsRequiredDescriptor)];
-        VariablesDescriptor = memberDescriptors.SingleOrDefault(IsVariableDescriptor);
+        VariablesDescriptor = memberDescriptors.SingleOrDefault(IsVariablesDescriptor);
         OptionDescriptors = [.. Enumerable.Where(this, IsOptionDescriptor)];
     }
 
@@ -199,6 +199,6 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
     private static bool IsOptionDescriptor(CommandMemberDescriptor memberDescriptor)
         => memberDescriptor.IsGeneral == true || memberDescriptor.IsSwitch == true;
 
-    private static bool IsVariableDescriptor(CommandMemberDescriptor memberDescriptor)
+    private static bool IsVariablesDescriptor(CommandMemberDescriptor memberDescriptor)
         => memberDescriptor.IsVariables;
 }

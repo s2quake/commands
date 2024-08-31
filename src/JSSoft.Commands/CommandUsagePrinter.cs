@@ -27,7 +27,7 @@ public class CommandUsagePrinter(ICommand command, CommandSettings settings)
             }
             else
             {
-                var memberDescriptors = CommandDescriptor.GetMemberDescriptors(command.GetType());
+                var memberDescriptors = CommandDescriptor.GetMemberDescriptors(command);
                 PrintRequirementsInDetail(commandWriter, memberDescriptors);
                 PrintVariablesInDetail(commandWriter, memberDescriptors);
                 PrintOptionsInDetail(commandWriter, memberDescriptors);
@@ -44,7 +44,7 @@ public class CommandUsagePrinter(ICommand command, CommandSettings settings)
             }
             else
             {
-                var memberDescriptors = CommandDescriptor.GetMemberDescriptors(command.GetType());
+                var memberDescriptors = CommandDescriptor.GetMemberDescriptors(command);
                 PrintRequirements(commandWriter, memberDescriptors);
                 PrintVariables(commandWriter, memberDescriptors);
                 PrintOptions(commandWriter, memberDescriptors);

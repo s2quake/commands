@@ -1,4 +1,9 @@
-# commands
+# Commands
+
+[![NuGet](https://img.shields.io/nuget/v/JSSoft.Commands.svg?style=flat)][NuGet]
+[![NuGet (prerelease)](https://img.shields.io/nuget/vpre/JSSoft.Commands.svg?style=flat)][NuGet]
+
+[NuGet]: https://www.nuget.org/packages/JSSoft.Commands/
 
 ## Summary
 
@@ -99,7 +104,7 @@ var commands = new ICommand[]
 var commandContext = new CommandContext(commands);
 commandContext.Execute(args);
 
-or 
+or
 
 await commandContext.ExecuteAsync(args);
 ```

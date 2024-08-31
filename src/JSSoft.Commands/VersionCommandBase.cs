@@ -11,6 +11,11 @@ namespace JSSoft.Commands;
 [ResourceUsage]
 public abstract class VersionCommandBase : CommandBase
 {
+    protected VersionCommandBase()
+        : base("version")
+    {
+    }
+
     [CommandPropertySwitch("quiet", 'q')]
     public bool IsQuiet { get; set; }
 

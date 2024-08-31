@@ -2,13 +2,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "build-script",
-            "type": "PowerShell",
-            "request": "launch",
-            "script": "${workspaceFolder}/build.ps1",
-            "cwd": "${cwd}"
-        },
-        {
             "name": "launch-parse",
             "type": "coreclr",
             "request": "launch",

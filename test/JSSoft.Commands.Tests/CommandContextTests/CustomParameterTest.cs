@@ -38,7 +38,7 @@ public class CustomParameterTest
         };
         var commandContext = new TestCommandContext(commands);
         await commandContext.ExecuteAsync(
-                "test method2 hello2 --boolean --name world2", CancellationToken.None);
+            "test method2 hello2 --boolean --name world2", CancellationToken.None);
         var customParameter = testCommand.CustomParameter;
         Assert.NotNull(customParameter);
         Assert.Equal("hello2", customParameter.String);
@@ -76,7 +76,7 @@ public class CustomParameterTest
         };
         var commandContext = new TestCommandContext(commands);
         await commandContext.ExecuteAsync(
-                "test method4 id4 hello4 --boolean --name world4", CancellationToken.None);
+            "test method4 id4 hello4 --boolean --name world4", CancellationToken.None);
         var customParameter = testCommand.CustomParameter;
         Assert.NotNull(customParameter);
         Assert.Equal("id4", testCommand.Value);
@@ -117,33 +117,37 @@ public class CustomParameterTest
         public object Value { get; set; } = DBNull.Value;
 
         [CommandMethod]
-        [CommandMethodParameter(nameof(customParameter))]
-        public void Method1(CustomParameter customParameter)
+        public void Method1([CommandParameter] CustomParameter customParameter)
         {
             CustomParameter = customParameter;
         }
 
         [CommandMethod]
-        [CommandMethodParameter(nameof(customParameter))]
         public async Task Method2Async(
-            CustomParameter customParameter, CancellationToken cancellationToken)
+            [CommandParameter]
+            CustomParameter customParameter,
+            CancellationToken cancellationToken)
         {
             CustomParameter = customParameter;
             await Task.CompletedTask;
         }
 
         [CommandMethod]
-        [CommandMethodParameter(nameof(customParameter))]
-        public void Method3(string id, CustomParameter customParameter)
+        public void Method3(
+            string id,
+            [CommandParameter]
+            CustomParameter customParameter)
         {
             Value = id;
             CustomParameter = customParameter;
         }
 
         [CommandMethod]
-        [CommandMethodParameter(nameof(customParameter))]
         public async Task Method4Async(
-            string id, CustomParameter customParameter, CancellationToken cancellationToken)
+            string id,
+            [CommandParameter]
+            CustomParameter customParameter,
+            CancellationToken cancellationToken)
         {
             Value = id;
             CustomParameter = customParameter;
@@ -151,8 +155,10 @@ public class CustomParameterTest
         }
 
         [CommandMethod]
-        [CommandMethodParameter(nameof(customParameter), nameof(id))]
-        public void Method5(CustomParameter customParameter, string id)
+        public void Method5(
+            [CommandParameter]
+            CustomParameter customParameter,
+            string id)
         {
             CustomParameter = customParameter;
             Value = id;

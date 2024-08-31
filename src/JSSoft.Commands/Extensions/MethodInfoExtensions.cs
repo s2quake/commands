@@ -94,9 +94,9 @@ public static class MethodInfoExtensions
 
                 var parameterTypes = new Type[]
                 {
-                        typeof(CommandMemberDescriptor),
-                        typeof(string),
-                        typeof(CancellationToken),
+                    typeof(CommandMemberDescriptor),
+                    typeof(string),
+                    typeof(CancellationToken),
                 };
                 var preferredMethodName = GenerateMethodInfoName(
                     methodName, typeof(Task<string[]>), parameterTypes);
@@ -112,8 +112,8 @@ public static class MethodInfoExtensions
 
                 var parameterTypes = new Type[]
                 {
-                        typeof(CommandMemberDescriptor),
-                        typeof(string),
+                    typeof(CommandMemberDescriptor),
+                    typeof(string),
                 };
                 var preferredMethodName = GenerateMethodInfoName(
                     methodName, typeof(string[]), parameterTypes);
@@ -247,27 +247,45 @@ public static class MethodInfoExtensions
             }
         }
 
-        var parameterInfos = @this.GetParameters()
+        var candidateParamInfos = @this.GetParameters()
             .Where(item => item.IsCancellationTokenParameter() != true)
             .Where(item => item.IsProgressParameter() != true)
-            .Where(item => CommandUtility.IsSupportedType(item.ParameterType) != true);
-        var parameterNames = GetValue<CommandMethodParameterAttribute, string[]>(
-            @this, item => item.ParameterNames, []);
+            .ToArray();
+        var availableParamInfos = candidateParamInfos
+            .Where(item => item.IsCommandParameter() == true)
+            .ToArray();
+        var hasParamArray = Array.Exists(availableParamInfos, IsDefined<ParamArrayAttribute>);
+        var commandParamsArray
+            = availableParamInfos.Where(IsDefined<CommandParameterArrayAttribute>).ToArray();
 
-        foreach (var parameterInfo in parameterInfos)
+        if (Array.Exists(commandParamsArray, item => item.ParameterType.IsArray != true))
         {
-            if (parameterNames.Contains(parameterInfo.Name) != true)
+            var message = $"Method '{@this}' must have an array type parameter.";
+            throw new CommandDefinitionException(message, @this);
+        }
+
+        if (hasParamArray == true && commandParamsArray.Length > 0)
+        {
+            var message = $"Method '{@this}' cannot have both 'params' and " +
+                          $"'{nameof(CommandParameterArrayAttribute)}' attributes.";
+            throw new CommandDefinitionException(message, @this);
+        }
+
+        if (commandParamsArray.Length > 1)
+        {
+            var message = $"Method '{@this}' can only have one " +
+                          $"'{nameof(CommandParameterArrayAttribute)}' attribute.";
+            throw new CommandDefinitionException(message, @this);
+        }
+
+        foreach (var candidateParamInfo in candidateParamInfos)
+        {
+            if (availableParamInfos.Contains(candidateParamInfo) != true)
             {
-                throw new CommandParameterNotSupportedTypeException(parameterInfo);
+                throw new CommandParameterNotSupportedTypeException(candidateParamInfo);
             }
         }
     }
-
-    internal static string[] GetMethodParameterNames(this MethodInfo @this)
-        => GetValue<CommandMethodParameterAttribute, string[]>(
-            memberInfo: @this,
-            getter: item => item.ParameterNames,
-            defaultValue: []);
 
     private static int IndexOf(ParameterInfo[] parameters, ParameterInfo? parameterInfo)
     {

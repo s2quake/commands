@@ -3,8 +3,6 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
-#pragma warning disable CA1822
-
 namespace JSSoft.Commands.Tests.CommandMethodDescriptorTests;
 
 public class Method_FailTest
@@ -19,7 +17,7 @@ public class Method_FailTest
     }
 
     [Fact]
-    public void Base_Method1_Test()
+    public void Method1_Test()
     {
         Assert.Throws<CommandDefinitionException>(
             () => CommandDescriptor.GetMethodDescriptors(typeof(Method1Class)));
@@ -35,7 +33,7 @@ public class Method_FailTest
     }
 
     [Fact]
-    public void Base_Method5_Test()
+    public void Method5_Test()
     {
         Assert.ThrowsAny<CommandDefinitionException>(
             () => CommandDescriptor.GetMethodDescriptors(typeof(Method5Class)));

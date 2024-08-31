@@ -12,7 +12,6 @@ namespace JSSoft.Commands;
 internal class CommandMethodInstance : ICustomCommandDescriptor, ISupportInitialize
 {
     private readonly ParameterInfo[] _parameterInfos;
-    private readonly string[] _methodParameterNames;
     private readonly Dictionary<Type, object> _valueByType = [];
     private readonly CommandMethodDescriptor _methodDescriptor;
     private readonly object _instance;
@@ -28,9 +27,7 @@ internal class CommandMethodInstance : ICustomCommandDescriptor, ISupportInitial
     {
         var methodInfo = methodDescriptor.MethodInfo;
         var parameterInfos = methodInfo.GetParameters();
-        var methodParameterNames = methodInfo.GetMethodParameterNames();
         _parameterInfos = parameterInfos;
-        _methodParameterNames = methodParameterNames;
         _methodDescriptor = methodDescriptor;
         _instance = instance;
     }
@@ -42,16 +39,15 @@ internal class CommandMethodInstance : ICustomCommandDescriptor, ISupportInitial
         var valueList = new List<object?>(_parameterInfos.Length);
         foreach (var parameterInfo in _parameterInfos)
         {
-            if (CommandUtility.IsSupportedType(parameterInfo.ParameterType) != true
-                && _methodParameterNames.Contains(parameterInfo.Name) == true)
-            {
-                valueList.Add(_valueByType[parameterInfo.ParameterType]);
-            }
-            else
+            if (CommandUtility.IsSupportedType(parameterInfo.ParameterType) == true)
             {
                 var memberDescriptor = _methodDescriptor.Members[parameterInfo.Name!];
                 var value = memberDescriptor.GetValueInternal(_instance);
                 valueList.Add(value);
+            }
+            else
+            {
+                valueList.Add(_valueByType[parameterInfo.ParameterType]);
             }
         }
 
@@ -64,11 +60,13 @@ internal class CommandMethodInstance : ICustomCommandDescriptor, ISupportInitial
         var valueList = new List<object?>(_parameterInfos.Length);
         foreach (var parameterInfo in _parameterInfos)
         {
-            if (_methodParameterNames.Contains(parameterInfo.Name) == true)
+            if (CommandUtility.IsSupportedType(parameterInfo.ParameterType) == true)
             {
-                valueList.Add(_valueByType[parameterInfo.ParameterType]);
+                var memberDescriptor = _methodDescriptor.Members[parameterInfo.Name!];
+                var value = memberDescriptor.GetValueInternal(_instance);
+                valueList.Add(value);
             }
-            else if (parameterInfo.ParameterType == typeof(CancellationToken))
+            else if (parameterInfo.IsCancellationTokenParameter() == true)
             {
                 valueList.Add(cancellationToken);
             }
@@ -78,9 +76,7 @@ internal class CommandMethodInstance : ICustomCommandDescriptor, ISupportInitial
             }
             else
             {
-                var memberDescriptor = _methodDescriptor.Members[parameterInfo.Name!];
-                var value = memberDescriptor.GetValueInternal(_instance);
-                valueList.Add(value);
+                valueList.Add(_valueByType[parameterInfo.ParameterType]);
             }
         }
 
@@ -115,8 +111,7 @@ internal class CommandMethodInstance : ICustomCommandDescriptor, ISupportInitial
         {
             var parameterInfo = _parameterInfos[i];
             var parameterType = parameterInfo.ParameterType;
-            if (CommandUtility.IsSupportedType(parameterType) != true
-                && _methodParameterNames.Contains(parameterInfo.Name) == true)
+            if (CommandUtility.IsSupportedType(parameterType) != true)
             {
                 var value = Activator.CreateInstance(parameterInfo.ParameterType)!;
                 _valueByType[parameterType] = value;
