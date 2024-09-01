@@ -10,13 +10,11 @@ public sealed class CommandCompletionContext
     private CommandCompletionContext(
         ICommand command,
         CommandMemberDescriptor memberDescriptor,
-        string[] args,
         string find,
         IReadOnlyDictionary<string, object?> properties)
     {
         Command = command;
         MemberDescriptor = memberDescriptor;
-        Arguments = args;
         Find = find;
         Properties = properties;
     }
@@ -27,19 +25,15 @@ public sealed class CommandCompletionContext
 
     public string Find { get; }
 
-    public string[] Arguments { get; }
-
     public IReadOnlyDictionary<string, object?> Properties { get; }
 
     public string MemberName => MemberDescriptor.MemberName;
 
     internal static object? Create(
         ICommand command,
-        CommandMemberDescriptorCollection memberDescriptors,
-        string[] args,
+        ParseContext parseContext,
         string find)
     {
-        var parseContext = new ParseContext(memberDescriptors, args);
         var properties = new Dictionary<string, object?>();
         var parseDescriptorByMemberDescriptor
             = parseContext.Items.ToDictionary(item => item.MemberDescriptor);
@@ -58,25 +52,13 @@ public sealed class CommandCompletionContext
             }
         }
 
-        if (find.StartsWith(CommandUtility.Delimiter) == true
-            || find.StartsWith(CommandUtility.ShortDelimiter) == true)
-        {
-            var argList = new List<string>();
-            foreach (var memberDescriptor in parseDescriptorByMemberDescriptor.Keys)
-            {
-                if (memberDescriptor.IsExplicit != true)
-                {
-                    continue;
-                }
-            }
-
-            return argList.OrderBy(item => item).ToArray();
-        }
-        else if (parseDescriptorByMemberDescriptor.Count != 0)
+        if (find.StartsWith(CommandUtility.Delimiter) != true
+            && find.StartsWith(CommandUtility.ShortDelimiter) != true
+            && parseDescriptorByMemberDescriptor.Count != 0)
         {
             var memberDescriptor = parseDescriptorByMemberDescriptor.Keys.First();
             return new CommandCompletionContext(
-                command, memberDescriptor, [.. args], find, properties);
+                command, memberDescriptor, find, properties);
         }
 
         return null;

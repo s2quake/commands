@@ -9,7 +9,7 @@ using System.Text;
 namespace JSSoft.Commands;
 
 internal sealed class ParseContext(
-    CommandMemberDescriptorCollection memberDescriptors, string[] args)
+    CommandMemberDescriptorCollection memberDescriptors, CommandSettings settings, string[] args)
 {
     public ParseDescriptorCollection Items { get; } = Parse(memberDescriptors, args);
 
@@ -44,9 +44,12 @@ internal sealed class ParseContext(
         {
             var memberDescriptor = item.MemberDescriptor;
             var obj = customCommandDescriptor?.GetMemberOwner(memberDescriptor) ?? instance;
-            if (item.Value is not DBNull)
+            var value = item.Value;
+            if (value is not DBNull)
             {
-                memberDescriptor.SetValueInternal(obj, item.Value);
+                var valueValidator = settings.ValueValidator;
+                memberDescriptor.ValidateValue(valueValidator, obj, value);
+                memberDescriptor.SetValueInternal(obj, value);
             }
         }
     }

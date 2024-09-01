@@ -79,6 +79,8 @@ public sealed record class CommandSettings
 
     public bool AllowEmpty { get; init; }
 
+    public ICommandValueValidator ValueValidator { get; init; } = new CommandValueValidator();
+
     internal static TimeSpan AsyncTimeout { get; } = TimeSpan.FromSeconds(1);
 
     internal static BindingFlags GetBindingFlags(Type type)

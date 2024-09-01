@@ -32,32 +32,10 @@ public abstract class CommandMethodDescriptor(MethodInfo methodInfo)
 
     internal bool CanExecute(object instance) => OnCanExecute(instance);
 
-    internal object? Invoke(
-        object instance, string[] args, CommandMemberDescriptorCollection memberDescriptors)
-    {
-        var parseContext = new ParseContext(memberDescriptors, args);
-        var methodInstance = new CommandMethodInstance(this, instance);
-        parseContext.SetValue(methodInstance);
-        return Invoke(instance, methodInstance);
-    }
-
     internal object? Invoke(object instance, CommandMethodInstance methodInstance)
     {
         var parameters = methodInstance.GetParameters();
         return OnInvoke(instance, parameters);
-    }
-
-    internal Task InvokeAsync(
-        object instance,
-        string[] args,
-        CommandMemberDescriptorCollection memberDescriptors,
-        CancellationToken cancellationToken,
-        IProgress<ProgressInfo> progress)
-    {
-        var parseContext = new ParseContext(memberDescriptors, args);
-        var methodInstance = new CommandMethodInstance(this, instance);
-        parseContext.SetValue(instance);
-        return InvokeAsync(instance, methodInstance, cancellationToken, progress);
     }
 
     internal Task InvokeAsync(

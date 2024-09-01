@@ -85,13 +85,13 @@ internal class CommandMethodInstance : ICustomCommandDescriptor, ISupportInitial
 
     object ICustomCommandDescriptor.GetMemberOwner(CommandMemberDescriptor memberDescriptor)
     {
-        if (memberDescriptor.Owner.Type == CommandMemberType.Parameter)
+        if (memberDescriptor.MemberInfo.Type == CommandMemberType.Parameter)
         {
             return _instance;
         }
-        else if (memberDescriptor.Owner.Type == CommandMemberType.Property)
+        else if (memberDescriptor.MemberInfo.Type == CommandMemberType.Property)
         {
-            var declaringType = memberDescriptor.Owner.DeclaringType;
+            var declaringType = memberDescriptor.MemberInfo.DeclaringType;
             if (_valueByType.TryGetValue(declaringType, out var value) == true)
             {
                 return value;
@@ -111,7 +111,9 @@ internal class CommandMethodInstance : ICustomCommandDescriptor, ISupportInitial
         {
             var parameterInfo = _parameterInfos[i];
             var parameterType = parameterInfo.ParameterType;
-            if (CommandUtility.IsSupportedType(parameterType) != true)
+            if (CommandUtility.IsSupportedType(parameterType) != true
+                && parameterInfo.IsCancellationTokenParameter() != true
+                && parameterInfo.IsProgressParameter() != true)
             {
                 var value = Activator.CreateInstance(parameterInfo.ParameterType)!;
                 _valueByType[parameterType] = value;

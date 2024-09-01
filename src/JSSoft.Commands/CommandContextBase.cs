@@ -264,7 +264,31 @@ public abstract class CommandContextBase : ICommandContext
     private static Assembly GetDefaultAssembly()
         => Assembly.GetEntryAssembly() ?? typeof(CommandParser).Assembly;
 
-    private static string[] GetCompletion(
+    private static void AttachContext(ICommand command, ICommandContext commandContext)
+    {
+        if (command.Context is not null)
+        {
+            throw new CommandDefinitionException(
+                message: "The command context is already attached.",
+                memberInfo: command.GetType());
+        }
+
+        var parent = command.Parent;
+        if (parent?.Commands.Contains(command) != true)
+        {
+            throw new CommandDefinitionException(
+                message: $"Command '{command}' does not contain the commands of parent '{parent}'.",
+                memberInfo: command.GetType());
+        }
+
+        command.Context = commandContext;
+        foreach (var item in command.Commands)
+        {
+            AttachContext(item, commandContext);
+        }
+    }
+
+    private string[] GetCompletion(
         ICommand parent, IList<string> itemList, string find)
     {
         if (itemList.Count == 0)
@@ -301,10 +325,12 @@ public abstract class CommandContextBase : ICommandContext
         }
     }
 
-    private static string[] GetCompletion(ICommand command, string[] args, string find)
+    private string[] GetCompletion(ICommand command, string[] args, string find)
     {
         var memberDescriptors = CommandDescriptor.GetMemberDescriptors(command);
-        var context = CommandCompletionContext.Create(command, memberDescriptors, args, find);
+        var settings = Settings;
+        var parseContext = new ParseContext(memberDescriptors, settings, args);
+        var context = CommandCompletionContext.Create(command, parseContext, find);
         if (context is CommandCompletionContext completionContext)
         {
             return command.GetCompletions(completionContext);
@@ -315,30 +341,6 @@ public abstract class CommandContextBase : ICommandContext
         }
 
         return [];
-    }
-
-    private static void AttachContext(ICommand command, ICommandContext commandContext)
-    {
-        if (command.Context is not null)
-        {
-            throw new CommandDefinitionException(
-                message: "The command context is already attached.",
-                memberInfo: command.GetType());
-        }
-
-        var parent = command.Parent;
-        if (parent?.Commands.Contains(command) != true)
-        {
-            throw new CommandDefinitionException(
-                message: $"Command '{command}' does not contain the commands of parent '{parent}'.",
-                memberInfo: command.GetType());
-        }
-
-        command.Context = commandContext;
-        foreach (var item in command.Commands)
-        {
-            AttachContext(item, commandContext);
-        }
     }
 
     private void Initialize(CommandNode commandNode, IEnumerable<ICommand> commands)

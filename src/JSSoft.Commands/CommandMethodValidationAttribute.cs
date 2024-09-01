@@ -3,8 +3,6 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
-using JSSoft.Commands.Extensions;
-
 namespace JSSoft.Commands;
 
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
