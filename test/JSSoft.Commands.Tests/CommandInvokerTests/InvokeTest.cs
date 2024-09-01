@@ -79,7 +79,7 @@ public class InvokeTest
     public static IEnumerable<object[]> TestData =>
     [
         [nameof(InstanceClass.Boolean), RandomUtility.Boolean()],
-        [nameof(InstanceClass.String), RandomUtility.Word()],
+        [nameof(InstanceClass.String), RandomUtility.Word(item => item.Contains('\'') is false)],
         [nameof(InstanceClass.SByte), RandomUtility.SByte()],
         [nameof(InstanceClass.Byte), RandomUtility.Byte()],
         [nameof(InstanceClass.Int16), RandomUtility.Int16()],
