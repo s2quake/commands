@@ -43,7 +43,8 @@ public class CommandParser : CommandAnalyzer
 
         var instance = Instance;
         var memberDescriptors = CommandDescriptor.GetMemberDescriptors(instance);
-        var parserContext = new ParseContext(memberDescriptors, args);
+        var settings = Settings;
+        var parserContext = new ParseContext(memberDescriptors, settings, args);
         parserContext.SetValue(instance);
     }
 

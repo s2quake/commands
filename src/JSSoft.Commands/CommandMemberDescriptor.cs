@@ -15,7 +15,7 @@ public abstract class CommandMemberDescriptor(
 {
     private string? _displayName;
 
-    public CommandMemberInfo Owner { get; } = memberInfo;
+    public CommandMemberInfo MemberInfo { get; } = memberInfo;
 
     public string Name { get; } = attribute.GetName(memberInfo, defaultName: memberName);
 
@@ -48,6 +48,19 @@ public abstract class CommandMemberDescriptor(
     protected CommandMemberBaseAttribute Attribute { get; } = attribute;
 
     public override string ToString() => $"{MemberName} [{DisplayName}]";
+
+    internal void ValidateValue(
+        ICommandValueValidator valueValidator, object instance, object? value)
+    {
+        try
+        {
+            valueValidator.Validate(MemberInfo, instance, value);
+        }
+        catch (Exception e)
+        {
+            throw new CommandLineException(e.Message, this, e);
+        }
+    }
 
     internal void SetValueInternal(object instance, object? value) => SetValue(instance, value);
 
@@ -125,7 +138,7 @@ public abstract class CommandMemberDescriptor(
 
     private static string GenerateDisplayName(CommandMemberDescriptor memberDescriptor)
     {
-        var memberInfo = memberDescriptor.Owner;
+        var memberInfo = memberDescriptor.MemberInfo;
         if (memberInfo.TryGetDisplayName(out var displayName) == true)
         {
             return displayName;

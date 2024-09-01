@@ -14,7 +14,9 @@ To be Released.
 * Added Allows custom types to be used for method parameters  [[#22]]
 * Added sub command of command  [[#23]]
 * Added Added a variety of attributes that can be used for parameters.  [[#25]]
-* Improved the structure to allow ICustomCommandDescriptor to be applied.  [[#25]]
+* Improved the structure to allow ICustomCommandDescriptor to be applied.
+  [[#25]]
+* Added validation to properties and parameter using DataAnnotation.  [[#26]]
 
 [#13]: https://github.com/s2quake/commands/pull/13
 [#17]: https://github.com/s2quake/commands/pull/17
@@ -23,6 +25,7 @@ To be Released.
 [#22]: https://github.com/s2quake/commands/pull/22
 [#23]: https://github.com/s2quake/commands/pull/23
 [#25]: https://github.com/s2quake/commands/pull/25
+[#26]: https://github.com/s2quake/commands/pull/26
 
 
 6.0.1

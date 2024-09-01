@@ -64,7 +64,7 @@ public class CommandInvoker : CommandAnalyzer
                 throw new InvalidOperationException("Use InvokeAsync instead.");
             }
         }
-        else if (TryGetMethodDescriptor(instance, commandName, out var methodDescriptor) == true)
+        else if (TryGetMethodDescriptor(commandName, out var methodDescriptor) == true)
         {
             if (methodDescriptor.IsAsync == true)
             {
@@ -72,7 +72,7 @@ public class CommandInvoker : CommandAnalyzer
             }
             else
             {
-                Invoke(methodDescriptor, instance, commandArguments);
+                Invoke(methodDescriptor, commandArguments);
             }
         }
         else if (instance is IExecutable executable)
@@ -113,16 +113,16 @@ public class CommandInvoker : CommandAnalyzer
                 await commandAsyncExecutable1.ExecuteAsync(cancellationToken, progress);
             }
         }
-        else if (TryGetMethodDescriptor(instance, commandName, out var methodDescriptor) == true)
+        else if (TryGetMethodDescriptor(commandName, out var methodDescriptor) == true)
         {
             if (methodDescriptor.IsAsync == true)
             {
                 await InvokeAsync(
-                    methodDescriptor, instance, commandArguments, cancellationToken, progress);
+                    methodDescriptor, commandArguments, cancellationToken, progress);
             }
             else
             {
-                Invoke(methodDescriptor, instance, commandArguments);
+                Invoke(methodDescriptor, commandArguments);
             }
         }
         else if (instance is IExecutable executable)
@@ -161,39 +161,50 @@ public class CommandInvoker : CommandAnalyzer
         }
     }
 
-    private static bool TryGetMethodDescriptor(
-        object instance,
+    private bool TryGetMethodDescriptor(
         string commandName,
         [MaybeNullWhen(false)] out CommandMethodDescriptor methodDescriptor)
     {
-        var instanceType = instance is Type type ? type : instance.GetType();
+        var instanceType = InstanceType;
         var methodDescriptors = CommandDescriptor.GetMethodDescriptors(instanceType);
         methodDescriptor = methodDescriptors.FindByName(commandName)!;
         return methodDescriptor is not null;
     }
 
-    private static void Invoke(
-        CommandMethodDescriptor methodDescriptor, object instance, string[] args)
+    private void Invoke(
+        CommandMethodDescriptor methodDescriptor, string[] args)
     {
-        methodDescriptor.Invoke(instance, args, methodDescriptor.Members);
+        var instance = Instance;
+        var memberDescriptors = methodDescriptor.Members;
+        var settings = Settings;
+        var parseContext = new ParseContext(memberDescriptors, settings, args);
+        var methodInstance = new CommandMethodInstance(methodDescriptor, instance);
+        parseContext.SetValue(methodInstance);
+        methodDescriptor.Invoke(instance, methodInstance);
     }
 
-    private static Task InvokeAsync(
+    private Task InvokeAsync(
         CommandMethodDescriptor methodDescriptor,
-        object instance,
         string[] args,
         CancellationToken cancellationToken,
         IProgress<ProgressInfo> progress)
     {
+        var instance = Instance;
+        var memberDescriptors = methodDescriptor.Members;
+        var settings = Settings;
+        var parseContext = new ParseContext(memberDescriptors, settings, args);
+        var methodInstance = new CommandMethodInstance(methodDescriptor, instance);
+        parseContext.SetValue(methodInstance);
         return methodDescriptor.InvokeAsync(
-            instance, args, methodDescriptor.Members, cancellationToken, progress);
+            instance, methodInstance, cancellationToken, progress);
     }
 
     private void Parse(string[] args)
     {
         var instance = Instance;
         var memberDescriptors = CommandDescriptor.GetMemberDescriptors(instance);
-        var parserContext = new ParseContext(memberDescriptors, args);
+        var settings = Settings;
+        var parserContext = new ParseContext(memberDescriptors, settings, args);
         parserContext.SetValue(instance);
     }
 }
