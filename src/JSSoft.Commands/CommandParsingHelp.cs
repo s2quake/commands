@@ -15,7 +15,7 @@ internal sealed class CommandParsingHelp
     {
         var settings = e.Parser.Settings;
         var name = e.Arguments[0];
-        var args = e.Arguments.Where(item => settings.IsHelpArg(item) != true).ToArray();
+        var args = e.Arguments.Where(item => settings.IsHelpArg(item) is false).ToArray();
         var obj = new CommandParsingHelp();
         var parser = new HelpCommandParser(name, obj);
         parser.Parse(args);

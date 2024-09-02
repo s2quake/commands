@@ -21,9 +21,9 @@ internal sealed class TerminalCursorTimer : TerminalPropertyChangedBase, IDispos
         get => _isEnabled;
         set
         {
-            if (SetField(ref _isEnabled, value, nameof(IsEnabled)) == true)
+            if (SetField(ref _isEnabled, value, nameof(IsEnabled)) is true)
             {
-                if (_isEnabled == true)
+                if (_isEnabled is true)
                 {
                     _timer = new(Timer_Callback, _synchronizationContext, 0, _interval);
                 }
@@ -41,7 +41,7 @@ internal sealed class TerminalCursorTimer : TerminalPropertyChangedBase, IDispos
         get => _interval;
         set
         {
-            if (SetField(ref _interval, value, nameof(Interval)) == true)
+            if (SetField(ref _interval, value, nameof(Interval)) is true)
             {
                 _timer?.Change(_interval, _interval);
             }
@@ -52,7 +52,7 @@ internal sealed class TerminalCursorTimer : TerminalPropertyChangedBase, IDispos
 
     public void Dispose()
     {
-        if (_isDisposed == true)
+        if (_isDisposed is true)
         {
             throw new ObjectDisposedException($"{this}");
         }

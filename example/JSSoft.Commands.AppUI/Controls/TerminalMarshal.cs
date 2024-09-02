@@ -47,7 +47,7 @@ static class TerminalMarshal
     public static IBrush ToBrush(TerminalColor color)
     {
         var colorCode = color.ToUInt32();
-        if (_brushByColorCode.ContainsKey(colorCode) != true)
+        if (_brushByColorCode.ContainsKey(colorCode) is false)
         {
             _brushByColorCode.Add(colorCode, new ImmutableSolidColorBrush(colorCode));
         }
@@ -62,19 +62,19 @@ static class TerminalMarshal
     public static TerminalModifiers Convert(KeyModifiers modifiers)
     {
         TerminalModifiers terminalModifiers = 0;
-        if (modifiers.HasFlag(KeyModifiers.Alt) == true)
+        if (modifiers.HasFlag(KeyModifiers.Alt) is true)
         {
             terminalModifiers |= TerminalModifiers.Alt;
         }
-        if (modifiers.HasFlag(KeyModifiers.Control) == true)
+        if (modifiers.HasFlag(KeyModifiers.Control) is true)
         {
             terminalModifiers |= TerminalModifiers.Control;
         }
-        if (modifiers.HasFlag(KeyModifiers.Shift) == true)
+        if (modifiers.HasFlag(KeyModifiers.Shift) is true)
         {
             terminalModifiers |= TerminalModifiers.Shift;
         }
-        if (modifiers.HasFlag(KeyModifiers.Meta) == true)
+        if (modifiers.HasFlag(KeyModifiers.Meta) is true)
         {
             terminalModifiers |= (TerminalModifiers)KeyModifiers.Meta;
         }

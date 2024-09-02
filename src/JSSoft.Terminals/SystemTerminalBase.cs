@@ -46,11 +46,11 @@ public abstract class SystemTerminalBase : IDisposable
     {
         OnInitialize(_out, _error);
 
-        while (cancellationToken.IsCancellationRequested != true)
+        while (cancellationToken.IsCancellationRequested is false)
         {
             var isEnabled = _terminal.IsEnabled;
             var prompt = Prompt;
-            if (isEnabled == true && _terminal.ReadStringInternal(prompt, cancellationToken) is { } text)
+            if (isEnabled is true && _terminal.ReadStringInternal(prompt, cancellationToken) is { } text)
             {
                 await ExecuteAsync(_error, text);
             }
@@ -66,7 +66,7 @@ public abstract class SystemTerminalBase : IDisposable
 
     public void Dispose()
     {
-        if (_isDisposed == true)
+        if (_isDisposed is true)
         {
             throw new ObjectDisposedException($"{this}");
         }
@@ -87,7 +87,7 @@ public abstract class SystemTerminalBase : IDisposable
         set
         {
             _prompt = value;
-            if (_terminal.IsReading == true)
+            if (_terminal.IsReading is true)
             {
                 _terminal.Prompt = value;
             }
@@ -118,29 +118,29 @@ public abstract class SystemTerminalBase : IDisposable
 
     private async Task ExecuteAsync(TextWriter error, string text)
     {
-        var consoleControlC = Console.IsInputRedirected != true && Console.TreatControlCAsInput;
+        var consoleControlC = Console.IsInputRedirected is false && Console.TreatControlCAsInput;
         var cancellationTokenSource = new CancellationTokenSource();
         try
         {
-            if (Console.IsInputRedirected != true)
+            if (Console.IsInputRedirected is false)
             {
                 Console.TreatControlCAsInput = false;
             }
 
             Console.CancelKeyPress += ConsoleCancelEventHandler;
-            if (OnCanExecute(text) != true)
+            if (OnCanExecute(text) is false)
             {
                 return;
             }
 
             var task = OnExecuteAsync(text, cancellationTokenSource.Token);
-            while (task.IsCompleted != true)
+            while (task.IsCompleted is false)
             {
                 _terminal.Update();
                 await Task.Delay(1);
             }
 
-            if (task.IsCanceled == true)
+            if (task.IsCanceled is true)
             {
                 throw new TaskCanceledException(task);
             }
@@ -158,7 +158,7 @@ public abstract class SystemTerminalBase : IDisposable
         }
         finally
         {
-            if (Console.IsInputRedirected != true)
+            if (Console.IsInputRedirected is false)
             {
                 Console.TreatControlCAsInput = consoleControlC;
             }
@@ -195,7 +195,7 @@ public abstract class SystemTerminalBase : IDisposable
     private void WriteException(TextWriter error, Exception e)
     {
         var exception = e is TargetInvocationException ? e.InnerException ?? e : e;
-        var errorMessage = DetailErrorMessage == true ? $"{exception}" : exception.Message;
+        var errorMessage = DetailErrorMessage is true ? $"{exception}" : exception.Message;
         var formattedMessage = TerminalStringBuilder.GetString(errorMessage, TerminalColorType.Red);
         error.WriteLine(formattedMessage);
     }

@@ -80,7 +80,7 @@ internal static class CommandUtility
         var itemList = new List<string>(items.Length);
         foreach (var item in items)
         {
-            itemList.Add(item.Contains(' ') == true ? $"\"{item}\"" : item);
+            itemList.Add(item.Contains(' ') is true ? $"\"{item}\"" : item);
         }
 
         return string.Join(" ", itemList);
@@ -90,7 +90,7 @@ internal static class CommandUtility
     {
         try
         {
-            if (TrySplit(commandLine, out var items) == true)
+            if (TrySplit(commandLine, out var items) is true)
             {
                 commandName = items[0];
                 commandArguments = items.Skip(1).ToArray();
@@ -148,7 +148,7 @@ internal static class CommandUtility
 
     public static bool TryWrapDoubleQuotes(string text, out string wrappedText)
     {
-        if (text.Contains('\\') == true || text.Contains('"') == true || text.Contains('\'') == true || text.Contains(' ') == true)
+        if (text.Contains('\\') is true || text.Contains('"') is true || text.Contains('\'') is true || text.Contains(' ') is true)
         {
             wrappedText = WrapDoubleQuotes(text);
             return true;
@@ -158,27 +158,27 @@ internal static class CommandUtility
         return false;
     }
 
-    public static int GetBufferWidth() => Console.IsOutputRedirected == true ? int.MaxValue : Console.BufferWidth;
+    public static int GetBufferWidth() => Console.IsOutputRedirected is true ? int.MaxValue : Console.BufferWidth;
 
     public static bool IsSupportedType(Type value)
     {
         if (Nullable.GetUnderlyingType(value) is not null &&
             value.GenericTypeArguments.Length == 1 &&
-            IsSupportedType(value.GenericTypeArguments[0]) == true)
+            IsSupportedType(value.GenericTypeArguments[0]) is true)
         {
             return true;
         }
-        else if (supportedTypes.Contains(value) == true)
+        else if (supportedTypes.Contains(value) is true)
         {
             return true;
         }
-        else if (value.IsEnum == true)
+        else if (value.IsEnum is true)
         {
             return true;
         }
-        else if (value.IsArray == true &&
-                value.HasElementType == true &&
-                IsSupportedType(value.GetElementType()!) == true)
+        else if (value.IsArray is true &&
+                value.HasElementType is true &&
+                IsSupportedType(value.GetElementType()!) is true)
         {
             return true;
         }
@@ -284,7 +284,7 @@ internal static class CommandUtility
 
     private static (string name, string value, int space, int array) GetMatchInfo(Match match)
     {
-        if (FindGroup(match, out var group, out var index) != true || group.Name == "etc")
+        if (FindGroup(match, out var group, out var index) is false || group.Name == "etc")
         {
             throw new ArgumentException($"‘{match.Value}’ is an invalid string.: [{match.Index} .. {match.Index + match.Length}]", nameof(match));
         }
@@ -296,7 +296,7 @@ internal static class CommandUtility
         var value3 = value2.TrimEnd();
         var array = value1.Length - value2.Length;
         var space = value0.Length - value1.Length + (value2.Length - value3.Length);
-        var replacer = replacerByName.TryGetValue(group.Name, out var r) == true ? r : (s) => string.Empty;
+        var replacer = replacerByName.TryGetValue(group.Name, out var r) is true ? r : (s) => string.Empty;
         return (group.Name, replacer(value), space, array);
     }
 
@@ -305,7 +305,7 @@ internal static class CommandUtility
         for (var i = 0; i < itemList.Count; i++)
         {
             var item = itemList[i];
-            itemList[i] = item.Contains(' ') == true ? $"'{item}'" : item;
+            itemList[i] = item.Contains(' ') is true ? $"'{item}'" : item;
         }
 
         return string.Join(",", itemList);
@@ -315,7 +315,7 @@ internal static class CommandUtility
     {
         for (var i = 1; i < match.Groups.Count; i++)
         {
-            if (match.Groups[i].Success == true)
+            if (match.Groups[i].Success is true)
             {
                 group = match.Groups[i];
                 index = i - 1;

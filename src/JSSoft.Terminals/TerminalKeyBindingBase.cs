@@ -33,7 +33,7 @@ public abstract class TerminalKeyBindingBase<T> : ITerminalKeyBinding
 
     void ITerminalKeyBinding.Invoke(object obj)
     {
-        if (Type.IsAssignableFrom(obj.GetType()) != true)
+        if (Type.IsAssignableFrom(obj.GetType()) is false)
         {
             throw new ArgumentException("invalid type", nameof(obj));
         }
@@ -43,7 +43,7 @@ public abstract class TerminalKeyBindingBase<T> : ITerminalKeyBinding
 
     bool ITerminalKeyBinding.CanInvoke(object obj)
     {
-        if (Type.IsAssignableFrom(obj.GetType()) != true)
+        if (Type.IsAssignableFrom(obj.GetType()) is false)
         {
             return false;
         }

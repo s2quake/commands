@@ -56,7 +56,7 @@ public struct TerminalRect(TerminalPoint location, TerminalSize size) : IEquatab
             throw new ArgumentOutOfRangeException(nameof(outerRect));
         }
 
-        return outerRect.Contains(point) == true && innerRect.Contains(point) != true;
+        return outerRect.Contains(point) is true && innerRect.Contains(point) is false;
     }
 
     public static bool Contains(TerminalRect rect, TerminalThickness margin, TerminalThickness padding, TerminalPoint point)

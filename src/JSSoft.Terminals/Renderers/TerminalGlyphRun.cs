@@ -39,7 +39,7 @@ public class TerminalGlyphRun(TerminalGlyphRunInfo info) : IDisposable
 
     public void Dispose()
     {
-        if (_isDisposed == true)
+        if (_isDisposed is true)
         {
             throw new ObjectDisposedException($"{this}");
         }

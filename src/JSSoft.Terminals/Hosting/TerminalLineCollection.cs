@@ -253,7 +253,7 @@ internal sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<
             while (context.TextIndex < contextText.Length)
             {
                 var character = contextText[context.TextIndex];
-                if (AsciiCodeByCharacter.ContainsKey(character) == true)
+                if (AsciiCodeByCharacter.ContainsKey(character) is true)
                 {
                     AsciiCodeByCharacter[character].Process(context);
                 }
@@ -331,7 +331,7 @@ internal sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<
     private void UpdateLines()
     {
         var query = from item in _lineList
-                    where item.IsModified == true
+                    where item.IsModified is true
                     select item;
         foreach (var item in query)
         {

@@ -28,7 +28,7 @@ internal class PtyProvider : IPtyProvider
         PtyOptions options,
         TraceSource trace)
     {
-        if (IsPseudoConsoleSupported != true)
+        if (IsPseudoConsoleSupported is false)
             throw new NotSupportedException();
 
         return StartPseudoConsole(options, trace);

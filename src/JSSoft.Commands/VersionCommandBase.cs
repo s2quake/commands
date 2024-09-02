@@ -23,7 +23,7 @@ public abstract class VersionCommandBase : CommandBase
     {
         var settings = Context.Settings;
         using var writer = new CommandTextWriter(Out, settings);
-        var text = IsQuiet == true ? GetQuietString() : GetDetailedString();
+        var text = IsQuiet is true ? GetQuietString() : GetDetailedString();
         writer.WriteLine(text);
     }
 

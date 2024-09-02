@@ -14,7 +14,7 @@ public static class ICommandExtensions
         string commandName,
         [MaybeNullWhen(false)] out ICommand command)
     {
-        return @this.Commands.TryGetValue(commandName, out command) == true;
+        return @this.Commands.TryGetValue(commandName, out command) is true;
     }
 
     public static string GetExecutionName(this ICommand @this)
@@ -42,12 +42,12 @@ public static class ICommandExtensions
 
     public static void Verify(this ICommand @this)
     {
-        if (CommandUtility.IsName(@this.Name) != true)
+        if (CommandUtility.IsName(@this.Name) is false)
         {
             throw new CommandDefinitionException("Invalid command name.");
         }
 
-        if (@this.AllowsSubCommands != true && @this.Commands.Count > 0)
+        if (@this.AllowsSubCommands is false && @this.Commands.Count > 0)
         {
             throw new CommandDefinitionException("This command does not allow subcommands.");
         }
@@ -73,14 +73,14 @@ public static class ICommandExtensions
         if (@this.Parent is { } oldParent)
         {
             oldParent.Commands.Remove(@this);
-            if (oldParent.Commands.Contains(@this) == true)
+            if (oldParent.Commands.Contains(@this) is true)
             {
                 throw new InvalidOperationException(
                     "The command is not removed from the parent command.");
             }
         }
 
-        if (parent is not null && parent.AllowsSubCommands != true)
+        if (parent is not null && parent.AllowsSubCommands is false)
         {
             throw new InvalidOperationException($"Parent '{parent}' does not allow sub commands.");
         }
@@ -89,7 +89,7 @@ public static class ICommandExtensions
 
         if (@this.Parent is { } newParent)
         {
-            if (newParent.Commands.Contains(@this) == true)
+            if (newParent.Commands.Contains(@this) is true)
             {
                 throw new InvalidOperationException(
                     "The command is already added to the parent command.");

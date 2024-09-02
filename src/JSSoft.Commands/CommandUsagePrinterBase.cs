@@ -86,9 +86,9 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
         using var _ = commandWriter.Group(groupName);
         string[] items =
         [
-            .. from item in memberDescriptors where item.IsRequired == true select GetString(item),
-            memberDescriptors.HasOptions == true ? "[options]" : string.Empty,
-            .. from item in memberDescriptors where item.IsVariables == true select GetString(item),
+            .. from item in memberDescriptors where item.IsRequired is true select GetString(item),
+            memberDescriptors.HasOptions is true ? "[options]" : string.Empty,
+            .. from item in memberDescriptors where item.IsVariables is true select GetString(item),
         ];
         var maxWidth = commandWriter.Width
             - (IndentedTextWriter.DefaultTabString.Length * commandWriter.Indent)
@@ -104,7 +104,7 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
     protected static bool PrintRequirements(
         CommandTextWriter commandWriter, CommandMemberDescriptorCollection memberDescriptors)
     {
-        if (memberDescriptors.HasRequirements == true)
+        if (memberDescriptors.HasRequirements is true)
         {
             var requirementDescriptors = memberDescriptors.RequirementDescriptors;
             var groupName = StringByName[TextRequirements];
@@ -119,7 +119,7 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
     protected static bool PrintRequirementsInDetail(
         CommandTextWriter commandWriter, CommandMemberDescriptorCollection memberDescriptors)
     {
-        if (memberDescriptors.HasRequirements == true)
+        if (memberDescriptors.HasRequirements is true)
         {
             var requirementDescriptors = memberDescriptors.RequirementDescriptors;
             var groupName = StringByName[TextRequirements];
@@ -180,7 +180,7 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
     protected static bool PrintOptions(
         CommandTextWriter commandWriter, CommandMemberDescriptorCollection memberDescriptors)
     {
-        if (memberDescriptors.HasOptions == true)
+        if (memberDescriptors.HasOptions is true)
         {
             var optionDescriptors = memberDescriptors.OptionDescriptors;
             var groupName = StringByName[TextOptions];
@@ -195,7 +195,7 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
     protected static bool PrintOptionsInDetail(
         CommandTextWriter commandWriter, CommandMemberDescriptorCollection memberDescriptors)
     {
-        if (memberDescriptors.HasOptions == true)
+        if (memberDescriptors.HasOptions is true)
         {
             var optionDescriptors = memberDescriptors.OptionDescriptors;
             var groupName = StringByName[TextOptions];
@@ -205,7 +205,7 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
                 var item = optionDescriptors[i];
                 var isLast = i + 1 == optionDescriptors.Length;
                 PrintOptionInDetail(commandWriter, item);
-                commandWriter.WriteLineIf(condition: isLast != true);
+                commandWriter.WriteLineIf(condition: isLast is false);
             }
 
             return true;
@@ -252,11 +252,11 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
     protected static string GetString(CommandMemberDescriptor memberDescriptor)
     {
         var displayName = memberDescriptor.DisplayName;
-        if (memberDescriptor.IsRequired == true)
+        if (memberDescriptor.IsRequired is true)
         {
             if (memberDescriptor.DefaultValue is DBNull)
             {
-                if (memberDescriptor.IsExplicit == true)
+                if (memberDescriptor.IsExplicit is true)
                 {
                     return $"<{displayName} 'value'>";
                 }
@@ -271,7 +271,7 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
                 return $"[{displayName} default='{value:R}']";
             }
         }
-        else if (memberDescriptor.IsSwitch != true)
+        else if (memberDescriptor.IsSwitch is false)
         {
             return $"[{displayName} 'value']";
         }
@@ -283,7 +283,7 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
 
     protected static string GetOptionString(CommandMemberDescriptor memberDescriptor)
     {
-        if (memberDescriptor.IsSwitch == true)
+        if (memberDescriptor.IsSwitch is true)
         {
             return memberDescriptor.DisplayName;
         }
@@ -349,7 +349,7 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
             var item = memberDescriptors[i];
             var isLast = i + 1 == memberDescriptors.Length;
             printer(commandWriter, item);
-            commandWriter.WriteLinesIf(separatorCount, condition: isLast != true);
+            commandWriter.WriteLinesIf(separatorCount, condition: isLast is false);
         }
     }
 }

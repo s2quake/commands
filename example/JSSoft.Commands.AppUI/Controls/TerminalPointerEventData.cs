@@ -70,7 +70,7 @@ sealed class TerminalPointerEventData : IPointerEventData
 
     private static MouseButton Convert(PointerPointProperties properties)
     {
-        if (properties.IsLeftButtonPressed == true)
+        if (properties.IsLeftButtonPressed is true)
         {
             return MouseButton.Left;
         }

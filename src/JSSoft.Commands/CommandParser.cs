@@ -50,17 +50,17 @@ public class CommandParser : CommandAnalyzer
 
     protected virtual void OnVerify(string[] args)
     {
-        if (CommandUtility.IsEmptyArgs(args) == true && Settings.AllowEmpty != true)
+        if (CommandUtility.IsEmptyArgs(args) is true && Settings.AllowEmpty is false)
         {
             throw new CommandParsingException(this, CommandParsingError.Empty, args);
         }
 
-        if (Settings.ContainsHelpOption(args) == true)
+        if (Settings.ContainsHelpOption(args) is true)
         {
             throw new CommandParsingException(this, CommandParsingError.Help, args);
         }
 
-        if (Settings.ContainsVersionOption(args) == true)
+        if (Settings.ContainsVersionOption(args) is true)
         {
             throw new CommandParsingException(this, CommandParsingError.Version, args);
         }

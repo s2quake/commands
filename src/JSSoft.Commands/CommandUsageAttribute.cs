@@ -30,7 +30,7 @@ public class CommandUsageAttribute : Attribute
             throw new CommandDefinitionException(message, memberInfo);
         }
 
-        if (typeof(CommandUsageDescriptorBase).IsAssignableFrom(type) != true)
+        if (typeof(CommandUsageDescriptorBase).IsAssignableFrom(type) is false)
         {
             var message = $"Type '{type}' is not subclass of " +
                           $"'{typeof(CommandUsageDescriptorBase)}'.";

@@ -66,7 +66,7 @@ public static partial class CommandUtility
     ];
 
     public static int BufferWidth
-        => Console.IsOutputRedirected == true ? int.MaxValue : Console.BufferWidth;
+        => Console.IsOutputRedirected is true ? int.MaxValue : Console.BufferWidth;
 
     public static bool TrySplit(string argumentLine, out string[] items)
     {
@@ -89,7 +89,7 @@ public static partial class CommandUtility
         var itemList = new List<string>(items.Length);
         foreach (var item in items)
         {
-            itemList.Add(item.Contains(' ') == true ? $"\"{item}\"" : item);
+            itemList.Add(item.Contains(' ') is true ? $"\"{item}\"" : item);
         }
 
         return string.Join(" ", itemList);
@@ -100,7 +100,7 @@ public static partial class CommandUtility
     {
         try
         {
-            if (TrySplit(commandLine, out var items) == true)
+            if (TrySplit(commandLine, out var items) is true)
             {
                 commandName = items[0];
                 commandArguments = items.Skip(1).ToArray();
@@ -152,10 +152,10 @@ public static partial class CommandUtility
 
     public static bool TryWrapDoubleQuotes(string text, out string wrappedText)
     {
-        if (text.Contains('\\') == true
-            || text.Contains('"') == true
-            || text.Contains('\'') == true
-            || text.Contains(' ') == true)
+        if (text.Contains('\\') is true
+            || text.Contains('"') is true
+            || text.Contains('\'') is true
+            || text.Contains(' ') is true)
         {
             wrappedText = WrapDoubleQuotes(text);
             return true;
@@ -169,21 +169,21 @@ public static partial class CommandUtility
     {
         if (Nullable.GetUnderlyingType(value) is not null &&
             value.GenericTypeArguments.Length == 1 &&
-            IsSupportedType(value.GenericTypeArguments[0]) == true)
+            IsSupportedType(value.GenericTypeArguments[0]) is true)
         {
             return true;
         }
-        else if (SupportedTypes.Contains(value) == true)
+        else if (SupportedTypes.Contains(value) is true)
         {
             return true;
         }
-        else if (value.IsEnum == true)
+        else if (value.IsEnum is true)
         {
             return true;
         }
-        else if (value.IsArray == true &&
-                value.HasElementType == true &&
-                IsSupportedType(value.GetElementType()!) == true)
+        else if (value.IsArray is true &&
+                value.HasElementType is true &&
+                IsSupportedType(value.GetElementType()!) is true)
         {
             return true;
         }
@@ -195,10 +195,10 @@ public static partial class CommandUtility
     }
 
     public static bool IsName(string name)
-        => new Regex(NamePattern).IsMatch(name) == true;
+        => new Regex(NamePattern).IsMatch(name) is true;
 
     public static bool IsShortName(char value)
-        => new Regex(ShortNamePattern).IsMatch(value.ToString()) == true;
+        => new Regex(ShortNamePattern).IsMatch(value.ToString()) is true;
 
     internal static string ToSpinalCase(Type type)
     {
@@ -283,7 +283,7 @@ public static partial class CommandUtility
 
     private static (string Name, string Value, int Space, int Array) GetMatchInfo(Match match)
     {
-        if (FindGroup(match, out var group, out var index) != true || group.Name == "etc")
+        if (FindGroup(match, out var group, out var index) is false || group.Name == "etc")
         {
             var message = $"'{match.Value}' is an invalid string.: " +
                           $"[{match.Index} .. {match.Index + match.Length}]";
@@ -303,7 +303,7 @@ public static partial class CommandUtility
 
     private static Func<string, string> GetReplacer(string name)
     {
-        if (ReplacerByName.TryGetValue(name, out var replacer) == true)
+        if (ReplacerByName.TryGetValue(name, out var replacer) is true)
         {
             return replacer;
         }
@@ -316,7 +316,7 @@ public static partial class CommandUtility
         for (var i = 0; i < itemList.Count; i++)
         {
             var item = itemList[i];
-            itemList[i] = item.Contains(' ') == true ? $"'{item}'" : item;
+            itemList[i] = item.Contains(' ') is true ? $"'{item}'" : item;
         }
 
         return string.Join(",", itemList);
@@ -326,7 +326,7 @@ public static partial class CommandUtility
     {
         for (var i = 1; i < match.Groups.Count; i++)
         {
-            if (match.Groups[i].Success == true)
+            if (match.Groups[i].Success is true)
             {
                 group = match.Groups[i];
                 index = i - 1;

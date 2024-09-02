@@ -137,7 +137,7 @@ public abstract class CommandContextBase : ICommandContext
     internal static ICommand? GetCommand(ICommand parent, IList<string> argList)
     {
         if (argList.FirstOrDefault() is { } commandName
-            && parent.TryGetCommand(commandName, out var command) == true)
+            && parent.TryGetCommand(commandName, out var command) is true)
         {
             argList.RemoveAt(0);
             if (argList.Count > 0 && command.Commands.Count != 0)
@@ -153,7 +153,7 @@ public abstract class CommandContextBase : ICommandContext
 
     internal void ThrowIfNotVerifyCommandName(string commandName)
     {
-        if (CheckCommandName(commandName) != true)
+        if (CheckCommandName(commandName) is false)
         {
             var message = $"Command name '{commandName}' is not available.";
             throw new ArgumentException(message, nameof(commandName));
@@ -242,7 +242,7 @@ public abstract class CommandContextBase : ICommandContext
 
     protected virtual void OnHelpExecute(string[] args)
     {
-        var items = args.Where(item => Settings.IsHelpArg(item) != true).ToArray();
+        var items = args.Where(item => Settings.IsHelpArg(item) is false).ToArray();
         var helpCommand = HelpCommand;
         var invoker = new InternalCommandInvoker(helpCommand);
         invoker.Invoke(items);
@@ -250,7 +250,7 @@ public abstract class CommandContextBase : ICommandContext
 
     protected virtual void OnVersionExecute(string[] args)
     {
-        var items = args.Where(item => Settings.IsVersionArg(item) != true).ToArray();
+        var items = args.Where(item => Settings.IsVersionArg(item) is false).ToArray();
         var versionCommand = VersionCommand;
         var invoker = new InternalCommandInvoker(versionCommand);
         invoker.Invoke(items);
@@ -274,7 +274,7 @@ public abstract class CommandContextBase : ICommandContext
         }
 
         var parent = command.Parent;
-        if (parent?.Commands.Contains(command) != true)
+        if (parent?.Commands.Contains(command) is false)
         {
             throw new CommandDefinitionException(
                 message: $"Command '{command}' does not contain the commands of parent '{parent}'.",
@@ -294,7 +294,7 @@ public abstract class CommandContextBase : ICommandContext
         if (itemList.Count == 0)
         {
             var query = from child in parent.Commands
-                        where child.IsEnabled == true
+                        where child.IsEnabled is true
                         from name in new string[] { child.Name }.Concat(child.Aliases)
                         where name.StartsWith(find)
                         orderby name
@@ -304,9 +304,9 @@ public abstract class CommandContextBase : ICommandContext
         else
         {
             var commandName = itemList[0];
-            if (parent.TryGetCommand(commandName, out var command) == true)
+            if (parent.TryGetCommand(commandName, out var command) is true)
             {
-                if (command.IsEnabled == true && command.Commands.Any() == true)
+                if (command.IsEnabled is true && command.Commands.Any() is true)
                 {
                     itemList.RemoveAt(0);
                     return GetCompletion(command, itemList, find);
@@ -364,15 +364,15 @@ public abstract class CommandContextBase : ICommandContext
     private void ExecuteInternal(string[] args)
     {
         var argList = new List<string>(args);
-        if (CommandUtility.IsEmptyArgs(args) == true)
+        if (CommandUtility.IsEmptyArgs(args) is true)
         {
             OnEmptyExecute();
         }
-        else if (Settings.ContainsHelpOption(args) == true)
+        else if (Settings.ContainsHelpOption(args) is true)
         {
             OnHelpExecute(args);
         }
-        else if (Settings.ContainsVersionOption(args) == true)
+        else if (Settings.ContainsVersionOption(args) is true)
         {
             OnVersionExecute(args);
         }
@@ -391,15 +391,15 @@ public abstract class CommandContextBase : ICommandContext
         string[] args, CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
     {
         var argList = new List<string>(args);
-        if (CommandUtility.IsEmptyArgs(args) == true)
+        if (CommandUtility.IsEmptyArgs(args) is true)
         {
             OnEmptyExecute();
         }
-        else if (Settings.ContainsHelpOption(args) == true)
+        else if (Settings.ContainsHelpOption(args) is true)
         {
             OnHelpExecute(args);
         }
-        else if (Settings.ContainsVersionOption(args) == true)
+        else if (Settings.ContainsVersionOption(args) is true)
         {
             OnVersionExecute(args);
         }

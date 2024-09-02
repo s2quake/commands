@@ -49,7 +49,7 @@ internal sealed class TerminalGlyphRunFactory<T>(ITerminalFont font, int capacit
                 break;
             }
 
-            if (Predicate(characterInfo.Character) != true)
+            if (Predicate(characterInfo.Character) is false)
             {
                 continue;
             }
@@ -139,7 +139,7 @@ internal sealed class TerminalGlyphRunFactory<T>(ITerminalFont font, int capacit
 
     private static TerminalGlyphInfo GetGlyphInfo(ITerminalFont font, char character)
     {
-        if (font.Contains(character) == true)
+        if (font.Contains(character) is true)
         {
             return font[character];
         }

@@ -19,7 +19,7 @@ public static partial class RandomUtility
     public static T? Nullable<T>(Func<T> generator)
         where T : struct
     {
-        if (Boolean() == true)
+        if (Boolean() is true)
         {
             return generator();
         }
@@ -30,7 +30,7 @@ public static partial class RandomUtility
     public static T? NullableObject<T>(Func<T> generator)
         where T : class
     {
-        if (Boolean() == true)
+        if (Boolean() is true)
         {
             return generator();
         }
@@ -41,7 +41,7 @@ public static partial class RandomUtility
     public static T?[] NullableArray<T>(Func<T> generator)
         where T : struct
     {
-        if (Boolean() == true)
+        if (Boolean() is true)
         {
             return [];
         }
@@ -59,7 +59,7 @@ public static partial class RandomUtility
     public static T?[] NullableObjectArray<T>(Func<T> generator)
         where T : class
     {
-        if (Boolean() == true)
+        if (Boolean() is true)
         {
             return [];
         }

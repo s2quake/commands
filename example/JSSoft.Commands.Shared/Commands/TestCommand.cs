@@ -58,7 +58,7 @@ internal sealed class TestCommand(IApplication application) : CommandMethodBase(
     public async Task AsyncAsync(CancellationToken cancellationToken)
     {
         await Out.WriteLineAsync("type control+c to cancel");
-        while (cancellationToken.IsCancellationRequested != true)
+        while (cancellationToken.IsCancellationRequested is false)
         {
             await Task.Delay(100, cancellationToken);
         }
@@ -103,7 +103,7 @@ internal sealed class TestCommand(IApplication application) : CommandMethodBase(
     {
         Console.WriteLine(path);
         var items = new string[] { "a", "b", "c" };
-        if (IsReverse != true)
+        if (IsReverse is false)
         {
             var i = 0;
             foreach (var item in items)
@@ -173,7 +173,7 @@ internal sealed class TestCommand(IApplication application) : CommandMethodBase(
         }
         else if (methodDescriptor.MethodName == nameof(StopAsync))
         {
-            return _task is not null && _cancellationTokenSource!.IsCancellationRequested != true;
+            return _task is not null && _cancellationTokenSource!.IsCancellationRequested is false;
         }
 
         throw new NotSupportedException();
@@ -183,7 +183,7 @@ internal sealed class TestCommand(IApplication application) : CommandMethodBase(
     {
         while (!_cancellationTokenSource!.IsCancellationRequested)
         {
-            if (IsPrompt == true)
+            if (IsPrompt is true)
             {
                 _application.CurrentDirectory = $"{DateTime.UtcNow}";
             }

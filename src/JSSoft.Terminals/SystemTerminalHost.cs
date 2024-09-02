@@ -29,13 +29,13 @@ public partial class SystemTerminalHost
     private readonly ManualResetEvent _eventSet = new(false);
     private readonly StringBuilder _outputText = new();
 
-    private TerminalCoord _pt1 = new(0, Console.IsOutputRedirected == true ? 0 : Console.CursorTop);
+    private TerminalCoord _pt1 = new(0, Console.IsOutputRedirected is true ? 0 : Console.CursorTop);
     private TerminalCoord _pt2;
     private TerminalCoord _pt3;
     private TerminalCoord _pt4;
     private TerminalCoord _ot1;
-    private int _width = Console.IsOutputRedirected == true ? int.MaxValue : Console.BufferWidth;
-    private int _height = Console.IsOutputRedirected == true ? int.MaxValue : Console.BufferHeight;
+    private int _width = Console.IsOutputRedirected is true ? int.MaxValue : Console.BufferWidth;
+    private int _height = Console.IsOutputRedirected is true ? int.MaxValue : Console.BufferHeight;
     private int _historyIndex;
     private int _cursorIndex;
     private SystemTerminalPrompt _prompt = SystemTerminalPrompt.Empty;
@@ -75,7 +75,7 @@ public partial class SystemTerminalHost
     public static string NextCompletion(string[] completions, string text)
     {
         completions = [.. completions.OrderBy(item => item)];
-        if (completions.Contains(text) == true)
+        if (completions.Contains(text) is true)
         {
             for (var i = 0; i < completions.Length; i++)
             {
@@ -111,7 +111,7 @@ public partial class SystemTerminalHost
     public static string PrevCompletion(string[] completions, string text)
     {
         completions = [.. completions.OrderBy(item => item)];
-        if (completions.Contains(text) == true)
+        if (completions.Contains(text) is true)
         {
             for (var i = completions.Length - 1; i >= 0; i--)
             {
@@ -254,7 +254,7 @@ public partial class SystemTerminalHost
     {
         lock (LockedObject)
         {
-            if (IsPassword == true)
+            if (IsPassword is true)
             {
                 throw new InvalidOperationException();
             }
@@ -270,7 +270,7 @@ public partial class SystemTerminalHost
     {
         lock (LockedObject)
         {
-            if (IsPassword == true)
+            if (IsPassword is true)
             {
                 throw new InvalidOperationException();
             }
@@ -393,7 +393,7 @@ public partial class SystemTerminalHost
     {
         lock (LockedObject)
         {
-            if (IsPassword == true)
+            if (IsPassword is true)
             {
                 throw new InvalidOperationException();
             }
@@ -406,7 +406,7 @@ public partial class SystemTerminalHost
     {
         lock (LockedObject)
         {
-            if (IsPassword == true)
+            if (IsPassword is true)
             {
                 throw new InvalidOperationException();
             }
@@ -463,7 +463,7 @@ public partial class SystemTerminalHost
         get => _command.Text;
         set
         {
-            if (IsPassword == true)
+            if (IsPassword is true)
             {
                 throw new InvalidOperationException();
             }
@@ -524,7 +524,7 @@ public partial class SystemTerminalHost
         var offsetY = _pt4.Y - _pt1.Y;
         var lt3 = _pt3;
         var pre = command.Slice(0, _cursorIndex);
-        var cursor = new TerminalCoord(Console.IsOutputRedirected == true ? 0 : Console.CursorLeft, Console.IsOutputRedirected == true ? 0 : Console.CursorTop);
+        var cursor = new TerminalCoord(Console.IsOutputRedirected is true ? 0 : Console.CursorLeft, Console.IsOutputRedirected is true ? 0 : Console.CursorTop);
         var pt1 = new TerminalCoord(0, cursor.Y - offsetY);
         var nt1 = PrevPosition(prompt + pre, bufferWidth, cursor);
         if (nt1.X == 0)
@@ -564,7 +564,7 @@ public partial class SystemTerminalHost
     {
         lock (LockedObject)
         {
-            var displayText = IsPassword == true ? ConvertToPassword(text) : text;
+            var displayText = IsPassword is true ? ConvertToPassword(text) : text;
             var oldCursorIndex = _cursorIndex;
             var bufferWidth = _width;
             var bufferHeight = _height;
@@ -604,7 +604,7 @@ public partial class SystemTerminalHost
         var texts = items.Select(item => $"{item:terminal}");
         var capacity = texts.Sum(item => item.Length) + 30;
         var sb = new StringBuilder(capacity);
-        var last = texts.Any() == true ? texts.Last() : string.Empty;
+        var last = texts.Any() is true ? texts.Last() : string.Empty;
         sb.Append(pt1.CursorString);
         sb.Append(EscEraseDown);
         foreach (var item in texts)
@@ -612,7 +612,7 @@ public partial class SystemTerminalHost
             sb.Append(item);
         }
 
-        if (NeedLineBreak() == true)
+        if (NeedLineBreak() is true)
         {
             sb.Append(Environment.NewLine);
         }
@@ -623,7 +623,7 @@ public partial class SystemTerminalHost
 
         bool NeedLineBreak()
         {
-            if (TerminalEnvironment.IsWindows() == true && Console.BufferHeight > Console.WindowHeight && pt2.Y <= bufferHeight)
+            if (TerminalEnvironment.IsWindows() is true && Console.BufferHeight > Console.WindowHeight && pt2.Y <= bufferHeight)
             {
                 return false;
             }
@@ -638,7 +638,7 @@ public partial class SystemTerminalHost
                 return false;
             }
 
-            if (last.EndsWith(Environment.NewLine) == true)
+            if (last.EndsWith(Environment.NewLine) is true)
             {
                 return false;
             }
@@ -840,7 +840,7 @@ public partial class SystemTerminalHost
             var completion = func(completions, _completion);
             var inputText = _inputText;
             var command = leftText + completion;
-            if (prefix == true || postfix == true)
+            if (prefix is true || postfix is true)
             {
                 command = leftText + "\"" + completion + "\"";
             }
@@ -876,7 +876,7 @@ public partial class SystemTerminalHost
         _pt3 = pt3 - offset;
         _pt4 = st3;
 
-        if (IsReading == true)
+        if (IsReading is true)
         {
             RenderString(st1, st2, st3, bufferHeight, items: [prompt, command]);
         }
@@ -940,13 +940,13 @@ public partial class SystemTerminalHost
 
     private object? ReadLineImpl(CancellationToken cancellation)
     {
-        while (IsEnabled == true && cancellation.IsCancellationRequested != true)
+        while (IsEnabled is true && cancellation.IsCancellationRequested is false)
         {
             var text = string.Empty;
             Update();
-            if (Console.IsInputRedirected != true)
+            if (Console.IsInputRedirected is false)
             {
-                while (Console.KeyAvailable == true)
+                while (Console.KeyAvailable is true)
                 {
                     var keyInfo = Console.ReadKey(true);
                     var ch = keyInfo.KeyChar;
@@ -957,18 +957,18 @@ public partial class SystemTerminalHost
                         FlushKeyChars(ref text);
                     }
 
-                    if (KeyBindings.Process(this, modifiers, key) != true &&
-                        PreviewKeyChar(keyInfo.KeyChar) == true &&
-                        PreviewCommand(text + keyInfo.KeyChar) == true)
+                    if (KeyBindings.Process(this, modifiers, key) is false &&
+                        PreviewKeyChar(keyInfo.KeyChar) is true &&
+                        PreviewCommand(text + keyInfo.KeyChar) is true)
                     {
                         text += keyInfo.KeyChar;
                     }
 
-                    if (IsInputEnded == true)
+                    if (IsInputEnded is true)
                     {
                         return OnInputEnd();
                     }
-                    else if (IsInputCancelled == true)
+                    else if (IsInputCancelled is true)
                     {
                         return OnInputCancel();
                     }
@@ -1036,7 +1036,7 @@ public partial class SystemTerminalHost
                 continue;
             }
 
-            if (filters.Length != 0 != true || filters.Any(item => item == key.Key) == true)
+            if (filters.Length == 0 || filters.Any(item => item == key.Key) is true)
             {
                 InsertText(key.Key.ToString());
                 return key.Key;
@@ -1048,7 +1048,7 @@ public partial class SystemTerminalHost
     {
         if (ch != '\0')
         {
-            if (IsPassword == true)
+            if (IsPassword is true)
             {
                 return Regex.IsMatch($"{ch}", PasswordPattern);
             }
@@ -1063,9 +1063,9 @@ public partial class SystemTerminalHost
 
     private void Initialize(string prompt, TerminalFlags flags, Func<string, bool> validator)
     {
-        var bufferWidth = Console.IsOutputRedirected == true ? int.MaxValue : Console.BufferWidth;
-        var bufferHeight = Console.IsOutputRedirected == true ? int.MaxValue : Console.BufferHeight;
-        var pt1 = new TerminalCoord(0, Console.IsOutputRedirected == true ? _pt1.Y : Console.CursorTop);
+        var bufferWidth = Console.IsOutputRedirected is true ? int.MaxValue : Console.BufferWidth;
+        var bufferHeight = Console.IsOutputRedirected is true ? int.MaxValue : Console.BufferHeight;
+        var pt1 = new TerminalCoord(0, Console.IsOutputRedirected is true ? _pt1.Y : Console.CursorTop);
         lock (LockedObject)
         {
             var isPassword = flags.HasFlag(TerminalFlags.IsPassword);
@@ -1092,7 +1092,7 @@ public partial class SystemTerminalHost
             _ot1 = TerminalCoord.Empty;
             _flags = flags | TerminalFlags.IsReading;
             _validator = validator;
-            _secureString = isPassword == true ? new SecureString() : null;
+            _secureString = isPassword is true ? new SecureString() : null;
             RenderString(st1, st2, st3, bufferHeight, items: [EscCursorVisible, promptS]);
         }
     }
@@ -1108,7 +1108,7 @@ public partial class SystemTerminalHost
             }
 
             _outputText.AppendLine(_promptText);
-            _pt1 = new TerminalCoord(0, Console.IsOutputRedirected == true ? 0 : Console.CursorTop);
+            _pt1 = new TerminalCoord(0, Console.IsOutputRedirected is true ? 0 : Console.CursorTop);
             _pt2 = _pt1;
             _pt3 = _pt1;
             _pt4 = _pt1;
@@ -1125,12 +1125,12 @@ public partial class SystemTerminalHost
 
     private object? OnInputEnd()
     {
-        if (CanRecord == true)
+        if (CanRecord is true)
         {
             RecordCommand(_command.Text);
         }
 
-        if (IsPassword == true)
+        if (IsPassword is true)
         {
             return _secureString;
         }
@@ -1146,7 +1146,7 @@ public partial class SystemTerminalHost
 
     private void RecordCommand(string command)
     {
-        if (_histories.Contains(command) != true)
+        if (_histories.Contains(command) is false)
         {
             _histories.Add(command);
             _historyIndex = _histories.Count;
@@ -1169,7 +1169,7 @@ public partial class SystemTerminalHost
 
         var text = StripOff(textF);
         var ct1 = NextPosition(text, bufferWidth, pt8);
-        var text1F = NeedLineBreak(ct1, bufferHeight, text) == true ? textF + Environment.NewLine : textF;
+        var text1F = NeedLineBreak(ct1, bufferHeight, text) is true ? textF + Environment.NewLine : textF;
         var text1 = StripOff(text1F);
         var promptS = text1F + promptText;
         var pt9 = NextPosition(text1, bufferWidth, pt8);
@@ -1204,7 +1204,7 @@ public partial class SystemTerminalHost
                 return false;
             }
 
-            if (text.EndsWith(Environment.NewLine) == true)
+            if (text.EndsWith(Environment.NewLine) is true)
             {
                 return false;
             }
@@ -1214,7 +1214,7 @@ public partial class SystemTerminalHost
                 return false;
             }
 
-            if (TerminalEnvironment.IsWindows() == true && Console.BufferHeight > Console.WindowHeight && pt.Y < height)
+            if (TerminalEnvironment.IsWindows() is true && Console.BufferHeight > Console.WindowHeight && pt.Y < height)
             {
                 return false;
             }
@@ -1228,7 +1228,7 @@ public partial class SystemTerminalHost
 
     private bool IsRecordable => _flags.HasFlag(TerminalFlags.IsRecordable);
 
-    private bool CanRecord => IsRecordable == true && IsPassword != true && _command != string.Empty;
+    private bool CanRecord => IsRecordable is true && IsPassword is false && _command != string.Empty;
 
     private bool IsInputCancelled => _flags.HasFlag(TerminalFlags.IsInputCancelled);
 
@@ -1246,7 +1246,7 @@ public partial class SystemTerminalHost
 
     internal void Update()
     {
-        if (Console.IsOutputRedirected != true && IsLayoutChanged() == true)
+        if (Console.IsOutputRedirected is false && IsLayoutChanged() is true)
         {
             UpdateLayout(Console.BufferWidth, Console.BufferHeight);
         }
@@ -1271,12 +1271,12 @@ public partial class SystemTerminalHost
     private sealed class Initializer : IDisposable
     {
         private readonly SystemTerminalHost _terminalHost;
-        private readonly bool _isControlC = Console.IsInputRedirected != true && Console.TreatControlCAsInput;
+        private readonly bool _isControlC = Console.IsInputRedirected is false && Console.TreatControlCAsInput;
 
         public Initializer(SystemTerminalHost terminalHost)
         {
             _terminalHost = terminalHost;
-            if (Console.IsInputRedirected != true)
+            if (Console.IsInputRedirected is false)
             {
                 _isControlC = Console.TreatControlCAsInput;
                 Console.TreatControlCAsInput = true;
@@ -1313,7 +1313,7 @@ public partial class SystemTerminalHost
         public void Dispose()
         {
             _terminalHost.Release();
-            if (Console.IsInputRedirected != true)
+            if (Console.IsInputRedirected is false)
             {
                 Console.TreatControlCAsInput = _isControlC;
             }

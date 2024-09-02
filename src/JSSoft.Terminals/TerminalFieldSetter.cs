@@ -28,7 +28,7 @@ public sealed class TerminalFieldSetter
             throw new ArgumentNullException(nameof(newField));
         }
 
-        if (Equals(oldField, newField) != true)
+        if (Equals(oldField, newField) is false)
         {
 #if !NETSTANDARD && !NETFRAMEWORK
             System.ComponentModel.DataAnnotations.Validator.ValidateProperty(newField, new System.ComponentModel.DataAnnotations.ValidationContext(_obj) { MemberName = propertyName });
@@ -43,7 +43,7 @@ public sealed class TerminalFieldSetter
 
     public bool SetField<T>(ref T oldField, T newField, string propertyName)
     {
-        if (Equals(oldField, newField) != true)
+        if (Equals(oldField, newField) is false)
         {
 #if !NETSTANDARD && !NETFRAMEWORK
             System.ComponentModel.DataAnnotations.Validator.ValidateProperty(newField, new System.ComponentModel.DataAnnotations.ValidationContext(_obj) { MemberName = propertyName });

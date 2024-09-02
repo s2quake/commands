@@ -76,7 +76,7 @@ public partial struct TerminalDisplayInfo
         {
             var code = span[0];
             span = span[1..];
-            if (actionByCode.TryGetValue(code, out var action) == true)
+            if (actionByCode.TryGetValue(code, out var action) is true)
             {
                 action.Invoke(ref this, ref span);
             }

@@ -195,17 +195,17 @@ public sealed class TerminalStringBuilder
     private void UpdateEscapeCode()
     {
         var itemList = new List<string>(3);
-        if (_isBold == true)
+        if (_isBold is true)
         {
             itemList.Add($"{1}");
         }
 
-        if (_isUnderline == true)
+        if (_isUnderline is true)
         {
             itemList.Add($"{4}");
         }
 
-        if (_isNegative == true)
+        if (_isNegative is true)
         {
             itemList.Add($"{7}");
         }

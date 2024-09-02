@@ -23,7 +23,7 @@ internal sealed class ParseContext(
         foreach (var item in items)
         {
             var memberDescriptor = item.MemberDescriptor;
-            if (item.HasValue != true && item.IsOptionSet != true)
+            if (item.HasValue is false && item.IsOptionSet is false)
             {
                 continue;
             }
@@ -68,7 +68,7 @@ internal sealed class ParseContext(
             var arg = argQueue.Dequeue();
             if (memberDescriptors.FindByOptionName(arg) is { } memberDescriptor)
             {
-                if (memberDescriptor.IsSwitch == true)
+                if (memberDescriptor.IsSwitch is true)
                 {
                     var parseDescriptor = parseDescriptors[memberDescriptor];
                     parseDescriptor.SetSwitchValue(true);
@@ -76,8 +76,8 @@ internal sealed class ParseContext(
                 }
                 else
                 {
-                    if (argQueue.TryPeek(out var nextArg) == true
-                        && CommandUtility.IsOption(nextArg) != true
+                    if (argQueue.TryPeek(out var nextArg) is true
+                        && CommandUtility.IsOption(nextArg) is false
                         && nextArg != "--")
                     {
                         var textValue = argQueue.Dequeue();
@@ -112,13 +112,13 @@ internal sealed class ParseContext(
                     parseDescriptors[memberDescriptor1].IsOptionSet = true;
                 }
             }
-            else if (CommandUtility.IsOption(arg) == true)
+            else if (CommandUtility.IsOption(arg) is true)
             {
                 variableList.Add(arg);
             }
             else
             {
-                if (implicitParseDescriptors.TryDequeue(out var parseDescriptor) == true)
+                if (implicitParseDescriptors.TryDequeue(out var parseDescriptor) is true)
                 {
                     parseDescriptor.SetValue(arg);
                 }

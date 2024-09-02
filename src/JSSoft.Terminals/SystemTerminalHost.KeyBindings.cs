@@ -58,7 +58,7 @@ public partial class SystemTerminalHost
 
     private static TerminalKeyBindingCollection GetDefaultKeyBindings()
     {
-        return TerminalEnvironment.IsWindows() == true ? WindowsKeyBindings : LinuxKeyBindings;
+        return TerminalEnvironment.IsWindows() is true ? WindowsKeyBindings : LinuxKeyBindings;
     }
 
     private static int PrevWord(SystemTerminalHost terminalHost)
@@ -117,7 +117,7 @@ public partial class SystemTerminalHost
 
     private static void InputEnter(SystemTerminalHost terminalHost)
     {
-        if (CommandUtility.TrySplit(terminalHost.Command, out var _) == true)
+        if (CommandUtility.TrySplit(terminalHost.Command, out var _) is true)
         {
             terminalHost.EndInput();
         }

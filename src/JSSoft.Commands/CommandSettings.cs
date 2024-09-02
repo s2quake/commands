@@ -85,7 +85,7 @@ public sealed record class CommandSettings
 
     internal static BindingFlags GetBindingFlags(Type type)
     {
-        var instanceFlag = type.IsStaticClass() == true
+        var instanceFlag = type.IsStaticClass() is true
             ? BindingFlags.Static
             : BindingFlags.Static | BindingFlags.Instance;
         var accessFlag = BindingFlags.Public | BindingFlags.NonPublic;
@@ -137,13 +137,13 @@ public sealed record class CommandSettings
     internal bool ContainsHelpOption(string[] args)
     {
         if (HelpName != string.Empty
-            && args.Contains($"{Delimiter}{HelpName}") == true)
+            && args.Contains($"{Delimiter}{HelpName}") is true)
         {
             return true;
         }
 
         if (HelpShortName != char.MinValue
-            && args.Contains($"{ShortDelimiter}{HelpShortName}") == true)
+            && args.Contains($"{ShortDelimiter}{HelpShortName}") is true)
         {
             return true;
         }
@@ -154,13 +154,13 @@ public sealed record class CommandSettings
     internal bool ContainsVersionOption(string[] args)
     {
         if (VersionName != string.Empty
-            && args.Contains($"{Delimiter}{VersionName}") == true)
+            && args.Contains($"{Delimiter}{VersionName}") is true)
         {
             return true;
         }
 
         if (VersionShortName != char.MinValue
-            && args.Contains($"{ShortDelimiter}{VersionShortName}") == true)
+            && args.Contains($"{ShortDelimiter}{VersionShortName}") is true)
         {
             return true;
         }

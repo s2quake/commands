@@ -18,7 +18,7 @@ internal sealed class CommandInvocationHelp
     {
         var settings = e.Invoker.Settings;
         var name = e.Arguments[0];
-        var args = e.Arguments.Where(item => settings.IsHelpArg(item) != true).ToArray();
+        var args = e.Arguments.Where(item => settings.IsHelpArg(item) is false).ToArray();
         var obj = new CommandInvocationHelp();
         var parser = new HelpCommandParser(name, obj);
         parser.Parse(args);

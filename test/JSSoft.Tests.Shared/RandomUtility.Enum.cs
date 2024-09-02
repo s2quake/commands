@@ -56,7 +56,7 @@ public static partial class RandomUtility
         for (var i = 0; i < AttemptCount; i++)
         {
             var value = GetRandomValue(typeof(T));
-            if (values.Contains(value) != true)
+            if (values.Contains(value) is false)
             {
                 return value;
             }

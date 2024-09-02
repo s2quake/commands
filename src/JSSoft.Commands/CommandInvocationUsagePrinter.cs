@@ -15,7 +15,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
     public virtual void Print(TextWriter writer, CommandMethodDescriptor[] methodDescriptors)
     {
         using var commandWriter = new CommandTextWriter(writer, Settings);
-        if (IsDetail == true)
+        if (IsDetail is true)
         {
             PrintSummary(commandWriter, commandUsage.Summary);
             PrintUsage(commandWriter, commandUsage.ExecutionName);
@@ -35,7 +35,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
     public virtual void Print(TextWriter writer, CommandMethodDescriptor methodDescriptor)
     {
         using var commandWriter = new CommandTextWriter(writer, Settings);
-        if (IsDetail == true)
+        if (IsDetail is true)
         {
             PrintMethodSummary(commandWriter, methodDescriptor);
             PrintUsage(commandWriter, commandUsage.ExecutionName, methodDescriptor.Members);
@@ -62,7 +62,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         CommandMemberDescriptor memberDescriptor)
     {
         using var commandWriter = new CommandTextWriter(writer, Settings);
-        if (IsDetail == true)
+        if (IsDetail is true)
         {
             PrintMemberSummary(commandWriter, memberDescriptor);
             PrintMemberUsage(commandWriter, memberDescriptor);
@@ -170,7 +170,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
                 var isLast = item == methodDescriptors.Last();
                 commandWriter.WriteLine(label);
                 commandWriter.WriteLineIndent(description, commandWriter.Indent + 1);
-                commandWriter.WriteLineIf(condition: isLast != true);
+                commandWriter.WriteLineIf(condition: isLast is false);
             }
         }
     }
@@ -186,7 +186,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
     {
         var memberDescriptors = methodDescriptor.Members;
-        if (memberDescriptors.HasRequirements == true)
+        if (memberDescriptors.HasRequirements is true)
         {
             var requirementDescriptors = memberDescriptors.RequirementDescriptors;
             var groupName = StringByName[TextRequirements];
@@ -202,7 +202,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
     {
         var memberDescriptors = methodDescriptor.Members;
-        if (memberDescriptors.HasRequirements == true)
+        if (memberDescriptors.HasRequirements is true)
         {
             var requirementDescriptors = memberDescriptors.RequirementDescriptors;
             var groupName = StringByName[TextRequirements];
@@ -247,7 +247,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
     {
         var memberDescriptors = methodDescriptor.Members;
-        if (memberDescriptors.HasOptions == true)
+        if (memberDescriptors.HasOptions is true)
         {
             var optionDescriptors = memberDescriptors.OptionDescriptors;
             var groupName = StringByName[TextOptions];
@@ -263,7 +263,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
     {
         var memberDescriptors = methodDescriptor.Members;
-        if (memberDescriptors.HasOptions == true)
+        if (memberDescriptors.HasOptions is true)
         {
             var optionDescriptors = memberDescriptors.OptionDescriptors;
             var groupName = StringByName[TextOptions];

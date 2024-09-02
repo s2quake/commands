@@ -24,7 +24,7 @@ internal sealed class TerminalInputHandlerContext(ITerminal terminal) : InputHan
 
     protected override void OnBeginDrag(IPointerEventData eventData)
     {
-        if (eventData.IsMouseLeftButton == true && _downCoord != TerminalCoord.Invalid)
+        if (eventData.IsMouseLeftButton is true && _downCoord != TerminalCoord.Invalid)
         {
             _cancellationTokenSource = _cancellationTokenSource ??= BeginScrollObservation(ObserveScroll);
             _dragTime = DateTime.Now;
@@ -42,7 +42,7 @@ internal sealed class TerminalInputHandlerContext(ITerminal terminal) : InputHan
 
     protected override void OnDrag(IPointerEventData eventData)
     {
-        if (eventData.IsMouseLeftButton == true && _downCoord != TerminalCoord.Invalid)
+        if (eventData.IsMouseLeftButton is true && _downCoord != TerminalCoord.Invalid)
         {
             var terminal = Terminal;
             var downCoord = _downCoord;
@@ -57,7 +57,7 @@ internal sealed class TerminalInputHandlerContext(ITerminal terminal) : InputHan
 
     protected override void OnEndDrag(IPointerEventData eventData)
     {
-        if (eventData.IsMouseLeftButton == true && _downCoord != TerminalCoord.Invalid)
+        if (eventData.IsMouseLeftButton is true && _downCoord != TerminalCoord.Invalid)
         {
             var terminal = Terminal;
             terminal.Selections.TrySelect(terminal.Selecting);
@@ -70,7 +70,7 @@ internal sealed class TerminalInputHandlerContext(ITerminal terminal) : InputHan
 
     protected override void OnPointerDown(IPointerEventData eventData)
     {
-        if (eventData.IsMouseLeftButton == true)
+        if (eventData.IsMouseLeftButton is true)
         {
             var terminal = Terminal;
             var newPosition = terminal.ViewToWorld(eventData.Position);
@@ -104,14 +104,14 @@ internal sealed class TerminalInputHandlerContext(ITerminal terminal) : InputHan
 
     protected override void OnPointerUp(IPointerEventData eventData)
     {
-        if (eventData.IsMouseLeftButton == true)
+        if (eventData.IsMouseLeftButton is true)
         {
             var terminal = Terminal;
             var downCount = _downCount;
             var position = terminal.ViewToWorld(eventData.Position);
             var newCoord = terminal.PositionToCoordinate(position);
             var oldCoord = _downCoord;
-            if (oldCoord == newCoord && _isDragging != true)
+            if (oldCoord == newCoord && _isDragging is false)
             {
                 if (downCount == 1)
                 {
@@ -138,7 +138,7 @@ internal sealed class TerminalInputHandlerContext(ITerminal terminal) : InputHan
 
     private async void ObserveScroll()
     {
-        while (_cancellationTokenSource?.IsCancellationRequested != true)
+        while (_cancellationTokenSource?.IsCancellationRequested is false)
         {
             var terminal = Terminal;
             var dragTime = DateTime.Now;

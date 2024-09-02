@@ -83,11 +83,11 @@ sealed class TerminalFont : ITerminalFont
         }
         if (index == -1)
             return _typefacesN[0];
-        if (isBold == true && isItalic == true)
+        if (isBold is true && isItalic is true)
             return _typefacesBI[index];
-        if (isBold == true)
+        if (isBold is true)
             return _typefacesB[index];
-        if (isItalic == true)
+        if (isItalic is true)
             return _typefacesI[index];
         return _typefacesN[index];
     }
@@ -96,7 +96,7 @@ sealed class TerminalFont : ITerminalFont
     {
         foreach (var item in _typefacesN)
         {
-            if (item.GlyphTypeface.TryGetGlyph(character, out var glyph) == true)
+            if (item.GlyphTypeface.TryGetGlyph(character, out var glyph) is true)
                 return true;
         }
         return false;
@@ -113,7 +113,7 @@ sealed class TerminalFont : ITerminalFont
                 var glyphTypeface = item.GlyphTypeface;
                 var designEmHeight = (double)glyphTypeface.Metrics.DesignEmHeight;
                 var id = glyphTypeface.GetGlyph(i);
-                if (id != 0 && glyphTypeface.TryGetGlyphMetrics(id, out var metrics) == true)
+                if (id != 0 && glyphTypeface.TryGetGlyphMetrics(id, out var metrics) is true)
                 {
                     var xAdvance = glyphTypeface.GetGlyphAdvance(id);
                     var glyphInfo = new TerminalGlyphInfo
@@ -158,7 +158,7 @@ sealed class TerminalFont : ITerminalFont
 
     private static int CalculateWidth(IGlyphTypeface glyphTypeface, int width, ushort glyph)
     {
-        if (glyphTypeface.TryGetGlyphMetrics(glyph, out var metrics) == true)
+        if (glyphTypeface.TryGetGlyphMetrics(glyph, out var metrics) is true)
         {
             var xAdvance = glyphTypeface.GetGlyphAdvance(glyph);
             width = Math.Max(width, xAdvance);

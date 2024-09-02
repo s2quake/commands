@@ -150,7 +150,7 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
         var index = this;
         var c = (TerminalCoord)index;
         var i = terminal.GetInfo(c);
-        while (predicate(index, i) == true)
+        while (predicate(index, i) is true)
         {
             index++;
             c = (TerminalCoord)index;
@@ -165,7 +165,7 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
         var index = this;
         var c = (TerminalCoord)index;
         var i = terminal.GetInfo(c);
-        while (predicate(index, i) == true)
+        while (predicate(index, i) is true)
         {
             index--;
             c = (TerminalCoord)index;

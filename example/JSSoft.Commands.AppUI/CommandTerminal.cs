@@ -56,7 +56,7 @@ sealed class CommandTerminal : IDisposable
             var progressValue = TerminalMathUtility.Clamp(value.Value, 0, 1);
             var progressText = GenerateText(progressValue, value.Text);
             await Task.CompletedTask;
-            // if (isCompleted == true)
+            // if (isCompleted is true)
             // {
             //     await Dispatcher.UIThread.InvokeAsync(() =>
             //     {

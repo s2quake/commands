@@ -27,17 +27,17 @@ public static class ParameterInfoExtensions
 
     public static bool IsCommandParameter(this ParameterInfo @this)
     {
-        if (IsCancellationTokenParameter(@this) == true)
+        if (IsCancellationTokenParameter(@this) is true)
         {
             return false;
         }
 
-        if (IsProgressParameter(@this) == true)
+        if (IsProgressParameter(@this) is true)
         {
             return false;
         }
 
-        if (CommandUtility.IsSupportedType(@this.ParameterType) != true)
+        if (CommandUtility.IsSupportedType(@this.ParameterType) is false)
         {
             return IsDefined<CommandParameterAttribute>(@this);
         }
@@ -51,14 +51,14 @@ public static class ParameterInfoExtensions
     public static bool IsProgressParameter(this ParameterInfo @this)
     {
         var parameterType = @this.ParameterType;
-        if (typeof(IProgress<ProgressInfo>).IsAssignableFrom(parameterType) == true)
+        if (typeof(IProgress<ProgressInfo>).IsAssignableFrom(parameterType) is true)
         {
             return true;
         }
         else if (parameterType.Namespace == nameof(System) && parameterType.Name == "IProgress`1")
         {
             var argumentType = parameterType.GetGenericArguments()[0];
-            return ProgressGenericArgumentTypes.Contains(argumentType) == true;
+            return ProgressGenericArgumentTypes.Contains(argumentType) is true;
         }
 
         return false;

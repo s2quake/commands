@@ -46,7 +46,7 @@ public abstract class CommandMemberBaseAttribute : Attribute
     {
         if (ShortName != char.MinValue)
         {
-            if (CommandUtility.IsShortName(ShortName) != true)
+            if (CommandUtility.IsShortName(ShortName) is false)
             {
                 throw new CommandInvalidShortNameException(memberInfo, ShortName);
             }
@@ -64,6 +64,6 @@ public abstract class CommandMemberBaseAttribute : Attribute
             return Name;
         }
 
-        return AllowName == true ? CommandUtility.ToSpinalCase(defaultName) : string.Empty;
+        return AllowName is true ? CommandUtility.ToSpinalCase(defaultName) : string.Empty;
     }
 }

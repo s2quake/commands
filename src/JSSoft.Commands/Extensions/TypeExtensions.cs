@@ -10,7 +10,7 @@ internal static class TypeExtensions
     public static bool IsStaticClass(this Type @this)
     {
         return @this.GetConstructor(Type.EmptyTypes) is null
-            && @this.IsAbstract == true
-            && @this.IsSealed == true;
+            && @this.IsAbstract is true
+            && @this.IsSealed is true;
     }
 }

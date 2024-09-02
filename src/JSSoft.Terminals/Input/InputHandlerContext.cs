@@ -26,15 +26,15 @@ public abstract class InputHandlerContext(ITerminal terminal) : IDisposable
     internal void PointerMove(IPointerEventData pointerEventData)
     {
         OnPointerMove(pointerEventData);
-        if (pointerEventData.IsMouseLeftButton == true)
+        if (pointerEventData.IsMouseLeftButton is true)
         {
-            if (_isDragging != true)
+            if (_isDragging is false)
             {
                 OnBeginDrag(pointerEventData);
                 _isDragging = true;
             }
 
-            if (_isDragging == true)
+            if (_isDragging is true)
             {
                 OnDrag(pointerEventData);
             }
@@ -43,7 +43,7 @@ public abstract class InputHandlerContext(ITerminal terminal) : IDisposable
 
     internal void PointerUp(IPointerEventData pointerEventData)
     {
-        if (_isDragging == true)
+        if (_isDragging is true)
         {
             OnEndDrag(pointerEventData);
         }

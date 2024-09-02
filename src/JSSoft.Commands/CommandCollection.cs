@@ -41,12 +41,12 @@ public sealed class CommandCollection : IEnumerable<ICommand>
 
     public void Add(ICommand command)
     {
-        if (IsLocked == true)
+        if (IsLocked is true)
         {
             throw new InvalidOperationException("Collection is locked.");
         }
 
-        if (command.AllowsSubCommands != true
+        if (command.AllowsSubCommands is false
             && command is not IExecutable
             && command is not IAsyncExecutable)
         {
@@ -55,7 +55,7 @@ public sealed class CommandCollection : IEnumerable<ICommand>
                 $"IAsyncExecutable if it does not allow subcommands.");
         }
 
-        if (CommandUtility.IsName(command.Name) != true)
+        if (CommandUtility.IsName(command.Name) is false)
         {
             throw new CommandDefinitionException("Invalid command name.");
         }
@@ -71,7 +71,7 @@ public sealed class CommandCollection : IEnumerable<ICommand>
 
     public void Remove(ICommand command)
     {
-        if (IsLocked == true)
+        if (IsLocked is true)
         {
             throw new InvalidOperationException("Collection is locked.");
         }

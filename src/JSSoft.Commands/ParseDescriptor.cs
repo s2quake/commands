@@ -33,14 +33,14 @@ public sealed class ParseDescriptor(CommandMemberDescriptor memberDescriptor)
                 return _value;
             }
 
-            if (MemberDescriptor.IsExplicit == true
-                && IsOptionSet == true
+            if (MemberDescriptor.IsExplicit is true
+                && IsOptionSet is true
                 && MemberDescriptor.DefaultValue is not DBNull)
             {
                 return MemberDescriptor.DefaultValue;
             }
 
-            if (MemberDescriptor.IsExplicit != true
+            if (MemberDescriptor.IsExplicit is false
                 && MemberDescriptor.DefaultValue is not DBNull)
             {
                 return MemberDescriptor.DefaultValue;
@@ -66,12 +66,12 @@ public sealed class ParseDescriptor(CommandMemberDescriptor memberDescriptor)
                 return MemberDescriptor.InitValue;
             }
 
-            if (MemberDescriptor.IsNullable == true)
+            if (MemberDescriptor.IsNullable is true)
             {
                 return null;
             }
 
-            if (MemberDescriptor.MemberType.IsArray == true)
+            if (MemberDescriptor.MemberType.IsArray is true)
             {
                 return Array.CreateInstance(MemberDescriptor.MemberType.GetElementType()!, 0);
             }
@@ -81,7 +81,7 @@ public sealed class ParseDescriptor(CommandMemberDescriptor memberDescriptor)
                 return string.Empty;
             }
 
-            if (MemberDescriptor.MemberType.IsValueType == true)
+            if (MemberDescriptor.MemberType.IsValueType is true)
             {
                 return Activator.CreateInstance(MemberDescriptor.MemberType);
             }
@@ -90,18 +90,18 @@ public sealed class ParseDescriptor(CommandMemberDescriptor memberDescriptor)
         }
     }
 
-    public object? ActualValue => IsValueSet == true ? Value : InitValue;
+    public object? ActualValue => IsValueSet is true ? Value : InitValue;
 
     internal void ThrowIfValueMissing()
     {
-        if (HasValue != true && MemberDescriptor.DefaultValue is DBNull)
+        if (HasValue is false && MemberDescriptor.DefaultValue is DBNull)
         {
-            if (IsOptionSet == true)
+            if (IsOptionSet is true)
             {
                 CommandLineException.ThrowIfValueMissing(MemberDescriptor);
             }
 
-            if (MemberDescriptor.IsRequired == true)
+            if (MemberDescriptor.IsRequired is true)
             {
                 CommandLineException.ThrowIfValueMissing(MemberDescriptor);
             }
@@ -122,7 +122,7 @@ public sealed class ParseDescriptor(CommandMemberDescriptor memberDescriptor)
         IsValueSet = true;
 
         static string WrapDoubleQuotes(string text)
-            => CommandUtility.TryWrapDoubleQuotes(text, out var s) == true ? s : text;
+            => CommandUtility.TryWrapDoubleQuotes(text, out var s) is true ? s : text;
     }
 
     internal void SetSwitchValue(bool value)
@@ -134,7 +134,7 @@ public sealed class ParseDescriptor(CommandMemberDescriptor memberDescriptor)
     private static object Parse(CommandMemberDescriptor memberDescriptor, string arg)
     {
         var isListType = typeof(IList).IsAssignableFrom(memberDescriptor.MemberType);
-        if (memberDescriptor.MemberType.IsArray == true || isListType == true)
+        if (memberDescriptor.MemberType.IsArray is true || isListType is true)
         {
             return ParseArray(memberDescriptor, arg);
         }
@@ -191,7 +191,7 @@ public sealed class ParseDescriptor(CommandMemberDescriptor memberDescriptor)
         var nameList = new List<string>(items.Length);
         foreach (var item in items)
         {
-            if (names.TryGetValue(item, out var value) != true)
+            if (names.TryGetValue(item, out var value) is false)
             {
                 throw new InvalidOperationException($"The value '{arg}' is not available.");
             }
@@ -220,9 +220,9 @@ public sealed class ParseDescriptor(CommandMemberDescriptor memberDescriptor)
 
     private static Type GetItemType(Type propertyType)
     {
-        if (propertyType.IsArray == true)
+        if (propertyType.IsArray is true)
         {
-            if (propertyType.HasElementType != true)
+            if (propertyType.HasElementType is false)
             {
                 var message = $"Property '{nameof(Type.HasElementType)}' of '{nameof(Type)}' " +
                               $"must be true.";

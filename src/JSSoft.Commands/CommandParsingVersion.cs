@@ -23,7 +23,7 @@ internal sealed class CommandParsingVersion
     public static CommandParsingVersion Create(CommandParsingException e)
     {
         var settings = e.Parser.Settings;
-        var args = e.Arguments.Where(item => settings.IsVersionArg(item) != true).ToArray();
+        var args = e.Arguments.Where(item => settings.IsVersionArg(item) is false).ToArray();
         var obj = new CommandParsingVersion();
         var parser = new VersionCommandParser($"{e.Parser.ExecutionName} {e.Arguments[0]}", obj);
         parser.Parse(args);
@@ -44,7 +44,7 @@ internal sealed class CommandParsingVersion
     public string GetQuietString() => Version;
 
     public string GetVersionString()
-        => IsQuiet == true ? GetQuietString() : GetDetailedString();
+        => IsQuiet is true ? GetQuietString() : GetDetailedString();
 
     private sealed class VersionCommandParser(string commandName, object instance)
         : CommandParser(commandName, instance)

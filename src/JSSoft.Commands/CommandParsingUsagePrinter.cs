@@ -14,7 +14,7 @@ public class CommandParsingUsagePrinter(ICommandUsage commandUsage, CommandSetti
         TextWriter writer, CommandMemberDescriptorCollection memberDescriptors)
     {
         using var commandWriter = new CommandTextWriter(writer, Settings);
-        if (IsDetail == true)
+        if (IsDetail is true)
         {
             PrintSummary(commandWriter, commandUsage.Summary);
             PrintUsage(commandWriter, commandUsage.ExecutionName, memberDescriptors);
@@ -38,7 +38,7 @@ public class CommandParsingUsagePrinter(ICommandUsage commandUsage, CommandSetti
     public virtual void Print(TextWriter writer, CommandMemberDescriptor memberDescriptor)
     {
         using var commandWriter = new CommandTextWriter(writer, Settings);
-        if (IsDetail == true)
+        if (IsDetail is true)
         {
             PrintMemberSummary(commandWriter, memberDescriptor);
             PrintMemberUsage(commandWriter, memberDescriptor);

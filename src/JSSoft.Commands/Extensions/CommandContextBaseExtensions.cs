@@ -16,12 +16,12 @@ public static class CommandContextBaseExtensions
         this CommandContextBase @this, string commandLine)
     {
         if (CommandUtility.TrySplitCommandLine(
-            commandLine, out var commandName, out var commandArguments) != true)
+            commandLine, out var commandName, out var commandArguments) is false)
         {
             return null;
         }
 
-        if (@this.CheckCommandName(commandName) != true)
+        if (@this.CheckCommandName(commandName) is false)
         {
             return null;
         }

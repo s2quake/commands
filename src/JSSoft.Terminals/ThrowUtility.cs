@@ -11,7 +11,7 @@ internal static class ThrowUtility
 {
     public static void ThrowObjectDisposedException(bool condition, IDisposable instance)
     {
-        if (condition == true)
+        if (condition is true)
         {
             throw new ObjectDisposedException(instance.GetType().FullName);
         }

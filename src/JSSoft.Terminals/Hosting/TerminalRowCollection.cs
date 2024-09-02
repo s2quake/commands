@@ -26,7 +26,7 @@ internal sealed class TerminalRowCollection : List<TerminalRow>
         {
             var y = scroll.Value + i;
             var row = this[i];
-            var line = lines.TryGetLine(y, out var l) == true ? l : null;
+            var line = lines.TryGetLine(y, out var l) is true ? l : null;
             row.Sync(line);
         }
 

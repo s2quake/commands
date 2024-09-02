@@ -9,7 +9,7 @@ internal static class CommandTextWriterExtensions
 {
     public static void WriteLineIf(this CommandTextWriter @this, bool condition)
     {
-        if (condition == true)
+        if (condition is true)
         {
             @this.WriteLine();
         }
@@ -18,7 +18,7 @@ internal static class CommandTextWriterExtensions
     public static void WriteLineIf(
         this CommandTextWriter @this, string value, Func<string, bool> predicate)
     {
-        if (predicate(value) == true)
+        if (predicate(value) is true)
         {
             @this.WriteLine(value);
         }
@@ -26,7 +26,7 @@ internal static class CommandTextWriterExtensions
 
     public static void WriteLinesIf(this CommandTextWriter @this, int count, bool condition)
     {
-        if (condition == true)
+        if (condition is true)
         {
             for (var i = 0; i < count; i++)
             {
@@ -38,7 +38,7 @@ internal static class CommandTextWriterExtensions
     public static void WriteIf(
         this CommandTextWriter @this, string value, Func<string, bool> predicate)
     {
-        if (predicate(value) == true)
+        if (predicate(value) is true)
         {
             @this.Write(value);
         }

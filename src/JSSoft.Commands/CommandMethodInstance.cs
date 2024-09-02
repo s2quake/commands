@@ -39,7 +39,7 @@ internal class CommandMethodInstance : ICustomCommandDescriptor, ISupportInitial
         var valueList = new List<object?>(_parameterInfos.Length);
         foreach (var parameterInfo in _parameterInfos)
         {
-            if (CommandUtility.IsSupportedType(parameterInfo.ParameterType) == true)
+            if (CommandUtility.IsSupportedType(parameterInfo.ParameterType) is true)
             {
                 var memberDescriptor = _methodDescriptor.Members[parameterInfo.Name!];
                 var value = memberDescriptor.GetValueInternal(_instance);
@@ -60,17 +60,17 @@ internal class CommandMethodInstance : ICustomCommandDescriptor, ISupportInitial
         var valueList = new List<object?>(_parameterInfos.Length);
         foreach (var parameterInfo in _parameterInfos)
         {
-            if (CommandUtility.IsSupportedType(parameterInfo.ParameterType) == true)
+            if (CommandUtility.IsSupportedType(parameterInfo.ParameterType) is true)
             {
                 var memberDescriptor = _methodDescriptor.Members[parameterInfo.Name!];
                 var value = memberDescriptor.GetValueInternal(_instance);
                 valueList.Add(value);
             }
-            else if (parameterInfo.IsCancellationTokenParameter() == true)
+            else if (parameterInfo.IsCancellationTokenParameter() is true)
             {
                 valueList.Add(cancellationToken);
             }
-            else if (parameterInfo.IsProgressParameter() == true)
+            else if (parameterInfo.IsProgressParameter() is true)
             {
                 valueList.Add(new CommandProgress(progress));
             }
@@ -92,7 +92,7 @@ internal class CommandMethodInstance : ICustomCommandDescriptor, ISupportInitial
         else if (memberDescriptor.MemberInfo.Type == CommandMemberType.Property)
         {
             var declaringType = memberDescriptor.MemberInfo.DeclaringType;
-            if (_valueByType.TryGetValue(declaringType, out var value) == true)
+            if (_valueByType.TryGetValue(declaringType, out var value) is true)
             {
                 return value;
             }
@@ -111,9 +111,9 @@ internal class CommandMethodInstance : ICustomCommandDescriptor, ISupportInitial
         {
             var parameterInfo = _parameterInfos[i];
             var parameterType = parameterInfo.ParameterType;
-            if (CommandUtility.IsSupportedType(parameterType) != true
-                && parameterInfo.IsCancellationTokenParameter() != true
-                && parameterInfo.IsProgressParameter() != true)
+            if (CommandUtility.IsSupportedType(parameterType) is false
+                && parameterInfo.IsCancellationTokenParameter() is false
+                && parameterInfo.IsProgressParameter() is false)
             {
                 var value = Activator.CreateInstance(parameterInfo.ParameterType)!;
                 _valueByType[parameterType] = value;
