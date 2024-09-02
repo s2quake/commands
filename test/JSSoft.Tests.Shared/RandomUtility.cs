@@ -131,7 +131,7 @@ public static partial class RandomUtility
         {
             var index = Int32(0, Words.Length);
             var item = Words[index];
-            if (predicate(item) == true)
+            if (predicate(item) is true)
             {
                 return item;
             }

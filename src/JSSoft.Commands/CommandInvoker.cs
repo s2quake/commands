@@ -51,7 +51,7 @@ public class CommandInvoker : CommandAnalyzer
         var instance = Instance;
 
         if (instance is ICommand hierarchy
-            && hierarchy.TryGetCommand(commandName, out var command) == true)
+            && hierarchy.TryGetCommand(commandName, out var command) is true)
         {
             var parser = new CommandParser(commandName, command);
             parser.Parse(commandArguments);
@@ -64,9 +64,9 @@ public class CommandInvoker : CommandAnalyzer
                 throw new InvalidOperationException("Use InvokeAsync instead.");
             }
         }
-        else if (TryGetMethodDescriptor(commandName, out var methodDescriptor) == true)
+        else if (TryGetMethodDescriptor(commandName, out var methodDescriptor) is true)
         {
-            if (methodDescriptor.IsAsync == true)
+            if (methodDescriptor.IsAsync is true)
             {
                 throw new InvalidOperationException("Use InvokeAsync instead.");
             }
@@ -100,7 +100,7 @@ public class CommandInvoker : CommandAnalyzer
         var commandArguments = args.Length > 0 ? args.Skip(1).ToArray() : [];
         var instance = Instance;
         if (instance is ICommand hierarchy
-            && hierarchy.TryGetCommand(commandName, out var command) == true)
+            && hierarchy.TryGetCommand(commandName, out var command) is true)
         {
             var parser = new CommandParser(commandName, command);
             parser.Parse(commandArguments);
@@ -113,9 +113,9 @@ public class CommandInvoker : CommandAnalyzer
                 await commandAsyncExecutable1.ExecuteAsync(cancellationToken, progress);
             }
         }
-        else if (TryGetMethodDescriptor(commandName, out var methodDescriptor) == true)
+        else if (TryGetMethodDescriptor(commandName, out var methodDescriptor) is true)
         {
-            if (methodDescriptor.IsAsync == true)
+            if (methodDescriptor.IsAsync is true)
             {
                 await InvokeAsync(
                     methodDescriptor, commandArguments, cancellationToken, progress);
@@ -145,17 +145,17 @@ public class CommandInvoker : CommandAnalyzer
 
     protected virtual void OnVerify(string[] args)
     {
-        if (CommandUtility.IsEmptyArgs(args) == true && Settings.AllowEmpty != true)
+        if (CommandUtility.IsEmptyArgs(args) is true && Settings.AllowEmpty is false)
         {
             throw new CommandInvocationException(this, CommandInvocationError.Empty, args);
         }
 
-        if (Settings.ContainsHelpOption(args) == true)
+        if (Settings.ContainsHelpOption(args) is true)
         {
             throw new CommandInvocationException(this, CommandInvocationError.Help, args);
         }
 
-        if (Settings.ContainsVersionOption(args) == true)
+        if (Settings.ContainsVersionOption(args) is true)
         {
             throw new CommandInvocationException(this, CommandInvocationError.Version, args);
         }

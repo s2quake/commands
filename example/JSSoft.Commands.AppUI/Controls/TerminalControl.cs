@@ -251,15 +251,15 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         base.OnKeyDown(e);
         var modifiers = TerminalMarshal.Convert(e.KeyModifiers);
         var key = TerminalMarshal.Convert(e.Key);
-        if (e.Handled != true && _keyBindings.Process(_terminal, modifiers, key) == true)
+        if (e.Handled is false && _keyBindings.Process(_terminal, modifiers, key) is true)
         {
             e.Handled = true;
         }
-        if (e.Handled != true && ProcessHotKey(e) == true)
+        if (e.Handled is false && ProcessHotKey(e) is true)
         {
             e.Handled = true;
         }
-        if (e.Handled != true && e.KeySymbol is { } keySymbol)
+        if (e.Handled is false && e.KeySymbol is { } keySymbol)
         {
             _terminal.WriteInput(keySymbol);
             e.Handled = true;
@@ -269,7 +269,7 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
     protected override void OnTextInput(TextInputEventArgs e)
     {
         base.OnTextInput(e);
-        if (e.Handled != true && e.Text is { } text)
+        if (e.Handled is false && e.Text is { } text)
         {
             _terminal.WriteInput(text);
             e.Handled = true;

@@ -28,7 +28,7 @@ public static partial class RandomUtility
         for (int i = 0; i < count; i++)
         {
             s += Word();
-            if (i > 0 && multiline == true && Within(5) == true)
+            if (i > 0 && multiline is true && Within(5) is true)
             {
                 s += Environment.NewLine;
             }

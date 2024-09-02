@@ -27,7 +27,7 @@ internal static class SystemTerminalNative
 
     public static void Initialize()
     {
-        if (IsInitialized != true && TerminalEnvironment.IsWindows() == true && Console.IsOutputRedirected != true)
+        if (IsInitialized is false && TerminalEnvironment.IsWindows() is true && Console.IsOutputRedirected is false)
         {
             var iStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
             if (!GetConsoleMode(iStdOut, out uint outConsoleMode))
@@ -36,7 +36,7 @@ internal static class SystemTerminalNative
             }
 
             outConsoleMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN;
-            if (SetConsoleMode(iStdOut, outConsoleMode) != true)
+            if (SetConsoleMode(iStdOut, outConsoleMode) is false)
             {
                 throw new InvalidOperationException($"failed to set output console mode, error code: {GetLastError()}");
             }

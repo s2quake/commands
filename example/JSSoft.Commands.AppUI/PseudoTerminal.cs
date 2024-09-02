@@ -100,7 +100,7 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
         var buffer = new char[4096];
         try
         {
-            while (cancellationToken.IsCancellationRequested != true)
+            while (cancellationToken.IsCancellationRequested is false)
             {
                 var count = await control.In.ReadAsync(buffer, cancellationToken);
                 if (count == 0)
@@ -123,7 +123,7 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
         try
         {
             var sb = new StringBuilder();
-            while (cancellationToken.IsCancellationRequested != true)
+            while (cancellationToken.IsCancellationRequested is false)
             {
                 var count = await Task.Run(() => pty.Read(buffer, buffer.Length));
                 if (count == 0)
@@ -138,7 +138,7 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
                 }
                 var s = Encoding.UTF8.GetString(buffer, 0, count);
                 sb.Append(s.Normalize());
-                if (await Task.Run(() => pty.CanRead == true))
+                if (await Task.Run(() => pty.CanRead is true))
                 {
                     continue;
                 }

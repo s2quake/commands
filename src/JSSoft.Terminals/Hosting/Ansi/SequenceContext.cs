@@ -64,13 +64,13 @@ internal sealed class SequenceContext(string parameter, AsciiCodeContext asciiCo
         var sb = new StringBuilder(s.Length);
         foreach (var item in s)
         {
-            if (char.IsDigit(item) == true)
+            if (char.IsDigit(item) is true)
             {
                 sb.Append(item);
             }
         }
 
-        return int.TryParse(sb.ToString(), out var i) == true ? i : 0;
+        return int.TryParse(sb.ToString(), out var i) is true ? i : 0;
     }
 
     public TerminalCoord GetCoordinate(TerminalLineCollection lines, TerminalIndex index)

@@ -12,7 +12,7 @@ internal static class StringBuilderExtensions
     public static StringBuilder AppendLineIf(
         this StringBuilder @this, string value, Func<string, bool> predicate)
     {
-        if (predicate(value) == true)
+        if (predicate(value) is true)
         {
             @this.AppendLine(value);
         }
@@ -23,7 +23,7 @@ internal static class StringBuilderExtensions
     public static StringBuilder AppendIf(
         this StringBuilder @this, string value, Func<string, bool> predicate)
     {
-        if (predicate(value) == true)
+        if (predicate(value) is true)
         {
             @this.Append(value);
         }

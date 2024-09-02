@@ -102,7 +102,7 @@ internal sealed class TerminalLine : IDisposable
 
     public void Update()
     {
-        if (IsModified != true)
+        if (IsModified is false)
         {
             throw new InvalidOperationException($"'{this}' is not modified.");
         }
@@ -385,7 +385,7 @@ internal sealed class TerminalLine : IDisposable
             throw new InvalidOperationException();
         }
 
-        if (_isDisposed == true)
+        if (_isDisposed is true)
         {
             throw new ObjectDisposedException($"{this}");
         }

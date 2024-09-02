@@ -66,7 +66,7 @@ public abstract class CommandPropertyBaseAttribute : CommandMemberBaseAttribute
     {
         if (attribute is CommandPropertyArrayAttribute)
         {
-            if (propertyInfo.PropertyType.IsArray != true)
+            if (propertyInfo.PropertyType.IsArray is false)
             {
                 throw new CommandPropertyCannotBeUsedAsVariablesTypeException(propertyInfo);
             }

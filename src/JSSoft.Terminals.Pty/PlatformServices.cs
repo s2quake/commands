@@ -100,9 +100,9 @@ internal static class PlatformServices
     {
         get
         {
-            if (IsWindows == true)
+            if (IsWindows is true)
                 return Path.Combine(Environment.SystemDirectory, "cmd.exe");
-            if (IsMac == true)
+            if (IsMac is true)
                 return "zsh";
             return "bash";
         }

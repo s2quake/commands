@@ -29,7 +29,7 @@ internal sealed class EraseInLine : CSISequenceBase
     {
         var lines = context.Lines;
         var index = context.Index;
-        if (lines.TryGetLine(index, out var line) == true)
+        if (lines.TryGetLine(index, out var line) is true)
         {
             line.Erase(index, line.Length - index.X);
         }

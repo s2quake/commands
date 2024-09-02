@@ -18,17 +18,17 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
         PropertyInfo propertyInfo, CommandPropertyBaseAttribute attribute)
         : base(propertyInfo, attribute, propertyInfo.Name)
     {
-        if (propertyInfo.CanWrite != true)
+        if (propertyInfo.CanWrite is false)
         {
             throw new CommandPropertyNotWritableException(propertyInfo);
         }
 
-        if (propertyInfo.CanRead != true)
+        if (propertyInfo.CanRead is false)
         {
             throw new CommandPropertyNotReadableException(propertyInfo);
         }
 
-        if (CommandUtility.IsSupportedType(propertyInfo.PropertyType) != true)
+        if (CommandUtility.IsSupportedType(propertyInfo.PropertyType) is false)
         {
             throw new CommandPropertyNotSupportedTypeException(propertyInfo);
         }
@@ -91,7 +91,7 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
             foreach (var attribute in group)
             {
                 var propertyName = attribute.PropertyName;
-                if (parseDescriptors.TryGetValue(propertyName, out var parseDescriptor) != true)
+                if (parseDescriptors.TryGetValue(propertyName, out var parseDescriptor) is false)
                 {
                     var message = $"Property '{attribute.PropertyName}' does not exists.";
                     throw new InvalidOperationException(message);
@@ -104,15 +104,15 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
                     throw new InvalidOperationException(message);
                 }
 
-                var value1 = attribute.OnSet != true
-                    || parseDescriptor.IsOptionSet == true ? parseDescriptor.ActualValue : null;
+                var value1 = attribute.OnSet is false
+                    || parseDescriptor.IsOptionSet is true ? parseDescriptor.ActualValue : null;
                 var value2 = attribute.Value;
 
-                if (attribute.IsNot != true)
+                if (attribute.IsNot is false)
                 {
-                    if (Equals(value1, value2) != true)
+                    if (Equals(value1, value2) is false)
                     {
-                        if (memberDescriptor.IsSwitch == true)
+                        if (memberDescriptor.IsSwitch is true)
                         {
                             var message = $"'{DisplayName}' cannot be used. Cannot be used with " +
                                           $"switch '{memberDescriptor.DisplayName}'.";
@@ -129,9 +129,9 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
                 }
                 else
                 {
-                    if (Equals(value1, value2) == true)
+                    if (Equals(value1, value2) is true)
                     {
-                        if (memberDescriptor.IsSwitch == true)
+                        if (memberDescriptor.IsSwitch is true)
                         {
                             var message = $"'{DisplayName}' cannot be used because switch " +
                                           $"'{memberDescriptor.DisplayName}' is not specified.";

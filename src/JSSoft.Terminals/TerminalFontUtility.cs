@@ -12,7 +12,7 @@ public static class TerminalFontUtility
 
     public static TerminalGlyphInfo? GetGlyph(ITerminalFont font, char character)
     {
-        if (font.Contains(character) == true)
+        if (font.Contains(character) is true)
         {
             return font[character];
         }
@@ -40,7 +40,7 @@ public static class TerminalFontUtility
 
     public static TerminalRect GetForegroundRect(ITerminalFont font, char character, int x, int y)
     {
-        if (font.Contains(character) == true)
+        if (font.Contains(character) is true)
         {
             var glyphInfo = font[character];
             var fx = x + glyphInfo.XOffset;

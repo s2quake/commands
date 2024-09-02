@@ -26,7 +26,7 @@ public static class MethodInfoExtensions
     {
         var isAsync = IsAsync(@this);
         var methodName = @this.Name;
-        if (isAsync == true && methodName.EndsWith("Async") == true)
+        if (isAsync is true && methodName.EndsWith("Async") is true)
         {
             methodName = methodName.Substring(0, methodName.Length - "Async".Length);
         }
@@ -39,7 +39,7 @@ public static class MethodInfoExtensions
 
     public static string GetDisplayName(this MethodInfo @this)
     {
-        if (TryGetDisplayName(@this, out var displayName) == true)
+        if (TryGetDisplayName(@this, out var displayName) is true)
         {
             return displayName;
         }
@@ -85,9 +85,9 @@ public static class MethodInfoExtensions
         {
             var methodName = attribute.MethodName;
             var completionMethodInfo = attribute.GetMethodInfo(@this, methodName);
-            if (completionMethodInfo.ReturnType.IsSubclassOf(typeof(Task)) == true)
+            if (completionMethodInfo.ReturnType.IsSubclassOf(typeof(Task)) is true)
             {
-                if (IsCompletionAsyncMethod(completionMethodInfo) == true)
+                if (IsCompletionAsyncMethod(completionMethodInfo) is true)
                 {
                     return completionMethodInfo;
                 }
@@ -105,7 +105,7 @@ public static class MethodInfoExtensions
             }
             else
             {
-                if (IsCompletionMethod(completionMethodInfo) == true)
+                if (IsCompletionMethod(completionMethodInfo) is true)
                 {
                     return completionMethodInfo;
                 }
@@ -131,7 +131,7 @@ public static class MethodInfoExtensions
                 var asyncMethod = instanceType.GetMethod(asyncName, bindingFlags);
                 if (asyncMethod is not null)
                 {
-                    if (IsCompletionAsyncMethod(asyncMethod) == true)
+                    if (IsCompletionAsyncMethod(asyncMethod) is true)
                     {
                         return asyncMethod;
                     }
@@ -154,7 +154,7 @@ public static class MethodInfoExtensions
                 var normalMethod = instanceType.GetMethod(normalName, bindingFlags);
                 if (normalMethod is not null)
                 {
-                    if (IsCompletionMethod(normalMethod) == true)
+                    if (IsCompletionMethod(normalMethod) is true)
                     {
                         return normalMethod;
                     }
@@ -183,21 +183,21 @@ public static class MethodInfoExtensions
             throw new CommandDeclaringTypeNullException(@this);
         }
 
-        if (@this.IsCommandMethod() != true)
+        if (@this.IsCommandMethod() is false)
         {
             throw new CommandMemberMissingAttributeException(
                 methodInfo: @this,
                 attributeType: typeof(CommandMethodAttribute));
         }
 
-        if (typeof(Task).IsAssignableFrom(@this.ReturnType) != true
+        if (typeof(Task).IsAssignableFrom(@this.ReturnType) is false
             && @this.ReturnType != typeof(void))
         {
             var message = $"Method '{@this}' must have a return type of '{typeof(void)}'.";
             throw new CommandDefinitionException(message, @this);
         }
 
-        if (typeof(Task).IsAssignableFrom(@this.ReturnType) == true
+        if (typeof(Task).IsAssignableFrom(@this.ReturnType) is true
             && typeof(Task) != @this.ReturnType)
         {
             var message = $"Method '{@this}' must have a return type of '{typeof(Task)}'.";
@@ -248,23 +248,23 @@ public static class MethodInfoExtensions
         }
 
         var candidateParamInfos = @this.GetParameters()
-            .Where(item => item.IsCancellationTokenParameter() != true)
-            .Where(item => item.IsProgressParameter() != true)
+            .Where(item => item.IsCancellationTokenParameter() is false)
+            .Where(item => item.IsProgressParameter() is false)
             .ToArray();
         var availableParamInfos = candidateParamInfos
-            .Where(item => item.IsCommandParameter() == true)
+            .Where(item => item.IsCommandParameter() is true)
             .ToArray();
         var hasParamArray = Array.Exists(availableParamInfos, IsDefined<ParamArrayAttribute>);
         var commandParamsArray
             = availableParamInfos.Where(IsDefined<CommandParameterArrayAttribute>).ToArray();
 
-        if (Array.Exists(commandParamsArray, item => item.ParameterType.IsArray != true))
+        if (Array.Exists(commandParamsArray, item => item.ParameterType.IsArray is false))
         {
             var message = $"Method '{@this}' must have an array type parameter.";
             throw new CommandDefinitionException(message, @this);
         }
 
-        if (hasParamArray == true && commandParamsArray.Length > 0)
+        if (hasParamArray is true && commandParamsArray.Length > 0)
         {
             var message = $"Method '{@this}' cannot have both 'params' and " +
                           $"'{nameof(CommandParameterArrayAttribute)}' attributes.";
@@ -278,12 +278,9 @@ public static class MethodInfoExtensions
             throw new CommandDefinitionException(message, @this);
         }
 
-        foreach (var candidateParamInfo in candidateParamInfos)
+        if (candidateParamInfos.Except(availableParamInfos).FirstOrDefault() is { } paramInfo)
         {
-            if (availableParamInfos.Contains(candidateParamInfo) != true)
-            {
-                throw new CommandParameterNotSupportedTypeException(candidateParamInfo);
-            }
+            throw new CommandParameterNotSupportedTypeException(paramInfo);
         }
     }
 

@@ -42,18 +42,18 @@ public sealed class CommandCompletionContext
         {
             var memberDescriptor = item.Key;
             var parseDescriptor = item.Value;
-            if (parseDescriptor.HasValue == true)
+            if (parseDescriptor.HasValue is true)
             {
                 properties.Add(memberDescriptor.MemberName, parseDescriptor.Value);
-                if (memberDescriptor.IsVariables != true)
+                if (memberDescriptor.IsVariables is false)
                 {
                     parseDescriptorByMemberDescriptor.Remove(memberDescriptor);
                 }
             }
         }
 
-        if (find.StartsWith(CommandUtility.Delimiter) != true
-            && find.StartsWith(CommandUtility.ShortDelimiter) != true
+        if (find.StartsWith(CommandUtility.Delimiter) is false
+            && find.StartsWith(CommandUtility.ShortDelimiter) is false
             && parseDescriptorByMemberDescriptor.Count != 0)
         {
             var memberDescriptor = parseDescriptorByMemberDescriptor.Keys.First();

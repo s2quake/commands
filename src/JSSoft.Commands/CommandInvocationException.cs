@@ -130,7 +130,7 @@ public class CommandInvocationException(
     private static void PrintVersion(TextWriter writer, CommandInvocationException e)
     {
         var settings = CommandInvocationVersion.Create(e);
-        var text = settings.IsQuiet != true
+        var text = settings.IsQuiet is false
             ? settings.GetDetailedString()
             : settings.GetQuietString();
         writer.WriteLine(text);

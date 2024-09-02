@@ -34,7 +34,7 @@ public static partial class RandomUtility
         for (var i = 0; i < count; i++)
         {
             var key = GetKey<TKey>();
-            if (dictionary.ContainsKey(key) == true)
+            if (dictionary.ContainsKey(key) is true)
             {
                 continue;
             }
@@ -62,7 +62,7 @@ public static partial class RandomUtility
         for (var i = 0; i < count; i++)
         {
             var key = GetKey<TKey>();
-            if (dictionary.ContainsKey(key) == true)
+            if (dictionary.ContainsKey(key) is true)
             {
                 continue;
             }
@@ -100,8 +100,8 @@ public static partial class RandomUtility
     private static TValue? GetValue<TKey, TValue>(DictionarySettings<TKey, TValue> settings)
         where TKey : notnull
     {
-        var isNull = Int32() % 10 == 0 && settings.IsNullable == true;
-        if (isNull == true)
+        var isNull = Int32() % 10 == 0 && settings.IsNullable is true;
+        if (isNull is true)
         {
             return default;
         }

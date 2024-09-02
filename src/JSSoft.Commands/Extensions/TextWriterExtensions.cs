@@ -13,7 +13,7 @@ public static class TextWriterExtensions
     {
         var propertyInfos = typeof(T).GetProperties();
         var query = from propertyInfo in propertyInfos
-                    where propertyInfo.PropertyType.IsArray != true
+                    where propertyInfo.PropertyType.IsArray is false
                     select propertyInfo;
 
         var headers = from item in query
@@ -61,7 +61,7 @@ public static class TextWriterExtensions
 
             @this.WriteLine();
 
-            if (y != 0 || hasHeader != true)
+            if (y != 0 || hasHeader is false)
             {
                 continue;
             }
@@ -150,7 +150,7 @@ public static class TextWriterExtensions
                 }
             }
 
-            if (canPrint != true)
+            if (canPrint is false)
             {
                 lineCount++;
                 continue;

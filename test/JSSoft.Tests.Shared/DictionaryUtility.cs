@@ -17,7 +17,7 @@ public static class DictionaryUtility
 {
     public static bool IsDictionary(Type type)
     {
-        if (type.IsGenericType == true)
+        if (type.IsGenericType is true)
         {
             var genericTypeDefinition = type.GetGenericTypeDefinition();
             if (genericTypeDefinition == typeof(Dictionary<,>))
@@ -33,7 +33,7 @@ public static class DictionaryUtility
 
     public static bool IsImmutableDictionary(Type type)
     {
-        if (type.IsGenericType == true)
+        if (type.IsGenericType is true)
         {
             var genericTypeDefinition = type.GetGenericTypeDefinition();
             if (genericTypeDefinition == typeof(ImmutableDictionary<,>))
@@ -76,7 +76,7 @@ public static class DictionaryUtility
             return false;
         }
 
-        if (baseType.IsGenericTypeDefinition == true && type.IsGenericType == true)
+        if (baseType.IsGenericTypeDefinition is true && type.IsGenericType is true)
         {
             var genericArguments = type.GetGenericArguments();
             if (genericArguments.Length != 2)
@@ -84,7 +84,7 @@ public static class DictionaryUtility
                 return false;
             }
 
-            if (IsKeyType(genericArguments[0]) != true)
+            if (IsKeyType(genericArguments[0]) is false)
             {
                 return false;
             }
@@ -117,7 +117,7 @@ public static class DictionaryUtility
 
     internal static void VerifyKeyType(Type type)
     {
-        if (IsKeyType(type) != true)
+        if (IsKeyType(type) is false)
         {
             throw new ArgumentException($"The key type '{type}' is not supported.");
         }
@@ -126,7 +126,7 @@ public static class DictionaryUtility
     internal static object GetComparer(object obj)
     {
         var type = obj.GetType();
-        if (IsDictionary(type) == true)
+        if (IsDictionary(type) is true)
         {
             var propertyName = nameof(Dictionary<object, object>.Comparer);
             var genericArguments = type.GetGenericArguments();
@@ -140,7 +140,7 @@ public static class DictionaryUtility
             return propertyInfo.GetValue(obj)!;
         }
 
-        if (IsImmutableDictionary(type) == true)
+        if (IsImmutableDictionary(type) is true)
         {
             var propertyName = nameof(ImmutableDictionary<object, object>.KeyComparer);
             var arguments = type.GetGenericArguments();

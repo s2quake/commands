@@ -25,13 +25,13 @@ internal abstract class SequenceBase(SequenceType type, char character)
     protected virtual bool Match(string text, Range parameterRange, out Range actualParameterRange)
     {
         var parameter = text[parameterRange];
-        if (Prefix != string.Empty && parameter.StartsWith(Prefix) != true)
+        if (Prefix != string.Empty && parameter.StartsWith(Prefix) is false)
         {
             actualParameterRange = parameterRange;
             return false;
         }
 
-        if (Suffix != string.Empty && parameter.EndsWith(Suffix) != true)
+        if (Suffix != string.Empty && parameter.EndsWith(Suffix) is false)
         {
             actualParameterRange = parameterRange;
             return false;

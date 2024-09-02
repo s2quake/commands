@@ -18,25 +18,25 @@ public static class TerminalSelectionUtility
         var isEnabled2 = terminal.GetInfo(s2) is { } characterInfo2 && characterInfo2.Character != char.MinValue;
         var bufferWidth = terminal.BufferSize.Width;
         var gap = 5;
-        if (isEnabled1 == true && isEnabled2 != true)
+        if (isEnabled1 is true && isEnabled2 is false)
         {
             var l2 = s2.MoveBackwardToEndOfString(terminal);
             var distance = TerminalIndex.DistanceOf(l2, s2);
             gap = Math.Min(gap, bufferWidth - (l2.X + 1));
             s2 = distance > gap ? s2.MoveToEndOfLine() : l2;
         }
-        else if (isEnabled2 == true && isEnabled1 != true)
+        else if (isEnabled2 is true && isEnabled1 is false)
         {
             var l1 = s1.MoveBackwardToEndOfString(terminal);
             var distance = TerminalIndex.DistanceOf(l1, s1);
             gap = Math.Min(gap, bufferWidth - (l1.X + 1));
             s1 = distance > gap ? s1.MoveToEndOfLine() : l1;
         }
-        else if (isEnabled1 != true && isEnabled2 != true)
+        else if (isEnabled1 is false && isEnabled2 is false)
         {
             var isRow1Empty = IsRowEmpty(terminal, s1);
             var isRow2Empty = IsRowEmpty(terminal, s2);
-            if (isRow1Empty != true)
+            if (isRow1Empty is false)
             {
                 var l1 = s1.MoveBackwardToEndOfString(terminal);
                 var distance = TerminalIndex.DistanceOf(l1, s1);
@@ -48,7 +48,7 @@ public static class TerminalSelectionUtility
                 s1 = s1.MoveToEndOfLine();
             }
 
-            if (isRow2Empty != true)
+            if (isRow2Empty is false)
             {
                 var l2 = s2.MoveBackwardToEndOfString(terminal);
                 var distance = TerminalIndex.DistanceOf(l2, s2);
@@ -191,17 +191,17 @@ public static class TerminalSelectionUtility
 
         static Func<TerminalCharacterInfo, bool> GetPredicate(TerminalCharacterInfo characterInfo)
         {
-            if (char.IsLetterOrDigit(characterInfo.Character) == true)
+            if (char.IsLetterOrDigit(characterInfo.Character) is true)
             {
-                return item => char.IsLetterOrDigit(item.Character) == true;
+                return item => char.IsLetterOrDigit(item.Character) is true;
             }
-            else if (char.IsWhiteSpace(characterInfo.Character) == true)
+            else if (char.IsWhiteSpace(characterInfo.Character) is true)
             {
-                return item => char.IsWhiteSpace(item.Character) == true;
+                return item => char.IsWhiteSpace(item.Character) is true;
             }
             else
             {
-                return item => char.IsLetterOrDigit(item.Character) != true && char.IsWhiteSpace(item.Character) != true;
+                return item => char.IsLetterOrDigit(item.Character) is false && char.IsWhiteSpace(item.Character) is false;
             }
         }
     }

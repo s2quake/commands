@@ -21,7 +21,7 @@ public static class ITerminalExtensions
 
     public static void KeyLeft(this ITerminal @this)
     {
-        if (@this.Modes[TerminalMode.DECCKM] == true)
+        if (@this.Modes[TerminalMode.DECCKM] is true)
         {
             @this.WriteInput($"\x1bOD");
         }
@@ -34,7 +34,7 @@ public static class ITerminalExtensions
 
     public static void KeyRight(this ITerminal @this)
     {
-        if (@this.Modes[TerminalMode.DECCKM] == true)
+        if (@this.Modes[TerminalMode.DECCKM] is true)
         {
             @this.WriteInput($"\x1bOC");
         }
@@ -47,7 +47,7 @@ public static class ITerminalExtensions
 
     public static void KeyDown(this ITerminal @this)
     {
-        if (@this.Modes[TerminalMode.DECCKM] == true)
+        if (@this.Modes[TerminalMode.DECCKM] is true)
         {
             @this.WriteInput($"\x1bOB");
         }
@@ -60,7 +60,7 @@ public static class ITerminalExtensions
 
     public static void KeyUp(this ITerminal @this)
     {
-        if (@this.Modes[TerminalMode.DECCKM] == true)
+        if (@this.Modes[TerminalMode.DECCKM] is true)
         {
             @this.WriteInput($"\x1bOA");
         }
@@ -73,7 +73,7 @@ public static class ITerminalExtensions
 
     public static void KeyHome(this ITerminal @this)
     {
-        if (@this.Modes[TerminalMode.DECCKM] == true)
+        if (@this.Modes[TerminalMode.DECCKM] is true)
         {
             @this.WriteInput($"\x1bOH");
         }
@@ -86,7 +86,7 @@ public static class ITerminalExtensions
 
     public static void KeyEnd(this ITerminal @this)
     {
-        if (@this.Modes[TerminalMode.DECCKM] == true)
+        if (@this.Modes[TerminalMode.DECCKM] is true)
         {
             @this.WriteInput($"\x1bOF");
         }
@@ -213,11 +213,11 @@ public static class ITerminalExtensions
         var style = terminal.ActualStyle;
         var characterInfo = terminal.GetInfo(coord);
         var displayInfo = characterInfo?.DisplayInfo ?? TerminalDisplayInfo.Empty;
-        var f1 = displayInfo.IsInverse != true ? displayInfo.Foreground : displayInfo.Background;
-        var f2 = displayInfo.IsInverse != true ? style.ForegroundColor : style.BackgroundColor;
-        var b1 = displayInfo.IsInverse != true ? displayInfo.Background : displayInfo.Foreground;
-        var b2 = displayInfo.IsInverse != true ? style.BackgroundColor : style.ForegroundColor;
-        if (terminal.IsSelecting(coord) == true || terminal.Selections.IsSelected(coord) == true)
+        var f1 = displayInfo.IsInverse is false ? displayInfo.Foreground : displayInfo.Background;
+        var f2 = displayInfo.IsInverse is false ? style.ForegroundColor : style.BackgroundColor;
+        var b1 = displayInfo.IsInverse is false ? displayInfo.Background : displayInfo.Foreground;
+        var b2 = displayInfo.IsInverse is false ? style.BackgroundColor : style.ForegroundColor;
+        if (terminal.IsSelecting(coord) is true || terminal.Selections.IsSelected(coord) is true)
         {
             return GetSelectionColor(style);
         }
@@ -239,11 +239,11 @@ public static class ITerminalExtensions
         var style = terminal.ActualStyle;
         var characterInfo = terminal.GetInfo(coord);
         var displayInfo = characterInfo?.DisplayInfo ?? TerminalDisplayInfo.Empty;
-        var f1 = displayInfo.IsInverse != true ? displayInfo.Foreground : displayInfo.Background;
-        var f2 = displayInfo.IsInverse != true ? style.ForegroundColor : style.BackgroundColor;
-        var b1 = displayInfo.IsInverse != true ? displayInfo.Background : displayInfo.Foreground;
-        var b2 = displayInfo.IsInverse != true ? style.BackgroundColor : style.ForegroundColor;
-        if (terminal.IsSelecting(coord) == true || terminal.Selections.IsSelected(coord) == true)
+        var f1 = displayInfo.IsInverse is false ? displayInfo.Foreground : displayInfo.Background;
+        var f2 = displayInfo.IsInverse is false ? style.ForegroundColor : style.BackgroundColor;
+        var b1 = displayInfo.IsInverse is false ? displayInfo.Background : displayInfo.Foreground;
+        var b2 = displayInfo.IsInverse is false ? style.BackgroundColor : style.ForegroundColor;
+        if (terminal.IsSelecting(coord) is true || terminal.Selections.IsSelected(coord) is true)
         {
             return GetSelectionColor(style);
         }

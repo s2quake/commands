@@ -46,7 +46,7 @@ public sealed class ParseDescriptorCollection : IEnumerable<ParseDescriptor>
     public bool TryGetValue(
         CommandMemberDescriptor memberDescriptor, [MaybeNullWhen(false)] out ParseDescriptor value)
     {
-        if (_itemByMember.Contains(memberDescriptor) == true)
+        if (_itemByMember.Contains(memberDescriptor) is true)
         {
             value = (ParseDescriptor)_itemByMember[memberDescriptor]!;
             return true;
@@ -67,9 +67,9 @@ public sealed class ParseDescriptorCollection : IEnumerable<ParseDescriptor>
     internal Queue<ParseDescriptor> CreateQueue()
     {
         var query = from ParseDescriptor item in _itemByMember.Values
-                    where item.IsRequired == true
-                    where item.IsExplicit != true
-                    where item.HasValue != true
+                    where item.IsRequired is true
+                    where item.IsExplicit is false
+                    where item.HasValue is false
                     select item;
         return new(query);
     }

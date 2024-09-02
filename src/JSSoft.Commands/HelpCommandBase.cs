@@ -42,7 +42,7 @@ public abstract class HelpCommandBase : CommandBase
         if (memberDescriptor.MemberName == nameof(CommandNames))
         {
             var commandNames = Array.Empty<string>();
-            if (properties.TryGetValue(nameof(CommandNames), out var value) == true
+            if (properties.TryGetValue(nameof(CommandNames), out var value) is true
                 && value is string[] items)
             {
                 commandNames = items;
@@ -81,7 +81,7 @@ public abstract class HelpCommandBase : CommandBase
     {
         var rootNode = commandContext.Node;
         var query = from child in rootNode.Commands
-                    where child.IsEnabled == true
+                    where child.IsEnabled is true
                     orderby child.Name
                     orderby child.Category
                     group child by child.Category into @group
@@ -127,7 +127,7 @@ public abstract class HelpCommandBase : CommandBase
 
         PrintSummary(commandWriter, commandUsageDescriptor.Summary);
         PrintUsage(commandWriter, Context.ExecutionName);
-        if (IsDetail == true)
+        if (IsDetail is true)
         {
             PrintDescription(commandWriter, commandUsageDescriptor.Description);
         }
@@ -157,7 +157,7 @@ public abstract class HelpCommandBase : CommandBase
         if (names.Length == 0)
         {
             var query = from child in node.Commands
-                        where child.IsEnabled == true
+                        where child.IsEnabled is true
                         from name in new string[] { child.Name }.Concat(child.Aliases)
                         where name.StartsWith(find)
                         where name != Name
@@ -165,7 +165,7 @@ public abstract class HelpCommandBase : CommandBase
                         select name;
             return [.. query];
         }
-        else if (node.TryGetCommand(names[0], out var childNode) == true)
+        else if (node.TryGetCommand(names[0], out var childNode) is true)
         {
             return GetCommandNames(childNode, [.. names.Skip(1)], find);
         }

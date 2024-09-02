@@ -25,7 +25,7 @@ public sealed class CommandMethodDescriptorCollection : IEnumerable<CommandMetho
         _methodDescriptorByName = new(aliases.Length + methodDescriptors.Count());
         foreach (var item in methodDescriptors)
         {
-            if (_methodDescriptorByMethodName.Contains(item.MethodName) == true)
+            if (_methodDescriptorByMethodName.Contains(item.MethodName) is true)
             {
                 var message = $"{nameof(CommandMethodDescriptor)} '{item.MethodName}' cannot be " +
                               $"added because it already exists.";
@@ -38,14 +38,14 @@ public sealed class CommandMethodDescriptorCollection : IEnumerable<CommandMetho
 
         foreach (var (alias, methodDescriptor) in aliases)
         {
-            if (_methodDescriptorByMethodName.Contains(alias) == true)
+            if (_methodDescriptorByMethodName.Contains(alias) is true)
             {
                 var message = $"{nameof(CommandMethodDescriptor)} '{alias}' cannot be added " +
                               $"because it already exists.";
                 throw new CommandDefinitionException(message, type);
             }
 
-            if (_methodDescriptorByName.ContainsKey(alias) == true)
+            if (_methodDescriptorByName.ContainsKey(alias) is true)
             {
                 var message = $"{nameof(CommandMethodDescriptor)} '{alias}' cannot be added " +
                               $"because it already exists.";
@@ -66,7 +66,7 @@ public sealed class CommandMethodDescriptorCollection : IEnumerable<CommandMetho
     {
         get
         {
-            if (_methodDescriptorByMethodName.Contains(methodName) == true)
+            if (_methodDescriptorByMethodName.Contains(methodName) is true)
             {
                 return (CommandMethodDescriptor)_methodDescriptorByMethodName[methodName]!;
             }
@@ -79,13 +79,13 @@ public sealed class CommandMethodDescriptorCollection : IEnumerable<CommandMetho
         => (CommandMethodDescriptor)_methodDescriptorByMethodName[index]!;
 
     public CommandMethodDescriptor? FindByName(string name)
-        => _methodDescriptorByName.TryGetValue(name, out var value) == true ? value : null;
+        => _methodDescriptorByName.TryGetValue(name, out var value) is true ? value : null;
 
     public bool Contains(string methodName) => _methodDescriptorByMethodName.Contains(methodName);
 
     public bool TryGetValue(string methodName, out CommandMethodDescriptor? value)
     {
-        if (_methodDescriptorByMethodName.Contains(methodName) == true)
+        if (_methodDescriptorByMethodName.Contains(methodName) is true)
         {
             value = (CommandMethodDescriptor)_methodDescriptorByMethodName[methodName]!;
             return true;
@@ -132,7 +132,7 @@ public sealed class CommandMethodDescriptorCollection : IEnumerable<CommandMetho
             var type = Type;
             foreach (var item in methodNames)
             {
-                if (Contains(item) != true)
+                if (Contains(item) is false)
                 {
                     var message = $"Type '{type}' does not have method '{item}'.";
                     throw new CommandDefinitionException(message, requestType);

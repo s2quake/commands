@@ -9,7 +9,7 @@ public static class ITerminalFontExtensions
 {
     public static int GetGlyphSpan(this ITerminalFont font, char character)
     {
-        if (font.Contains(character) == true)
+        if (font.Contains(character) is true)
         {
             var characterInfo = font[character];
             var defaultWidth = font.Width;

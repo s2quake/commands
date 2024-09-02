@@ -17,12 +17,12 @@ public static class MemberInfoExtensions
             memberInfo: @this,
             getter: memberInfo => memberInfo.Browsable,
             defaultValue: true);
-        if (isBrowsable != true)
+        if (isBrowsable is false)
         {
             return false;
         }
 
-        if (IsConsoleMode != true && IsDefined<ConsoleModeOnlyAttribute>(@this) != true)
+        if (IsConsoleMode is false && IsDefined<ConsoleModeOnlyAttribute>(@this) is false)
         {
             return false;
         }

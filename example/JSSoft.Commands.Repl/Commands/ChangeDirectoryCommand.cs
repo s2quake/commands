@@ -32,7 +32,7 @@ internal sealed class ChangeDirectoryCommand(IApplication application)
             Directory.SetCurrentDirectory(parentDirectory);
             application.CurrentDirectory = parentDirectory;
         }
-        else if (Directory.Exists(DirectoryName) == true)
+        else if (Directory.Exists(DirectoryName) is true)
         {
             var dir = new DirectoryInfo(DirectoryName).FullName;
             Directory.SetCurrentDirectory(dir);

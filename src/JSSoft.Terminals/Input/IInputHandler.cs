@@ -30,7 +30,7 @@ internal static class IInputHandlerExtensions
 {
     public static void SelectIf(this IInputHandler @this, bool condition, ITerminal terminal)
     {
-        if (condition == true)
+        if (condition is true)
         {
             @this.Select(terminal);
         }
@@ -38,7 +38,7 @@ internal static class IInputHandlerExtensions
 
     public static void DeselectIf(this IInputHandler @this, bool condition, ITerminal terminal)
     {
-        if (condition == true)
+        if (condition is true)
         {
             @this.Deselect(terminal);
         }

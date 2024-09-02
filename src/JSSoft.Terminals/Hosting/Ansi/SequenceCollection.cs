@@ -17,7 +17,7 @@ internal class SequenceCollection(string sequenceString) : ISequenceCollection
 
     public void Add(ISequence item)
     {
-        if (_sequencesByCharacter.ContainsKey(item.Character) != true)
+        if (_sequencesByCharacter.ContainsKey(item.Character) is false)
         {
             _sequencesByCharacter.Add(item.Character, []);
         }
@@ -27,7 +27,7 @@ internal class SequenceCollection(string sequenceString) : ISequenceCollection
 
     public (ISequence value, string parameter, int endIndex) GetValue(string text)
     {
-        if (text.StartsWith(SequenceString) != true)
+        if (text.StartsWith(SequenceString) is false)
         {
             throw new ArgumentException($"text does not start with: '{SequenceString}'", nameof(text));
         }
@@ -35,12 +35,12 @@ internal class SequenceCollection(string sequenceString) : ISequenceCollection
         for (var i = SequenceString.Length; i < text.Length; i++)
         {
             var character = text[i];
-            if (_sequencesByCharacter.TryGetValue(character, out var sequences) == true)
+            if (_sequencesByCharacter.TryGetValue(character, out var sequences) is true)
             {
                 var range = new Range(SequenceString.Length, i);
                 foreach (var sequence in sequences)
                 {
-                    if (sequence.Match(text, range, out var actualRange) == true)
+                    if (sequence.Match(text, range, out var actualRange) is true)
                     {
                         var parameter = text[actualRange];
                         var endIndex = Math.Max(actualRange.End.Value, i + 1);
@@ -50,7 +50,7 @@ internal class SequenceCollection(string sequenceString) : ISequenceCollection
 
                 throw new NotFoundSequenceException(text[0..i]);
             }
-            else if (Test(character) != true)
+            else if (Test(character) is false)
             {
                 throw new NotFoundSequenceException(text[0..i]);
             }

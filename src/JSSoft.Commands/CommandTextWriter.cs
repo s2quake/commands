@@ -121,7 +121,7 @@ public class CommandTextWriter(TextWriter writer, int width, string tabString)
 
     public void BeginGroup(string s)
     {
-        var text = IsAnsiSupported == true ? $"\x1b[1m{s}\x1b[0m" : s;
+        var text = IsAnsiSupported is true ? $"\x1b[1m{s}\x1b[0m" : s;
         WriteLine(text);
         Indent++;
     }

@@ -69,7 +69,7 @@ public class TerminalCursorRenderer : TerminalRendererBase
         get => _cursorBlinkDelay;
         private set
         {
-            if (SetField(ref _cursorBlinkDelay, value, nameof(CursorBlinkDelay)) == true)
+            if (SetField(ref _cursorBlinkDelay, value, nameof(CursorBlinkDelay)) is true)
             {
                 _cursorTimer.Interval = _cursorBlinkDelay;
             }
@@ -81,7 +81,7 @@ public class TerminalCursorRenderer : TerminalRendererBase
         get => _isCursorBlinkable;
         private set
         {
-            if (SetField(ref _isCursorBlinkable, value, nameof(IsCursorBlinkable)) == true)
+            if (SetField(ref _isCursorBlinkable, value, nameof(IsCursorBlinkable)) is true)
             {
                 _cursorTimer.IsEnabled = _terminal.IsFocused && _isCursorBlinkable;
             }
@@ -92,12 +92,12 @@ public class TerminalCursorRenderer : TerminalRendererBase
     {
         get
         {
-            if (_terminal.ActualStyle.CursorVisibility == TerminalCursorVisibility.OnlyInFocus && _terminal.IsFocused != true)
+            if (_terminal.ActualStyle.CursorVisibility == TerminalCursorVisibility.OnlyInFocus && _terminal.IsFocused is false)
             {
                 return false;
             }
 
-            if (_terminal.IsFocused == true && IsCursorBlinkable == true)
+            if (_terminal.IsFocused is true && IsCursorBlinkable is true)
             {
                 return _isCursorVisible;
             }
@@ -110,7 +110,7 @@ public class TerminalCursorRenderer : TerminalRendererBase
 
     protected override void OnRender(ITerminalDrawingContext drawingContext)
     {
-        if (IsCursorVisible != true)
+        if (IsCursorVisible is false)
         {
             return;
         }
@@ -127,7 +127,7 @@ public class TerminalCursorRenderer : TerminalRendererBase
             var span = characterInfo?.Span ?? 1;
             var transform = drawingContext.PushTransform(new TerminalPoint(0, -scroll.Value * height));
             var isFocused = terminal.IsFocused;
-            if (isFocused == true)
+            if (isFocused is true)
             {
                 _cursorRenderer.Invoke(drawingContext, cursorCoord, span);
             }
@@ -207,7 +207,7 @@ public class TerminalCursorRenderer : TerminalRendererBase
     {
         var terminal = obj._terminal;
         var cursorCoordinate = terminal.CursorCoordinate - new TerminalCoord(0, terminal.Scroll.Value);
-        if (TryGetCell(terminal, cursorCoordinate, out var cell) == true && Predicate(cell.Character) == true)
+        if (TryGetCell(terminal, cursorCoordinate, out var cell) is true && Predicate(cell.Character) is true)
         {
             var row = terminal.View[cursorCoordinate.Y];
             return TerminalGlyphRunFactory<TerminalGlyphRun>.Create(row, cursorCoordinate.X, obj.CreateGlyphRun);

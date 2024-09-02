@@ -21,8 +21,8 @@ internal static class SequenceUtility
     {
         var types = typeof(EscapeCharacter).Assembly.GetTypes();
         var query = from type in types
-                    where typeof(ISequence).IsAssignableFrom(type) == true
-                    where type.IsAbstract != true
+                    where typeof(ISequence).IsAssignableFrom(type) is true
+                    where type.IsAbstract is false
                     select type;
         var items = query.ToArray();
         foreach (var item in items)
@@ -58,7 +58,7 @@ internal static class SequenceUtility
         for (var i = 0; i < SequenceCollections.Length; i++)
         {
             var sequenceCollection = SequenceCollections[i];
-            if (text.StartsWith(sequenceCollection.SequenceString) == true)
+            if (text.StartsWith(sequenceCollection.SequenceString) is true)
             {
                 return sequenceCollection;
             }

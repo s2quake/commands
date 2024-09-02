@@ -67,7 +67,7 @@ internal sealed class ListDirectoryCommand : CommandBase
         Out.PrintTableData([.. items], true);
         Out.WriteLine();
 
-        if (IsRecursive == true)
+        if (IsRecursive is true)
         {
             foreach (var item in Directory.GetDirectories(dir))
             {

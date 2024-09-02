@@ -19,7 +19,7 @@ public abstract class TerminalRendererBase : TerminalPropertyChangedBase, ITermi
 
     void IDisposable.Dispose()
     {
-        if (_isDisposed == true)
+        if (_isDisposed is true)
         {
             throw new ObjectDisposedException($"{this}");
         }

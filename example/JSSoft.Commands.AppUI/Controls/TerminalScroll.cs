@@ -70,7 +70,7 @@ sealed class TerminalScroll : ITerminalScroll
         get => _minimum;
         set
         {
-            if (_setter.SetField(ref _minimum, value, nameof(Minimum)) == true)
+            if (_setter.SetField(ref _minimum, value, nameof(Minimum)) is true)
             {
                 _scrollBar?.SetValue(RangeBase.MinimumProperty, _minimum);
             }
@@ -82,7 +82,7 @@ sealed class TerminalScroll : ITerminalScroll
         get => _maximum;
         set
         {
-            if (_setter.SetField(ref _maximum, value, nameof(Maximum)) == true)
+            if (_setter.SetField(ref _maximum, value, nameof(Maximum)) is true)
             {
                 _scrollBar?.SetValue(RangeBase.MaximumProperty, _maximum);
             }
@@ -94,7 +94,7 @@ sealed class TerminalScroll : ITerminalScroll
         get => _smallChange;
         set
         {
-            if (_setter.SetField(ref _smallChange, value, nameof(SmallChange)) == true)
+            if (_setter.SetField(ref _smallChange, value, nameof(SmallChange)) is true)
             {
                 _scrollBar?.SetValue(RangeBase.SmallChangeProperty, _smallChange);
             }
@@ -106,7 +106,7 @@ sealed class TerminalScroll : ITerminalScroll
         get => _largeChange;
         set
         {
-            if (_setter.SetField(ref _largeChange, value, nameof(LargeChange)) == true)
+            if (_setter.SetField(ref _largeChange, value, nameof(LargeChange)) is true)
             {
                 _scrollBar?.SetValue(RangeBase.LargeChangeProperty, _largeChange);
             }
@@ -118,7 +118,7 @@ sealed class TerminalScroll : ITerminalScroll
         get => _viewportSize;
         set
         {
-            if (_setter.SetField(ref _viewportSize, value, nameof(ViewportSize)) == true)
+            if (_setter.SetField(ref _viewportSize, value, nameof(ViewportSize)) is true)
             {
                 _scrollBar?.SetValue(ScrollBar.ViewportSizeProperty, _viewportSize);
             }
@@ -130,7 +130,7 @@ sealed class TerminalScroll : ITerminalScroll
         get => _isVisible;
         set
         {
-            if (_setter.SetField(ref _isVisible, value, nameof(IsVisible)) == true)
+            if (_setter.SetField(ref _isVisible, value, nameof(IsVisible)) is true)
             {
                 _scrollBar?.SetValue(Visual.IsVisibleProperty, _isVisible);
             }
@@ -142,7 +142,7 @@ sealed class TerminalScroll : ITerminalScroll
         get => _value;
         set
         {
-            if (_setter.SetField(ref _value, value, nameof(Value)) == true)
+            if (_setter.SetField(ref _value, value, nameof(Value)) is true)
             {
                 _scrollBar?.SetValue(RangeBase.ValueProperty, _value);
             }

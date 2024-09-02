@@ -113,12 +113,12 @@ public class ResourceUsageDescriptor : CommandUsageDescriptorBase
         var resourceNames = resourceType.Assembly.GetManifestResourceNames();
         var baseName = resourceName == string.Empty ? resourceType.FullName : resourceName;
 
-        if (resourceNames.Contains(baseName + Extension) != true)
+        if (resourceNames.Contains(baseName + Extension) is false)
         {
             return null;
         }
 
-        if (_resourceManagers.TryGetValue(baseName, out var value) != true)
+        if (_resourceManagers.TryGetValue(baseName, out var value) is false)
         {
             value = new ResourceManager(baseName, resourceType.Assembly);
             _resourceManagers.Add(baseName, value);
@@ -132,12 +132,12 @@ public class ResourceUsageDescriptor : CommandUsageDescriptorBase
         var resourceNames = assembly.GetManifestResourceNames();
         var baseName = resourceName;
 
-        if (resourceNames.Contains(baseName + Extension) != true)
+        if (resourceNames.Contains(baseName + Extension) is false)
         {
             return null;
         }
 
-        if (_resourceManagers.TryGetValue(baseName, out var value) != true)
+        if (_resourceManagers.TryGetValue(baseName, out var value) is false)
         {
             value = new ResourceManager(baseName, assembly);
             _resourceManagers.Add(baseName, value);
@@ -150,7 +150,7 @@ public class ResourceUsageDescriptor : CommandUsageDescriptorBase
     {
         if (resourceManager.GetString(id) is { } text)
         {
-            if (text.StartsWith(ReferencePrefix) == true
+            if (text.StartsWith(ReferencePrefix) is true
                 && resourceManager.GetString(text[ReferencePrefix.Length..]) is { } referenceText)
             {
                 return referenceText;
@@ -167,7 +167,7 @@ public class ResourceUsageDescriptor : CommandUsageDescriptorBase
         var typeItem = type;
         while (typeItem is not null)
         {
-            if (System.Attribute.IsDefined(typeItem, attribute.GetType(), inherit: false) == true)
+            if (System.Attribute.IsDefined(typeItem, attribute.GetType(), inherit: false) is true)
             {
                 return typeItem;
             }

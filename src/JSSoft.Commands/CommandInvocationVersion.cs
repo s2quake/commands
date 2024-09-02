@@ -24,7 +24,7 @@ internal sealed class CommandInvocationVersion
     {
         var settings = e.Invoker.Settings;
         var name = e.Arguments[0];
-        var args = e.Arguments.Where(item => settings.IsVersionArg(item) != true).ToArray();
+        var args = e.Arguments.Where(item => settings.IsVersionArg(item) is false).ToArray();
         var obj = new CommandInvocationVersion();
         var parser = new VersionCommandParser(name, obj);
         parser.Parse(args);
@@ -45,7 +45,7 @@ internal sealed class CommandInvocationVersion
     public string GetQuietString() => Version;
 
     public string GetVersionString()
-        => IsQuiet == true ? GetQuietString() : GetDetailedString();
+        => IsQuiet is true ? GetQuietString() : GetDetailedString();
 
     private sealed class VersionCommandParser(string commandName, object instance)
         : CommandParser(commandName, instance)

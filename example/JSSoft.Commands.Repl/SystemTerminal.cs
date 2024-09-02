@@ -40,7 +40,7 @@ internal sealed class SystemTerminal : SystemTerminalBase
 
     protected override string FormatPrompt(string prompt)
     {
-        if (prompt.EndsWith(Suffix) == true)
+        if (prompt.EndsWith(Suffix) is true)
         {
             var text = prompt.Substring(0, prompt.Length - Suffix.Length);
             var textC = Regex.Replace(text, $"\\{Path.DirectorySeparatorChar}", SeparatorC);

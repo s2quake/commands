@@ -32,7 +32,7 @@ internal sealed class TerminalSelectionCollection(Terminal terminal, Action<ITer
             throw new ArgumentException("Invalid selection", nameof(item));
         }
 
-        if (Contains(item) == true)
+        if (Contains(item) is true)
         {
             throw new ArgumentException("Already exists.", nameof(item));
         }

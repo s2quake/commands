@@ -102,7 +102,7 @@ public class Terminal : ITerminal
         get => _isFocused;
         set
         {
-            if (_setter.SetField(ref _isFocused, value, nameof(IsFocused)) == true)
+            if (_setter.SetField(ref _isFocused, value, nameof(IsFocused)) is true)
             {
                 Update();
             }
@@ -230,7 +230,7 @@ public class Terminal : ITerminal
         get => _style;
         set
         {
-            if (_setter.SetField(ref _style, value, nameof(Style)) == true)
+            if (_setter.SetField(ref _style, value, nameof(Style)) is true)
             {
                 ActualStyle = _style ?? _originStyle;
                 _view.Update(_lines);
@@ -327,7 +327,7 @@ public class Terminal : ITerminal
     }
 
     public string Copy()
-        => Selections.Any() == true ? _lines.GetString([.. Selections]) : string.Empty;
+        => Selections.Any() is true ? _lines.GetString([.. Selections]) : string.Empty;
 
     public void Paste(string text) => WriteInput(text);
 
@@ -353,7 +353,7 @@ public class Terminal : ITerminal
         using (var _ = _setter.LockEvent())
         {
             _setter.SetField(ref _size, size, nameof(Size));
-            if (_setter.SetField(ref _bufferSize, bufferSize, nameof(BufferSize)) == true)
+            if (_setter.SetField(ref _bufferSize, bufferSize, nameof(BufferSize)) is true)
             {
                 _lines.Update();
                 Scroll.PropertyChanged -= Scroll_PropertyChanged;
@@ -444,7 +444,7 @@ public class Terminal : ITerminal
 
     private int GetScrollMaximum()
     {
-        if (ActualStyle.IsScrollForwardEnabled != true)
+        if (ActualStyle.IsScrollForwardEnabled is false)
         {
             return Math.Max(_originCoordinate.Y, _lines.Count - BufferSize.Height);
         }

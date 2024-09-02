@@ -39,7 +39,7 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
         _itemByShortName = new(items.Length);
         foreach (var item in items)
         {
-            if (_itemByMemberName.Contains(item.MemberName) == true)
+            if (_itemByMemberName.Contains(item.MemberName) is true)
             {
                 var message = $"{nameof(CommandMemberDescriptor)} '{item.MemberName}' cannot be " +
                               $"added because it already exists.";
@@ -56,7 +56,7 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
                 continue;
             }
 
-            if (_itemByName.ContainsKey(item.Name) == true)
+            if (_itemByName.ContainsKey(item.Name) is true)
             {
                 var message = $"{nameof(CommandMemberDescriptor)} '{item.Name}' cannot be added " +
                               $"because it already exists.";
@@ -73,7 +73,7 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
                 continue;
             }
 
-            if (_itemByShortName.ContainsKey(item.ShortName) == true)
+            if (_itemByShortName.ContainsKey(item.ShortName) is true)
             {
                 var message = $"{nameof(CommandMemberDescriptor)} '{item.ShortName}' cannot be " +
                               $"added because it already exists.";
@@ -107,7 +107,7 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
     {
         get
         {
-            if (_itemByMemberName.Contains(memberName) == true)
+            if (_itemByMemberName.Contains(memberName) is true)
             {
                 return (CommandMemberDescriptor)_itemByMemberName[memberName]!;
             }
@@ -121,20 +121,20 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
 
     public CommandMemberDescriptor? FindByOptionName(string optionName)
     {
-        if (optionName.StartsWith(Delimiter) == true && optionName.Length > 3)
+        if (optionName.StartsWith(Delimiter) is true && optionName.Length > 3)
         {
             var name = optionName[Delimiter.Length..];
-            return _itemByName.TryGetValue(name, out var value) == true ? value : null;
+            return _itemByName.TryGetValue(name, out var value) is true ? value : null;
         }
-        else if (optionName.StartsWith(ShortDelimiter) == true && optionName.Length == 2)
+        else if (optionName.StartsWith(ShortDelimiter) is true && optionName.Length == 2)
         {
             var name = optionName[1];
-            return _itemByShortName.TryGetValue(name, out var value) == true ? value : null;
+            return _itemByShortName.TryGetValue(name, out var value) is true ? value : null;
         }
         else if (optionName.Length == 1)
         {
             var name = optionName[0];
-            return _itemByShortName.TryGetValue(name, out var value) == true ? value : null;
+            return _itemByShortName.TryGetValue(name, out var value) is true ? value : null;
         }
         else
         {
@@ -182,7 +182,7 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
             var type = Owner;
             foreach (var item in memberNames)
             {
-                if (Contains(item) != true)
+                if (Contains(item) is false)
                 {
                     var message = $"Type '{type}' does not have property '{item}'.";
                     throw new CommandDefinitionException(message, memberInfo);
@@ -194,10 +194,10 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
     }
 
     private static bool IsRequiredDescriptor(CommandMemberDescriptor memberDescriptor)
-        => memberDescriptor.IsRequired == true;
+        => memberDescriptor.IsRequired is true;
 
     private static bool IsOptionDescriptor(CommandMemberDescriptor memberDescriptor)
-        => memberDescriptor.IsGeneral == true || memberDescriptor.IsSwitch == true;
+        => memberDescriptor.IsGeneral is true || memberDescriptor.IsSwitch is true;
 
     private static bool IsVariablesDescriptor(CommandMemberDescriptor memberDescriptor)
         => memberDescriptor.IsVariables;

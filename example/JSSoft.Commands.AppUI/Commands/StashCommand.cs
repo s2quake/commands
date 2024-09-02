@@ -52,7 +52,7 @@ sealed class StashCommand(TerminalControl terminalControl) : CommandMethodBase
     [CommandMethod]
     public void Pop(string name = DefaultKey)
     {
-        // if (_dataByName.ContainsKey(name) == true)
+        // if (_dataByName.ContainsKey(name) is true)
         // {
         //     var data = _dataByName[name];
         //     _dataByName.Remove(name);

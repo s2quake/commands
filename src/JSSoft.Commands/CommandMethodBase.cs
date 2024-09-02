@@ -153,7 +153,7 @@ public abstract class CommandMethodBase : ICommand
         static ICommand CreateCommand(
             CommandMethodBase obj, CommandMethodDescriptor methodDescriptor)
         {
-            return methodDescriptor.IsAsync == true ?
+            return methodDescriptor.IsAsync is true ?
                 new SubCommandAsync(obj, methodDescriptor) :
                 new SubCommand(obj, methodDescriptor);
         }

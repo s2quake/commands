@@ -22,7 +22,7 @@ public abstract class CommandStaticTypeAttribute : Attribute
 
     internal Type GetTypeWithFallback(CommandMemberInfo memberInfo)
     {
-        if (Type.GetType(StaticTypeName) is { } type && type.IsStaticClass() == true)
+        if (Type.GetType(StaticTypeName) is { } type && type.IsStaticClass() is true)
         {
             return type;
         }
@@ -32,7 +32,7 @@ public abstract class CommandStaticTypeAttribute : Attribute
 
     internal Type GetStaticType(CommandMemberInfo memberInfo)
     {
-        if (Type.GetType(StaticTypeName) is { } type && type.IsStaticClass() == true)
+        if (Type.GetType(StaticTypeName) is { } type && type.IsStaticClass() is true)
         {
             return type;
         }

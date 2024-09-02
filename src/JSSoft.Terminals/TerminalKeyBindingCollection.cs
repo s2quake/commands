@@ -29,17 +29,17 @@ public class TerminalKeyBindingCollection : ITerminalKeyBindingCollection
     public bool Process(object obj, TerminalModifiers modifiers, TerminalKey key)
     {
         var name = $"{modifiers}+{key}";
-        if (_keyBindingByName.ContainsKey(name) == true)
+        if (_keyBindingByName.ContainsKey(name) is true)
         {
             var binding = _keyBindingByName[name];
-            if (binding.CanInvoke(obj) == true)
+            if (binding.CanInvoke(obj) is true)
             {
                 binding.Invoke(obj);
                 return true;
             }
         }
 
-        if (Parent?.Process(obj, modifiers, key) == true)
+        if (Parent?.Process(obj, modifiers, key) is true)
         {
             return true;
         }

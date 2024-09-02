@@ -50,7 +50,7 @@ internal sealed class StandardCommandMethodDescriptor : CommandMethodDescriptor
 
     protected override object? OnInvoke(object instance, object?[] parameters)
     {
-        if (MethodInfo.DeclaringType!.IsAbstract && MethodInfo.DeclaringType.IsSealed == true)
+        if (MethodInfo.DeclaringType!.IsAbstract && MethodInfo.DeclaringType.IsSealed is true)
         {
             return MethodInfo.Invoke(null, parameters);
         }
@@ -91,7 +91,7 @@ internal sealed class StandardCommandMethodDescriptor : CommandMethodDescriptor
             }
             else if (value is Task<string[]> task)
             {
-                if (task.Wait(CommandSettings.AsyncTimeout) != true)
+                if (task.Wait(CommandSettings.AsyncTimeout) is false)
                 {
                     return [];
                 }

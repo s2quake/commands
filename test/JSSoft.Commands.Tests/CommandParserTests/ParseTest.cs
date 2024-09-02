@@ -54,7 +54,7 @@ public class ParseTest(ITestOutputHelper logger)
     public static IEnumerable<object[]> TestData =>
     [
         [nameof(InstanceClass.Boolean), "--boolean", Boolean()],
-        [nameof(InstanceClass.String), "--string", Word(item => item.Contains('\'') != true)],
+        [nameof(InstanceClass.String), "--string", Word(item => item.Contains('\'') is false)],
         [nameof(InstanceClass.SByte), "--sbyte", SByte()],
         [nameof(InstanceClass.Byte), "--byte", Byte()],
         [nameof(InstanceClass.Int16), "--int16", Int16()],

@@ -119,7 +119,7 @@ public abstract class CommandMemberDescriptor(
             }
             else if (value is Task<string[]> task)
             {
-                if (task.Wait(CommandSettings.AsyncTimeout) != true)
+                if (task.Wait(CommandSettings.AsyncTimeout) is false)
                 {
                     return [];
                 }
@@ -139,7 +139,7 @@ public abstract class CommandMemberDescriptor(
     private static string GenerateDisplayName(CommandMemberDescriptor memberDescriptor)
     {
         var memberInfo = memberDescriptor.MemberInfo;
-        if (memberInfo.TryGetDisplayName(out var displayName) == true)
+        if (memberInfo.TryGetDisplayName(out var displayName) is true)
         {
             return displayName;
         }
@@ -154,7 +154,7 @@ public abstract class CommandMemberDescriptor(
             GetNamePattern(),
             GetShortNamePattern(),
         };
-        if (memberDescriptor.Attribute.AllowName == true)
+        if (memberDescriptor.Attribute.AllowName is true)
         {
             itemList.Reverse();
         }
@@ -168,7 +168,7 @@ public abstract class CommandMemberDescriptor(
                 return string.Empty;
             }
 
-            if (memberDescriptor.IsExplicit == true)
+            if (memberDescriptor.IsExplicit is true)
             {
                 return CommandUtility.Delimiter + memberDescriptor.Name;
             }
@@ -183,7 +183,7 @@ public abstract class CommandMemberDescriptor(
                 return string.Empty;
             }
 
-            if (memberDescriptor.IsExplicit == true)
+            if (memberDescriptor.IsExplicit is true)
             {
                 return CommandUtility.ShortDelimiter + memberDescriptor.ShortName;
             }
