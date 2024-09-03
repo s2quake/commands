@@ -87,18 +87,29 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
         string[] items =
         [
             .. from item in memberDescriptors where item.IsRequired is true select GetString(item),
-            memberDescriptors.HasOptions is true ? "[options]" : string.Empty,
+            .. memberDescriptors.HasOptions is true ? new string[] { "[options]" } : [],
             .. from item in memberDescriptors where item.IsVariables is true select GetString(item),
         ];
         var maxWidth = commandWriter.Width
             - (IndentedTextWriter.DefaultTabString.Length * commandWriter.Indent)
             - (executionName.Length + 1);
-        var lines = CommandTextWriter.Wrap(items, maxWidth);
+        var lines = items.Length == 0 ? [string.Empty] : CommandTextWriter.Wrap(items, maxWidth);
         for (var i = 0; i < lines.Length; i++)
         {
             var pre = i == 0 ? executionName : string.Empty.PadRight(executionName.Length);
-            commandWriter.WriteLine($"{pre} {lines[i]}");
+            var lineItems = new string[] { pre, lines[i] };
+            var line = string.Join(" ", lineItems.Where(item => item != string.Empty));
+            commandWriter.WriteLine(line);
         }
+    }
+
+    protected static void PrintUsage(
+        CommandTextWriter commandWriter,
+        string executionName)
+    {
+        var groupName = StringByName[TextUsage];
+        using var groupScope = commandWriter.Group(groupName);
+        commandWriter.WriteLine($"{executionName} <command> [options...]");
     }
 
     protected static bool PrintRequirements(

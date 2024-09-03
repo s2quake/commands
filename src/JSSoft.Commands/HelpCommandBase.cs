@@ -65,7 +65,8 @@ public abstract class HelpCommandBase : CommandBase
     {
         var groupName = StringByName[TextUsage];
         using var groupScope = commandWriter.Group(groupName);
-        var text = string.Join(" ", executionName, "<command>", "[options...]");
+        var items = new string[] { executionName, "<command>", "[options...]" };
+        var text = string.Join(" ", items.Where(item => item != string.Empty));
         commandWriter.WriteLine(text);
     }
 
@@ -143,7 +144,7 @@ public abstract class HelpCommandBase : CommandBase
         if (command is not null && argList.Count == 0)
         {
             var usage = command.GetUsage(IsDetail);
-            Out.WriteLine(usage);
+            Out.Write(usage);
         }
         else
         {
