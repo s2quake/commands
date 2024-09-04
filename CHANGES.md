@@ -17,6 +17,7 @@ To be Released.
 * Improved the structure to allow ICustomCommandDescriptor to be applied.
   [[#25]]
 * Added validation to properties and parameter using DataAnnotation.  [[#26]]
+* Fixed an issue with usage not printing correctly.  [[#28]]
 
 [#13]: https://github.com/s2quake/commands/pull/13
 [#17]: https://github.com/s2quake/commands/pull/17
@@ -26,6 +27,7 @@ To be Released.
 [#23]: https://github.com/s2quake/commands/pull/23
 [#25]: https://github.com/s2quake/commands/pull/25
 [#26]: https://github.com/s2quake/commands/pull/26
+[#28]: https://github.com/s2quake/commands/pull/28
 
 
 6.0.1
