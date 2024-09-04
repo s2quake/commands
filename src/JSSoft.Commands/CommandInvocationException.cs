@@ -10,11 +10,8 @@ namespace JSSoft.Commands;
 
 public class CommandInvocationException(
     CommandInvoker invoker, CommandInvocationError error, string[] args, Exception? innerException)
-    : Exception(innerException?.Message, innerException), ICommandUsage
+    : Exception(innerException?.Message, innerException)
 {
-    private readonly CommandUsageDescriptorBase _usageDescriptor
-        = CommandDescriptor.GetUsageDescriptor(invoker.InstanceType);
-
     public CommandInvocationException(
         CommandInvoker invoker, CommandInvocationError error, string[] args)
         : this(invoker, error, args, innerException: null)
@@ -26,17 +23,6 @@ public class CommandInvocationException(
     public string[] Arguments { get; } = args;
 
     public CommandInvoker Invoker { get; } = invoker;
-
-    public CommandMethodDescriptorCollection MethodDescriptors
-        => CommandDescriptor.GetMethodDescriptors(Invoker.InstanceType);
-
-    string ICommandUsage.ExecutionName => Invoker.ExecutionName;
-
-    string ICommandUsage.Summary => _usageDescriptor.Summary;
-
-    string ICommandUsage.Description => _usageDescriptor.Description;
-
-    string ICommandUsage.Example => _usageDescriptor.Example;
 
     public void Print(TextWriter writer)
     {
@@ -106,10 +92,21 @@ public class CommandInvocationException(
 
     private static void PrintHelp(TextWriter writer, CommandInvocationException e)
     {
-        var settings = e.Invoker.Settings;
+        var invoker = e.Invoker;
+        var settings = invoker.Settings;
         var invocationHelp = CommandInvocationHelp.Create(e);
-        var methodDescriptors = e.MethodDescriptors;
-        var usagePrinter = new CommandInvocationUsagePrinter(e, settings)
+        var usageDescriptor = CommandDescriptor.GetUsageDescriptor(invoker.InstanceType);
+        var methodDescriptors = CommandDescriptor.GetMethodDescriptors(invoker.InstanceType);
+        var items = new string[] { invoker.ExecutionName, invocationHelp.Command };
+        var executionName = string.Join(" ", items.Where(item => item != string.Empty));
+        var usage = new CommandUsage
+        {
+            ExecutionName = executionName,
+            Summary = usageDescriptor.Summary,
+            Description = usageDescriptor.Description,
+            Example = usageDescriptor.Example,
+        };
+        var usagePrinter = new CommandInvocationUsagePrinter(usage, settings)
         {
             IsDetail = invocationHelp.IsDetail,
         };
@@ -123,7 +120,7 @@ public class CommandInvocationException(
         }
         else
         {
-            throw new CommandLineException("weqrwqrwe");
+            throw new CommandLineException($"'{invocationHelp.Command}' is not a valid command.");
         }
     }
 

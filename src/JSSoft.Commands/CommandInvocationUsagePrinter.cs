@@ -175,13 +175,6 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
         }
     }
 
-    protected static void PrintUsage(CommandTextWriter commandWriter, string executionName)
-    {
-        var groupName = StringByName[TextUsage];
-        using var groupScope = commandWriter.Group(groupName);
-        commandWriter.WriteLine($"{executionName} <command> [options...]");
-    }
-
     protected static bool PrintRequirements(
         CommandTextWriter commandWriter, CommandMethodDescriptor methodDescriptor)
     {

@@ -162,8 +162,7 @@ public class CommandInvoker : CommandAnalyzer
     }
 
     private bool TryGetMethodDescriptor(
-        string commandName,
-        [MaybeNullWhen(false)] out CommandMethodDescriptor methodDescriptor)
+        string commandName, [MaybeNullWhen(false)] out CommandMethodDescriptor methodDescriptor)
     {
         var instanceType = InstanceType;
         var methodDescriptors = CommandDescriptor.GetMethodDescriptors(instanceType);
@@ -171,8 +170,7 @@ public class CommandInvoker : CommandAnalyzer
         return methodDescriptor is not null;
     }
 
-    private void Invoke(
-        CommandMethodDescriptor methodDescriptor, string[] args)
+    private void Invoke(CommandMethodDescriptor methodDescriptor, string[] args)
     {
         var instance = Instance;
         var memberDescriptors = methodDescriptor.Members;

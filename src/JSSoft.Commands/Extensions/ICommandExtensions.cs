@@ -27,14 +27,8 @@ public static class ICommandExtensions
         var executionName = CommandUtility.GetExecutionName(@this.Name, @this.Aliases);
         if (@this.Parent is { } parent)
         {
-            executionName = $"{GetExecutionName(parent)} {executionName}";
-        }
-        else
-        {
-            if (@this.Context.Name != string.Empty)
-            {
-                executionName = $"{@this.Context.Name} {executionName}";
-            }
+            var items = new string[] { GetExecutionName(parent), executionName };
+            executionName = string.Join(" ", items.Where(item => item != string.Empty));
         }
 
         return executionName;
