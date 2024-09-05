@@ -18,7 +18,7 @@ internal static class NetframeworkExtensions
 {
     public static bool TryPeek<T>(this Queue<T> @this, out T? result)
     {
-        if (@this.Count == 0)
+        if (@this.Count is 0)
         {
             result = default;
             return false;
@@ -30,7 +30,7 @@ internal static class NetframeworkExtensions
 
     public static bool TryDequeue<T>(this Queue<T> @this, out T? result)
     {
-        if (@this.Count == 0)
+        if (@this.Count is 0)
         {
             result = default;
             return false;

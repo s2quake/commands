@@ -190,12 +190,12 @@ public class TerminalCursorRenderer : TerminalRendererBase
 
     protected static bool Predicate(char character)
     {
-        if (character == 0)
+        if (character is char.MinValue)
         {
             return false;
         }
 
-        if (character == ' ')
+        if (character is ' ')
         {
             return false;
         }

@@ -103,7 +103,7 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
             while (cancellationToken.IsCancellationRequested is false)
             {
                 var count = await control.In.ReadAsync(buffer, cancellationToken);
-                if (count == 0)
+                if (count is 0)
                 {
                     await Task.Delay(1, cancellationToken);
                     continue;
@@ -126,7 +126,7 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
             while (cancellationToken.IsCancellationRequested is false)
             {
                 var count = await Task.Run(() => pty.Read(buffer, buffer.Length));
-                if (count == 0)
+                if (count is 0)
                 {
                     Console.WriteLine("ReadStream ended");
                     break;

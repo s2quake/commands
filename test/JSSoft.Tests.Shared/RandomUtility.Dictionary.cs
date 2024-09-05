@@ -100,7 +100,7 @@ public static partial class RandomUtility
     private static TValue? GetValue<TKey, TValue>(DictionarySettings<TKey, TValue> settings)
         where TKey : notnull
     {
-        var isNull = Int32() % 10 == 0 && settings.IsNullable is true;
+        var isNull = Int32() % 10 is 0 && settings.IsNullable is true;
         if (isNull is true)
         {
             return default;

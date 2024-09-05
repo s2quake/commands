@@ -148,11 +148,11 @@ public class CommandTextWriter(TextWriter writer, int width, string tabString)
     {
         var name = _settings.GetLabelString(label);
         var items = Wrap(summary, Width - (TotalIndentSpaces + name.Length));
-        var lines = items.Length != 0 ? items : [string.Empty];
+        var lines = items.Length is not 0 ? items : [string.Empty];
         var spaces = string.Empty.PadRight(name.Length);
         for (var i = 0; i < lines.Length; i++)
         {
-            Write(i == 0 ? name : spaces);
+            Write(i is 0 ? name : spaces);
             WriteLine(lines[i]);
         }
     }

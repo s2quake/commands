@@ -22,22 +22,22 @@ internal sealed class CommandProgress(IProgress<ProgressInfo> progress)
     private readonly IProgress<ProgressInfo> _progress = progress;
 
     void IProgress<sbyte>.Report(sbyte value)
-        => Report(value == sbyte.MaxValue ? long.MaxValue : value);
+        => Report(value is sbyte.MaxValue ? long.MaxValue : value);
 
     void IProgress<byte>.Report(byte value)
-        => Report(value == byte.MaxValue ? ulong.MaxValue : value);
+        => Report(value is byte.MaxValue ? ulong.MaxValue : value);
 
     void IProgress<short>.Report(short value)
-        => Report(value == short.MaxValue ? long.MaxValue : value);
+        => Report(value is short.MaxValue ? long.MaxValue : value);
 
     void IProgress<ushort>.Report(ushort value)
-        => Report(value == ushort.MaxValue ? ulong.MaxValue : value);
+        => Report(value is ushort.MaxValue ? ulong.MaxValue : value);
 
     void IProgress<int>.Report(int value)
-        => Report(value == int.MaxValue ? long.MaxValue : value);
+        => Report(value is int.MaxValue ? long.MaxValue : value);
 
     void IProgress<uint>.Report(uint value)
-        => Report(value == uint.MaxValue ? ulong.MaxValue : value);
+        => Report(value is uint.MaxValue ? ulong.MaxValue : value);
 
     void IProgress<long>.Report(long value)
         => Report(value);
@@ -64,7 +64,7 @@ internal sealed class CommandProgress(IProgress<ProgressInfo> progress)
     {
         _progress.Report(new ProgressInfo()
         {
-            Value = value == decimal.MaxValue ? double.MaxValue : checked((double)value),
+            Value = value is decimal.MaxValue ? double.MaxValue : checked((double)value),
             Text = string.Empty,
         });
     }
@@ -73,7 +73,7 @@ internal sealed class CommandProgress(IProgress<ProgressInfo> progress)
 
     private void Report(long value)
     {
-        if (value == long.MaxValue)
+        if (value is long.MaxValue)
         {
             _progress.Report(new ProgressInfo() { Value = double.MaxValue, Text = string.Empty });
         }
@@ -85,7 +85,7 @@ internal sealed class CommandProgress(IProgress<ProgressInfo> progress)
 
     private void Report(ulong value)
     {
-        if (value == ulong.MaxValue)
+        if (value is ulong.MaxValue)
         {
             _progress.Report(new ProgressInfo() { Value = double.MaxValue, Text = string.Empty });
         }

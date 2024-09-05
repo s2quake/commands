@@ -220,7 +220,7 @@ public sealed class TerminalStringBuilder
             itemList.Add($"{BackgroundValues[_background.Value]}");
         }
 
-        if (itemList.Count != 0)
+        if (itemList.Count is not 0)
         {
             _p1 = $"\x1b[{string.Join(";", itemList)}m";
         }

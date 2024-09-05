@@ -35,7 +35,7 @@ internal sealed class TerminalRowCollection : List<TerminalRow>
 
     public TerminalRow Prepare()
     {
-        return _poolStack.Count != 0 ? _poolStack.Pop() : new TerminalRow(_terminal);
+        return _poolStack.Count is not 0 ? _poolStack.Pop() : new TerminalRow(_terminal);
     }
 
     public event EventHandler<TerminalRowUpdateEventArgs>? Updated;
@@ -58,7 +58,7 @@ internal sealed class TerminalRowCollection : List<TerminalRow>
 
         for (var i = Count; i < bufferHeight; i++)
         {
-            var item = _poolStack.Count != 0 ? _poolStack.Pop() : new TerminalRow(_terminal);
+            var item = _poolStack.Count is not 0 ? _poolStack.Pop() : new TerminalRow(_terminal);
             Add(item);
             item.Index = i;
         }

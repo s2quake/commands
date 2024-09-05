@@ -61,7 +61,7 @@ public static class TextWriterExtensions
 
             @this.WriteLine();
 
-            if (y != 0 || hasHeader is false)
+            if (y is not 0 || hasHeader is false)
             {
                 continue;
             }

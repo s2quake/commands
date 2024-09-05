@@ -25,7 +25,7 @@ public abstract class HelpCommandBase : CommandBase
 
     protected override void OnExecute()
     {
-        if (CommandNames.Length == 0)
+        if (CommandNames.Length is 0)
         {
             PrintHelp();
         }
@@ -39,7 +39,7 @@ public abstract class HelpCommandBase : CommandBase
     {
         var memberDescriptor = completionContext.MemberDescriptor;
         var properties = completionContext.Properties;
-        if (memberDescriptor.MemberName == nameof(CommandNames))
+        if (memberDescriptor.MemberName is nameof(CommandNames))
         {
             var commandNames = Array.Empty<string>();
             if (properties.TryGetValue(nameof(CommandNames), out var value) is true
@@ -141,7 +141,7 @@ public abstract class HelpCommandBase : CommandBase
     {
         var argList = new List<string>(CommandNames);
         var command = CommandContextBase.GetCommand(Context.Node, argList);
-        if (command is not null && argList.Count == 0)
+        if (command is not null && argList.Count is 0)
         {
             var usage = command.GetUsage(IsDetail);
             Out.Write(usage);
@@ -155,7 +155,7 @@ public abstract class HelpCommandBase : CommandBase
 
     private string[] GetCommandNames(ICommand node, string[] names, string find)
     {
-        if (names.Length == 0)
+        if (names.Length is 0)
         {
             var query = from child in node.Commands
                         where child.IsEnabled is true

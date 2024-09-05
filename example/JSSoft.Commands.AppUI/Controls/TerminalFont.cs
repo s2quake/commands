@@ -113,7 +113,7 @@ sealed class TerminalFont : ITerminalFont
                 var glyphTypeface = item.GlyphTypeface;
                 var designEmHeight = (double)glyphTypeface.Metrics.DesignEmHeight;
                 var id = glyphTypeface.GetGlyph(i);
-                if (id != 0 && glyphTypeface.TryGetGlyphMetrics(id, out var metrics) is true)
+                if (id is not 0 && glyphTypeface.TryGetGlyphMetrics(id, out var metrics) is true)
                 {
                     var xAdvance = glyphTypeface.GetGlyphAdvance(id);
                     var glyphInfo = new TerminalGlyphInfo

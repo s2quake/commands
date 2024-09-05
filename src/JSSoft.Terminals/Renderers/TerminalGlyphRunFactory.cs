@@ -26,7 +26,7 @@ internal sealed class TerminalGlyphRunFactory<T>(ITerminalFont font, int capacit
 
     private static bool Predicate(char character)
     {
-        if (character == 0)
+        if (character is char.MinValue)
         {
             return false;
         }
