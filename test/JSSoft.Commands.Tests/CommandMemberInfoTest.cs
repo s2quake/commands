@@ -20,6 +20,7 @@ public class CommandMemberInfoTest
         Assert.Equal(typeof(CommandMemberInfoTest), memberInfo.Value);
         Assert.Equal(CommandMemberType.Type, memberInfo.Type);
         Assert.Equal(nameof(CommandMemberInfoTest), memberInfo.Name);
+        Assert.Equal(nameof(CommandMemberInfoTest), memberInfo.Identifier);
         Assert.Equal(
             expected: $"JSSoft.Commands.Tests.{nameof(CommandMemberInfoTest)}",
             actual: memberInfo.FullName);
@@ -45,9 +46,10 @@ public class CommandMemberInfoTest
 
         Assert.Equal(propertyInfo, memberInfo.Value);
         Assert.Equal(CommandMemberType.Property, memberInfo.Type);
+        Assert.Equal(nameof(Property), memberInfo.Name);
         Assert.Equal(
             expected: $"{nameof(CommandMemberInfoTest)}.{nameof(Property)}",
-            actual: memberInfo.Name);
+            actual: memberInfo.Identifier);
         Assert.Equal(
             expected: $"JSSoft.Commands.Tests.{nameof(CommandMemberInfoTest)}.{nameof(Property)}",
             actual: memberInfo.FullName);
@@ -74,9 +76,10 @@ public class CommandMemberInfoTest
 
         Assert.Equal(methodInfo, memberInfo.Value);
         Assert.Equal(CommandMemberType.Method, memberInfo.Type);
+        Assert.Equal(nameof(Method1), memberInfo.Name);
         Assert.Equal(
             expected: $"{nameof(CommandMemberInfoTest)}.{nameof(Method1)}",
-            actual: memberInfo.Name);
+            actual: memberInfo.Identifier);
         Assert.Equal(
             expected: $"JSSoft.Commands.Tests.{nameof(CommandMemberInfoTest)}.{nameof(Method1)}",
             actual: memberInfo.FullName);
@@ -104,9 +107,10 @@ public class CommandMemberInfoTest
 
         Assert.Equal(parameterInfo, memberInfo.Value);
         Assert.Equal(CommandMemberType.Parameter, memberInfo.Type);
+        Assert.Equal("parameter", memberInfo.Name);
         Assert.Equal(
             expected: $"{type.Name}.{nameof(Method1)}.parameter",
-            actual: memberInfo.Name);
+            actual: memberInfo.Identifier);
         Assert.Equal(
             expected: $"JSSoft.Commands.Tests.{type.Name}.{nameof(Method1)}.parameter",
             actual: memberInfo.FullName);
@@ -133,9 +137,10 @@ public class CommandMemberInfoTest
 
         Assert.Equal(methodInfo, memberInfo.Value);
         Assert.Equal(CommandMemberType.Method, memberInfo.Type);
+        Assert.Equal(nameof(Method2Async), memberInfo.Name);
         Assert.Equal(
             expected: $"{nameof(CommandMemberInfoTest)}.{nameof(Method2Async)}",
-            actual: memberInfo.Name);
+            actual: memberInfo.Identifier);
         Assert.Equal(
             expected: $"JSSoft.Commands.Tests.{nameof(CommandMemberInfoTest)}.{nameof(Method2Async)}",
             actual: memberInfo.FullName);
