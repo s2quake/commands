@@ -15,6 +15,7 @@ public sealed record class CommandMemberInfo
         Value = type;
         Type = CommandMemberType.Type;
         Name = type.Name;
+        Identifier = type.Name;
         FullName = $"{type.Namespace}.{type.Name}";
         DeclaringType = type;
     }
@@ -29,7 +30,8 @@ public sealed record class CommandMemberInfo
 
         Value = propertyInfo;
         Type = CommandMemberType.Property;
-        Name = $"{GetName(propertyInfo.DeclaringType)}.{propertyInfo.Name}";
+        Name = propertyInfo.Name;
+        Identifier = $"{GetName(propertyInfo.DeclaringType)}.{propertyInfo.Name}";
         FullName = $"{GetFullName(propertyInfo.DeclaringType)}.{propertyInfo.Name}";
         DeclaringType = propertyInfo.DeclaringType;
     }
@@ -44,7 +46,8 @@ public sealed record class CommandMemberInfo
 
         Value = methodInfo;
         Type = CommandMemberType.Method;
-        Name = $"{GetName(methodInfo.DeclaringType)}.{methodInfo.Name}";
+        Name = methodInfo.Name;
+        Identifier = $"{GetName(methodInfo.DeclaringType)}.{methodInfo.Name}";
         FullName = $"{GetFullName(methodInfo.DeclaringType)}.{methodInfo.Name}";
         DeclaringType = methodInfo.DeclaringType;
     }
@@ -71,7 +74,8 @@ public sealed record class CommandMemberInfo
 
         Value = parameterInfo;
         Type = CommandMemberType.Parameter;
-        Name = $"{GetName(parameterInfo.Member.DeclaringType)}." +
+        Name = parameterInfo.Name;
+        Identifier = $"{GetName(parameterInfo.Member.DeclaringType)}." +
                $"{parameterInfo.Member.Name}.{parameterInfo.Name}";
         FullName = $"{GetFullName(parameterInfo.Member.DeclaringType)}." +
                $"{parameterInfo.Member.Name}.{parameterInfo.Name}";
@@ -83,6 +87,8 @@ public sealed record class CommandMemberInfo
     public CommandMemberType Type { get; }
 
     public string Name { get; }
+
+    public string Identifier { get; }
 
     public string FullName { get; }
 

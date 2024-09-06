@@ -182,7 +182,7 @@ public class ResourceUsageDescriptor : CommandUsageDescriptorBase
     {
         var resourceName = _resourceName;
         var resourceType = _resourceType ?? _declaredType;
-        var id = _memberInfo.Name;
+        var id = _memberInfo.Identifier;
         return GetResourceSummary(resourceType, resourceName, id);
     }
 
@@ -190,7 +190,7 @@ public class ResourceUsageDescriptor : CommandUsageDescriptorBase
     {
         var resourceName = _resourceName;
         var resourceType = _resourceType ?? _declaredType;
-        var id = _memberInfo.Name;
+        var id = _memberInfo.Identifier;
         return GetResourceDescription(resourceType, resourceName, id);
     }
 
@@ -198,7 +198,7 @@ public class ResourceUsageDescriptor : CommandUsageDescriptorBase
     {
         var resourceName = _resourceName;
         var resourceType = _resourceType ?? _declaredType;
-        var id = _memberInfo.Name;
+        var id = _memberInfo.Identifier;
         return GetResourceExample(resourceType, resourceName, id);
     }
 }
