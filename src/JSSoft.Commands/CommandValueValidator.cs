@@ -16,7 +16,7 @@ internal sealed class CommandValueValidator : ICommandValueValidator
 #if !NETSTANDARD
         if (memberInfo.GetAttributes<ValidationAttribute>(true) is { } attributes)
         {
-            var context = new ValidationContext(instance) { MemberName = memberInfo.Identifier };
+            var context = new ValidationContext(instance) { MemberName = memberInfo.Name };
 #if NET6_0 || NET7_0
             Validator.ValidateValue(value!, context, attributes);
 #else
