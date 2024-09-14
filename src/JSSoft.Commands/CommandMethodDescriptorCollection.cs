@@ -120,7 +120,7 @@ public sealed class CommandMethodDescriptorCollection : IEnumerable<CommandMetho
 
     internal IEnumerable<CommandMethodDescriptor> Filter(Type requestType, string[] methodNames)
     {
-        if (methodNames.Length == 0)
+        if (methodNames.Length is 0)
         {
             foreach (var item in this)
             {

@@ -50,8 +50,8 @@ public static class PtyProvider
                 PlatformServices.EnvironmentVariables,
                 options.EnvironmentVariables
             ),
-            Height = options.Height == 0 ? PlatformServices.DefaultHeight : options.Height,
-            Width = options.Width == 0 ? PlatformServices.DefaultWidth : options.Width,
+            Height = options.Height is 0 ? PlatformServices.DefaultHeight : options.Height,
+            Width = options.Width is 0 ? PlatformServices.DefaultWidth : options.Width,
             WorkingDirectory = options.WorkingDirectory == string.Empty ? Environment.CurrentDirectory : options.WorkingDirectory,
         };
 

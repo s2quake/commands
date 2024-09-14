@@ -141,7 +141,7 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
                 return true;
             }
 
-            return index.X != 0;
+            return index.X is not 0;
         }) + 1;
     }
 
@@ -185,7 +185,7 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
 
     public readonly TerminalIndex CarriageReturn(TerminalIndex beginIndex)
     {
-        if (X == 0 && Y > beginIndex.Y)
+        if (X is 0 && Y > beginIndex.Y)
         {
             return this - Width;
         }
@@ -199,7 +199,7 @@ public struct TerminalIndex : IEquatable<TerminalIndex>, IComparable
     public readonly TerminalIndex Backspace()
     {
         var coord = (TerminalCoord)this;
-        if (coord.X == 0)
+        if (coord.X is 0)
         {
             coord.Y--;
             coord.X = Width - 1;

@@ -5,9 +5,4 @@
 
 namespace JSSoft.Commands;
 
-public struct ProgressInfo
-{
-    public double Value { get; set; }
-
-    public string Text { get; set; }
-}
+public readonly record struct ProgressInfo(double Value, string Text);

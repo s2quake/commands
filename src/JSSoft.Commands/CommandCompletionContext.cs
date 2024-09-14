@@ -54,7 +54,7 @@ public sealed class CommandCompletionContext
 
         if (find.StartsWith(CommandUtility.Delimiter) is false
             && find.StartsWith(CommandUtility.ShortDelimiter) is false
-            && parseDescriptorByMemberDescriptor.Count != 0)
+            && parseDescriptorByMemberDescriptor.Count is not 0)
         {
             var memberDescriptor = parseDescriptorByMemberDescriptor.Keys.First();
             return new CommandCompletionContext(

@@ -80,7 +80,7 @@ public partial class SystemTerminalHost
             for (var i = 0; i < completions.Length; i++)
             {
                 var r = string.Compare(text, completions[i], true);
-                if (r == 0)
+                if (r is 0)
                 {
                     if (i + 1 < completions.Length)
                     {
@@ -116,7 +116,7 @@ public partial class SystemTerminalHost
             for (var i = completions.Length - 1; i >= 0; i--)
             {
                 var r = string.Compare(text, completions[i], true);
-                if (r == 0)
+                if (r is 0)
                 {
                     if (i - 1 >= 0)
                     {
@@ -527,7 +527,7 @@ public partial class SystemTerminalHost
         var cursor = new TerminalCoord(Console.IsOutputRedirected is true ? 0 : Console.CursorLeft, Console.IsOutputRedirected is true ? 0 : Console.CursorTop);
         var pt1 = new TerminalCoord(0, cursor.Y - offsetY);
         var nt1 = PrevPosition(prompt + pre, bufferWidth, cursor);
-        if (nt1.X == 0)
+        if (nt1.X is 0)
         {
             var pt2 = NextPosition(prompt, bufferWidth, nt1);
             var pt3 = command.Next(pt2, bufferWidth);
@@ -633,7 +633,7 @@ public partial class SystemTerminalHost
                 return false;
             }
 
-            if (pt2.X != 0)
+            if (pt2.X is not 0)
             {
                 return false;
             }
@@ -835,7 +835,7 @@ public partial class SystemTerminalHost
         }
 
         var completions = GetCompletion([.. argList], find);
-        if (completions is not null && completions.Length != 0)
+        if (completions is not null && completions.Length is not 0)
         {
             var completion = func(completions, _completion);
             var inputText = _inputText;
@@ -1004,10 +1004,10 @@ public partial class SystemTerminalHost
         var text = string.Empty;
         lock (ExternalObject)
         {
-            if (_stringQueue.Count != 0)
+            if (_stringQueue.Count is not 0)
             {
                 var sb = new StringBuilder();
-                while (_stringQueue.Count != 0)
+                while (_stringQueue.Count is not 0)
                 {
                     var item = _stringQueue.Dequeue();
                     sb.Append(item);
@@ -1031,12 +1031,12 @@ public partial class SystemTerminalHost
         {
             var key = Console.ReadKey(true);
 
-            if ((int)key.Modifiers != 0)
+            if ((int)key.Modifiers is not 0)
             {
                 continue;
             }
 
-            if (filters.Length == 0 || filters.Any(item => item == key.Key) is true)
+            if (filters.Length is 0 || filters.Any(item => item == key.Key) is true)
             {
                 InsertText(key.Key.ToString());
                 return key.Key;
@@ -1173,7 +1173,7 @@ public partial class SystemTerminalHost
         var text1 = StripOff(text1F);
         var promptS = text1F + promptText;
         var pt9 = NextPosition(text1, bufferWidth, pt8);
-        var pt1 = pt9.X == 0 ? new TerminalCoord(pt9.X, pt9.Y) : new TerminalCoord(0, pt9.Y + 1);
+        var pt1 = pt9.X is 0 ? new TerminalCoord(pt9.X, pt9.Y) : new TerminalCoord(0, pt9.Y + 1);
         var pt2 = prompt.Next(pt1, bufferWidth);
         var pt3 = command.Next(pt2, bufferWidth);
         var pt4 = pre.Next(pt2, bufferWidth);
@@ -1187,7 +1187,7 @@ public partial class SystemTerminalHost
         _pt2 = pt2 - offset;
         _pt3 = pt3 - offset;
         _pt4 = pt4 - offset;
-        _ot1 = new TerminalCoord(ct1.X, ct1.X != 0 ? -1 : 0);
+        _ot1 = new TerminalCoord(ct1.X, ct1.X is not 0 ? -1 : 0);
         _outputText.Append(text);
 
         RenderString(st1, st2, st3, bufferHeight, items: [promptS]);

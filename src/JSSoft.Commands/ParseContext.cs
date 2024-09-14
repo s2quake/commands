@@ -70,7 +70,7 @@ internal sealed class ParseContext(
         var argQueue = CreateQueue(args);
         var variableList = new List<string>(argQueue.Count);
 
-        while (argQueue.Count != 0)
+        while (argQueue.Count is not 0)
         {
             var arg = argQueue.Dequeue();
             if (memberDescriptors.FindByOptionName(arg) is { } memberDescriptor)
@@ -95,7 +95,7 @@ internal sealed class ParseContext(
                     parseDescriptors[memberDescriptor].IsOptionSet = true;
                 }
             }
-            else if (arg == "--")
+            else if (arg is "--")
             {
                 variableList.AddRange([.. argQueue]);
                 argQueue.Clear();
@@ -136,14 +136,14 @@ internal sealed class ParseContext(
             }
         }
 
-        if (variablesDescriptor is not null && variableList.Count != 0)
+        if (variablesDescriptor is not null && variableList.Count is not 0)
         {
             var variablesParseDescriptor = parseDescriptors[variablesDescriptor];
             variablesParseDescriptor.SetVariablesValue(variableList);
             variableList.Clear();
         }
 
-        if (variableList.Count != 0)
+        if (variableList.Count is not 0)
         {
             var sb = new StringBuilder();
             sb.AppendLine("There are unhandled arguments.");

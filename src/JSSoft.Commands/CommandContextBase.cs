@@ -140,7 +140,7 @@ public abstract class CommandContextBase : ICommandContext
             && parent.TryGetCommand(commandName, out var command) is true)
         {
             argList.RemoveAt(0);
-            if (argList.Count > 0 && command.Commands.Count != 0)
+            if (argList.Count > 0 && command.Commands.Count is not 0)
             {
                 return GetCommand(command, argList);
             }
@@ -291,7 +291,7 @@ public abstract class CommandContextBase : ICommandContext
     private string[] GetCompletion(
         ICommand parent, IList<string> itemList, string find)
     {
-        if (itemList.Count == 0)
+        if (itemList.Count is 0)
         {
             var query = from child in parent.Commands
                         where child.IsEnabled is true

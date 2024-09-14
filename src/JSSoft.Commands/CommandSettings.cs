@@ -57,7 +57,7 @@ public sealed record class CommandSettings
         get => _indentSpaces;
         init
         {
-            if (value == 0)
+            if (value is 0)
             {
                 var message = $"The length of value must be greater than zero.";
                 throw new ArgumentException(message, nameof(value));
@@ -159,7 +159,7 @@ public sealed record class CommandSettings
             return true;
         }
 
-        if (VersionShortName != char.MinValue
+        if (VersionShortName is not char.MinValue
             && args.Contains($"{ShortDelimiter}{VersionShortName}") is true)
         {
             return true;

@@ -62,7 +62,7 @@ internal sealed class TerminalLine : IDisposable
                 _parent = value;
                 if (_parent is not null)
                 {
-                    if (_parent.Children.Count == 0)
+                    if (_parent.Children.Count is 0)
                     {
                         _parent._next = this;
                         _prev = _parent;
@@ -214,7 +214,7 @@ internal sealed class TerminalLine : IDisposable
             throw new ArgumentOutOfRangeException(nameof(index));
         }
 
-        if (characterInfo.Group != 0)
+        if (characterInfo.Group is not 0)
         {
             throw new ArgumentException($"The value of the property '{nameof(TerminalCharacterInfo.Group)}' of '{nameof(TerminalCharacterInfo)}' must be 0.", nameof(characterInfo));
         }

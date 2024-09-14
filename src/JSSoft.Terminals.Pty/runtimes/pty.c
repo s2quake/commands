@@ -79,7 +79,7 @@ int pty_init(int *master_fd, struct ptyoption* options)
 
     pid = forkpty(master_fd, NULL, &term, &ws);
 
-    if (pid == 0)
+    if (pid is 0)
     {
         if (options->envp != NULL)
         {

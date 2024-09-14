@@ -127,7 +127,7 @@ internal abstract partial class PtyConnection : IPtyConnection
 
         Console.WriteLine($"Wait succeeded");
         _exitSignal = status & SignalMask;
-        _exitCode = _exitSignal == 0 ? (status >> 8) & ExitCodeMask : 0;
+        _exitCode = _exitSignal is 0 ? (status >> 8) & ExitCodeMask : 0;
         _terminalProcessTerminatedEvent.Set();
         Exited?.Invoke(this, new PtyExitedEventArgs(_exitCode));
     }

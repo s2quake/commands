@@ -170,7 +170,7 @@ public static partial class RandomUtility
     public static int Length(int minLength, int maxLength)
         => System.Random.Shared.Next(minLength, maxLength);
 
-    public static bool Boolean() => Int32(0, 2) == 0;
+    public static bool Boolean() => Int32(0, 2) is 0;
 
     public static string String()
     {
@@ -178,7 +178,7 @@ public static partial class RandomUtility
         var count = Int32(1, 10);
         for (var i = 0; i < count; i++)
         {
-            if (sb.Length != 0)
+            if (sb.Length is not 0)
             {
                 sb.Append(' ');
             }
@@ -249,7 +249,7 @@ public static partial class RandomUtility
     public static T? RandomOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate)
     {
         var items = enumerable.Where(predicate).ToArray();
-        if (items.Length == 0)
+        if (items.Length is 0)
         {
             return default!;
         }

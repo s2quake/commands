@@ -40,8 +40,9 @@ public static partial class CommandUtility
         }
 
         var nullable = customAttributes
-            .FirstOrDefault(x => x.AttributeType.FullName == NullableAttribute);
-        if (nullable is not null && nullable.ConstructorArguments.Count == 1)
+            .FirstOrDefault(
+                x => x.AttributeType.FullName is string and NullableAttribute);
+        if (nullable is not null && nullable.ConstructorArguments.Count is 1)
         {
             var argument = nullable.ConstructorArguments[0];
             if (argument.ArgumentType == typeof(byte[]))
@@ -49,24 +50,25 @@ public static partial class CommandUtility
                 var args = (ReadOnlyCollection<CustomAttributeTypedArgument>)argument.Value!;
                 if (args.Count > 0 && args[0].ArgumentType == typeof(byte))
                 {
-                    return (byte)args[0].Value! == 2;
+                    return (byte)args[0].Value! is 2;
                 }
             }
             else if (argument.ArgumentType == typeof(byte))
             {
-                return (byte)argument.Value! == 2;
+                return (byte)argument.Value! is 2;
             }
         }
 
         for (var type = declaringType; type is not null; type = type.DeclaringType)
         {
             var context = type.CustomAttributes
-                .FirstOrDefault(x => x.AttributeType.FullName == NullableContextAttribute);
+                .FirstOrDefault(
+                    x => x.AttributeType.FullName is string and NullableContextAttribute);
             if (context is not null &&
-                context.ConstructorArguments.Count == 1 &&
+                context.ConstructorArguments.Count is 1 &&
                 context.ConstructorArguments[0].ArgumentType == typeof(byte))
             {
-                return (byte)context.ConstructorArguments[0].Value! == 2;
+                return (byte)context.ConstructorArguments[0].Value! is 2;
             }
         }
 

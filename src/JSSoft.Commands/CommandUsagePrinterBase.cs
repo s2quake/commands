@@ -93,10 +93,10 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
         var maxWidth = commandWriter.Width
             - (IndentedTextWriter.DefaultTabString.Length * commandWriter.Indent)
             - (executionName.Length + 1);
-        var lines = items.Length == 0 ? [string.Empty] : CommandTextWriter.Wrap(items, maxWidth);
+        var lines = items.Length is 0 ? [string.Empty] : CommandTextWriter.Wrap(items, maxWidth);
         for (var i = 0; i < lines.Length; i++)
         {
-            var pre = i == 0 ? executionName : string.Empty.PadRight(executionName.Length);
+            var pre = i is 0 ? executionName : string.Empty.PadRight(executionName.Length);
             var lineItems = new string[] { pre, lines[i] };
             var line = string.Join(" ", lineItems.Where(item => item != string.Empty));
             commandWriter.WriteLine(line);

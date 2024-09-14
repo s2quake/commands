@@ -146,7 +146,7 @@ public static class TerminalSelectionUtility
                 return true;
             }
 
-            return index.X != 0;
+            return index.X is not 0;
         }) + 1;
         var i2 = index.MoveToEndOfLine();
         return new TerminalSelection(c1, i2);

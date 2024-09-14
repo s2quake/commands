@@ -218,7 +218,7 @@ internal static class CommandUtility
         return sb.ToString();
     }
 
-    internal static bool IsEmptyArgs(string[] args) => args.Length == 0 || args[0] == string.Empty;
+    internal static bool IsEmptyArgs(string[] args) => args.Length is 0 || args[0] == string.Empty;
 
     internal static string Join(string separator, IEnumerable<string> items)
     {

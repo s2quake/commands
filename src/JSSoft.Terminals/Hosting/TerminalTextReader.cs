@@ -17,7 +17,7 @@ internal sealed class TerminalTextReader : TextReader
 
     public override int Read()
     {
-        if (_sb.Length == 0)
+        if (_sb.Length is 0)
         {
             _manualResetEvent.Reset();
             return -1;

@@ -349,7 +349,7 @@ internal sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<
         {
             if (GetInfo(item) is { } characterInfo)
             {
-                if (g != 0 && characterInfo.Group != g)
+                if (g is not 0 && characterInfo.Group != g)
                 {
                     sb.AppendLine();
                 }

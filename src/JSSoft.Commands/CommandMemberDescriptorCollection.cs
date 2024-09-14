@@ -170,7 +170,7 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
     internal IEnumerable<CommandMemberDescriptor> Filter(
         CommandMemberInfo memberInfo, string[] memberNames)
     {
-        if (memberNames.Length == 0)
+        if (memberNames.Length is 0)
         {
             foreach (var item in this)
             {
