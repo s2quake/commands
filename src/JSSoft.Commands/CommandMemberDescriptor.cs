@@ -49,19 +49,6 @@ public abstract class CommandMemberDescriptor(
 
     public override string ToString() => $"{MemberName} [{DisplayName}]";
 
-    internal void ValidateValue(
-        ICommandValueValidator valueValidator, object instance, object? value)
-    {
-        try
-        {
-            valueValidator.Validate(MemberInfo, instance, value);
-        }
-        catch (Exception e)
-        {
-            throw new CommandLineException(e.Message, this, e);
-        }
-    }
-
     internal void SetValueInternal(object instance, object? value) => SetValue(instance, value);
 
     internal object? GetValueInternal(object instance) => GetValue(instance);

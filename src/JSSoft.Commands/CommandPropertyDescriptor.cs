@@ -11,7 +11,8 @@ namespace JSSoft.Commands;
 public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
 {
     private readonly PropertyInfo _propertyInfo;
-    private readonly CommandPropertyConditionAttribute[] _conditionsAttributes;
+    private readonly CommandPropertyDependencyAttribute[] _dependencyAttributes;
+    private readonly CommandPropertyExclusionAttribute[] _exclusionAttributes;
     private readonly CommandPropertyCompletionAttribute? _completionAttribute;
 
     public CommandPropertyDescriptor(
@@ -34,7 +35,9 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
         }
 
         _propertyInfo = propertyInfo;
-        _conditionsAttributes = GetAttributes<CommandPropertyConditionAttribute>(
+        _dependencyAttributes = GetAttributes<CommandPropertyDependencyAttribute>(
+            propertyInfo, inherit: true);
+        _exclusionAttributes = GetAttributes<CommandPropertyExclusionAttribute>(
             propertyInfo, inherit: true);
         _completionAttribute = GetAttribute<CommandPropertyCompletionAttribute>(propertyInfo);
         MemberType = propertyInfo.PropertyType;
@@ -77,75 +80,49 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
 
     protected override void OnVerifyTrigger(ParseDescriptorCollection parseDescriptors)
     {
-        if (_conditionsAttributes.Length == 0)
+        foreach (var propertyName in _dependencyAttributes.Select(item => item.PropertyName))
         {
-            return;
+            if (parseDescriptors.TryGetValue(propertyName, out var parseDescriptor) is false)
+            {
+                var message = $"Property '{propertyName}' does not exists.";
+                throw new InvalidOperationException(message);
+            }
+
+            var memberDescriptor = parseDescriptor.MemberDescriptor;
+            if (memberDescriptor is not CommandPropertyDescriptor)
+            {
+                var message = $"'{propertyName}' is not property.";
+                throw new InvalidOperationException(message);
+            }
+
+            if (parseDescriptor.IsOptionSet is false)
+            {
+                var message = $"'{DisplayName}' can not use. property " +
+                              $"'{memberDescriptor.DisplayName}' is not set.";
+                throw new InvalidOperationException(message);
+            }
         }
 
-        var groups = from item in _conditionsAttributes
-                     group item by item.Group into @group
-                     select @group;
-
-        foreach (var group in groups)
+        foreach (var propertyName in _exclusionAttributes.Select(item => item.PropertyName))
         {
-            foreach (var attribute in group)
+            if (parseDescriptors.TryGetValue(propertyName, out var parseDescriptor) is false)
             {
-                var propertyName = attribute.PropertyName;
-                if (parseDescriptors.TryGetValue(propertyName, out var parseDescriptor) is false)
-                {
-                    var message = $"Property '{attribute.PropertyName}' does not exists.";
-                    throw new InvalidOperationException(message);
-                }
+                var message = $"Property '{propertyName}' does not exists.";
+                throw new InvalidOperationException(message);
+            }
 
-                var memberDescriptor = parseDescriptor.MemberDescriptor;
-                if (memberDescriptor is not CommandPropertyDescriptor)
-                {
-                    var message = $"'{attribute.PropertyName}' is not property.";
-                    throw new InvalidOperationException(message);
-                }
+            var memberDescriptor = parseDescriptor.MemberDescriptor;
+            if (memberDescriptor is not CommandPropertyDescriptor)
+            {
+                var message = $"'{propertyName}' is not property.";
+                throw new InvalidOperationException(message);
+            }
 
-                var value1 = attribute.OnSet is false
-                    || parseDescriptor.IsOptionSet is true ? parseDescriptor.ActualValue : null;
-                var value2 = attribute.Value;
-
-                if (attribute.IsNot is false)
-                {
-                    if (Equals(value1, value2) is false)
-                    {
-                        if (memberDescriptor.IsSwitch is true)
-                        {
-                            var message = $"'{DisplayName}' cannot be used. Cannot be used with " +
-                                          $"switch '{memberDescriptor.DisplayName}'.";
-                            throw new CommandPropertyConditionException(message, this);
-                        }
-                        else
-                        {
-                            var message = $"'{DisplayName}' can not use. property " +
-                                          $"'{memberDescriptor.DisplayName}' value must be " +
-                                          $"'{value2:R}'.";
-                            throw new CommandPropertyConditionException(message, this);
-                        }
-                    }
-                }
-                else
-                {
-                    if (Equals(value1, value2) is true)
-                    {
-                        if (memberDescriptor.IsSwitch is true)
-                        {
-                            var message = $"'{DisplayName}' cannot be used because switch " +
-                                          $"'{memberDescriptor.DisplayName}' is not specified.";
-                            throw new CommandPropertyConditionException(message, this);
-                        }
-                        else
-                        {
-                            var message = $"'{DisplayName}' can not use. property " +
-                                          $"'{memberDescriptor.DisplayName}' value must be not " +
-                                          $"'{value2:R}'.";
-                            throw new CommandPropertyConditionException(message, this);
-                        }
-                    }
-                }
+            if (parseDescriptor.IsOptionSet is true)
+            {
+                var message = $"'{DisplayName}' can not use. property " +
+                              $"'{memberDescriptor.DisplayName}' is set.";
+                throw new InvalidOperationException(message);
             }
         }
     }

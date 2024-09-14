@@ -11,11 +11,11 @@ namespace JSSoft.Commands.Applications.Commands;
 public static class FilterProperties
 {
     [CommandProperty("filter")]
-    [CommandPropertyCondition(nameof(FilterFile), "")]
+    [CommandPropertyExclusion(nameof(FilterFile))]
     public static string Filter { get; set; } = string.Empty;
 
     [CommandProperty(DefaultValue = "")]
-    [CommandPropertyCondition(nameof(Filter), "")]
+    [CommandPropertyExclusion(nameof(Filter))]
     public static string FilterFile { get; set; } = string.Empty;
 
     public static string FilterExpression

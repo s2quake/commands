@@ -10,7 +10,7 @@ public class CommandMemberDescriptorCollectionTest
     private sealed class StyleCommand
     {
         [CommandPropertySwitch('i')]
-        [CommandPropertyCondition(nameof(StyleName), "", IsNot = true)]
+        [CommandPropertyDependency(nameof(StyleName))]
         public bool IsDetail { get; set; }
 
         [CommandPropertyRequired(DefaultValue = "")]

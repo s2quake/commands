@@ -11,12 +11,17 @@ namespace JSSoft.Commands;
 
 internal sealed class CommandValueValidator : ICommandValueValidator
 {
-    public void Validate(CommandMemberInfo memberInfo, object instance, object? value)
+    public void Validate(ParseDescriptor parseDescriptor, object instance, object? value)
     {
 #if !NETSTANDARD
+        var memberInfo = parseDescriptor.MemberDescriptor.MemberInfo;
         if (memberInfo.GetAttributes<ValidationAttribute>(true) is { } attributes)
         {
-            var context = new ValidationContext(instance) { MemberName = memberInfo.Name };
+            var items = new Dictionary<object, object?>()
+            {
+                { typeof(ParseDescriptor), parseDescriptor },
+            };
+            var context = new ValidationContext(instance, items) { MemberName = memberInfo.Name };
 #if NET6_0 || NET7_0
             Validator.ValidateValue(value!, context, attributes);
 #else

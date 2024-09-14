@@ -83,18 +83,18 @@ public class RunScriptTest
     }
 
     [CommandPropertyRequired(DefaultValue = "")]
-    [CommandPropertyCondition(nameof(Filename), "")]
-    [CommandPropertyCondition(nameof(List), false)]
+    [CommandPropertyExclusion(nameof(Filename))]
+    [CommandPropertyExclusion(nameof(List))]
     public string Script { get; set; } = string.Empty;
 
     [CommandProperty]
-    [CommandPropertyCondition(nameof(Script), "")]
-    [CommandPropertyCondition(nameof(List), false)]
+    [CommandPropertyExclusion(nameof(Script))]
+    [CommandPropertyExclusion(nameof(List))]
     public string Filename { get; set; } = string.Empty;
 
     [CommandPropertySwitch("list", 'l')]
-    [CommandPropertyCondition(nameof(Script), "")]
-    [CommandPropertyCondition(nameof(Filename), "")]
+    [CommandPropertyExclusion(nameof(Script))]
+    [CommandPropertyExclusion(nameof(Filename))]
     public bool List { get; set; }
 
     [CommandPropertyArray]
