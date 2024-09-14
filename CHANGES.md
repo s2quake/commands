@@ -18,6 +18,9 @@ To be Released.
   [[#25]]
 * Added validation to properties and parameter using DataAnnotation.  [[#26]]
 * Fixed an issue with usage not printing correctly.  [[#28]]
+* Removed the `CommandPropertyConditionAttribute`.  [[#31]]
+* Added the `CommandPropertyDependencyAttribute`.  [[#31]]
+* Added the `CommandPropertyExclusionAttribute`.  [[#31]]
 
 [#13]: https://github.com/s2quake/commands/pull/13
 [#17]: https://github.com/s2quake/commands/pull/17
@@ -28,6 +31,7 @@ To be Released.
 [#25]: https://github.com/s2quake/commands/pull/25
 [#26]: https://github.com/s2quake/commands/pull/26
 [#28]: https://github.com/s2quake/commands/pull/28
+[#31]: https://github.com/s2quake/commands/pull/31
 
 
 6.0.1

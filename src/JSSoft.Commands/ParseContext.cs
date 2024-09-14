@@ -47,10 +47,17 @@ internal sealed class ParseContext(
             var value = item.Value;
             if (value is not DBNull)
             {
-                var valueValidator = settings.ValueValidator;
-                memberDescriptor.ValidateValue(valueValidator, obj, value);
                 memberDescriptor.SetValueInternal(obj, value);
             }
+        }
+
+        foreach (var item in items)
+        {
+            var memberDescriptor = item.MemberDescriptor;
+            var obj = customCommandDescriptor?.GetMemberOwner(memberDescriptor) ?? instance;
+            var value = memberDescriptor.GetValueInternal(obj);
+            var valueValidator = settings.ValueValidator;
+            item.ValidateValue(valueValidator, obj, value);
         }
     }
 

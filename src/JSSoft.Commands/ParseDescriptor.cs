@@ -92,6 +92,19 @@ public sealed class ParseDescriptor(CommandMemberDescriptor memberDescriptor)
 
     public object? ActualValue => IsValueSet is true ? Value : InitValue;
 
+    internal void ValidateValue(
+        ICommandValueValidator valueValidator, object instance, object? value)
+    {
+        try
+        {
+            valueValidator.Validate(this, instance, value);
+        }
+        catch (Exception e)
+        {
+            throw new CommandLineException(e.Message, MemberDescriptor, e);
+        }
+    }
+
     internal void ThrowIfValueMissing()
     {
         if (HasValue is false && MemberDescriptor.DefaultValue is DBNull)

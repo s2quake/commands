@@ -7,5 +7,5 @@ namespace JSSoft.Commands;
 
 public interface ICommandValueValidator
 {
-    void Validate(CommandMemberInfo memberInfo, object instance, object? value);
+    void Validate(ParseDescriptor parseDescriptor, object instance, object? value);
 }

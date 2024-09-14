@@ -53,7 +53,7 @@ public class LockTest
     [Fact]
     public void TestMethod6()
     {
-        Assert.Throws<CommandPropertyConditionException>(
+        Assert.Throws<InvalidOperationException>(
             () => _parser.ParseCommandLine("lock current_path -m 123 -i"));
     }
 
@@ -61,15 +61,15 @@ public class LockTest
     public string Path { get; set; } = string.Empty;
 
     [CommandProperty('m')]
-    [CommandPropertyCondition(nameof(Information), false)]
+    [CommandPropertyExclusion(nameof(Information))]
     public string Comment { get; set; } = string.Empty;
 
     [CommandPropertySwitch('i')]
-    [CommandPropertyCondition(nameof(Comment), "")]
+    [CommandPropertyExclusion(nameof(Comment))]
     public bool Information { get; set; }
 
     [CommandProperty("format", DefaultValue = "xml")]
-    [CommandPropertyCondition(nameof(Information), true)]
+    [CommandPropertyDependency(nameof(Information))]
     public string FormatType { get; set; } = string.Empty;
 
     private sealed class TestCommandParser(string name, object instance)
