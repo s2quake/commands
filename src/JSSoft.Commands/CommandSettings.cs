@@ -20,6 +20,8 @@ public sealed record class CommandSettings
     public const char DefaultHelpShortName = 'h';
     public const string DefaultVersionName = "version";
     public const char DefaultVersionShortName = 'v';
+    public static readonly Predicate<string> DefaultCategoryPredicate = s => s != "Hidden";
+
     private int _labelWith = DefaultLabelWidth;
     private int _indentSpaces = DefaultIndentSpaces;
 
@@ -80,6 +82,8 @@ public sealed record class CommandSettings
     public bool AllowEmpty { get; init; }
 
     public ICommandValueValidator ValueValidator { get; init; } = new CommandValueValidator();
+
+    public Predicate<string> CategoryPredicate { get; init; } = DefaultCategoryPredicate;
 
     internal static TimeSpan AsyncTimeout { get; } = TimeSpan.FromSeconds(1);
 

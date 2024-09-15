@@ -7,6 +7,7 @@
 #if JSSOFT_COMMANDS_REPL
 
 using System;
+using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -19,6 +20,7 @@ namespace JSSoft.Commands.Applications.Commands;
 [Export(typeof(ICommand))]
 [CommandSummary("Test Command")]
 [method: ImportingConstructor]
+[Category("Hidden")]
 internal sealed class TestCommand(IApplication application) : CommandMethodBase(["t"]), IDisposable
 {
     private readonly IApplication _application = application;

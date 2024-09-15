@@ -28,7 +28,7 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
             PrintSummary(commandWriter, commandUsage.Summary);
             PrintUsage(commandWriter, commandUsage.ExecutionName);
             PrintExample(commandWriter, commandUsage.Example);
-            PrintCommands(commandWriter, methodDescriptors);
+            PrintCommands(commandWriter, methodDescriptors, Settings.CategoryPredicate);
         }
     }
 
@@ -109,9 +109,12 @@ public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSe
     }
 
     protected static void PrintCommands(
-        CommandTextWriter commandWriter, CommandMethodDescriptor[] methodDescriptors)
+        CommandTextWriter commandWriter,
+        CommandMethodDescriptor[] methodDescriptors,
+        Predicate<string> categoryPredicate)
     {
         var query = from methodDescriptor in methodDescriptors
+                    where categoryPredicate(methodDescriptor.Category) is true
                     orderby methodDescriptor.Name
                     orderby methodDescriptor.Category
                     group methodDescriptor by methodDescriptor.Category into @group

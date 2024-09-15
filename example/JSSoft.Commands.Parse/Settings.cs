@@ -35,4 +35,8 @@ internal sealed class Settings
     [CommandPropertyArray]
     [CommandSummary("library paths.")]
     public string[] Libraries { get; set; } = [];
+
+    [CommandProperty]
+    [Category("Hidden")]
+    public string Comment { get; set; } = string.Empty;
 }

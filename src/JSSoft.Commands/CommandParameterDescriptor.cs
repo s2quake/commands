@@ -3,6 +3,7 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
+using System.ComponentModel;
 using JSSoft.Commands.Exceptions;
 using static JSSoft.Commands.AttributeUtility;
 
@@ -36,6 +37,7 @@ public sealed class CommandParameterDescriptor : CommandMemberDescriptor
         IsNullable = CommandUtility.IsNullable(parameterInfo);
         DefaultValue = parameterInfo.DefaultValue;
         InitValue = GetInitValue(parameterInfo, attribute);
+        Category = string.Empty;
     }
 
     public override Type MemberType { get; }
@@ -55,6 +57,8 @@ public sealed class CommandParameterDescriptor : CommandMemberDescriptor
     public override bool IsGeneral { get; }
 
     public override bool IsNullable { get; }
+
+    public override string Category { get; }
 
     public override CommandUsageDescriptorBase UsageDescriptor { get; }
 
