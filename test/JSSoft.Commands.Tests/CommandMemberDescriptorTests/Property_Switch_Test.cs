@@ -3,6 +3,8 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
+using System.ComponentModel;
+
 namespace JSSoft.Commands.Tests.CommandMemberDescriptorTests;
 
 public class Property_Switch_Test
@@ -10,6 +12,7 @@ public class Property_Switch_Test
     private sealed class InstanceClass
     {
         [CommandPropertySwitch]
+        [Category("")]
         public bool Member1 { get; set; }
 
         [CommandPropertySwitch]
@@ -25,6 +28,7 @@ public class Property_Switch_Test
         public bool Member5 { get; set; }
 
         [CommandPropertySwitch('c', useName: true)]
+        [Category("Test")]
         public bool Member6 { get; set; }
     }
 
@@ -45,6 +49,7 @@ public class Property_Switch_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(bool), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member1), memberDescriptor.MemberName);
+        Assert.Empty(memberDescriptor.Category);
     }
 
     [Fact]
@@ -64,6 +69,7 @@ public class Property_Switch_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(bool), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member2), memberDescriptor.MemberName);
+        Assert.Empty(memberDescriptor.Category);
     }
 
     [Fact]
@@ -83,6 +89,7 @@ public class Property_Switch_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(bool), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member3), memberDescriptor.MemberName);
+        Assert.Empty(memberDescriptor.Category);
     }
 
     [Fact]
@@ -102,6 +109,7 @@ public class Property_Switch_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(bool), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member4), memberDescriptor.MemberName);
+        Assert.Empty(memberDescriptor.Category);
     }
 
     [Fact]
@@ -121,6 +129,7 @@ public class Property_Switch_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(bool), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member5), memberDescriptor.MemberName);
+        Assert.Empty(memberDescriptor.Category);
     }
 
     [Fact]
@@ -140,5 +149,6 @@ public class Property_Switch_Test
         Assert.False(memberDescriptor.IsVariables);
         Assert.Equal(typeof(bool), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member6), memberDescriptor.MemberName);
+        Assert.Equal("Test", memberDescriptor.Category);
     }
 }

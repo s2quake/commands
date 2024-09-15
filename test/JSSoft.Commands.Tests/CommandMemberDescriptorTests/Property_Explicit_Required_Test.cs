@@ -3,6 +3,8 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
+using System.ComponentModel;
+
 namespace JSSoft.Commands.Tests.CommandMemberDescriptorTests;
 
 public class Property_Explicit_Required_Test
@@ -10,6 +12,7 @@ public class Property_Explicit_Required_Test
     private sealed class InstanceClass
     {
         [CommandPropertyExplicitRequired]
+        [Category("")]
         public string Member1 { get; set; } = string.Empty;
 
         [CommandPropertyExplicitRequired(DefaultValue = "3")]
@@ -25,6 +28,7 @@ public class Property_Explicit_Required_Test
         public string Member5 { get; set; } = string.Empty;
 
         [CommandPropertyExplicitRequired('c', useName: true)]
+        [Category("Test")]
         public string Member6 { get; set; } = string.Empty;
     }
 
@@ -47,6 +51,7 @@ public class Property_Explicit_Required_Test
         Assert.Equal(nameof(InstanceClass.Member1), memberDescriptor.MemberName);
         Assert.True(memberDescriptor.IsRequired);
         Assert.True(memberDescriptor.IsExplicit);
+        Assert.Empty(memberDescriptor.Category);
     }
 
     [Fact]
@@ -68,6 +73,7 @@ public class Property_Explicit_Required_Test
         Assert.Equal(nameof(InstanceClass.Member2), memberDescriptor.MemberName);
         Assert.True(memberDescriptor.IsRequired);
         Assert.True(memberDescriptor.IsExplicit);
+        Assert.Empty(memberDescriptor.Category);
     }
 
     [Fact]
@@ -89,6 +95,7 @@ public class Property_Explicit_Required_Test
         Assert.Equal(nameof(InstanceClass.Member3), memberDescriptor.MemberName);
         Assert.True(memberDescriptor.IsRequired);
         Assert.True(memberDescriptor.IsExplicit);
+        Assert.Empty(memberDescriptor.Category);
     }
 
     [Fact]
@@ -110,6 +117,7 @@ public class Property_Explicit_Required_Test
         Assert.Equal(nameof(InstanceClass.Member4), memberDescriptor.MemberName);
         Assert.True(memberDescriptor.IsRequired);
         Assert.True(memberDescriptor.IsExplicit);
+        Assert.Empty(memberDescriptor.Category);
     }
 
     [Fact]
@@ -131,6 +139,7 @@ public class Property_Explicit_Required_Test
         Assert.Equal(nameof(InstanceClass.Member5), memberDescriptor.MemberName);
         Assert.True(memberDescriptor.IsRequired);
         Assert.True(memberDescriptor.IsExplicit);
+        Assert.Empty(memberDescriptor.Category);
     }
 
     [Fact]
@@ -152,5 +161,6 @@ public class Property_Explicit_Required_Test
         Assert.Equal(nameof(InstanceClass.Member6), memberDescriptor.MemberName);
         Assert.True(memberDescriptor.IsRequired);
         Assert.True(memberDescriptor.IsExplicit);
+        Assert.Equal("Test", memberDescriptor.Category);
     }
 }
