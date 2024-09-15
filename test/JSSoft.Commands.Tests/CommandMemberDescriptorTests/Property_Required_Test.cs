@@ -3,6 +3,8 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
+using System.ComponentModel;
+
 namespace JSSoft.Commands.Tests.CommandMemberDescriptorTests;
 
 public class Property_Required_Test
@@ -10,12 +12,14 @@ public class Property_Required_Test
     private sealed class InstanceClass
     {
         [CommandPropertyRequired]
+        [Category("")]
         public string Required1 { get; set; } = string.Empty;
 
         [CommandPropertyRequired(DefaultValue = "3")]
         public string Required2 { get; set; } = string.Empty;
 
         [CommandPropertyRequired("required")]
+        [Category("Test")]
         public string Required3 { get; set; } = string.Empty;
     }
 
@@ -37,6 +41,7 @@ public class Property_Required_Test
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Required1), memberDescriptor.MemberName);
         Assert.True(memberDescriptor.IsRequired);
+        Assert.Empty(memberDescriptor.Category);
     }
 
     [Fact]
@@ -57,6 +62,7 @@ public class Property_Required_Test
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Required2), memberDescriptor.MemberName);
         Assert.True(memberDescriptor.IsRequired);
+        Assert.Empty(memberDescriptor.Category);
     }
 
     [Fact]
@@ -77,5 +83,6 @@ public class Property_Required_Test
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Required3), memberDescriptor.MemberName);
         Assert.True(memberDescriptor.IsRequired);
+        Assert.Equal("Test", memberDescriptor.Category);
     }
 }

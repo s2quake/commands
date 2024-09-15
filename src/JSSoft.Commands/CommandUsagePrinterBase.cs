@@ -189,14 +189,31 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
     }
 
     protected static bool PrintOptions(
-        CommandTextWriter commandWriter, CommandMemberDescriptorCollection memberDescriptors)
+        CommandTextWriter commandWriter,
+        CommandMemberDescriptorCollection memberDescriptors,
+        Predicate<string> categoryPredicate)
     {
         if (memberDescriptors.HasOptions is true)
         {
-            var optionDescriptors = memberDescriptors.OptionDescriptors;
-            var groupName = StringByName[TextOptions];
-            using var _ = commandWriter.Group(groupName);
-            PrintMany(commandWriter, optionDescriptors, PrintOption, separatorCount: 1);
+            var query = from memberDescriptor in memberDescriptors.OptionDescriptors
+                        where categoryPredicate(memberDescriptor.Category) is true
+                        orderby memberDescriptor.Name
+                        orderby memberDescriptor.Category
+                        group memberDescriptor by memberDescriptor.Category into @group
+                        select @group;
+
+            foreach (var @group in query)
+            {
+                var itemList = new List<string>
+                {
+                    @group.Key,
+                    StringByName[TextOptions],
+                };
+                var groupName = CommandUtility.Join(" ", itemList);
+                using var _ = commandWriter.Group(groupName);
+                PrintMany(commandWriter, [.. @group], PrintOption, separatorCount: 1);
+            }
+
             return true;
         }
 
@@ -208,15 +225,29 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
     {
         if (memberDescriptors.HasOptions is true)
         {
-            var optionDescriptors = memberDescriptors.OptionDescriptors;
-            var groupName = StringByName[TextOptions];
-            using var _ = commandWriter.Group(groupName);
-            for (var i = 0; i < optionDescriptors.Length; i++)
+            var query = from memberDescriptor in memberDescriptors.OptionDescriptors
+                        orderby memberDescriptor.Name
+                        orderby memberDescriptor.Category
+                        group memberDescriptor by memberDescriptor.Category into @group
+                        select @group;
+
+            foreach (var @group in query)
             {
-                var item = optionDescriptors[i];
-                var isLast = i + 1 == optionDescriptors.Length;
-                PrintOptionInDetail(commandWriter, item);
-                commandWriter.WriteLineIf(condition: isLast is false);
+                var itemList = new List<string>
+                {
+                    @group.Key,
+                    StringByName[TextOptions],
+                };
+                var groupName = CommandUtility.Join(" ", itemList);
+                using var _ = commandWriter.Group(groupName);
+                var optionDescriptors = @group.ToArray();
+                for (var i = 0; i < optionDescriptors.Length; i++)
+                {
+                    var item = optionDescriptors[i];
+                    var isLast = i + 1 == optionDescriptors.Length;
+                    PrintOptionInDetail(commandWriter, item);
+                    commandWriter.WriteLineIf(condition: isLast is false);
+                }
             }
 
             return true;

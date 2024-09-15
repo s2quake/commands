@@ -43,6 +43,8 @@ public abstract class CommandMemberDescriptor(
 
     public string MemberName { get; } = memberName;
 
+    public abstract string Category { get; }
+
     public abstract CommandUsageDescriptorBase UsageDescriptor { get; }
 
     protected CommandMemberBaseAttribute Attribute { get; } = attribute;

@@ -78,14 +78,18 @@ public abstract class HelpCommandBase : CommandBase
     }
 
     private static void PrintCommands(
-        CommandTextWriter commandWriter, ICommandContext commandContext)
+        CommandTextWriter commandWriter,
+        ICommandContext commandContext,
+        Predicate<string> categoryPredicate)
     {
         var rootNode = commandContext.Node;
         var query = from child in rootNode.Commands
                     where child.IsEnabled is true
+                    let category = child.Category
+                    where categoryPredicate(category) is true
                     orderby child.Name
-                    orderby child.Category
-                    group child by child.Category into @group
+                    orderby category
+                    group child by category into @group
                     select @group;
 
         foreach (var @group in query)
@@ -125,6 +129,8 @@ public abstract class HelpCommandBase : CommandBase
         var settings = Context.Settings;
         using var commandWriter = new CommandTextWriter(settings);
         var commandUsageDescriptor = CommandDescriptor.GetUsageDescriptor(Context.GetType());
+        var categoryPredicate = new Predicate<string>(
+            category => IsDetail is true || settings.CategoryPredicate(category) is true);
 
         PrintSummary(commandWriter, commandUsageDescriptor.Summary);
         PrintUsage(commandWriter, Context.ExecutionName);
@@ -133,7 +139,7 @@ public abstract class HelpCommandBase : CommandBase
             PrintDescription(commandWriter, commandUsageDescriptor.Description);
         }
 
-        PrintCommands(commandWriter, Context);
+        PrintCommands(commandWriter, Context, categoryPredicate);
         Out.Write(commandWriter.ToString());
     }
 

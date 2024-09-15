@@ -3,6 +3,7 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
+using System.Diagnostics;
 using JSSoft.Commands.Exceptions;
 using static JSSoft.Commands.AttributeUtility;
 
@@ -50,6 +51,7 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
         IsNullable = CommandUtility.IsNullable(propertyInfo);
         DefaultValue = GetDefaultValue(attribute);
         InitValue = GetInitValue(attribute);
+        Category = GetCategory(propertyInfo, attribute);
     }
 
     public override Type MemberType { get; }
@@ -69,6 +71,8 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
     public override bool IsGeneral { get; }
 
     public override bool IsNullable { get; }
+
+    public override string Category { get; }
 
     public override CommandUsageDescriptorBase UsageDescriptor { get; }
 
@@ -170,5 +174,21 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
         }
 
         return DBNull.Value;
+    }
+
+    private static string GetCategory(
+        PropertyInfo propertyInfo, CommandPropertyBaseAttribute attribute)
+    {
+        var category = AttributeUtility.GetCategory(propertyInfo);
+
+        if (category != string.Empty
+            && attribute is not CommandPropertyAttribute and not CommandPropertySwitchAttribute)
+        {
+            Trace.TraceWarning(
+                $"Property '{propertyInfo.Name}' has category attribute, " +
+                $"but category will be ignored.");
+        }
+
+        return category;
     }
 }

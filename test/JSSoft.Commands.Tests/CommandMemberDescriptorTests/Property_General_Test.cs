@@ -3,6 +3,8 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
+using System.ComponentModel;
+
 namespace JSSoft.Commands.Tests.CommandMemberDescriptorTests;
 
 public class Property_General_Test
@@ -10,6 +12,7 @@ public class Property_General_Test
     private sealed class InstanceClass
     {
         [CommandProperty]
+        [Category("")]
         public string Member1 { get; set; } = string.Empty;
 
         [CommandProperty(InitValue = "1", DefaultValue = "3")]
@@ -25,6 +28,7 @@ public class Property_General_Test
         public string Member5 { get; set; } = string.Empty;
 
         [CommandProperty('c', useName: true)]
+        [Category("Test")]
         public string Member6 { get; set; } = string.Empty;
     }
 
@@ -46,6 +50,7 @@ public class Property_General_Test
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member1), memberDescriptor.MemberName);
         Assert.True(memberDescriptor.IsGeneral);
+        Assert.Empty(memberDescriptor.Category);
     }
 
     [Fact]
@@ -66,6 +71,7 @@ public class Property_General_Test
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member2), memberDescriptor.MemberName);
         Assert.True(memberDescriptor.IsGeneral);
+        Assert.Empty(memberDescriptor.Category);
     }
 
     [Fact]
@@ -86,6 +92,7 @@ public class Property_General_Test
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member3), memberDescriptor.MemberName);
         Assert.True(memberDescriptor.IsGeneral);
+        Assert.Empty(memberDescriptor.Category);
     }
 
     [Fact]
@@ -106,6 +113,7 @@ public class Property_General_Test
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member4), memberDescriptor.MemberName);
         Assert.True(memberDescriptor.IsGeneral);
+        Assert.Empty(memberDescriptor.Category);
     }
 
     [Fact]
@@ -126,6 +134,7 @@ public class Property_General_Test
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member5), memberDescriptor.MemberName);
         Assert.True(memberDescriptor.IsGeneral);
+        Assert.Empty(memberDescriptor.Category);
     }
 
     [Fact]
@@ -146,5 +155,6 @@ public class Property_General_Test
         Assert.Equal(typeof(string), memberDescriptor.MemberType);
         Assert.Equal(nameof(InstanceClass.Member6), memberDescriptor.MemberName);
         Assert.True(memberDescriptor.IsGeneral);
+        Assert.Equal("Test", memberDescriptor.Category);
     }
 }

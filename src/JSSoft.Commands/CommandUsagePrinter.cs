@@ -57,21 +57,24 @@ public class CommandUsagePrinter(ICommand command, CommandSettings settings)
             PrintExample(commandWriter, command.Example);
             if (command.AllowsSubCommands is true)
             {
-                PrintCommands(commandWriter, command.Commands);
+                PrintCommands(commandWriter, command.Commands, Settings.CategoryPredicate);
             }
             else
             {
                 PrintRequirements(commandWriter, memberDescriptors);
                 PrintVariables(commandWriter, memberDescriptors);
-                PrintOptions(commandWriter, memberDescriptors);
+                PrintOptions(commandWriter, memberDescriptors, Settings.CategoryPredicate);
             }
         }
     }
 
     protected static void PrintCommands(
-        CommandTextWriter commandWriter, IEnumerable<ICommand> commands)
+        CommandTextWriter commandWriter,
+        IEnumerable<ICommand> commands,
+        Predicate<string> categoryPredicate)
     {
         var query = from command in commands
+                    where categoryPredicate(command.Category) is true
                     orderby command.Name
                     orderby command.Category
                     group command by command.Category into @group
