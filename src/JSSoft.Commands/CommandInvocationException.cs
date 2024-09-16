@@ -101,12 +101,11 @@ public class CommandInvocationException(
         var executionName = string.Join(" ", items.Where(item => item != string.Empty));
         var usage = new CommandUsage
         {
-            ExecutionName = executionName,
             Summary = usageDescriptor.Summary,
             Description = usageDescriptor.Description,
             Example = usageDescriptor.Example,
         };
-        var usagePrinter = new CommandInvocationUsagePrinter(usage, settings)
+        var usagePrinter = new CommandInvocationUsagePrinter(executionName, usage, settings)
         {
             IsDetail = invocationHelp.IsDetail,
         };

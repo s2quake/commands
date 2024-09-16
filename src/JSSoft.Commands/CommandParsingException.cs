@@ -97,8 +97,9 @@ public class CommandParsingException(
         var settings = e.Parser.Settings;
         var parsingHelp = CommandParsingHelp.Create(e);
         var memberDescriptors = e.MemberDescriptors;
+        var executionName = e.Parser.ExecutionName;
         var usage = CommandDescriptor.GetUsage(e.Parser.InstanceType);
-        var usagePrinter = new CommandParsingUsagePrinter(usage, settings)
+        var usagePrinter = new CommandParsingUsagePrinter(executionName, usage, settings)
         {
             IsDetail = parsingHelp.IsDetail,
         };

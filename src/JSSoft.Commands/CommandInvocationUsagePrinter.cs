@@ -9,7 +9,8 @@ using JSSoft.Commands.Extensions;
 
 namespace JSSoft.Commands;
 
-public class CommandInvocationUsagePrinter(CommandUsage commandUsage, CommandSettings settings)
+public class CommandInvocationUsagePrinter(
+    string executionName, CommandUsage commandUsage, CommandSettings settings)
     : CommandUsagePrinterBase(settings)
 {
     public virtual void Print(TextWriter writer, CommandMethodDescriptor[] methodDescriptors)
@@ -18,7 +19,7 @@ public class CommandInvocationUsagePrinter(CommandUsage commandUsage, CommandSet
         if (IsDetail is true)
         {
             PrintSummary(commandWriter, commandUsage.Summary);
-            PrintUsage(commandWriter, commandUsage.ExecutionName);
+            PrintUsage(commandWriter, executionName);
             PrintDescription(commandWriter, commandUsage.Description);
             PrintExample(commandWriter, commandUsage.Example);
             PrintCommandsInDetail(commandWriter, methodDescriptors);
@@ -26,7 +27,7 @@ public class CommandInvocationUsagePrinter(CommandUsage commandUsage, CommandSet
         else
         {
             PrintSummary(commandWriter, commandUsage.Summary);
-            PrintUsage(commandWriter, commandUsage.ExecutionName);
+            PrintUsage(commandWriter, executionName);
             PrintExample(commandWriter, commandUsage.Example);
             PrintCommands(commandWriter, methodDescriptors, Settings.CategoryPredicate);
         }
@@ -38,7 +39,7 @@ public class CommandInvocationUsagePrinter(CommandUsage commandUsage, CommandSet
         if (IsDetail is true)
         {
             PrintMethodSummary(commandWriter, methodDescriptor);
-            PrintUsage(commandWriter, commandUsage.ExecutionName, methodDescriptor.Members);
+            PrintUsage(commandWriter, executionName, methodDescriptor.Members);
             PrintMethodDescription(commandWriter, methodDescriptor);
             PrintMethodExample(commandWriter, methodDescriptor);
             PrintRequirementsInDetail(commandWriter, methodDescriptor);
@@ -48,7 +49,7 @@ public class CommandInvocationUsagePrinter(CommandUsage commandUsage, CommandSet
         else
         {
             PrintMethodSummary(commandWriter, methodDescriptor);
-            PrintUsage(commandWriter, commandUsage.ExecutionName, methodDescriptor.Members);
+            PrintUsage(commandWriter, executionName, methodDescriptor.Members);
             PrintMethodExample(commandWriter, methodDescriptor);
             PrintRequirements(commandWriter, methodDescriptor);
             PrintVariables(commandWriter, methodDescriptor);
