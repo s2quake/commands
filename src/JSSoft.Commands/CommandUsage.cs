@@ -5,10 +5,8 @@
 
 namespace JSSoft.Commands;
 
-internal sealed record class CommandUsage : ICommandUsage
+public sealed record class CommandUsage
 {
-    public string ExecutionName { get; init; } = string.Empty;
-
     public string Summary { get; init; } = string.Empty;
 
     public string Description { get; init; } = string.Empty;

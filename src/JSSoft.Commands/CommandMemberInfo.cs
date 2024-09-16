@@ -96,15 +96,6 @@ public sealed record class CommandMemberInfo
 
     public Type DeclaringType { get; }
 
-    public string Summary
-        => GetAttributeValue<CommandSummaryAttribute>(attr => attr.Summary, string.Empty);
-
-    public string Description
-        => GetAttributeValue<DescriptionAttribute>(attr => attr.Description, string.Empty);
-
-    public string Example
-        => GetAttributeValue<CommandExampleAttribute>(attr => attr.Example, string.Empty);
-
     public bool IsBrowsable
         => GetAttributeValue<BrowsableAttribute, bool>(attr => attr.Browsable, true);
 
@@ -233,6 +224,19 @@ public sealed record class CommandMemberInfo
 
         displayName = string.Empty;
         return false;
+    }
+
+    internal CommandUsage GetDefaultUsage()
+    {
+        return new()
+        {
+            Summary
+                = GetAttributeValue<CommandSummaryAttribute>(attr => attr.Summary, string.Empty),
+            Description
+                = GetAttributeValue<DescriptionAttribute>(attr => attr.Description, string.Empty),
+            Example
+                = GetAttributeValue<CommandExampleAttribute>(attr => attr.Example, string.Empty),
+        };
     }
 
     private static string GetFullName(Type type) => $"{type.Namespace}.{type.Name}";

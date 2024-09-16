@@ -20,20 +20,20 @@ public static class CommandDescriptor
     private static readonly Dictionary<MemberInfo, CommandMethodDescriptorCollection>
         MethodDescriptorsByMemberInfo = [];
 
-    private static readonly Dictionary<CommandMemberInfo, CommandUsageDescriptorBase>
-        UsageDescriptorByMemberInfo = [];
+    private static readonly Dictionary<CommandMemberInfo, CommandUsage>
+        UsageByMemberInfo = [];
 
-    public static CommandUsageDescriptorBase GetUsageDescriptor(CommandMemberInfo memberInfo)
+    public static CommandUsage GetUsage(CommandMemberInfo memberInfo)
     {
-        if (GetUsageDescriptor(memberInfo, memberInfo) is { } usageDescriptor1)
+        if (GetAttribute<CommandUsageAttribute>(memberInfo.DeclaringType) is { } attribute)
         {
-            return usageDescriptor1;
+            return attribute.GetUsage(memberInfo);
         }
 
-        if (UsageDescriptorByMemberInfo.TryGetValue(memberInfo, out var value) is false)
+        if (UsageByMemberInfo.TryGetValue(memberInfo, out var value) is false)
         {
-            value = new CommandUsageDescriptor(memberInfo);
-            UsageDescriptorByMemberInfo.Add(memberInfo, value);
+            value = memberInfo.GetDefaultUsage();
+            UsageByMemberInfo.Add(memberInfo, value);
         }
 
         return value;
@@ -343,34 +343,5 @@ public static class CommandDescriptor
 
         var attribute3 = new CommandParameterAttribute();
         return new CommandParameterDescriptor(parameterInfo, attribute3);
-    }
-
-    private static CommandUsageDescriptorBase CreateUsageDescriptor(
-        CommandUsageAttribute usageAttribute, CommandMemberInfo memberInfo)
-    {
-        var usageDescriptorType = usageAttribute.GetUsageDescriptorType(memberInfo);
-        var args = new object[] { usageAttribute, memberInfo };
-        return (CommandUsageDescriptorBase)Activator.CreateInstance(usageDescriptorType, args)!;
-    }
-
-    private static CommandUsageDescriptorBase? GetUsageDescriptor(
-        CommandMemberInfo attributeOwner, CommandMemberInfo memberInfo)
-    {
-        if (attributeOwner.GetAttribute<CommandUsageAttribute>() is { } usageAttribute)
-        {
-            if (UsageDescriptorByMemberInfo.TryGetValue(memberInfo, out var value) is false)
-            {
-                value = CreateUsageDescriptor(usageAttribute, memberInfo);
-                UsageDescriptorByMemberInfo.Add(memberInfo, value);
-            }
-
-            return value;
-        }
-        else if (attributeOwner.GetParent() is { } parent)
-        {
-            return GetUsageDescriptor(parent, memberInfo);
-        }
-
-        return null;
     }
 }

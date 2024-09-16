@@ -95,18 +95,17 @@ public class CommandInvocationException(
         var invoker = e.Invoker;
         var settings = invoker.Settings;
         var invocationHelp = CommandInvocationHelp.Create(e);
-        var usageDescriptor = CommandDescriptor.GetUsageDescriptor(invoker.InstanceType);
+        var usageDescriptor = CommandDescriptor.GetUsage(invoker.InstanceType);
         var methodDescriptors = CommandDescriptor.GetMethodDescriptors(invoker.InstanceType);
         var items = new string[] { invoker.ExecutionName, invocationHelp.Command };
         var executionName = string.Join(" ", items.Where(item => item != string.Empty));
         var usage = new CommandUsage
         {
-            ExecutionName = executionName,
             Summary = usageDescriptor.Summary,
             Description = usageDescriptor.Description,
             Example = usageDescriptor.Example,
         };
-        var usagePrinter = new CommandInvocationUsagePrinter(usage, settings)
+        var usagePrinter = new CommandInvocationUsagePrinter(executionName, usage, settings)
         {
             IsDetail = invocationHelp.IsDetail,
         };

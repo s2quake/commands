@@ -27,7 +27,7 @@ public sealed class CommandParameterDescriptor : CommandMemberDescriptor
         _completionAttribute
             = GetAttribute<CommandParameterCompletionAttribute>(parameterInfo);
         MemberType = parameterInfo.ParameterType;
-        UsageDescriptor = CommandDescriptor.GetUsageDescriptor(parameterInfo);
+        Usage = CommandDescriptor.GetUsage(parameterInfo);
         IsRequired = attribute is not CommandParameterArrayAttribute;
         IsSwitch = parameterInfo.HasDefaultValue is true
             && parameterInfo.ParameterType == typeof(bool);
@@ -60,7 +60,7 @@ public sealed class CommandParameterDescriptor : CommandMemberDescriptor
 
     public override string Category { get; }
 
-    public override CommandUsageDescriptorBase UsageDescriptor { get; }
+    public override CommandUsage Usage { get; }
 
     protected override void SetValue(object instance, object? value) => _value = value;
 

@@ -161,7 +161,7 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
         CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
     {
         var label = memberDescriptor.DisplayName;
-        var summary = memberDescriptor.UsageDescriptor.Summary;
+        var summary = memberDescriptor.Usage.Summary;
         commandWriter.WriteLine(label: label, summary: summary);
     }
 
@@ -183,7 +183,7 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
         CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
     {
         var label = memberDescriptor.DisplayName;
-        var description = memberDescriptor.UsageDescriptor.Description;
+        var description = memberDescriptor.Usage.Description;
         commandWriter.WriteLine(label);
         commandWriter.WriteLineIndent(description, commandWriter.Indent + 1);
     }
@@ -260,7 +260,7 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
         CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
     {
         var label = memberDescriptor.DisplayName;
-        var summary = memberDescriptor.UsageDescriptor.Summary;
+        var summary = memberDescriptor.Usage.Summary;
         commandWriter.WriteLine(label: label, summary: summary);
     }
 
@@ -268,7 +268,7 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
         CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
     {
         var label = memberDescriptor.DisplayName;
-        var description = memberDescriptor.UsageDescriptor.Description;
+        var description = memberDescriptor.Usage.Description;
         commandWriter.WriteLine(label);
         commandWriter.WriteLineIndent(description, commandWriter.Indent + 1);
     }
@@ -277,7 +277,7 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
         CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
     {
         var optionString = GetOptionString(memberDescriptor);
-        var summary = memberDescriptor.UsageDescriptor.Summary;
+        var summary = memberDescriptor.Usage.Summary;
         commandWriter.WriteLine(optionString);
         commandWriter.WriteLineIndent(summary, commandWriter.Indent + 1);
     }
@@ -286,7 +286,7 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
         CommandTextWriter commandWriter, CommandMemberDescriptor memberDescriptor)
     {
         var optionString = GetOptionString(memberDescriptor);
-        var description = memberDescriptor.UsageDescriptor.Description;
+        var description = memberDescriptor.Usage.Description;
         commandWriter.WriteLine(optionString);
         commandWriter.WriteLineIndent(description, commandWriter.Indent + 1);
     }
@@ -345,7 +345,7 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
     {
         var groupName = StringByName[TextSummary];
         using var _ = commandWriter.Group(groupName);
-        commandWriter.WriteLine(memberDescriptor.UsageDescriptor.Summary);
+        commandWriter.WriteLine(memberDescriptor.Usage.Summary);
     }
 
     protected static void PrintMemberUsage(
@@ -361,7 +361,7 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
     {
         var groupName = StringByName[TextDescription];
         using var _ = commandWriter.Group(groupName);
-        commandWriter.WriteLine(memberDescriptor.UsageDescriptor.Description);
+        commandWriter.WriteLine(memberDescriptor.Usage.Description);
     }
 
     protected static void PrintMemberExample(
@@ -369,7 +369,7 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
     {
         var groupName = StringByName[TextExample];
         using var _ = commandWriter.Group(groupName);
-        commandWriter.WriteLine(memberDescriptor.UsageDescriptor.Example);
+        commandWriter.WriteLine(memberDescriptor.Usage.Example);
     }
 
     protected static void PrintMany(

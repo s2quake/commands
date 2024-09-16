@@ -11,7 +11,7 @@ public class ResourceUsageDescriptorTest
     public void ResourceStaticProperties_Test()
     {
         var type = typeof(ResourceStaticProperties);
-        var usageDescriptor = CommandDescriptor.GetUsageDescriptor(type);
+        var usageDescriptor = CommandDescriptor.GetUsage(type);
 
         Assert.Equal(
             expected: "Resource Static Properties",
@@ -28,7 +28,7 @@ public class ResourceUsageDescriptorTest
     public void ResourceProperties_Test()
     {
         var type = typeof(ResourceProperties);
-        var usageDescriptor = CommandDescriptor.GetUsageDescriptor(type);
+        var usageDescriptor = CommandDescriptor.GetUsage(type);
 
         Assert.Equal(
             expected: "Resource Properties",
@@ -46,7 +46,7 @@ public class ResourceUsageDescriptorTest
     {
         var type = typeof(ResourceStaticMethods);
         var methodInfo = type.GetMethod(nameof(ResourceStaticMethods.Method1))!;
-        var usageDescriptor = CommandDescriptor.GetUsageDescriptor(methodInfo);
+        var usageDescriptor = CommandDescriptor.GetUsage(methodInfo);
 
         Assert.Equal(
             expected: "Method1 Summary",
@@ -65,7 +65,7 @@ public class ResourceUsageDescriptorTest
         var type = typeof(ResourceStaticMethods);
         var methodInfo = type.GetMethod(nameof(ResourceStaticMethods.Method1))!;
         var parameterInfo = methodInfo.GetParameters()[0];
-        var usageDescriptor = CommandDescriptor.GetUsageDescriptor(parameterInfo);
+        var usageDescriptor = CommandDescriptor.GetUsage(parameterInfo);
 
         Assert.Equal(
             expected: "text Summary",
@@ -84,7 +84,7 @@ public class ResourceUsageDescriptorTest
         var type = typeof(ResourceStaticMethods);
         var methodInfo = type.GetMethod(nameof(ResourceStaticMethods.Method1))!;
         var parameterInfo = methodInfo.GetParameters()[1];
-        var usageDescriptor = CommandDescriptor.GetUsageDescriptor(parameterInfo);
+        var usageDescriptor = CommandDescriptor.GetUsage(parameterInfo);
 
         Assert.Equal(
             expected: "value Summary",
@@ -102,7 +102,7 @@ public class ResourceUsageDescriptorTest
     {
         var type = typeof(ResourceStaticMethods);
         var methodInfo = type.GetMethod(nameof(ResourceStaticMethods.Method2Async))!;
-        var usageDescriptor = CommandDescriptor.GetUsageDescriptor(methodInfo);
+        var usageDescriptor = CommandDescriptor.GetUsage(methodInfo);
 
         Assert.Equal(
             expected: "Method2Async Summary",
@@ -121,7 +121,7 @@ public class ResourceUsageDescriptorTest
         var type = typeof(ResourceStaticMethods);
         var methodInfo = type.GetMethod(nameof(ResourceStaticMethods.Method2Async))!;
         var parameterInfo = methodInfo.GetParameters()[0];
-        var usageDescriptor = CommandDescriptor.GetUsageDescriptor(parameterInfo);
+        var usageDescriptor = CommandDescriptor.GetUsage(parameterInfo);
 
         Assert.Equal(
             expected: "text Summary",

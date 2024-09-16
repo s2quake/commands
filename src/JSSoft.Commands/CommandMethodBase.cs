@@ -11,7 +11,7 @@ namespace JSSoft.Commands;
 public abstract class CommandMethodBase : ICommand
 {
     private readonly CommandCollection _commands;
-    private readonly CommandUsageDescriptorBase _usageDescriptor;
+    private readonly CommandUsage _usage;
     private ICommandContext? _context;
 
     protected CommandMethodBase()
@@ -55,7 +55,7 @@ public abstract class CommandMethodBase : ICommand
         Aliases = aliases;
         ICommandExtensions.SetParent(this, parent);
         _commands = CreateCommands(this);
-        _usageDescriptor = CommandDescriptor.GetUsageDescriptor(GetType());
+        _usage = CommandDescriptor.GetUsage(GetType());
     }
 
     public string Name { get; }
@@ -87,11 +87,11 @@ public abstract class CommandMethodBase : ICommand
 
     CommandCollection ICommand.Commands => _commands;
 
-    string ICommand.Summary => _usageDescriptor.Summary;
+    string ICommand.Summary => _usage.Summary;
 
-    string ICommand.Description => _usageDescriptor.Description;
+    string ICommand.Description => _usage.Description;
 
-    string ICommand.Example => _usageDescriptor.Example;
+    string ICommand.Example => _usage.Example;
 
     string ICommand.Category => AttributeUtility.GetCategory(GetType());
 

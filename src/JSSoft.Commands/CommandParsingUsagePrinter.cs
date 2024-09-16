@@ -7,7 +7,8 @@ using System.IO;
 
 namespace JSSoft.Commands;
 
-public class CommandParsingUsagePrinter(ICommandUsage commandUsage, CommandSettings settings)
+public class CommandParsingUsagePrinter(
+    string executionName, CommandUsage commandUsage, CommandSettings settings)
     : CommandUsagePrinterBase(settings with { })
 {
     public virtual void Print(
@@ -17,7 +18,7 @@ public class CommandParsingUsagePrinter(ICommandUsage commandUsage, CommandSetti
         if (IsDetail is true)
         {
             PrintSummary(commandWriter, commandUsage.Summary);
-            PrintUsage(commandWriter, commandUsage.ExecutionName, memberDescriptors);
+            PrintUsage(commandWriter, executionName, memberDescriptors);
             PrintDescription(commandWriter, commandUsage.Description);
             PrintExample(commandWriter, commandUsage.Example);
             PrintRequirementsInDetail(commandWriter, memberDescriptors);
@@ -27,7 +28,7 @@ public class CommandParsingUsagePrinter(ICommandUsage commandUsage, CommandSetti
         else
         {
             PrintSummary(commandWriter, commandUsage.Summary);
-            PrintUsage(commandWriter, commandUsage.ExecutionName, memberDescriptors);
+            PrintUsage(commandWriter, executionName, memberDescriptors);
             PrintExample(commandWriter, commandUsage.Example);
             PrintRequirements(commandWriter, memberDescriptors);
             PrintVariables(commandWriter, memberDescriptors);
