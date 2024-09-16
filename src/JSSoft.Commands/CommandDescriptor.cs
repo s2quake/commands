@@ -32,12 +32,7 @@ public static class CommandDescriptor
 
         if (UsageByMemberInfo.TryGetValue(memberInfo, out var value) is false)
         {
-            value = new CommandUsage
-            {
-                Description = memberInfo.Description,
-                Summary = memberInfo.Summary,
-                Example = memberInfo.Example,
-            };
+            value = memberInfo.GetDefaultUsage();
             UsageByMemberInfo.Add(memberInfo, value);
         }
 

@@ -16,6 +16,7 @@ public class CommandMemberInfoTest
     public void Type_Test()
     {
         var memberInfo = new CommandMemberInfo(typeof(CommandMemberInfoTest));
+        var usage = CommandDescriptor.GetUsage(memberInfo);
 
         Assert.Equal(typeof(CommandMemberInfoTest), memberInfo.Value);
         Assert.Equal(CommandMemberType.Type, memberInfo.Type);
@@ -28,13 +29,13 @@ public class CommandMemberInfoTest
         Assert.Equal(typeof(CommandMemberInfoTest), memberInfo.DeclaringType);
         Assert.Equal(
             expected: "CommandMemberInfoTest: Summary",
-            actual: memberInfo.Summary);
+            actual: usage.Summary);
         Assert.Equal(
             expected: "CommandMemberInfoTest: Description",
-            actual: memberInfo.Description);
+            actual: usage.Description);
         Assert.Equal(
             expected: "CommandMemberInfoTest: Example",
-            actual: memberInfo.Example);
+            actual: usage.Example);
     }
 
     [Fact]
@@ -43,6 +44,7 @@ public class CommandMemberInfoTest
         var type = typeof(CommandMemberInfoTest);
         var propertyInfo = type.GetProperty(nameof(Property))!;
         var memberInfo = new CommandMemberInfo(propertyInfo);
+        var usage = CommandDescriptor.GetUsage(memberInfo);
 
         Assert.Equal(propertyInfo, memberInfo.Value);
         Assert.Equal(CommandMemberType.Property, memberInfo.Type);
@@ -57,13 +59,13 @@ public class CommandMemberInfoTest
         Assert.Equal(typeof(CommandMemberInfoTest), memberInfo.DeclaringType);
         Assert.Equal(
             expected: "Property: Summary",
-            actual: memberInfo.Summary);
+            actual: usage.Summary);
         Assert.Equal(
             expected: "Property: Description",
-            actual: memberInfo.Description);
+            actual: usage.Description);
         Assert.Equal(
             expected: "Property: Example",
-            actual: memberInfo.Example);
+            actual: usage.Example);
     }
 
     [Fact]
@@ -73,6 +75,7 @@ public class CommandMemberInfoTest
         var bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
         var methodInfo = type.GetMethod(nameof(Method1), bindingFlags)!;
         var memberInfo = new CommandMemberInfo(methodInfo);
+        var usage = CommandDescriptor.GetUsage(memberInfo);
 
         Assert.Equal(methodInfo, memberInfo.Value);
         Assert.Equal(CommandMemberType.Method, memberInfo.Type);
@@ -87,13 +90,13 @@ public class CommandMemberInfoTest
         Assert.Equal(typeof(CommandMemberInfoTest), memberInfo.DeclaringType);
         Assert.Equal(
             expected: "Method1: Summary",
-            actual: memberInfo.Summary);
+            actual: usage.Summary);
         Assert.Equal(
             expected: "Method1: Description",
-            actual: memberInfo.Description);
+            actual: usage.Description);
         Assert.Equal(
             expected: "Method1: Example",
-            actual: memberInfo.Example);
+            actual: usage.Example);
     }
 
     [Fact]
@@ -104,6 +107,7 @@ public class CommandMemberInfoTest
         var methodInfo = type.GetMethod(nameof(Method1), bindingFlags)!;
         var parameterInfo = methodInfo.GetParameters()[0];
         var memberInfo = new CommandMemberInfo(parameterInfo);
+        var usage = CommandDescriptor.GetUsage(memberInfo);
 
         Assert.Equal(parameterInfo, memberInfo.Value);
         Assert.Equal(CommandMemberType.Parameter, memberInfo.Type);
@@ -118,13 +122,13 @@ public class CommandMemberInfoTest
         Assert.Equal(typeof(CommandMemberInfoTest), memberInfo.DeclaringType);
         Assert.Equal(
             expected: "parameter: Summary",
-            actual: memberInfo.Summary);
+            actual: usage.Summary);
         Assert.Equal(
             expected: "parameter: Description",
-            actual: memberInfo.Description);
+            actual: usage.Description);
         Assert.Equal(
             expected: "parameter: Example",
-            actual: memberInfo.Example);
+            actual: usage.Example);
     }
 
     [Fact]
@@ -134,6 +138,7 @@ public class CommandMemberInfoTest
         var bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
         var methodInfo = type.GetMethod(nameof(Method2Async), bindingFlags)!;
         var memberInfo = new CommandMemberInfo(methodInfo);
+        var usage = CommandDescriptor.GetUsage(memberInfo);
 
         Assert.Equal(methodInfo, memberInfo.Value);
         Assert.Equal(CommandMemberType.Method, memberInfo.Type);
@@ -148,13 +153,13 @@ public class CommandMemberInfoTest
         Assert.Equal(typeof(CommandMemberInfoTest), memberInfo.DeclaringType);
         Assert.Equal(
             expected: "Method2Async: Summary",
-            actual: memberInfo.Summary);
+            actual: usage.Summary);
         Assert.Equal(
             expected: "Method2Async: Description",
-            actual: memberInfo.Description);
+            actual: usage.Description);
         Assert.Equal(
             expected: "Method2Async: Example",
-            actual: memberInfo.Example);
+            actual: usage.Example);
     }
 
     [CommandProperty]
