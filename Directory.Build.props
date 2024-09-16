@@ -17,9 +17,7 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER I
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -->
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
-  <Import Condition="'$(SolutionDir)' != '' and '$(SolutionDir)' != '$(MSBuildThisFileDirectory)' and $([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../')) != ''" Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+<Project>
 
   <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
@@ -69,8 +67,11 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     <SignAssembly Condition="'$(Configuration)' == 'Release'">true</SignAssembly>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Nullable>enable</Nullable>
-    <PublishGroup>commands</PublishGroup>
     <AssemblyOriginatorKeyFile Condition="Exists('$(MSBuildThisFileDirectory).build/public.snk')">$(MSBuildThisFileDirectory).build/public.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DelaySign>false</DelaySign>
   </PropertyGroup>
 
   <ItemGroup>

@@ -18,25 +18,24 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 
 -->
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <PublishName>commands.examples</PublishName>
     <OutputType>Exe</OutputType>
     <AssemblyName>repl</AssemblyName>
-    <PublishSingleFile>true</PublishSingleFile>
-    <SelfContained>False</SelfContained>
     <DefineConstants>$(DefineConstants);JSSOFT_COMMANDS;JSSOFT_COMMANDS_REPL</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DelaySign>false</DelaySign>
-  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\JSSoft.Commands\JSSoft.Commands.csproj" />
     <ProjectReference Include="..\..\src\JSSoft.Terminals\JSSoft.Terminals.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)..\JSSoft.Commands.Shared\**\*.cs" />
   </ItemGroup>
+
 </Project>

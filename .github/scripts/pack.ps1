@@ -10,7 +10,7 @@ param (
 )
 
 $namespaces = @{
-    ns = "http://schemas.microsoft.com/developer/msbuild/2003"
+    ns = ""
 }
 $propsPath = "Directory.Build.props"
 $fileVersionPath = "/ns:Project/ns:PropertyGroup/ns:FileVersion"

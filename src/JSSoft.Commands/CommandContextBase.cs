@@ -86,7 +86,7 @@ public abstract class CommandContextBase : ICommandContext
         {
             if (Owner is null)
             {
-#if NETCOREAPP
+#if NETCOREAPP || NET
                 if (_filename != Name)
                 {
                     return $"dotnet {_filename}";

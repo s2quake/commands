@@ -1,0 +1,10 @@
+<Project>
+
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)**\*.cs" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\words.txt" >
+      <Link>Resources\words.txt</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

@@ -1,19 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <PublishName>commands</PublishName>
     <DefineConstants>JSSOFT_TERMINALS</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DelaySign>false</DelaySign>
-  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Condition="'$(Configuration)'=='Debug' and '$(TargetFramework)'=='net8.0'" Include="Microsoft.CodeAnalysis.CSharp" Version="3.8.0" />
   </ItemGroup>
+
   <ItemGroup>
     <None Remove="Unix.dat" />
     <None Remove="Win32NT.dat" />
   </ItemGroup>
+
   <ItemGroup>
     <EmbeddedResource Include="Unix.dat" />
     <EmbeddedResource Include="Win32NT.dat" />
