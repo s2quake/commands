@@ -22,6 +22,10 @@ To be Released.
 * Added the `CommandPropertyDependencyAttribute`.  [[#31]]
 * Added the `CommandPropertyExclusionAttribute`.  [[#31]]
 * Added a `Category` property to the `CommandMemberDescriptor`.  [[#33]]
+* Simplified the process of getting strings from `ResourceManager`.  [[#34]]
+* Removed `ICommandUsage`, `CommandUsageDescriptorBase`, 
+  `ResourceUsageDescriptor`.  [[#34]]
+
 
 [#13]: https://github.com/s2quake/commands/pull/13
 [#17]: https://github.com/s2quake/commands/pull/17
@@ -34,6 +38,7 @@ To be Released.
 [#28]: https://github.com/s2quake/commands/pull/28
 [#31]: https://github.com/s2quake/commands/pull/31
 [#33]: https://github.com/s2quake/commands/pull/33
+[#34]: https://github.com/s2quake/commands/pull/34
 
 
 6.0.1
