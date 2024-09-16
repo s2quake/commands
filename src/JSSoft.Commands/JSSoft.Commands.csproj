@@ -20,7 +20,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <PublishName>commands</PublishName>
+    <PublishName>library</PublishName>
     <DefineConstants>JSSOFT_COMMANDS</DefineConstants>
   </PropertyGroup>
 

@@ -19,8 +19,6 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 -->
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\JSSoft.Tests.Shared\JSSoft.Tests.Shared.projitems" Label="Shared" />
-
   <PropertyGroup>
     <DefineConstants>JSSOFT_COMMANDS</DefineConstants>
   </PropertyGroup>
@@ -41,6 +39,10 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <ProjectReference Include="..\..\src\JSSoft.Commands\JSSoft.Commands.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)..\JSSoft.Tests.Shared\**\*.cs" />
   </ItemGroup>
 
 </Project>

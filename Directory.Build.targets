@@ -17,7 +17,7 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER I
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -->
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project>
 
   <PropertyGroup>
     <DesiredPublishDir>$(OutputPath)publish\</DesiredPublishDir>
@@ -31,7 +31,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 
   <Target Name="AfterBuild">
     <PropertyGroup Condition="'$(PublishName)' != ''">
-      <PublishDir>$([System.IO.Path]::Combine($(DesiredPublishDir),$(PublishName)))</PublishDir>
+      <PublishDir>$([System.IO.Path]::Combine($(RootPath),.bin,$(PublishName)))</PublishDir>
     </PropertyGroup>
     <PropertyGroup Condition="'$(PublishName)' == ''">
       <PublishDir>$(DesiredPublishDir)</PublishDir>
