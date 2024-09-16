@@ -16,6 +16,13 @@ public abstract class CommandContextBase : ICommandContext
     private readonly CommandNode _commandNode;
     private readonly string _fullName;
     private readonly string _filename;
+    private readonly string? _processName
+#if NET6_0_OR_GREATER
+        = Path.GetFileNameWithoutExtension(Environment.ProcessPath);
+#else
+        = Path.GetFileNameWithoutExtension(
+            System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName);
+#endif
 
     protected CommandContextBase(IEnumerable<ICommand> commands)
         : this(GetDefaultAssembly(), commands, settings: CommandSettings.Default)
@@ -86,15 +93,15 @@ public abstract class CommandContextBase : ICommandContext
         {
             if (Owner is null)
             {
-#if NETCOREAPP || NET
-                if (_filename != Name)
-                {
-                    return $"dotnet {_filename}";
-                }
-#elif NETFRAMEWORK
+#if NETFRAMEWORK
                 if (Environment.OSVersion.Platform == PlatformID.Unix)
                 {
                     return $"mono {_filename}";
+                }
+#else
+                if (_processName == "dotnet")
+                {
+                    return $"dotnet {_filename}";
                 }
 #endif
                 return Name;
