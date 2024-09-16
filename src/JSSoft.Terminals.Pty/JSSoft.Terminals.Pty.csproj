@@ -1,12 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <PublishName>library</PublishName>
     <DefineConstants>JSSOFT_TERMINALS</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DelaySign>false</DelaySign>
     <IsMacOS Condition="'$(NETCoreSdkPortableRuntimeIdentifier)'=='osx-arm64' or '$(NETCoreSdkPortableRuntimeIdentifier)'=='osx-x64'">true</IsMacOS>
     <IsLinux Condition="'$(NETCoreSdkPortableRuntimeIdentifier)'=='linux-arm64'">true</IsLinux>
     <NativeSourcePath>$(MSBuildThisFileDirectory)runtimes/pty.c</NativeSourcePath>

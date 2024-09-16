@@ -23,10 +23,6 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     <DefineConstants>JSSOFT_COMMANDS</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DelaySign>false</DelaySign>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
     <PackageReference Include="xunit" Version="2.5.0" />
@@ -41,8 +37,6 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     <ProjectReference Include="..\..\src\JSSoft.Commands\JSSoft.Commands.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)..\JSSoft.Tests.Shared\**\*.cs" />
-  </ItemGroup>
+  <Import Project="..\JSSoft.Tests.Shared\JSSoft.Tests.Shared.props" />
 
 </Project>

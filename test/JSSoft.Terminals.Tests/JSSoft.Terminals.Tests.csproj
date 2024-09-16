@@ -19,10 +19,6 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 -->
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DelaySign>false</DelaySign>
-  </PropertyGroup>
-
   <PropertyGroup>
     <DefineConstants>JSSOFT_TERMINALS</DefineConstants>
   </PropertyGroup>
@@ -41,8 +37,6 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     <ProjectReference Include="..\..\src\JSSoft.Terminals\JSSoft.Terminals.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)..\JSSoft.Tests.Shared\**\*.cs" />
-  </ItemGroup>
+  <Import Project="..\JSSoft.Tests.Shared\JSSoft.Tests.Shared.props" />
 
 </Project>
