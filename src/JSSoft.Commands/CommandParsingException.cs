@@ -10,11 +10,8 @@ namespace JSSoft.Commands;
 
 public class CommandParsingException(
     CommandParser parser, CommandParsingError error, string[] args, Exception? innerException)
-    : Exception(innerException?.Message, innerException), ICommandUsage
+    : Exception(innerException?.Message, innerException)
 {
-    private readonly CommandUsageDescriptorBase _usageDescriptor
-        = CommandDescriptor.GetUsageDescriptor(parser.InstanceType);
-
     public CommandParsingException(CommandParser parser, CommandParsingError error, string[] args)
         : this(parser, error, args, innerException: null)
     {
@@ -28,14 +25,6 @@ public class CommandParsingException(
 
     public CommandMemberDescriptorCollection MemberDescriptors
         => CommandDescriptor.GetMemberDescriptors(Parser.InstanceType);
-
-    string ICommandUsage.ExecutionName => Parser.ExecutionName;
-
-    string ICommandUsage.Summary => _usageDescriptor.Summary;
-
-    string ICommandUsage.Description => _usageDescriptor.Description;
-
-    string ICommandUsage.Example => _usageDescriptor.Example;
 
     public void Print(TextWriter writer)
     {
@@ -108,7 +97,8 @@ public class CommandParsingException(
         var settings = e.Parser.Settings;
         var parsingHelp = CommandParsingHelp.Create(e);
         var memberDescriptors = e.MemberDescriptors;
-        var usagePrinter = new CommandParsingUsagePrinter(e, settings)
+        var usage = CommandDescriptor.GetUsage(e.Parser.InstanceType);
+        var usagePrinter = new CommandParsingUsagePrinter(usage, settings)
         {
             IsDetail = parsingHelp.IsDetail,
         };

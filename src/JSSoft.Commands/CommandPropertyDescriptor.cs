@@ -42,7 +42,7 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
             propertyInfo, inherit: true);
         _completionAttribute = GetAttribute<CommandPropertyCompletionAttribute>(propertyInfo);
         MemberType = propertyInfo.PropertyType;
-        UsageDescriptor = CommandDescriptor.GetUsageDescriptor(propertyInfo);
+        Usage = CommandDescriptor.GetUsage(propertyInfo);
         IsRequired = CommandPropertyBaseAttribute.IsRequired(attribute, propertyInfo);
         IsExplicit = CommandPropertyBaseAttribute.IsExplicit(attribute, propertyInfo);
         IsSwitch = CommandPropertyBaseAttribute.IsSwitch(attribute, propertyInfo);
@@ -74,7 +74,7 @@ public sealed class CommandPropertyDescriptor : CommandMemberDescriptor
 
     public override string Category { get; }
 
-    public override CommandUsageDescriptorBase UsageDescriptor { get; }
+    public override CommandUsage Usage { get; }
 
     protected override void SetValue(object instance, object? value)
         => _propertyInfo.SetValue(instance, value, null);

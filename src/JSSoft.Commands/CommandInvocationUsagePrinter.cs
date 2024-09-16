@@ -9,7 +9,7 @@ using JSSoft.Commands.Extensions;
 
 namespace JSSoft.Commands;
 
-public class CommandInvocationUsagePrinter(ICommandUsage commandUsage, CommandSettings settings)
+public class CommandInvocationUsagePrinter(CommandUsage commandUsage, CommandSettings settings)
     : CommandUsagePrinterBase(settings)
 {
     public virtual void Print(TextWriter writer, CommandMethodDescriptor[] methodDescriptors)

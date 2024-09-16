@@ -27,8 +27,7 @@ public abstract class CommandMethodDescriptor(MethodInfo methodInfo)
 
     public MethodInfo MethodInfo { get; } = methodInfo;
 
-    public CommandUsageDescriptorBase UsageDescriptor { get; }
-        = CommandDescriptor.GetUsageDescriptor(methodInfo);
+    public CommandUsage UsageDescriptor { get; } = CommandDescriptor.GetUsage(methodInfo);
 
     internal bool CanExecute(object instance) => OnCanExecute(instance);
 

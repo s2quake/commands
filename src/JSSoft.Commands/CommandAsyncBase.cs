@@ -12,7 +12,7 @@ namespace JSSoft.Commands;
 
 public abstract class CommandAsyncBase : ICommand, IAsyncExecutable
 {
-    private readonly CommandUsageDescriptorBase _usageDescriptor;
+    private readonly CommandUsage _usage;
     private readonly CommandCollection _commands = [];
     private ICommandContext? _context;
     private IProgress<ProgressInfo>? _progress;
@@ -56,7 +56,7 @@ public abstract class CommandAsyncBase : ICommand, IAsyncExecutable
     {
         Name = name == string.Empty ? CommandUtility.ToSpinalCase(GetType()) : name;
         Aliases = aliases;
-        _usageDescriptor = CommandDescriptor.GetUsageDescriptor(GetType());
+        _usage = CommandDescriptor.GetUsage(GetType());
         ICommandExtensions.SetParent(this, parent);
     }
 
@@ -89,11 +89,11 @@ public abstract class CommandAsyncBase : ICommand, IAsyncExecutable
         set => _context = value;
     }
 
-    string ICommand.Summary => _usageDescriptor.Summary;
+    string ICommand.Summary => _usage.Summary;
 
-    string ICommand.Description => _usageDescriptor.Description;
+    string ICommand.Description => _usage.Description;
 
-    string ICommand.Example => _usageDescriptor.Example;
+    string ICommand.Example => _usage.Example;
 
     string ICommand.Category => AttributeUtility.GetCategory(GetType());
 

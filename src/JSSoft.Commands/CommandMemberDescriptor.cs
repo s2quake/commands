@@ -45,7 +45,7 @@ public abstract class CommandMemberDescriptor(
 
     public abstract string Category { get; }
 
-    public abstract CommandUsageDescriptorBase UsageDescriptor { get; }
+    public abstract CommandUsage Usage { get; }
 
     protected CommandMemberBaseAttribute Attribute { get; } = attribute;
 

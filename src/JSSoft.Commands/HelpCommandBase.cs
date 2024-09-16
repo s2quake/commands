@@ -128,7 +128,7 @@ public abstract class HelpCommandBase : CommandBase
     {
         var settings = Context.Settings;
         using var commandWriter = new CommandTextWriter(settings);
-        var commandUsageDescriptor = CommandDescriptor.GetUsageDescriptor(Context.GetType());
+        var commandUsageDescriptor = CommandDescriptor.GetUsage(Context.GetType());
         var categoryPredicate = new Predicate<string>(
             category => IsDetail is true || settings.CategoryPredicate(category) is true);
 

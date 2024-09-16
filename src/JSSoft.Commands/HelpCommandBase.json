@@ -1,0 +1,13 @@
+{
+    "HelpCommandBase": "Displays a list of available commands and help.",
+    "HelpCommandBase.CommandNames": "Indicates the name of the command to display usage",
+    "HelpCommandBase.IsDetail": "Displays detailed usage if it exists.",
+    "HelpCommandBase.OptionName": "Displays usage for specific options in the specified command.",
+    "CommandParsingHelp.IsDetail": "&HelpCommandBase.IsDetail",
+    "CommandParsingHelp.OptionName": "&HelpCommandBase.OptionName",
+    "CommandInvocationHelp.IsDetail": "&HelpCommandBase.IsDetail",
+    "CommandInvocationHelp.OptionName": "&HelpCommandBase.OptionName",
+    "CommandInvocationHelp.Command": "Indicates the name of the command.",
+    "CommandInvocationHelp": "&HelpCommandBase",
+    "CommandParsingHelp": "&HelpCommandBase"
+}

@@ -7,7 +7,7 @@ using System.IO;
 
 namespace JSSoft.Commands;
 
-public class CommandParsingUsagePrinter(ICommandUsage commandUsage, CommandSettings settings)
+public class CommandParsingUsagePrinter(CommandUsage commandUsage, CommandSettings settings)
     : CommandUsagePrinterBase(settings with { })
 {
     public virtual void Print(
