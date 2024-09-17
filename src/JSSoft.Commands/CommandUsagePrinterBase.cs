@@ -197,7 +197,6 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
         {
             var query = from memberDescriptor in memberDescriptors.OptionDescriptors
                         where categoryPredicate(memberDescriptor.Category) is true
-                        orderby memberDescriptor.Name
                         orderby memberDescriptor.Category
                         group memberDescriptor by memberDescriptor.Category into @group
                         select @group;
@@ -226,7 +225,6 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
         if (memberDescriptors.HasOptions is true)
         {
             var query = from memberDescriptor in memberDescriptors.OptionDescriptors
-                        orderby memberDescriptor.Name
                         orderby memberDescriptor.Category
                         group memberDescriptor by memberDescriptor.Category into @group
                         select @group;

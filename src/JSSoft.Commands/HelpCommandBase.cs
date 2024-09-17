@@ -87,7 +87,6 @@ public abstract class HelpCommandBase : CommandBase
                     where child.IsEnabled is true
                     let category = child.Category
                     where categoryPredicate(category) is true
-                    orderby child.Name
                     orderby category
                     group child by category into @group
                     select @group;

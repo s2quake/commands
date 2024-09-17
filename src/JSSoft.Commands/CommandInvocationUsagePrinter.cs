@@ -116,7 +116,6 @@ public class CommandInvocationUsagePrinter(
     {
         var query = from methodDescriptor in methodDescriptors
                     where categoryPredicate(methodDescriptor.Category) is true
-                    orderby methodDescriptor.Name
                     orderby methodDescriptor.Category
                     group methodDescriptor by methodDescriptor.Category into @group
                     select @group;
@@ -148,7 +147,6 @@ public class CommandInvocationUsagePrinter(
         CommandTextWriter commandWriter, CommandMethodDescriptor[] methodDescriptors)
     {
         var query = from methodDescriptor in methodDescriptors
-                    orderby methodDescriptor.Name
                     orderby methodDescriptor.Category
                     group methodDescriptor by methodDescriptor.Category into @group
                     select @group;

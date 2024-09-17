@@ -28,8 +28,10 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
 
         var query = from memberDescriptor in memberDescriptors
                     orderby memberDescriptor.DefaultValue != DBNull.Value
-                    orderby memberDescriptor.IsGeneral descending
+                    orderby memberDescriptor.IsGeneral || memberDescriptor.IsSwitch descending
                     orderby memberDescriptor.IsVariables descending
+                    orderby memberDescriptor.IsRequired
+                        && memberDescriptor.DefaultValue is not DBNull
                     orderby memberDescriptor.IsRequired && memberDescriptor.IsExplicit descending
                     orderby memberDescriptor.IsRequired descending
                     select memberDescriptor;

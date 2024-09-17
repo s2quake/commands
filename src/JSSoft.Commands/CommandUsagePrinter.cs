@@ -75,7 +75,6 @@ public class CommandUsagePrinter(ICommand command, CommandSettings settings)
     {
         var query = from command in commands
                     where categoryPredicate(command.Category) is true
-                    orderby command.Name
                     orderby command.Category
                     group command by command.Category into @group
                     select @group;
