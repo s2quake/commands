@@ -195,13 +195,8 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
     {
         if (memberDescriptors.HasOptions is true)
         {
-            var query = from memberDescriptor in memberDescriptors.OptionDescriptors
-                        where categoryPredicate(memberDescriptor.Category) is true
-                        orderby memberDescriptor.Category
-                        group memberDescriptor by memberDescriptor.Category into @group
-                        select @group;
-
-            foreach (var @group in query)
+            var groups = memberDescriptors.GroupOptionsByCategory(categoryPredicate);
+            foreach (var @group in groups)
             {
                 var itemList = new List<string>
                 {
@@ -224,12 +219,8 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
     {
         if (memberDescriptors.HasOptions is true)
         {
-            var query = from memberDescriptor in memberDescriptors.OptionDescriptors
-                        orderby memberDescriptor.Category
-                        group memberDescriptor by memberDescriptor.Category into @group
-                        select @group;
-
-            foreach (var @group in query)
+            var groups = memberDescriptors.GroupOptionsByCategory();
+            foreach (var @group in groups)
             {
                 var itemList = new List<string>
                 {

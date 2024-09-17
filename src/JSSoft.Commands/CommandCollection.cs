@@ -92,6 +92,22 @@ public sealed class CommandCollection : IEnumerable<ICommand>
     public bool TryGetValue(string name, [MaybeNullWhen(false)] out ICommand value)
         => _commandByName.TryGetValue(name, out value);
 
+    public IGrouping<string, ICommand>[] GroupByCategory()
+        => GroupByCategory(_ => true);
+
+    public IGrouping<string, ICommand>[] GroupByCategory(Predicate<string> categoryPredicate)
+    {
+        var query = from child in this
+                    where child.IsEnabled is true
+                    let category = child.Category
+                    where categoryPredicate(category) is true
+                    orderby category != string.Empty
+                    orderby category
+                    group child by category into @group
+                    select @group;
+        return query.ToArray();
+    }
+
     public IEnumerator<ICommand> GetEnumerator() => _commandList.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => _commandList.GetEnumerator();

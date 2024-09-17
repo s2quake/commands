@@ -27,7 +27,6 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
         }
 
         var query = from memberDescriptor in memberDescriptors
-                    orderby memberDescriptor.DefaultValue != DBNull.Value
                     orderby memberDescriptor.IsGeneral || memberDescriptor.IsSwitch descending
                     orderby memberDescriptor.IsVariables descending
                     orderby memberDescriptor.IsRequired
@@ -145,6 +144,20 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
     }
 
     public bool Contains(string memberName) => _itemByMemberName.Contains(memberName);
+
+    public IGrouping<string, CommandMemberDescriptor>[] GroupOptionsByCategory()
+        => GroupOptionsByCategory(_ => true);
+
+    public IGrouping<string, CommandMemberDescriptor>[] GroupOptionsByCategory(
+        Predicate<string> categoryPredicate)
+    {
+        var query = from item in OptionDescriptors
+                    where categoryPredicate(item.Category)
+                    orderby item.Category != string.Empty
+                    group item by item.Category into @group
+                    select @group;
+        return query.ToArray();
+    }
 
     IEnumerator<CommandMemberDescriptor> IEnumerable<CommandMemberDescriptor>.GetEnumerator()
     {

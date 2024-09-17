@@ -13,7 +13,8 @@ public class CommandInvocationUsagePrinter(
     string executionName, CommandUsage commandUsage, CommandSettings settings)
     : CommandUsagePrinterBase(settings)
 {
-    public virtual void Print(TextWriter writer, CommandMethodDescriptor[] methodDescriptors)
+    public virtual void Print(
+        TextWriter writer, CommandMethodDescriptorCollection methodDescriptors)
     {
         using var commandWriter = new CommandTextWriter(writer, Settings);
         if (IsDetail is true)
@@ -111,16 +112,11 @@ public class CommandInvocationUsagePrinter(
 
     protected static void PrintCommands(
         CommandTextWriter commandWriter,
-        CommandMethodDescriptor[] methodDescriptors,
+        CommandMethodDescriptorCollection methodDescriptors,
         Predicate<string> categoryPredicate)
     {
-        var query = from methodDescriptor in methodDescriptors
-                    where categoryPredicate(methodDescriptor.Category) is true
-                    orderby methodDescriptor.Category
-                    group methodDescriptor by methodDescriptor.Category into @group
-                    select @group;
-
-        foreach (var @group in query)
+        var groups = methodDescriptors.GroupByCategory(categoryPredicate);
+        foreach (var @group in groups)
         {
             var itemList = new List<string>
             {
@@ -144,14 +140,10 @@ public class CommandInvocationUsagePrinter(
     }
 
     protected static void PrintCommandsInDetail(
-        CommandTextWriter commandWriter, CommandMethodDescriptor[] methodDescriptors)
+        CommandTextWriter commandWriter, CommandMethodDescriptorCollection methodDescriptors)
     {
-        var query = from methodDescriptor in methodDescriptors
-                    orderby methodDescriptor.Category
-                    group methodDescriptor by methodDescriptor.Category into @group
-                    select @group;
-
-        foreach (var @group in query)
+        var groups = methodDescriptors.GroupByCategory();
+        foreach (var @group in groups)
         {
             var itemList = new List<string>
             {
