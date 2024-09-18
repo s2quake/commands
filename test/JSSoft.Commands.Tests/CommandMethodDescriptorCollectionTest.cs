@@ -32,7 +32,7 @@ public class CommandMethodDescriptorCollectionTest
     internal sealed class Commands
     {
         [CommandMethod]
-        [Category("Hidden")]
+        [Category]
         public void Initialize()
         {
         }
@@ -94,7 +94,7 @@ public class CommandMethodDescriptorCollectionTest
                 nameof(StaticCommand.Restore),
                 nameof(StaticCommand.Revert),
             ]);
-        Assert.Equal("Hidden", groups[1].Key);
+        Assert.Equal(CategoryAttribute.Default.Category, groups[1].Key);
         Assert.Equal(
             groups[1].Select(item => item.MethodName).ToArray(),
             [

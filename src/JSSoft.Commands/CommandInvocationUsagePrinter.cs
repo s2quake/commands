@@ -32,6 +32,8 @@ public class CommandInvocationUsagePrinter(
             PrintExample(commandWriter, commandUsage.Example);
             PrintCommands(commandWriter, methodDescriptors, Settings.CategoryPredicate);
         }
+
+        PrintHelpMessage(commandWriter, executionName);
     }
 
     public virtual void Print(TextWriter writer, CommandMethodDescriptor methodDescriptor)

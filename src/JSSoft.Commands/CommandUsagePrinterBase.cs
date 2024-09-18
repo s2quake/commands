@@ -383,4 +383,11 @@ public abstract class CommandUsagePrinterBase(CommandSettings settings)
             commandWriter.WriteLinesIf(separatorCount, condition: isLast is false);
         }
     }
+
+    protected static void PrintHelpMessage(CommandTextWriter commandWriter, string executionName)
+    {
+        commandWriter.WriteLine($"Run '{executionName} <command> --help' to get help for " +
+                                $"a specific command.");
+        commandWriter.WriteLine("Use the --detail option for a more detailed description.");
+    }
 }

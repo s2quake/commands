@@ -3,8 +3,6 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
-using JSSoft.Terminals.Extensions;
-
 namespace JSSoft.Terminals.Hosting.Ansi;
 
 internal sealed class AsciiCodeContext(TerminalLineCollection lines, string text, ITerminal terminal)

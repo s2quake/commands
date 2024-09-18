@@ -9,7 +9,7 @@ namespace JSSoft.Commands.Tests;
 
 public class CommandCollectionTest
 {
-    [Category("Hidden")]
+    [Category]
     private sealed class HiddenCommand : CommandBase
     {
         protected override void OnExecute()
@@ -85,7 +85,7 @@ public class CommandCollectionTest
             [
                 typeof(DeleteCommand),
             ]);
-        Assert.Equal("Hidden", groups[1].Key);
+        Assert.Equal(CategoryAttribute.Default.Category, groups[1].Key);
         Assert.Equal(
             groups[1].Select(item => item.GetType()).ToArray(),
             [

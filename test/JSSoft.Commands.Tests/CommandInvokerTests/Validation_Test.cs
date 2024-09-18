@@ -4,7 +4,6 @@
 // </copyright>
 
 using System.ComponentModel.DataAnnotations;
-using NuGet.Frameworks;
 
 namespace JSSoft.Commands.Tests.CommandInvokerTests;
 

@@ -20,7 +20,7 @@ namespace JSSoft.Commands.Applications.Commands;
 [Export(typeof(ICommand))]
 [CommandSummary("Test Command")]
 [method: ImportingConstructor]
-[Category("Hidden")]
+[Category]
 internal sealed class TestCommand(IApplication application) : CommandMethodBase(["t"]), IDisposable
 {
     private readonly IApplication _application = application;

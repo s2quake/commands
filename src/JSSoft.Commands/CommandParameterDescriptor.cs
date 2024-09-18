@@ -3,7 +3,6 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
-using System.ComponentModel;
 using JSSoft.Commands.Exceptions;
 using static JSSoft.Commands.AttributeUtility;
 

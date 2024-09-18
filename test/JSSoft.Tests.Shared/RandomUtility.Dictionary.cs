@@ -4,7 +4,6 @@
 // </copyright>
 
 using System.Collections.Immutable;
-using System.Security;
 
 #if JSSOFT_COMMANDS
 namespace JSSoft.Commands.Tests;

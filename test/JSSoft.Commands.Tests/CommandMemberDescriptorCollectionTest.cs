@@ -38,7 +38,7 @@ public class CommandMemberDescriptorCollectionTest
         public string WorkingPath { get; set; } = string.Empty;
 
         [CommandProperty('p', useName: true, InitValue = "10001")]
-        [Category("Hidden")]
+        [Category]
         public int Port { get; set; }
 
         [CommandPropertySwitch]
@@ -92,7 +92,7 @@ public class CommandMemberDescriptorCollectionTest
                 nameof(Settings.CacheSize),
                 nameof(GlobalSettings.Password),
             ]);
-        Assert.Equal("Hidden", groups[1].Key);
+        Assert.Equal(CategoryAttribute.Default.Category, groups[1].Key);
         Assert.Equal(
             groups[1].Select(item => item.MemberName).ToArray(),
             [
