@@ -28,6 +28,8 @@ To be Released.
 * Fixed an issue with the display order of options and commands in Help.  
   [[#37]]
 * Removed commands sorting code in `CommandContextBase`.  [[#38]]
+* Integrated usage-related properties(`Summary`, `Description`, `Example`) into 
+  the `CommandUsage` property.  [[#40]]
 
 [#13]: https://github.com/s2quake/commands/pull/13
 [#17]: https://github.com/s2quake/commands/pull/17
@@ -43,6 +45,7 @@ To be Released.
 [#34]: https://github.com/s2quake/commands/pull/34
 [#37]: https://github.com/s2quake/commands/pull/37
 [#38]: https://github.com/s2quake/commands/pull/38
+[#40]: https://github.com/s2quake/commands/pull/40
 
 
 6.0.1
