@@ -27,7 +27,7 @@ To be Released.
   `ResourceUsageDescriptor`.  [[#34]]
 * Fixed an issue with the display order of options and commands in Help.  
   [[#37]]
-
+* Removed commands sorting code in `CommandContextBase`.  [[#38]]
 
 [#13]: https://github.com/s2quake/commands/pull/13
 [#17]: https://github.com/s2quake/commands/pull/17
@@ -42,6 +42,7 @@ To be Released.
 [#33]: https://github.com/s2quake/commands/pull/33
 [#34]: https://github.com/s2quake/commands/pull/34
 [#37]: https://github.com/s2quake/commands/pull/37
+[#38]: https://github.com/s2quake/commands/pull/38
 
 
 6.0.1

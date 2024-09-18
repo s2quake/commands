@@ -354,7 +354,6 @@ public abstract class CommandContextBase : ICommandContext
     {
         var query = from command in commands.Concat([HelpCommand, VersionCommand]).Distinct()
                     where command.Parent is null
-                    orderby command.Name
                     select command;
 
         foreach (var command in query)
