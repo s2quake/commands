@@ -26,8 +26,8 @@ public class Parameter_Test
         var index = 0;
         Assert.Equal(nameof(CustomParameter.String), methodDescriptor.Members[index++].MemberName);
         Assert.Equal(nameof(CustomParameter.Integer), methodDescriptor.Members[index++].MemberName);
-        Assert.Equal(nameof(CustomParameter.Name), methodDescriptor.Members[index++].MemberName);
         Assert.Equal(nameof(CustomParameter.Boolean), methodDescriptor.Members[index++].MemberName);
+        Assert.Equal(nameof(CustomParameter.Name), methodDescriptor.Members[index++].MemberName);
         Assert.Equal(4, index);
     }
 

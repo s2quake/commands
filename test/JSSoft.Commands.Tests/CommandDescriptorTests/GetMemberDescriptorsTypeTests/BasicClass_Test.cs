@@ -41,8 +41,8 @@ public sealed class BasicClass_Test
         Assert.Equal(4, memberDescriptors.Count);
         Assert.Equal(nameof(BasicClass.Int), memberDescriptors[index++].MemberName);
         Assert.Equal(nameof(BasicClass.Arguments), memberDescriptors[index++].MemberName);
-        Assert.Equal(nameof(BasicClass.String), memberDescriptors[index++].MemberName);
         Assert.Equal(nameof(BasicClass.Bool), memberDescriptors[index++].MemberName);
+        Assert.Equal(nameof(BasicClass.String), memberDescriptors[index++].MemberName);
 
         Assert.Equal(4, index);
     }
@@ -56,8 +56,8 @@ public sealed class BasicClass_Test
         Assert.Equal(4, memberDescriptors.Count);
         Assert.Equal(nameof(BasicClass.Int), memberDescriptors[index++].MemberName);
         Assert.Equal(nameof(BasicClass.Arguments), memberDescriptors[index++].MemberName);
-        Assert.Equal(nameof(BasicClass.String), memberDescriptors[index++].MemberName);
         Assert.Equal(nameof(BasicClass.Bool), memberDescriptors[index++].MemberName);
+        Assert.Equal(nameof(BasicClass.String), memberDescriptors[index++].MemberName);
 
         Assert.Equal(4, index);
     }

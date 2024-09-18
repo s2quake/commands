@@ -111,7 +111,7 @@ public class CommandInvocationException(
         };
         if (invocationHelp.Command == string.Empty)
         {
-            usagePrinter.Print(writer, [.. methodDescriptors]);
+            usagePrinter.Print(writer, methodDescriptors);
         }
         else if (methodDescriptors.FindByName(invocationHelp.Command) is { } methodDescriptor)
         {

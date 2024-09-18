@@ -63,8 +63,8 @@ public sealed class BasicClass_With_2_StaticClass1_Test
         Assert.Equal(nameof(StaticClass1.StaticInt1), memberDescriptors[index++].MemberName);
         Assert.Equal(nameof(StaticClass2.StaticInt2), memberDescriptors[index++].MemberName);
         Assert.Equal(nameof(BasicClass.Arguments), memberDescriptors[index++].MemberName);
-        Assert.Equal(nameof(BasicClass.String), memberDescriptors[index++].MemberName);
         Assert.Equal(nameof(BasicClass.Bool), memberDescriptors[index++].MemberName);
+        Assert.Equal(nameof(BasicClass.String), memberDescriptors[index++].MemberName);
         Assert.Equal(nameof(StaticClass1.StaticBool1), memberDescriptors[index++].MemberName);
         Assert.Equal(nameof(StaticClass2.StaticBool2), memberDescriptors[index++].MemberName);
 

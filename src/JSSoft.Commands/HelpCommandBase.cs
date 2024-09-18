@@ -83,16 +83,8 @@ public abstract class HelpCommandBase : CommandBase
         Predicate<string> categoryPredicate)
     {
         var rootNode = commandContext.Node;
-        var query = from child in rootNode.Commands
-                    where child.IsEnabled is true
-                    let category = child.Category
-                    where categoryPredicate(category) is true
-                    orderby child.Name
-                    orderby category
-                    group child by category into @group
-                    select @group;
-
-        foreach (var @group in query)
+        var groups = rootNode.Commands.GroupByCategory(categoryPredicate);
+        foreach (var @group in groups)
         {
             var itemList = new List<string>
             {

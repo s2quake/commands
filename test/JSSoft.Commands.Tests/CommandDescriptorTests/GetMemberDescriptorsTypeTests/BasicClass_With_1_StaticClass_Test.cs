@@ -56,15 +56,16 @@ public sealed class BasicClass_With_1_StaticClass_Test
     public void GetMemberDescriptors_Arg0_BasicClassType_Test()
     {
         var memberDescriptors = GetMemberDescriptors(typeof(BasicClass));
-
+        var index = 0;
         Assert.Equal(7, memberDescriptors.Count);
-        Assert.Equal(nameof(BasicClass.Int), memberDescriptors[0].MemberName);
-        Assert.Equal(nameof(StaticClass.StaticInt), memberDescriptors[1].MemberName);
-        Assert.Equal(nameof(BasicClass.Arguments), memberDescriptors[2].MemberName);
-        Assert.Equal(nameof(BasicClass.String), memberDescriptors[3].MemberName);
-        Assert.Equal(nameof(StaticClass.StaticString), memberDescriptors[4].MemberName);
-        Assert.Equal(nameof(BasicClass.Bool), memberDescriptors[5].MemberName);
-        Assert.Equal(nameof(StaticClass.StaticBool), memberDescriptors[6].MemberName);
+        Assert.Equal(nameof(BasicClass.Int), memberDescriptors[index++].MemberName);
+        Assert.Equal(nameof(StaticClass.StaticInt), memberDescriptors[index++].MemberName);
+        Assert.Equal(nameof(BasicClass.Arguments), memberDescriptors[index++].MemberName);
+        Assert.Equal(nameof(BasicClass.Bool), memberDescriptors[index++].MemberName);
+        Assert.Equal(nameof(BasicClass.String), memberDescriptors[index++].MemberName);
+        Assert.Equal(nameof(StaticClass.StaticBool), memberDescriptors[index++].MemberName);
+        Assert.Equal(nameof(StaticClass.StaticString), memberDescriptors[index++].MemberName);
+        Assert.Equal(7, index);
     }
 
     [CommandStaticProperty(typeof(StaticClass), nameof(StaticClass.StaticInt))]

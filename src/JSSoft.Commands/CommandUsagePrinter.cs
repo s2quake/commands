@@ -70,17 +70,11 @@ public class CommandUsagePrinter(ICommand command, CommandSettings settings)
 
     protected static void PrintCommands(
         CommandTextWriter commandWriter,
-        IEnumerable<ICommand> commands,
+        CommandCollection commands,
         Predicate<string> categoryPredicate)
     {
-        var query = from command in commands
-                    where categoryPredicate(command.Category) is true
-                    orderby command.Name
-                    orderby command.Category
-                    group command by command.Category into @group
-                    select @group;
-
-        foreach (var @group in query)
+        var groups = commands.GroupByCategory(categoryPredicate);
+        foreach (var @group in groups)
         {
             var itemList = new List<string>
             {

@@ -40,8 +40,8 @@ public sealed class StaticClass_Test
         Assert.Equal(4, memberDescriptors.Count);
         Assert.Equal(nameof(StaticClass.Int), memberDescriptors[index++].MemberName);
         Assert.Equal(nameof(StaticClass.Arguments), memberDescriptors[index++].MemberName);
-        Assert.Equal(nameof(StaticClass.String), memberDescriptors[index++].MemberName);
         Assert.Equal(nameof(StaticClass.Bool), memberDescriptors[index++].MemberName);
+        Assert.Equal(nameof(StaticClass.String), memberDescriptors[index++].MemberName);
 
         Assert.Equal(4, index);
     }

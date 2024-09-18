@@ -95,6 +95,20 @@ public sealed class CommandMethodDescriptorCollection : IEnumerable<CommandMetho
         return false;
     }
 
+    public IGrouping<string, CommandMethodDescriptor>[] GroupByCategory()
+        => GroupByCategory(_ => true);
+
+    public IGrouping<string, CommandMethodDescriptor>[] GroupByCategory(
+        Predicate<string> categoryPredicate)
+    {
+        var query = from item in this
+                    where categoryPredicate(item.Category)
+                    orderby item.Category != string.Empty
+                    group item by item.Category into @group
+                    select @group;
+        return query.ToArray();
+    }
+
     IEnumerator<CommandMethodDescriptor> IEnumerable<CommandMethodDescriptor>.GetEnumerator()
     {
         foreach (var item in _methodDescriptorByMethodName.Values)
