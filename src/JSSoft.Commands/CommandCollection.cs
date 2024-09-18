@@ -102,7 +102,6 @@ public sealed class CommandCollection : IEnumerable<ICommand>
                     let category = child.Category
                     where categoryPredicate(category) is true
                     orderby category != string.Empty
-                    orderby category
                     group child by category into @group
                     select @group;
         return query.ToArray();
