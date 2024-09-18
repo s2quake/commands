@@ -86,7 +86,7 @@ public class CommandInvocationUsagePrinter(
     {
         var groupName = StringByName[TextSummary];
         using var groupScope = commandWriter.Group(groupName);
-        var summary = methodDescriptor.UsageDescriptor.Summary;
+        var summary = methodDescriptor.Usage.Summary;
         var width = commandWriter.Width - commandWriter.TotalIndentSpaces;
         var lines = CommandTextWriter.Wrap(summary, width);
         commandWriter.WriteLine(lines);
@@ -97,7 +97,7 @@ public class CommandInvocationUsagePrinter(
     {
         var groupName = StringByName[TextDescription];
         using var groupScope = commandWriter.Group(groupName);
-        var description = methodDescriptor.UsageDescriptor.Description;
+        var description = methodDescriptor.Usage.Description;
         var width = commandWriter.Width - commandWriter.TotalIndentSpaces;
         var lines = CommandTextWriter.Wrap(description, width);
         commandWriter.WriteLine(lines);
@@ -108,7 +108,7 @@ public class CommandInvocationUsagePrinter(
     {
         var groupName = StringByName[TextExample];
         using var groupScope = commandWriter.Group(groupName);
-        var example = methodDescriptor.UsageDescriptor.Example;
+        var example = methodDescriptor.Usage.Example;
         commandWriter.WriteLine(example);
     }
 
@@ -135,7 +135,7 @@ public class CommandInvocationUsagePrinter(
             foreach (var item in methodDescriptors)
             {
                 var label = GetMethodString(item);
-                var summary = item.UsageDescriptor.Summary;
+                var summary = item.Usage.Summary;
                 commandWriter.WriteLine(label: label, summary: summary);
             }
         }
@@ -162,7 +162,7 @@ public class CommandInvocationUsagePrinter(
             foreach (var item in methodDescriptors)
             {
                 var label = GetMethodString(item);
-                var description = item.UsageDescriptor.Description;
+                var description = item.Usage.Description;
                 var isLast = item == methodDescriptors.Last();
                 commandWriter.WriteLine(label);
                 commandWriter.WriteLineIndent(description, commandWriter.Indent + 1);

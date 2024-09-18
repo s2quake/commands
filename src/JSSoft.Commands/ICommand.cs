@@ -15,13 +15,9 @@ public interface ICommand
 
     bool AllowsSubCommands { get; }
 
-    string Summary { get; }
-
-    string Description { get; }
-
-    string Example { get; }
-
     string Category { get; }
+
+    CommandUsage Usage { get; }
 
     ICommand? Parent { get; set; }
 

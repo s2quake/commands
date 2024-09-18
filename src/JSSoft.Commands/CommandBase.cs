@@ -86,11 +86,7 @@ public abstract class CommandBase : ICommand, IExecutable
         set => _context = value;
     }
 
-    string ICommand.Summary => _usage.Summary;
-
-    string ICommand.Description => _usage.Description;
-
-    string ICommand.Example => _usage.Example;
+    CommandUsage ICommand.Usage => _usage;
 
     string ICommand.Category => AttributeUtility.GetCategory(GetType());
 

@@ -18,13 +18,9 @@ internal sealed class CommandNode(CommandContextBase commandContext) : ICommand
 
     public bool AllowsSubCommands => true;
 
-    public string Summary { get; } = string.Empty;
-
-    public string Description { get; } = string.Empty;
-
-    public string Example { get; } = string.Empty;
-
     public string Category { get; } = string.Empty;
+
+    public CommandUsage Usage { get; } = CommandDescriptor.GetUsage(commandContext.GetType());
 
     public ICommand? Parent { get; }
 

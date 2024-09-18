@@ -87,11 +87,7 @@ public abstract class CommandMethodBase : ICommand
 
     CommandCollection ICommand.Commands => _commands;
 
-    string ICommand.Summary => _usage.Summary;
-
-    string ICommand.Description => _usage.Description;
-
-    string ICommand.Example => _usage.Example;
+    CommandUsage ICommand.Usage => _usage;
 
     string ICommand.Category => AttributeUtility.GetCategory(GetType());
 
