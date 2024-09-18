@@ -25,6 +25,8 @@ To be Released.
 * Simplified the process of getting strings from `ResourceManager`.  [[#34]]
 * Removed `ICommandUsage`, `CommandUsageDescriptorBase`, 
   `ResourceUsageDescriptor`.  [[#34]]
+* Fixed an issue with the display order of options and commands in Help.  
+  [[#37]]
 
 
 [#13]: https://github.com/s2quake/commands/pull/13
@@ -39,6 +41,7 @@ To be Released.
 [#31]: https://github.com/s2quake/commands/pull/31
 [#33]: https://github.com/s2quake/commands/pull/33
 [#34]: https://github.com/s2quake/commands/pull/34
+[#37]: https://github.com/s2quake/commands/pull/37
 
 
 6.0.1
