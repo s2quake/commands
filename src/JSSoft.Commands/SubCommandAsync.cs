@@ -11,9 +11,7 @@ namespace JSSoft.Commands;
 
 internal sealed class SubCommandAsync(
     CommandMethodBase method, CommandMethodDescriptor methodDescriptor)
-    : CommandMethodInstance(methodDescriptor),
-    ICommand,
-    IAsyncExecutable
+    : CommandMethodInstance(methodDescriptor), ICommand, IAsyncExecutable
 {
     private readonly CommandMethodDescriptor _methodDescriptor = methodDescriptor;
 
@@ -29,11 +27,7 @@ internal sealed class SubCommandAsync(
 
     bool ICommand.AllowsSubCommands => false;
 
-    string ICommand.Summary => _methodDescriptor.UsageDescriptor.Summary;
-
-    string ICommand.Description => _methodDescriptor.UsageDescriptor.Description;
-
-    string ICommand.Example => _methodDescriptor.UsageDescriptor.Example;
+    CommandUsage ICommand.Usage => _methodDescriptor.Usage;
 
     string ICommand.Category => _methodDescriptor.Category;
 

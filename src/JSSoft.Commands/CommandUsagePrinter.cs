@@ -19,7 +19,7 @@ public class CommandUsagePrinter(ICommand command, CommandSettings settings)
         var executionName = command.GetExecutionName();
         if (IsDetail is true)
         {
-            PrintSummary(commandWriter, command.Summary);
+            PrintSummary(commandWriter, command.Usage.Summary);
             if (command.AllowsSubCommands is true)
             {
                 PrintUsage(commandWriter, executionName);
@@ -29,8 +29,8 @@ public class CommandUsagePrinter(ICommand command, CommandSettings settings)
                 PrintUsage(commandWriter, executionName, memberDescriptors);
             }
 
-            PrintDescription(commandWriter, command.Description);
-            PrintExample(commandWriter, command.Example);
+            PrintDescription(commandWriter, command.Usage.Description);
+            PrintExample(commandWriter, command.Usage.Example);
             if (command.AllowsSubCommands is true)
             {
                 PrintCommandsInDetail(commandWriter, command.Commands);
@@ -44,7 +44,7 @@ public class CommandUsagePrinter(ICommand command, CommandSettings settings)
         }
         else
         {
-            PrintSummary(commandWriter, command.Summary);
+            PrintSummary(commandWriter, command.Usage.Summary);
             if (command.AllowsSubCommands is true)
             {
                 PrintUsage(commandWriter, executionName);
@@ -54,7 +54,7 @@ public class CommandUsagePrinter(ICommand command, CommandSettings settings)
                 PrintUsage(commandWriter, executionName, memberDescriptors);
             }
 
-            PrintExample(commandWriter, command.Example);
+            PrintExample(commandWriter, command.Usage.Example);
             if (command.AllowsSubCommands is true)
             {
                 PrintCommands(commandWriter, command.Commands, Settings.CategoryPredicate);
@@ -131,7 +131,7 @@ public class CommandUsagePrinter(ICommand command, CommandSettings settings)
         foreach (var command in commands)
         {
             var label = GetCommandString(command);
-            var summary = command.Summary;
+            var summary = command.Usage.Summary;
             commandWriter.WriteLine(label: label, summary: summary);
         }
     }
@@ -143,7 +143,7 @@ public class CommandUsagePrinter(ICommand command, CommandSettings settings)
         foreach (var command in commands)
         {
             var label = GetCommandString(command);
-            var description = command.Description;
+            var description = command.Usage.Description;
             var isLast = command == commands.Last();
             commandWriter.WriteLine(label);
             commandWriter.WriteLineIndent(description, commandWriter.Indent + 1);

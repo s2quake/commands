@@ -26,11 +26,7 @@ internal sealed class SubCommand(CommandMethodBase method, CommandMethodDescript
 
     bool ICommand.AllowsSubCommands => false;
 
-    string ICommand.Summary => _methodDescriptor.UsageDescriptor.Summary;
-
-    string ICommand.Description => _methodDescriptor.UsageDescriptor.Description;
-
-    string ICommand.Example => _methodDescriptor.UsageDescriptor.Example;
+    CommandUsage ICommand.Usage => _methodDescriptor.Usage;
 
     string ICommand.Category => _methodDescriptor.Category;
 

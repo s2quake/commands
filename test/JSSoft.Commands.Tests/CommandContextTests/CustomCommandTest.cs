@@ -28,11 +28,12 @@ public class CustomCommandTest
 
         public bool AllowsSubCommands => false;
 
-        public string Summary => nameof(Summary);
-
-        public string Description => nameof(Description);
-
-        public string Example => nameof(Example);
+        public CommandUsage Usage { get; } = new()
+        {
+            Summary = nameof(CommandUsage.Summary),
+            Description = nameof(CommandUsage.Description),
+            Example = nameof(CommandUsage.Example),
+        };
 
         public string Category => string.Empty;
 
@@ -67,11 +68,12 @@ public class CustomCommandTest
 
         public bool AllowsSubCommands => false;
 
-        public string Summary => nameof(Summary);
-
-        public string Description => nameof(Description);
-
-        public string Example => nameof(Example);
+        public CommandUsage Usage { get; } = new()
+        {
+            Summary = nameof(CommandUsage.Summary),
+            Description = nameof(CommandUsage.Description),
+            Example = nameof(CommandUsage.Example),
+        };
 
         public string Category => string.Empty;
 
@@ -113,11 +115,12 @@ public class CustomCommandTest
 
         public bool AllowsSubCommands => false;
 
-        public string Summary => nameof(Summary);
-
-        public string Description => nameof(Description);
-
-        public string Example => nameof(Example);
+        public CommandUsage Usage { get; } = new()
+        {
+            Summary = nameof(CommandUsage.Summary),
+            Description = nameof(CommandUsage.Description),
+            Example = nameof(CommandUsage.Example),
+        };
 
         public string Category => string.Empty;
 
