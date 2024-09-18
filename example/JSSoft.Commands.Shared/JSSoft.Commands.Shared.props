@@ -1,0 +1,9 @@
+<Project>
+
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)**\*.cs" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)**\*.resx" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)**\*.json" />
+  </ItemGroup>
+
+</Project>

@@ -20,7 +20,7 @@ try
     sb.AppendLine($"{nameof(settings.Port)}: {settings.Port}");
     sb.AppendLine($"{nameof(settings.UseCache)}: {settings.UseCache}");
     sb.AppendLine($"{nameof(settings.CacheSize)}: {settings.CacheSize}");
-    sb.AppendLine($"{nameof(GlobalSettings.ID)}: {GlobalSettings.ID}");
+    sb.AppendLine($"{nameof(GlobalSettings.Id)}: {GlobalSettings.Id}");
     sb.AppendLine($"{nameof(GlobalSettings.Password)}: {GlobalSettings.Password}");
     sb.AppendLine($"{nameof(settings.Libraries)}:");
     foreach (var item in settings.Libraries)

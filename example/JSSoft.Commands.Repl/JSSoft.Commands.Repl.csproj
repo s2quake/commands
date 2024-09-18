@@ -22,7 +22,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <AssemblyName>repl</AssemblyName>
-    <DefineConstants>$(DefineConstants);JSSOFT_COMMANDS;JSSOFT_COMMANDS_REPL</DefineConstants>
+    <DefineConstants>$(DefineConstants);JSSOFT_COMMANDS_REPL</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,8 +34,6 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     <ProjectReference Include="..\..\src\JSSoft.Terminals\JSSoft.Terminals.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)..\JSSoft.Commands.Shared\**\*.cs" />
-  </ItemGroup>
+  <Import Project="$(MSBuildThisFileDirectory)..\JSSoft.Commands.Shared\JSSoft.Commands.Shared.props" />
 
 </Project>
