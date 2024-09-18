@@ -10,7 +10,7 @@ using static JSSoft.Commands.ResourceManagerUtility;
 namespace JSSoft.Commands;
 
 [AttributeUsage(AttributeTargets.Class)]
-public class ResourceUsageAttribute : CommandUsageAttribute
+public sealed class ResourceUsageAttribute : CommandUsageAttribute
 {
     public ResourceUsageAttribute()
     {

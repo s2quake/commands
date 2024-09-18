@@ -9,7 +9,7 @@ namespace JSSoft.Commands.Applications.Commands;
 internal static class GlobalSettings
 {
     [CommandProperty]
-    public static string ID { get; set; } = string.Empty;
+    public static string Id { get; set; } = string.Empty;
 
     [CommandProperty]
     public static string Password { get; set; } = string.Empty;

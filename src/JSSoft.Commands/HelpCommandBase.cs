@@ -3,13 +3,14 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
-using System.Text;
+using System.ComponentModel;
+using System.IO;
 using JSSoft.Commands.Extensions;
-using static JSSoft.Commands.CommandUsagePrinterBase;
 
 namespace JSSoft.Commands;
 
 [ResourceUsage]
+[Category]
 public abstract class HelpCommandBase : CommandBase
 {
     protected HelpCommandBase()
@@ -54,85 +55,17 @@ public abstract class HelpCommandBase : CommandBase
         return base.GetCompletions(completionContext);
     }
 
-    private static void PrintSummary(CommandTextWriter commandWriter, string summary)
-    {
-        var groupName = StringByName[TextSummary];
-        using var groupScope = commandWriter.Group(groupName);
-        commandWriter.WriteIndentLine(summary);
-    }
-
-    private static void PrintUsage(CommandTextWriter commandWriter, string executionName)
-    {
-        var groupName = StringByName[TextUsage];
-        using var groupScope = commandWriter.Group(groupName);
-        var items = new string[] { executionName, "<command>", "[options...]" };
-        var text = string.Join(" ", items.Where(item => item != string.Empty));
-        commandWriter.WriteLine(text);
-    }
-
-    private static void PrintDescription(CommandTextWriter commandWriter, string description)
-    {
-        var groupName = StringByName[TextDescription];
-        using var groupScope = commandWriter.Group(groupName);
-        commandWriter.WriteIndentLine(description);
-    }
-
-    private static void PrintCommands(
-        CommandTextWriter commandWriter,
-        ICommandContext commandContext,
-        Predicate<string> categoryPredicate)
-    {
-        var rootNode = commandContext.Node;
-        var groups = rootNode.Commands.GroupByCategory(categoryPredicate);
-        foreach (var @group in groups)
-        {
-            var itemList = new List<string>
-            {
-                @group.Key,
-                StringByName[TextCommands],
-            };
-            var groupName = CommandUtility.Join(" ", itemList);
-            using var groupScope = commandWriter.Group(groupName);
-            PrintCommands(@group);
-        }
-
-        void PrintCommands(IEnumerable<ICommand> nodes)
-        {
-            foreach (var node in nodes)
-            {
-                var label = GetCommandNames(node);
-                var summary = node.Summary;
-                commandWriter.WriteLine(label: label, summary: summary);
-            }
-        }
-    }
-
-    private static string GetCommandNames(ICommand node)
-    {
-        var sb = new StringBuilder();
-        sb.Append(node.Name);
-        sb.AppendMany(node.Aliases, item => $", {item}");
-
-        return sb.ToString();
-    }
-
     private void PrintHelp()
     {
         var settings = Context.Settings;
         using var commandWriter = new CommandTextWriter(settings);
-        var commandUsageDescriptor = CommandDescriptor.GetUsage(Context.GetType());
-        var categoryPredicate = new Predicate<string>(
-            category => IsDetail is true || settings.CategoryPredicate(category) is true);
-
-        PrintSummary(commandWriter, commandUsageDescriptor.Summary);
-        PrintUsage(commandWriter, Context.ExecutionName);
-        if (IsDetail is true)
+        var usagePrinter = new CommandUsagePrinter(Context.Node, settings)
         {
-            PrintDescription(commandWriter, commandUsageDescriptor.Description);
-        }
-
-        PrintCommands(commandWriter, Context, categoryPredicate);
-        Out.Write(commandWriter.ToString());
+            IsDetail = IsDetail,
+        };
+        using var sw = new StringWriter();
+        usagePrinter.Print(sw);
+        Out.Write(sw.ToString());
     }
 
     private void PrintCommandHelp()

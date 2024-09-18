@@ -22,11 +22,13 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <AssemblyName>parse</AssemblyName>
-    <DefineConstants>JSSOFT_COMMANDS</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\JSSoft.Commands\JSSoft.Commands.csproj" />
   </ItemGroup>
 

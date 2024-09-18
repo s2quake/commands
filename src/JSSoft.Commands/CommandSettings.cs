@@ -6,6 +6,7 @@
 // Reflection should not be used to increase accessibility of classes, methods, or fields
 #pragma warning disable S3011
 
+using System.ComponentModel;
 using System.Diagnostics;
 using JSSoft.Commands.Extensions;
 using static JSSoft.Commands.CommandUtility;
@@ -20,7 +21,8 @@ public sealed record class CommandSettings
     public const char DefaultHelpShortName = 'h';
     public const string DefaultVersionName = "version";
     public const char DefaultVersionShortName = 'v';
-    public static readonly Predicate<string> DefaultCategoryPredicate = s => s != "Hidden";
+    public static readonly Predicate<string> DefaultCategoryPredicate
+        = s => s != CategoryAttribute.Default.Category;
 
     private int _labelWith = DefaultLabelWidth;
     private int _indentSpaces = DefaultIndentSpaces;

@@ -3,10 +3,6 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace JSSoft.Commands.Tests.CommandContextTests;
 
 public class CommandAsICustomCommandDescriptor

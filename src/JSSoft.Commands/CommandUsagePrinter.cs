@@ -66,6 +66,11 @@ public class CommandUsagePrinter(ICommand command, CommandSettings settings)
                 PrintOptions(commandWriter, memberDescriptors, Settings.CategoryPredicate);
             }
         }
+
+        if (command.AllowsSubCommands is true)
+        {
+            PrintHelpMessage(commandWriter, executionName);
+        }
     }
 
     protected static void PrintCommands(

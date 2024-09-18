@@ -37,6 +37,6 @@ internal sealed class Settings
     public string[] Libraries { get; set; } = [];
 
     [CommandProperty]
-    [Category("Hidden")]
+    [Category]
     public string Comment { get; set; } = string.Empty;
 }

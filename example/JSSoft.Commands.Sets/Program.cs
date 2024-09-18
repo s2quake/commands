@@ -3,7 +3,6 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
-using System;
 using JSSoft.Commands.Repl;
 
 var application = new Application();

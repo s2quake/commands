@@ -3,12 +3,14 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
+using System.ComponentModel;
 using System.Text;
 using JSSoft.Commands.Extensions;
 
 namespace JSSoft.Commands;
 
 [ResourceUsage]
+[Category]
 public abstract class VersionCommandBase : CommandBase
 {
     protected VersionCommandBase()
