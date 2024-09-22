@@ -30,6 +30,7 @@ To be Released.
 * Removed commands sorting code in `CommandContextBase`.  [[#38]]
 * Integrated usage-related properties(`Summary`, `Description`, `Example`) into 
   the `CommandUsage` property.  [[#40]]
+* Added ₩StepProgress₩ to make it easier to work with progress.  [[#41]]
 
 [#13]: https://github.com/s2quake/commands/pull/13
 [#17]: https://github.com/s2quake/commands/pull/17
@@ -46,6 +47,7 @@ To be Released.
 [#37]: https://github.com/s2quake/commands/pull/37
 [#38]: https://github.com/s2quake/commands/pull/38
 [#40]: https://github.com/s2quake/commands/pull/40
+[#41]: https://github.com/s2quake/commands/pull/41
 
 
 6.0.1
