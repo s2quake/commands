@@ -76,7 +76,7 @@ internal sealed class Application : IApplication, IDisposable
 
         _terminal = _container.GetExportedValue<SystemTerminal>();
         _cancellationTokenSource = new();
-        return _terminal.StartAsync(_cancellationTokenSource.Token);
+        return _terminal.RunAsync(_cancellationTokenSource.Token);
     }
 
     public void Dispose()
