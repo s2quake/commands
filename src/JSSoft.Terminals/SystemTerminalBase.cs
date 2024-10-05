@@ -22,6 +22,8 @@ public abstract class SystemTerminalBase : IDisposable
     private readonly TextWriter _error;
     private string _prompt = string.Empty;
     private bool _isDisposed;
+    private CancellationTokenSource? _cancellationTokenSource;
+    private Task? _runningTask;
 
     protected SystemTerminalBase()
     {
@@ -44,20 +46,50 @@ public abstract class SystemTerminalBase : IDisposable
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        OnInitialize(_out, _error);
+        if (_cancellationTokenSource is not null)
+        {
+            throw new InvalidOperationException("The terminal is already running.");
+        }
 
+        _cancellationTokenSource = new CancellationTokenSource();
+        OnInitialize(_out, _error);
+        _runningTask = Task.Run(() => ProcessAsync(_cancellationTokenSource.Token), default);
+        await Task.CompletedTask;
+    }
+
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        if (_cancellationTokenSource is null)
+        {
+            throw new InvalidOperationException("The terminal is not running.");
+        }
+
+        _cancellationTokenSource.Cancel();
+        if (_runningTask is not null)
+        {
+            await _runningTask;
+        }
+
+        _cancellationTokenSource.Dispose();
+        _cancellationTokenSource = null;
+    }
+
+    public async Task RunAsync(CancellationToken cancellationToken)
+    {
+        await StartAsync(cancellationToken);
         while (cancellationToken.IsCancellationRequested is false)
         {
-            var isEnabled = _terminal.IsEnabled;
-            var prompt = Prompt;
-            if (isEnabled is true && _terminal.ReadStringInternal(prompt, cancellationToken) is { } text)
+            try
             {
-                await ExecuteAsync(_error, text);
+                await Task.Delay(1, default);
             }
-#pragma warning disable CA2016
-            await Task.Delay(1);
-#pragma warning restore
+            catch (TaskCanceledException)
+            {
+                break;
+            }
         }
+
+        await StopAsync(cancellationToken);
     }
 
     public string? ReadString(string prompt, string command) => _terminal.ReadString(prompt, command);
@@ -115,6 +147,27 @@ public abstract class SystemTerminalBase : IDisposable
     protected abstract void OnInitialize(TextWriter @out, TextWriter error);
 
     protected abstract Task OnExecuteAsync(string command, CancellationToken cancellationToken);
+
+    private async Task ProcessAsync(CancellationToken cancellationToken)
+    {
+        while (cancellationToken.IsCancellationRequested is false)
+        {
+            var isEnabled = _terminal.IsEnabled;
+            var prompt = Prompt;
+            if (isEnabled is true && _terminal.ReadStringInternal(prompt, cancellationToken) is { } text)
+            {
+                await ExecuteAsync(_error, text);
+            }
+            try
+            {
+                await Task.Delay(1, default);
+            }
+            catch (TaskCanceledException)
+            {
+                break;
+            }
+        }
+    }
 
     private async Task ExecuteAsync(TextWriter error, string text)
     {
