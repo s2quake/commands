@@ -115,6 +115,10 @@ public abstract class CommandContextBase : ICommandContext
 
     public CommandSettings Settings { get; }
 
+    ICommand ICommandContext.HelpCommand => HelpCommand;
+
+    ICommand ICommandContext.VersionCommand => VersionCommand;
+
     protected virtual ICommand HelpCommand { get; } = new InternalHelpCommand();
 
     protected virtual ICommand VersionCommand { get; } = new InternalVersionCommand();

@@ -24,6 +24,13 @@ public abstract class HelpCommandBase : CommandBase
     [CommandPropertySwitch("detail")]
     public bool IsDetail { get; set; }
 
+    public void PrintHelp(ICommand command)
+    {
+        var executionName = command.GetExecutionName();
+        var commandNames = executionName.Split(' ');
+        PrintCommandHelp(commandNames);
+    }
+
     protected override void OnExecute()
     {
         if (CommandNames.Length is 0)
@@ -32,7 +39,7 @@ public abstract class HelpCommandBase : CommandBase
         }
         else
         {
-            PrintCommandHelp();
+            PrintCommandHelp(CommandNames);
         }
     }
 
@@ -68,9 +75,9 @@ public abstract class HelpCommandBase : CommandBase
         Out.Write(sw.ToString());
     }
 
-    private void PrintCommandHelp()
+    private void PrintCommandHelp(string[] commandNames)
     {
-        var argList = new List<string>(CommandNames);
+        var argList = new List<string>(commandNames);
         var command = CommandContextBase.GetCommand(Context.Node, argList);
         if (command is not null && argList.Count is 0)
         {
@@ -79,7 +86,7 @@ public abstract class HelpCommandBase : CommandBase
         }
         else
         {
-            var commandName = CommandUtility.Join(CommandNames);
+            var commandName = CommandUtility.Join(commandNames);
             throw new InvalidOperationException($"Command '{commandName}' does not exist.");
         }
     }
