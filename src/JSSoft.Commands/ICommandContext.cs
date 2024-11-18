@@ -24,4 +24,8 @@ public interface ICommandContext
     string Version { get; }
 
     CommandSettings Settings { get; }
+
+    ICommand HelpCommand { get; }
+
+    ICommand VersionCommand { get; }
 }

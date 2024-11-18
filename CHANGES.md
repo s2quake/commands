@@ -32,6 +32,9 @@ To be Released.
   the `CommandUsage` property.  [[#40]]
 * Added `StepProgress` to make it easier to work with progress.  [[#41]]
 * Added `RunAsync` and `StopAsync` methods to `SystemTerminalBase`.  [[#42]]
+* Added `HelpCommand` and `VersionCommand` properties to `ICommandContext`.
+  [[#43]]
+* Added `PrintHelp` method to `HelpCommandBase`.  [[#43]]
 
 [#13]: https://github.com/s2quake/commands/pull/13
 [#17]: https://github.com/s2quake/commands/pull/17
@@ -50,6 +53,7 @@ To be Released.
 [#40]: https://github.com/s2quake/commands/pull/40
 [#41]: https://github.com/s2quake/commands/pull/41
 [#42]: https://github.com/s2quake/commands/pull/42
+[#43]: https://github.com/s2quake/commands/pull/43
 
 
 6.0.1
