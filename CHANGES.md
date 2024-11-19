@@ -4,7 +4,7 @@ Commands changes
 7.0.0
 -------------
 
-To be Released.
+Released on November 19, 2024.
 
 * Added github action for CI.  [[#13]]
 * Fixed cursor not updating when buffer height changed.  [[#17]]
