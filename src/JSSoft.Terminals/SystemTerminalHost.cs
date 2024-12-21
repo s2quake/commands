@@ -74,7 +74,6 @@ public partial class SystemTerminalHost
 
     public static string NextCompletion(string[] completions, string text)
     {
-        completions = [.. completions.OrderBy(item => item)];
         if (completions.Contains(text) is true)
         {
             for (var i = 0; i < completions.Length; i++)
@@ -110,7 +109,6 @@ public partial class SystemTerminalHost
 
     public static string PrevCompletion(string[] completions, string text)
     {
-        completions = [.. completions.OrderBy(item => item)];
         if (completions.Contains(text) is true)
         {
             for (var i = completions.Length - 1; i >= 0; i--)
@@ -511,10 +509,16 @@ public partial class SystemTerminalHost
 
     protected virtual string[] GetCompletion(string[] items, string find)
     {
+        if (find == string.Empty)
+        {
+            return items;
+        }
+
         var query = from item in items
                     where item.StartsWith(find)
+                    orderby item
                     select item;
-        return query.ToArray();
+        return [.. query];
     }
 
     protected void UpdateLayout(int bufferWidth, int bufferHeight)
