@@ -86,7 +86,7 @@ public class CommandMethodDescriptorCollectionTest
         Assert.Equal(4, groups.Length);
 
         Assert.Equal(string.Empty, groups[0].Key);
-        Assert.Equal(
+        Assert.Equal<string>(
             groups[0].Select(item => item.MethodName).ToArray(),
             [
                 nameof(Commands.Add),
@@ -95,20 +95,20 @@ public class CommandMethodDescriptorCollectionTest
                 nameof(StaticCommand.Revert),
             ]);
         Assert.Equal(CategoryAttribute.Default.Category, groups[1].Key);
-        Assert.Equal(
+        Assert.Equal<string>(
             groups[1].Select(item => item.MethodName).ToArray(),
             [
                 nameof(Commands.Initialize),
             ]);
         Assert.Equal("Normal", groups[2].Key);
-        Assert.Equal(
+        Assert.Equal<string>(
             groups[2].Select(item => item.MethodName).ToArray(),
             [
                 nameof(Commands.Update),
                 nameof(Commands.Commit),
             ]);
         Assert.Equal("Asset", groups[3].Key);
-        Assert.Equal(
+        Assert.Equal<string>(
             groups[3].Select(item => item.MethodName).ToArray(),
             [
                 nameof(StaticCommand.List),
@@ -125,7 +125,7 @@ public class CommandMethodDescriptorCollectionTest
         Assert.Equal(3, groups.Length);
 
         Assert.Equal(string.Empty, groups[0].Key);
-        Assert.Equal(
+        Assert.Equal<string>(
             groups[0].Select(item => item.MethodName).ToArray(),
             [
                 nameof(Commands.Add),
@@ -134,14 +134,14 @@ public class CommandMethodDescriptorCollectionTest
                 nameof(StaticCommand.Revert),
             ]);
         Assert.Equal("Normal", groups[1].Key);
-        Assert.Equal(
+        Assert.Equal<string>(
             groups[1].Select(item => item.MethodName).ToArray(),
             [
                 nameof(Commands.Update),
                 nameof(Commands.Commit),
             ]);
         Assert.Equal("Asset", groups[2].Key);
-        Assert.Equal(
+        Assert.Equal<string>(
             groups[2].Select(item => item.MethodName).ToArray(),
             [
                 nameof(StaticCommand.List),
