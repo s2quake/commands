@@ -86,27 +86,27 @@ public class CommandMemberDescriptorCollectionTest
         Assert.Equal(4, groups.Length);
 
         Assert.Equal(string.Empty, groups[0].Key);
-        Assert.Equal(
+        Assert.Equal<string>(
             groups[0].Select(item => item.MemberName).ToArray(),
             [
                 nameof(Settings.CacheSize),
                 nameof(GlobalSettings.Password),
             ]);
         Assert.Equal(CategoryAttribute.Default.Category, groups[1].Key);
-        Assert.Equal(
+        Assert.Equal<string>(
             groups[1].Select(item => item.MemberName).ToArray(),
             [
                 nameof(Settings.Port),
             ]);
         Assert.Equal("Normal", groups[2].Key);
-        Assert.Equal(
+        Assert.Equal<string>(
             groups[2].Select(item => item.MemberName).ToArray(),
             [
                 nameof(Settings.UseCache),
                 nameof(Settings.Comment),
             ]);
         Assert.Equal("Asset", groups[3].Key);
-        Assert.Equal(
+        Assert.Equal<string>(
             groups[3].Select(item => item.MemberName).ToArray(),
             [
                 nameof(GlobalSettings.Id),
@@ -123,21 +123,21 @@ public class CommandMemberDescriptorCollectionTest
         Assert.Equal(3, groups.Length);
 
         Assert.Equal(string.Empty, groups[0].Key);
-        Assert.Equal(
+        Assert.Equal<string>(
             groups[0].Select(item => item.MemberName).ToArray(),
             [
                 nameof(Settings.CacheSize),
                 nameof(GlobalSettings.Password),
             ]);
         Assert.Equal("Normal", groups[1].Key);
-        Assert.Equal(
+        Assert.Equal<string>(
             groups[1].Select(item => item.MemberName).ToArray(),
             [
                 nameof(Settings.UseCache),
                 nameof(Settings.Comment),
             ]);
         Assert.Equal("Asset", groups[2].Key);
-        Assert.Equal(
+        Assert.Equal<string>(
             groups[2].Select(item => item.MemberName).ToArray(),
             [
                 nameof(GlobalSettings.Id),
