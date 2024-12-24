@@ -138,7 +138,7 @@ public abstract class SystemTerminalBase : IDisposable
 
     protected virtual string FormatCommand(string command) => command;
 
-    protected virtual string[] GetCompletion(string[] items, string find) => [];
+    protected virtual string[] GetCompletions(string[] items, string find) => [];
 
     protected virtual void OnDispose()
     {
@@ -262,7 +262,7 @@ public abstract class SystemTerminalBase : IDisposable
 
         protected override string[] GetCompletion(string[] items, string find)
         {
-            return terminalBase.GetCompletion(items, find);
+            return terminalBase.GetCompletions(items, find);
         }
     }
 

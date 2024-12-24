@@ -46,8 +46,7 @@ internal sealed class SubCommandAsync(
             method, this, cancellationToken, progress);
 
     public string[] GetCompletions(CommandCompletionContext completionContext)
-        => method.GetCompletions(
-            _methodDescriptor, completionContext.MemberDescriptor, completionContext.Find);
+        => method.GetCompletions(_methodDescriptor, completionContext.MemberDescriptor);
 
     string ICommand.GetUsage(bool isDetail)
     {

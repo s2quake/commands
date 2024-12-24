@@ -44,8 +44,8 @@ public class CommandParser : CommandAnalyzer
         var instance = Instance;
         var memberDescriptors = CommandDescriptor.GetMemberDescriptors(instance);
         var settings = Settings;
-        var parserContext = new ParseContext(memberDescriptors, settings, args);
-        parserContext.SetValue(instance);
+        var parserContext = ParseContext.Create(memberDescriptors, args);
+        parserContext.SetValue(instance, settings);
     }
 
     protected virtual void OnVerify(string[] args)

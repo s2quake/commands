@@ -8,7 +8,7 @@ using System.IO;
 namespace JSSoft.Commands;
 
 internal sealed class SubCommand(CommandMethodBase method, CommandMethodDescriptor methodDescriptor)
-    : CommandMethodInstance(methodDescriptor),
+    : CommandMethodInstance(methodDescriptor, method),
     ICommand,
     IExecutable
 {
@@ -41,8 +41,7 @@ internal sealed class SubCommand(CommandMethodBase method, CommandMethodDescript
     public void Execute() => _methodDescriptor.Invoke(method, this);
 
     public string[] GetCompletions(CommandCompletionContext completionContext)
-        => method.GetCompletions(
-            _methodDescriptor, completionContext.MemberDescriptor, completionContext.Find);
+        => method.GetCompletions(_methodDescriptor, completionContext.MemberDescriptor);
 
     string ICommand.GetUsage(bool isDetail)
     {

@@ -4,26 +4,64 @@
 // </copyright>
 
 using System.ComponentModel;
-using System.Text;
 
 namespace JSSoft.Commands;
 
-internal sealed class ParseContext(
-    CommandMemberDescriptorCollection memberDescriptors, CommandSettings settings, string[] args)
+public sealed class ParseContext
 {
-    public ParseDescriptorCollection Items { get; } = Parse(memberDescriptors, args);
+    private readonly CommandMemberDescriptorCollection _memberDescriptors;
+    private readonly ParseDescriptorCollection _descriptors;
+    private readonly ParseDescriptor[] _implicitDescriptors;
+    private readonly ParseDescriptor? _variablesDescriptor;
+    private readonly List<string> _variableList = [];
+    private int _countOfImplicit = 0;
+    private bool _isVariableMode;
 
-    public void SetValue(object instance)
+    public ParseContext(CommandMemberDescriptorCollection memberDescriptors)
     {
-        ThrowIfInvalidValue(Items);
+        _memberDescriptors = memberDescriptors;
+        _descriptors = new ParseDescriptorCollection(memberDescriptors);
+        _implicitDescriptors = GetImplicitDescriptors(_descriptors);
+        _variablesDescriptor = GetVariableDescriptors(_descriptors);
+        Descriptor = _implicitDescriptors.FirstOrDefault() ?? _variablesDescriptor;
+    }
 
-        var items = Items;
+    public ParseDescriptor? Descriptor { get; private set; }
+
+    public static ParseContext Create(
+        CommandMemberDescriptorCollection memberDescriptors, string[] args)
+    {
+        try
+        {
+            var parseContext = new ParseContext(memberDescriptors);
+            parseContext.Next(args);
+            return parseContext;
+        }
+        catch (Exception e)
+        {
+            throw new CommandLineException("Failed to create a parse context.", e);
+        }
+    }
+
+    public void Next(params string[] args)
+    {
+        foreach (var arg in args)
+        {
+            Next(arg);
+        }
+    }
+
+    public void SetValue(object instance, CommandSettings settings)
+    {
+        ThrowIfInvalidValue(_descriptors);
+
+        var items = _descriptors;
         var supportInitialize = instance as ISupportInitialize;
         var customCommandDescriptor = instance as ICustomCommandDescriptor;
         foreach (var item in items)
         {
             var memberDescriptor = item.MemberDescriptor;
-            if (item.HasValue is false && item.IsOptionSet is false)
+            if (item.IsValueSet is false && item.IsOptionSet is false)
             {
                 continue;
             }
@@ -61,119 +99,157 @@ internal sealed class ParseContext(
         }
     }
 
-    private static ParseDescriptorCollection Parse(
-        CommandMemberDescriptorCollection memberDescriptors, string[] args)
+    public IReadOnlyDictionary<string, object?> GetProperties()
     {
-        var parseDescriptors = new ParseDescriptorCollection(memberDescriptors);
-        var implicitParseDescriptors = parseDescriptors.CreateQueue();
-        var variablesDescriptor = memberDescriptors.VariablesDescriptor;
-        var argQueue = CreateQueue(args);
-        var variableList = new List<string>(argQueue.Count);
-
-        while (argQueue.Count is not 0)
+        var properties = new Dictionary<string, object?>(_descriptors.Count);
+        foreach (var descriptor in _descriptors)
         {
-            var arg = argQueue.Dequeue();
-            if (memberDescriptors.FindByOptionName(arg) is { } memberDescriptor)
+            var memberDescriptor = descriptor.MemberDescriptor;
+            if (descriptor.Value is not DBNull)
             {
-                if (memberDescriptor.IsSwitch is true)
-                {
-                    var parseDescriptor = parseDescriptors[memberDescriptor];
-                    parseDescriptor.SetSwitchValue(true);
-                    parseDescriptor.IsOptionSet = true;
-                }
-                else
-                {
-                    if (argQueue.TryPeek(out var nextArg) is true
-                        && CommandUtility.IsOption(nextArg) is false
-                        && nextArg != "--")
-                    {
-                        var textValue = argQueue.Dequeue();
-                        var parseDescriptor = parseDescriptors[memberDescriptor];
-                        parseDescriptor.SetValue(textValue);
-                    }
-
-                    parseDescriptors[memberDescriptor].IsOptionSet = true;
-                }
-            }
-            else if (arg is "--")
-            {
-                variableList.AddRange([.. argQueue]);
-                argQueue.Clear();
-            }
-            else if (CommandUtility.IsMultipleSwitch(arg))
-            {
-                for (var i = 1; i < arg.Length; i++)
-                {
-                    var s = arg[i];
-                    var item = $"-{s}";
-                    if (memberDescriptors.FindByOptionName(item) is not { } memberDescriptor1)
-                    {
-                        throw new InvalidOperationException($"Unknown switch: '{s}'.");
-                    }
-
-                    if (memberDescriptor1.MemberType != typeof(bool))
-                    {
-                        throw new InvalidOperationException($"Unknown switch: '{s}'.");
-                    }
-
-                    parseDescriptors[memberDescriptor1].IsOptionSet = true;
-                }
-            }
-            else if (CommandUtility.IsOption(arg) is true)
-            {
-                variableList.Add(arg);
-            }
-            else
-            {
-                if (implicitParseDescriptors.TryDequeue(out var parseDescriptor) is true)
-                {
-                    parseDescriptor.SetValue(arg);
-                }
-                else
-                {
-                    variableList.Add(arg);
-                }
+                properties.Add(memberDescriptor.MemberName, descriptor.Value);
             }
         }
 
-        if (variablesDescriptor is not null && variableList.Count is not 0)
-        {
-            var variablesParseDescriptor = parseDescriptors[variablesDescriptor];
-            variablesParseDescriptor.SetVariablesValue(variableList);
-            variableList.Clear();
-        }
-
-        if (variableList.Count is not 0)
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine("There are unhandled arguments.");
-            foreach (var item in variableList)
-            {
-                sb.AppendLine($"    {item}");
-            }
-
-            throw new CommandLineException(sb.ToString());
-        }
-
-        return parseDescriptors;
+        return properties;
     }
 
-    private static Queue<string> CreateQueue(string[] args)
+    private static ParseDescriptor[] GetImplicitDescriptors(
+        ParseDescriptorCollection parseDescriptors)
     {
-        var queue = new Queue<string>(args.Length);
-        foreach (var arg in args)
-        {
-            queue.Enqueue(arg);
-        }
-
-        return queue;
+        var query = from item in parseDescriptors
+                    let memberDescriptor = item.MemberDescriptor
+                    where item.IsRequired is true
+                    where item.IsExplicit is false
+                    select item;
+        return [.. query];
     }
+
+    private static ParseDescriptor? GetVariableDescriptors(
+        ParseDescriptorCollection parseDescriptors)
+        => parseDescriptors.FirstOrDefault(item => item.MemberDescriptor.IsVariables);
 
     private static void ThrowIfInvalidValue(ParseDescriptorCollection parseDescriptors)
     {
         foreach (var parseDescriptor in parseDescriptors)
         {
             parseDescriptor.ThrowIfValueMissing();
+        }
+    }
+
+    private ParseDescriptor? FindNextDescriptor(ParseDescriptor descriptor)
+    {
+        if (Descriptor == descriptor)
+        {
+            _countOfImplicit++;
+        }
+
+        if (_countOfImplicit < _implicitDescriptors.Length)
+        {
+            return _implicitDescriptors[_countOfImplicit];
+        }
+
+        if (_descriptors.IsRequiredDone() is false)
+        {
+            return null;
+        }
+
+        return _variablesDescriptor;
+    }
+
+    private void Next(string arg)
+    {
+        if (_memberDescriptors.FindByOptionName(arg) is { } memberDescriptor)
+        {
+            var parseDescriptor = _descriptors[memberDescriptor];
+            if (memberDescriptor.IsSwitch is true)
+            {
+                parseDescriptor.SetSwitchValue(true);
+                parseDescriptor.IsOptionSet = true;
+                Descriptor = FindNextDescriptor(parseDescriptor);
+            }
+            else
+            {
+                if (memberDescriptor.IsRequired is false
+                    && memberDescriptor.DefaultValue is not DBNull
+                    && _descriptors.IsRequiredDone() is false)
+                {
+                    var optionName = memberDescriptor.DisplayName;
+                    var message = $"'{optionName}'(with a default value) can be used only after " +
+                                  $"all required options are set.";
+                    throw new ArgumentException(message, nameof(arg));
+                }
+
+                if (memberDescriptor.IsRequired is true
+                    && memberDescriptor.DefaultValue is not DBNull
+                    && _countOfImplicit < _implicitDescriptors.Length)
+                {
+                    var optionName = memberDescriptor.DisplayName;
+                    var message = $"'{optionName}'(with a default value) can be used only after " +
+                                  $"all implicit options are set.";
+                    throw new ArgumentException(message, nameof(arg));
+                }
+
+                parseDescriptor.IsOptionSet = true;
+                Descriptor = parseDescriptor;
+            }
+        }
+        else if (arg is "--")
+        {
+            if (_variablesDescriptor is null)
+            {
+                var message = "The '--' option cannot be used because the command does not have " +
+                              "a variable option.";
+                throw new ArgumentException(message, nameof(arg));
+            }
+
+            if (_isVariableMode is true)
+            {
+                var message = "The '--' option cannot be used because the mode is already set to "
+                            + "'variable'.";
+                throw new ArgumentException(message, nameof(arg));
+            }
+
+            if (Descriptor is { IsExplicit: true } descriptor && descriptor.Value is DBNull)
+            {
+                var optionName = descriptor.MemberDescriptor.DisplayName;
+                var message = $"Cannot use '--'. Value of the '{optionName}' must be specified.";
+                throw new ArgumentException(message, nameof(arg));
+            }
+
+            if (_descriptors.IsRequiredDone() is false)
+            {
+                var message = "Cannot use '--'. All required options must be set.";
+                throw new ArgumentException(message, nameof(arg));
+            }
+
+            _isVariableMode = true;
+            Descriptor = _variablesDescriptor;
+        }
+        else if (CommandUtility.IsMultipleSwitch(arg))
+        {
+            throw new NotSupportedException("Multiple switch is not supported.");
+        }
+        else if (CommandUtility.IsOption(arg) is true)
+        {
+            throw new ArgumentException($"Invalid option: '{arg}'", nameof(arg));
+        }
+        else if (Descriptor is { } descriptor)
+        {
+            if (descriptor == _variablesDescriptor)
+            {
+                _variableList.Add(arg);
+                descriptor.SetVariablesValue([.. _variableList]);
+            }
+            else
+            {
+                descriptor.SetValue(arg);
+                Descriptor = FindNextDescriptor(descriptor);
+            }
+        }
+        else
+        {
+            throw new ArgumentException($"Invalid argument: '{arg}'", nameof(arg));
         }
     }
 }

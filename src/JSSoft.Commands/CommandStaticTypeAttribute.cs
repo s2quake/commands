@@ -60,4 +60,14 @@ public abstract class CommandStaticTypeAttribute : Attribute
             ?? throw new CommandDefinitionException(
                 $"'{methodName}' method not found in '{type.FullName}'.", memberInfo);
     }
+
+    internal MethodInfo GetMethodInfo(CommandMemberInfo memberInfo, string methodName, Type[] types)
+    {
+        var type = GetTypeWithFallback(memberInfo);
+        var bindingFlags = CommandSettings.GetBindingFlags(type);
+
+        return type.GetMethod(methodName, bindingFlags, types)
+            ?? throw new CommandDefinitionException(
+                $"'{methodName}' method not found in '{type.FullName}'.", memberInfo);
+    }
 }

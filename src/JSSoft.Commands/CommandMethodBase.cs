@@ -106,10 +106,8 @@ public abstract class CommandMethodBase : ICommand
     }
 
     public virtual string[] GetCompletions(
-        CommandMethodDescriptor methodDescriptor,
-        CommandMemberDescriptor memberDescriptor,
-        string find)
-        => methodDescriptor.GetCompletionInternal(this, memberDescriptor, find);
+        CommandMethodDescriptor methodDescriptor, CommandMemberDescriptor memberDescriptor)
+        => methodDescriptor.GetCompletionsInternal(this, memberDescriptor);
 
     string[] ICommand.GetCompletions(CommandCompletionContext completionContext) => [];
 

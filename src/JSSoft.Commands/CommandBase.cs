@@ -111,7 +111,12 @@ public abstract class CommandBase : ICommand, IExecutable
     string[] ICommand.GetCompletions(CommandCompletionContext completionContext)
         => GetCompletions(completionContext);
 
-    protected virtual string[] GetCompletions(CommandCompletionContext completionContext) => [];
+    protected virtual string[] GetCompletions(CommandCompletionContext completionContext)
+    {
+        var memberDescriptor = completionContext.MemberDescriptor;
+        var instance = this;
+        return memberDescriptor.GetCompletionsInternal(instance);
+    }
 
     protected abstract void OnExecute();
 

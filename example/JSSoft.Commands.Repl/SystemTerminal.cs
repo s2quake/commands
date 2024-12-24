@@ -50,9 +50,9 @@ internal sealed class SystemTerminal : SystemTerminalBase
         return prompt;
     }
 
-    protected override string[] GetCompletion(string[] items, string find)
+    protected override string[] GetCompletions(string[] items, string find)
     {
-        return _commandContext.GetCompletion(items, find);
+        return _commandContext.GetCompletions(items, find);
     }
 
     protected override Task OnExecuteAsync(string command, CancellationToken cancellationToken)

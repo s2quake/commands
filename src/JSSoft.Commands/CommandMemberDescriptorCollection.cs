@@ -77,7 +77,7 @@ public sealed class CommandMemberDescriptorCollection : IEnumerable<CommandMembe
             if (_itemByShortName.ContainsKey(item.ShortName) is true)
             {
                 var message = $"{nameof(CommandMemberDescriptor)} '{item.ShortName}' cannot be " +
-                              $"added because it already exists.";
+                              $"added because it already exists in '{owner}'";
                 throw new CommandDefinitionException(message, owner);
             }
 

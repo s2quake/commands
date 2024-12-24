@@ -31,7 +31,14 @@ public sealed class CommandPropertyAttribute : CommandPropertyBaseAttribute
     {
     }
 
+    /// <summary>
+    /// Gets or sets the initial value when the option is not specified on the command line.
+    /// </summary>
     public object InitValue { get; set; } = DBNull.Value;
 
+    /// <summary>
+    /// Gets or sets the default value when the option is specified on the command line
+    /// but the value is not set.
+    /// </summary>
     public object DefaultValue { get; set; } = DBNull.Value;
 }

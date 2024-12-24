@@ -22,8 +22,6 @@ public sealed class ParseDescriptor(CommandMemberDescriptor memberDescriptor)
 
     public bool IsOptionSet { get; internal set; }
 
-    public bool HasValue => _value is not DBNull;
-
     public object? Value
     {
         get
@@ -57,40 +55,9 @@ public sealed class ParseDescriptor(CommandMemberDescriptor memberDescriptor)
 
     public string? TextValue { get; private set; }
 
-    public object? InitValue
-    {
-        get
-        {
-            if (MemberDescriptor.InitValue is not DBNull)
-            {
-                return MemberDescriptor.InitValue;
-            }
+    public object? InitValue { get; } = GetInitValue(memberDescriptor);
 
-            if (MemberDescriptor.IsNullable is true)
-            {
-                return null;
-            }
-
-            if (MemberDescriptor.MemberType.IsArray is true)
-            {
-                return Array.CreateInstance(MemberDescriptor.MemberType.GetElementType()!, 0);
-            }
-
-            if (MemberDescriptor.MemberType == typeof(string))
-            {
-                return string.Empty;
-            }
-
-            if (MemberDescriptor.MemberType.IsValueType is true)
-            {
-                return Activator.CreateInstance(MemberDescriptor.MemberType);
-            }
-
-            return null;
-        }
-    }
-
-    public object? ActualValue => IsValueSet is true ? Value : InitValue;
+    public override string ToString() => MemberDescriptor.DisplayName;
 
     internal void ValidateValue(
         ICommandValueValidator valueValidator, object instance, object? value)
@@ -107,7 +74,7 @@ public sealed class ParseDescriptor(CommandMemberDescriptor memberDescriptor)
 
     internal void ThrowIfValueMissing()
     {
-        if (HasValue is false && MemberDescriptor.DefaultValue is DBNull)
+        if (_value is DBNull && MemberDescriptor.DefaultValue is DBNull)
         {
             if (IsOptionSet is true)
             {
@@ -142,6 +109,36 @@ public sealed class ParseDescriptor(CommandMemberDescriptor memberDescriptor)
     {
         _value = value;
         IsValueSet = true;
+    }
+
+    private static object? GetInitValue(CommandMemberDescriptor memberDescriptor)
+    {
+        if (memberDescriptor.InitValue is not DBNull)
+        {
+            return memberDescriptor.InitValue;
+        }
+
+        if (memberDescriptor.IsNullable is true)
+        {
+            return null;
+        }
+
+        if (memberDescriptor.MemberType.IsArray is true)
+        {
+            return Array.CreateInstance(memberDescriptor.MemberType.GetElementType()!, 0);
+        }
+
+        if (memberDescriptor.MemberType == typeof(string))
+        {
+            return string.Empty;
+        }
+
+        if (memberDescriptor.MemberType.IsValueType is true)
+        {
+            return Activator.CreateInstance(memberDescriptor.MemberType);
+        }
+
+        return null;
     }
 
     private static object Parse(CommandMemberDescriptor memberDescriptor, string arg)
