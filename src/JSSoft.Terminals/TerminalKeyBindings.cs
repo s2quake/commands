@@ -47,17 +47,19 @@ public static class TerminalKeyBindings
         new TerminalKeyBinding(TerminalKey.Delete, (t) => t.Delete()),
     ];
 
-    public static readonly TerminalKeyBindingCollection MacOS = new(Common)
-    {
+    public static readonly TerminalKeyBindingCollection MacOS =
+    [
+        .. Common,
         new TerminalKeyBinding(TerminalModifiers.Control, TerminalKey.E, (t) => t.MoveToLast()),
         new TerminalKeyBinding(TerminalModifiers.Control, TerminalKey.A, (t) => t.MoveToFirst()),
 
         new TerminalKeyBinding(TerminalKey.PageUp, (g) => g.Scroll.PageUp()),
         new TerminalKeyBinding(TerminalKey.PageDown, (g) => g.Scroll.PageDown()),
-    };
+    ];
 
-    public static readonly TerminalKeyBindingCollection Windows = new(Common)
-    {
+    public static readonly TerminalKeyBindingCollection Windows =
+    [
+        .. Common,
         new TerminalKeyBinding(TerminalKey.Home, (t) => t.MoveToFirst()),
         new TerminalKeyBinding(TerminalKey.End, (t) => t.MoveToLast()),
 
@@ -68,10 +70,11 @@ public static class TerminalKeyBindings
         new TerminalKeyBinding(TerminalModifiers.Control, TerminalKey.Home, (g) => g.Scroll.ScrollToTop()),
         new TerminalKeyBinding(TerminalModifiers.Control, TerminalKey.End, (g) => g.Scroll.ScrollToBottom()),
         new TerminalKeyBinding(TerminalModifiers.Control, TerminalKey.A, (g) => g.Selections.SelectAll()),
-    };
+    ];
 
-    public static readonly TerminalKeyBindingCollection Linux = new(Common)
-    {
+    public static readonly TerminalKeyBindingCollection Linux =
+    [
+        .. Common,
         new TerminalKeyBinding(TerminalModifiers.Control, TerminalKey.E, t => t.MoveToLast()),
         new TerminalKeyBinding(TerminalModifiers.Control, TerminalKey.A, t => t.MoveToFirst()),
         new TerminalKeyBinding(TerminalKey.Home, (t) => t.MoveToFirst()),
@@ -83,5 +86,5 @@ public static class TerminalKeyBindings
         new TerminalKeyBinding(TerminalModifiers.Control | TerminalModifiers.Shift, TerminalKey.UpArrow, (g) => g.Scroll.LineUp()),
         new TerminalKeyBinding(TerminalModifiers.Shift, TerminalKey.Home, (g) => g.Scroll.ScrollToTop()),
         new TerminalKeyBinding(TerminalModifiers.Shift, TerminalKey.End, (g) => g.Scroll.ScrollToBottom()),
-    };
+    ];
 }

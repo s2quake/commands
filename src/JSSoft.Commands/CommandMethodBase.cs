@@ -142,7 +142,7 @@ public abstract class CommandMethodBase : ICommand
         var query = from methodDescriptor in methodDescriptors
                     select CreateCommand(obj, methodDescriptor);
         var commands = query.ToArray();
-        return new CommandCollection(commands);
+        return [.. commands];
 
         static ICommand CreateCommand(
             CommandMethodBase obj, CommandMethodDescriptor methodDescriptor)

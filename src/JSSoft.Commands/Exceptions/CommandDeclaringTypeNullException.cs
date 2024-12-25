@@ -5,10 +5,7 @@
 
 namespace JSSoft.Commands.Exceptions;
 
-internal sealed class CommandDeclaringTypeNullException : CommandDefinitionException
+internal sealed class CommandDeclaringTypeNullException(CommandMemberInfo memberInfo)
+    : CommandDefinitionException($"{memberInfo}' does not have a declaring type.", memberInfo)
 {
-    public CommandDeclaringTypeNullException(CommandMemberInfo memberInfo)
-        : base($"{memberInfo}' does not have a declaring type.", memberInfo)
-    {
-    }
 }
