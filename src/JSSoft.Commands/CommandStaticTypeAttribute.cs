@@ -66,7 +66,7 @@ public abstract class CommandStaticTypeAttribute : Attribute
         var type = GetTypeWithFallback(memberInfo);
         var bindingFlags = CommandSettings.GetBindingFlags(type);
 
-        return type.GetMethod(methodName, bindingFlags, types)
+        return type.GetMethod(methodName, bindingFlags, binder: null, types, modifiers: null)
             ?? throw new CommandDefinitionException(
                 $"'{methodName}' method not found in '{type.FullName}'.", memberInfo);
     }
