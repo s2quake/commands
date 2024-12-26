@@ -51,7 +51,7 @@ public class CommandAsICustomCommandDescriptor
                 itemList.AddRange(descriptors);
             }
 
-            _descriptorByInstance = new(itemList);
+            _descriptorByInstance = itemList.ToDictionary(item => item.Key, item => item.Value);
             _descriptors = new(GetType(), [.. _descriptorByInstance.Keys]);
         }
 

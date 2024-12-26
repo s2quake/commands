@@ -26,7 +26,7 @@ public sealed class CommandCollection : IEnumerable<ICommand>
             Add(command);
         }
 
-        _commandList = new List<ICommand>(commands);
+        _commandList = [.. commands];
     }
 
     public static CommandCollection Empty { get; } = new() { IsLocked = true };

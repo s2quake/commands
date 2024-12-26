@@ -110,7 +110,8 @@ public abstract class CommandAsyncBase : ICommand, IAsyncExecutable
     protected IProgress<ProgressInfo> Progress
         => _progress ?? throw new InvalidOperationException("The progress is not available.");
 
-    public virtual string[] GetCompletions(CommandCompletionContext completionContext) => [];
+    string[] ICommand.GetCompletions(CommandCompletionContext completionContext)
+        => GetCompletions(completionContext);
 
     Task IAsyncExecutable.ExecuteAsync(
         CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
@@ -127,6 +128,13 @@ public abstract class CommandAsyncBase : ICommand, IAsyncExecutable
     }
 
     string ICommand.GetUsage(bool isDetail) => OnUsagePrint(isDetail);
+
+    protected virtual string[] GetCompletions(CommandCompletionContext completionContext)
+    {
+        var memberDescriptor = completionContext.MemberDescriptor;
+        var instance = this;
+        return memberDescriptor.GetCompletionsInternal(instance);
+    }
 
     protected abstract Task OnExecuteAsync(CancellationToken cancellationToken);
 

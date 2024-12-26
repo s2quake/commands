@@ -3,6 +3,7 @@
 //   Licensed under the MIT License. See LICENSE.md in the project root for license information.
 // </copyright>
 
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -142,8 +143,46 @@ public abstract class CommandContextBase : ICommandContext
         OnExecuted(EventArgs.Empty);
     }
 
+    [Obsolete("Use GetCompletions instead.")]
     public string[] GetCompletion(string[] items, string find)
-        => GetCompletion(_commandNode, new List<string>(items), find);
+    {
+        var completions = GetCompletions(items, find);
+        if (find == string.Empty)
+        {
+            return completions;
+        }
+
+        return [.. completions.Where(item => item.StartsWith(find))];
+    }
+
+    public string[] GetCompletions(string[] items, string find)
+    {
+        var completionList = new List<string>(items.Length);
+        var itemList = new List<string>(items);
+        var completions = GetCompletions(_commandNode, itemList);
+        for (var i = 0; i < completions.Length; i++)
+        {
+            var completion = completions[i];
+            if (completion != string.Empty)
+            {
+                if (find == string.Empty || completion.StartsWith(find) is true)
+                {
+                    completionList.Add(completions[i]);
+                }
+            }
+            else
+            {
+                Trace.TraceWarning($"The '{i}' completion string is empty. It will be ignored.");
+            }
+        }
+
+        if (find != string.Empty)
+        {
+            completionList.Sort();
+        }
+
+        return [.. completionList];
+    }
 
     internal static ICommand? GetCommand(ICommand parent, IList<string> argList)
     {
@@ -299,16 +338,14 @@ public abstract class CommandContextBase : ICommandContext
         }
     }
 
-    private string[] GetCompletion(
-        ICommand parent, IList<string> itemList, string find)
+    private static string[] GetCompletions(
+        ICommand parent, IList<string> itemList)
     {
         if (itemList.Count is 0)
         {
             var query = from child in parent.Commands
                         where child.IsEnabled is true
                         from name in new string[] { child.Name }.Concat(child.Aliases)
-                        where name.StartsWith(find)
-                        orderby name
                         select name;
             return query.ToArray();
         }
@@ -317,15 +354,15 @@ public abstract class CommandContextBase : ICommandContext
             var commandName = itemList[0];
             if (parent.TryGetCommand(commandName, out var command) is true)
             {
-                if (command.IsEnabled is true && command.Commands.Any() is true)
+                if (command.IsEnabled is true && command.Commands.Count > 0)
                 {
                     itemList.RemoveAt(0);
-                    return GetCompletion(command, itemList, find);
+                    return GetCompletions(command, itemList);
                 }
                 else
                 {
                     var args = itemList.Skip(1).ToArray();
-                    if (GetCompletion(command, args, find) is string[] completions)
+                    if (GetCompletions(command, args) is string[] completions)
                     {
                         return completions;
                     }
@@ -336,19 +373,17 @@ public abstract class CommandContextBase : ICommandContext
         }
     }
 
-    private string[] GetCompletion(ICommand command, string[] args, string find)
+    private static string[] GetCompletions(ICommand command, string[] args)
     {
         var memberDescriptors = CommandDescriptor.GetMemberDescriptors(command);
-        var settings = Settings;
-        var parseContext = new ParseContext(memberDescriptors, settings, args);
-        var context = CommandCompletionContext.Create(command, parseContext, find);
-        if (context is CommandCompletionContext completionContext)
+        var parseContext = ParseContext.Create(memberDescriptors, args);
+        if (parseContext.Descriptor is { } descriptor)
         {
+            var properties = parseContext.GetProperties();
+            var memberDescriptor = descriptor.MemberDescriptor;
+            var completionContext = new CommandCompletionContext(
+                command, memberDescriptor, properties);
             return command.GetCompletions(completionContext);
-        }
-        else if (context is string[] completions)
-        {
-            return completions;
         }
 
         return [];

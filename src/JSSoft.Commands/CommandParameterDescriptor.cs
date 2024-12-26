@@ -65,14 +65,14 @@ public sealed class CommandParameterDescriptor : CommandMemberDescriptor
 
     protected override object? GetValue(object instance) => _value;
 
-    protected override string[]? GetCompletion(object instance, string find)
+    protected override string[] GetCompletions(object instance)
     {
         if (_completionAttribute is not null)
         {
-            return GetCompletion(instance, find, _completionAttribute);
+            return GetCompletions(instance, _completionAttribute);
         }
 
-        return base.GetCompletion(instance, find);
+        return base.GetCompletions(instance);
     }
 
     private static object GetInitValue(

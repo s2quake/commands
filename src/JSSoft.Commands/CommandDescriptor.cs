@@ -319,7 +319,7 @@ public static class CommandDescriptor
             methodDescriptorList.Capacity = items.Length + staticMethodDescriptors.Length;
             foreach (var item in items)
             {
-                methodDescriptorList.Add(new StandardCommandMethodDescriptor(item));
+                methodDescriptorList.Add(new CommandMethodDescriptor(item));
             }
 
             methodDescriptorList.AddRange(staticMethodDescriptors);

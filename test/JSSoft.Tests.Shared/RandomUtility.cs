@@ -216,7 +216,7 @@ public static partial class RandomUtility
             items[i] = generator();
         }
 
-        return new List<T>(items);
+        return [.. items];
     }
 
     public static ImmutableArray<T> ImmutableArray<T>(Func<T> generator)

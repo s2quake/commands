@@ -106,10 +106,8 @@ public abstract class CommandMethodBase : ICommand
     }
 
     public virtual string[] GetCompletions(
-        CommandMethodDescriptor methodDescriptor,
-        CommandMemberDescriptor memberDescriptor,
-        string find)
-        => methodDescriptor.GetCompletionInternal(this, memberDescriptor, find);
+        CommandMethodDescriptor methodDescriptor, CommandMemberDescriptor memberDescriptor)
+        => methodDescriptor.GetCompletionsInternal(this, memberDescriptor);
 
     string[] ICommand.GetCompletions(CommandCompletionContext completionContext) => [];
 
@@ -144,7 +142,7 @@ public abstract class CommandMethodBase : ICommand
         var query = from methodDescriptor in methodDescriptors
                     select CreateCommand(obj, methodDescriptor);
         var commands = query.ToArray();
-        return new CommandCollection(commands);
+        return [.. commands];
 
         static ICommand CreateCommand(
             CommandMethodBase obj, CommandMethodDescriptor methodDescriptor)

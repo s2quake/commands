@@ -5,13 +5,10 @@
 
 namespace JSSoft.Commands.Exceptions;
 
-internal sealed class CommandInvalidNameException : CommandDefinitionException
-{
-    public CommandInvalidNameException(CommandMemberInfo memberInfo, string name)
-        : base(
-            message: $"'{name}' is not a name that matches the regular expression pattern " +
+internal sealed class CommandInvalidNameException(CommandMemberInfo memberInfo, string name)
+    : CommandDefinitionException(
+        message: $"'{name}' is not a name that matches the regular expression pattern " +
                      $"'{CommandUtility.NamePattern}'.",
-            memberInfo: memberInfo)
-    {
-    }
+        memberInfo: memberInfo)
+{
 }

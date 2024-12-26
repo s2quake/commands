@@ -11,7 +11,7 @@ namespace JSSoft.Commands;
 
 internal sealed class SubCommandAsync(
     CommandMethodBase method, CommandMethodDescriptor methodDescriptor)
-    : CommandMethodInstance(methodDescriptor), ICommand, IAsyncExecutable
+    : CommandMethodInstance(methodDescriptor, method), ICommand, IAsyncExecutable
 {
     private readonly CommandMethodDescriptor _methodDescriptor = methodDescriptor;
 
@@ -41,15 +41,12 @@ internal sealed class SubCommandAsync(
 
     CommandCollection ICommand.Commands { get; } = CommandCollection.Empty;
 
-    public object GetMemberOwner(CommandMemberDescriptor memberDescriptor) => method;
-
     public Task ExecuteAsync(CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
         => _methodDescriptor.InvokeAsync(
             method, this, cancellationToken, progress);
 
     public string[] GetCompletions(CommandCompletionContext completionContext)
-        => method.GetCompletions(
-            _methodDescriptor, completionContext.MemberDescriptor, completionContext.Find);
+        => method.GetCompletions(_methodDescriptor, completionContext.MemberDescriptor);
 
     string ICommand.GetUsage(bool isDetail)
     {

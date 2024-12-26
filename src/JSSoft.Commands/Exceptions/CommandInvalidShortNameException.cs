@@ -5,12 +5,9 @@
 
 namespace JSSoft.Commands.Exceptions;
 
-internal sealed class CommandInvalidShortNameException : CommandDefinitionException
+internal sealed class CommandInvalidShortNameException(CommandMemberInfo memberInfo, char value)
+    : CommandDefinitionException(
+        message: $"'{value}' is an invalid short name. Only alphabetic characters can be used.",
+        memberInfo: memberInfo)
 {
-    public CommandInvalidShortNameException(CommandMemberInfo memberInfo, char value)
-        : base(
-            message: $"'{value}' is an invalid short name. Only alphabetic characters can be used.",
-            memberInfo: memberInfo)
-    {
-    }
 }

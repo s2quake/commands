@@ -25,8 +25,9 @@ public partial class SystemTerminalHost
         new KeyBinding(TerminalKey.RightArrow, (t) => t.Right()),
     ];
 
-    public static TerminalKeyBindingCollection WindowsKeyBindings { get; } = new(CommonKeyBindings)
-    {
+    public static TerminalKeyBindingCollection WindowsKeyBindings { get; } =
+    [
+        .. CommonKeyBindings,
         new KeyBinding(TerminalKey.Enter, InputEnter),
         new KeyBinding(TerminalModifiers.Control, TerminalKey.C, (t) => t.CancelInput()),
         new KeyBinding(TerminalKey.Escape, (t) => t.Command = string.Empty, (t) => !t.IsPassword),
@@ -38,10 +39,11 @@ public partial class SystemTerminalHost
         new KeyBinding(TerminalModifiers.Shift, TerminalKey.Tab, (t) => t.PrevCompletion(), (t) => !t.IsPassword),
         new KeyBinding(TerminalModifiers.Control, TerminalKey.LeftArrow, (t) => PrevWord(t), (t) => !t.IsPassword),
         new KeyBinding(TerminalModifiers.Control, TerminalKey.RightArrow, (t) => NextWord(t), (t) => !t.IsPassword),
-    };
+    ];
 
-    public static TerminalKeyBindingCollection LinuxKeyBindings { get; } = new(CommonKeyBindings)
-    {
+    public static TerminalKeyBindingCollection LinuxKeyBindings { get; } =
+    [
+        .. CommonKeyBindings,
         new KeyBinding(TerminalKey.Enter, InputEnter),
         new KeyBinding(TerminalModifiers.Control, TerminalKey.C, (t) => t.CancelInput()),
         new KeyBinding(TerminalKey.Escape, (t) => {}),
@@ -54,7 +56,7 @@ public partial class SystemTerminalHost
         new KeyBinding(TerminalModifiers.Control, TerminalKey.L, (t) => t.Clear(), (t) => !t.IsPassword),
         new KeyBinding(TerminalKey.Tab, (t) => t.NextCompletion(), (t) => !t.IsPassword),
         new KeyBinding(TerminalModifiers.Shift, TerminalKey.Tab, (t) => t.PrevCompletion(), (t) => !t.IsPassword),
-    };
+    ];
 
     private static TerminalKeyBindingCollection GetDefaultKeyBindings()
     {

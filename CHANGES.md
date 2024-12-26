@@ -6,6 +6,10 @@ Commands changes
 
 To be Released.
 
+* Renamed method `GetCompletion` to `GetCompletions`.  [[#47]]
+
+[#47]: https://github.com/s2quake/commands/pull/47
+
 
 7.0.0
 -------------

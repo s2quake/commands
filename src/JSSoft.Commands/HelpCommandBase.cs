@@ -56,7 +56,7 @@ public abstract class HelpCommandBase : CommandBase
                 commandNames = items;
             }
 
-            return GetCommandNames(Context.Node, commandNames, completionContext.Find);
+            return GetCommandNames(Context.Node, commandNames);
         }
 
         return base.GetCompletions(completionContext);
@@ -91,14 +91,13 @@ public abstract class HelpCommandBase : CommandBase
         }
     }
 
-    private string[] GetCommandNames(ICommand node, string[] names, string find)
+    private string[] GetCommandNames(ICommand node, string[] names)
     {
         if (names.Length is 0)
         {
             var query = from child in node.Commands
                         where child.IsEnabled is true
                         from name in new string[] { child.Name }.Concat(child.Aliases)
-                        where name.StartsWith(find)
                         where name != Name
                         orderby name
                         select name;
@@ -106,7 +105,7 @@ public abstract class HelpCommandBase : CommandBase
         }
         else if (node.TryGetCommand(names[0], out var childNode) is true)
         {
-            return GetCommandNames(childNode, [.. names.Skip(1)], find);
+            return GetCommandNames(childNode, [.. names.Skip(1)]);
         }
 
         return [];

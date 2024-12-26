@@ -64,13 +64,16 @@ public sealed class ParseDescriptorCollection : IEnumerable<ParseDescriptor>
 
     IEnumerator IEnumerable.GetEnumerator() => _itemByMember.Values.GetEnumerator();
 
-    internal Queue<ParseDescriptor> CreateQueue()
+    internal bool IsRequiredDone()
     {
-        var query = from ParseDescriptor item in _itemByMember.Values
-                    where item.IsRequired is true
-                    where item.IsExplicit is false
-                    where item.HasValue is false
-                    select item;
-        return new(query);
+        foreach (ParseDescriptor item in _itemByMember.Values)
+        {
+            if (item.IsRequired is true && item.Value is DBNull)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

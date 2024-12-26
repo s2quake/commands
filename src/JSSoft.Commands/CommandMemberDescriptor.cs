@@ -5,6 +5,7 @@
 
 using System.Diagnostics;
 using System.Threading.Tasks;
+using JSSoft.Commands.Exceptions;
 
 namespace JSSoft.Commands;
 
@@ -58,18 +59,7 @@ public abstract class CommandMemberDescriptor(
     internal void VerifyTrigger(ParseDescriptorCollection parseDescriptors)
         => OnVerifyTrigger(parseDescriptors);
 
-    internal string[]? GetCompletionInternal(object instance, string find)
-    {
-        if (GetCompletion(instance, find) is { } items)
-        {
-            var query = from item in items
-                        where item.StartsWith(find)
-                        select item;
-            return query.ToArray();
-        }
-
-        return null;
-    }
+    internal string[] GetCompletionsInternal(object instance) => GetCompletions(instance);
 
     protected abstract void SetValue(object instance, object? value);
 
@@ -79,14 +69,17 @@ public abstract class CommandMemberDescriptor(
     {
     }
 
-    protected virtual string[]? GetCompletion(object instance, string find) => null;
+    protected virtual string[] GetCompletions(object instance) => [];
 
-    protected string[] GetCompletion(
-        object instance, string find, CommandMemberCompletionAttribute attribute)
+    protected string[] GetCompletions(
+        object instance, CommandMemberCompletionAttribute attribute)
     {
+        var declaringType = MemberInfo.DeclaringType;
         var methodName = attribute.MethodName;
-        var methodInfo = attribute.GetMethodInfo(instance.GetType(), methodName);
-        var obj = methodInfo.DeclaringType == instance.GetType() ? instance : null;
+        var parameterTypes = Array.Empty<Type>();
+        var methodInfo = attribute.GetMethodInfo(
+            MemberInfo.DeclaringType, methodName, parameterTypes);
+        var obj = declaringType.IsInstanceOfType(instance) ? instance : null;
 
         try
         {
