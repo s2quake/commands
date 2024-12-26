@@ -45,7 +45,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     <TargetFrameworks Condition="'$(_IsPacking)'=='true'">net6.0;net7.0;net8.0;netstandard2.1</TargetFrameworks>
     <TargetFramework Condition="'$(_IsPacking)'!='true'">net8.0</TargetFramework>
     <AssemblyVersion>7.0</AssemblyVersion>
-    <FileVersion>7.0.0</FileVersion>
+    <FileVersion>7.1.0</FileVersion>
     <Version>$(FileVersion)</Version>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/s2quake/commands</RepositoryUrl>
