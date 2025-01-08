@@ -8,6 +8,7 @@
 
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using JSSoft.Commands.Extensions;
 using static JSSoft.Commands.CommandUtility;
 
@@ -86,6 +87,10 @@ public sealed record class CommandSettings
     public ICommandValueValidator ValueValidator { get; init; } = new CommandValueValidator();
 
     public Predicate<string> CategoryPredicate { get; init; } = DefaultCategoryPredicate;
+
+    public IServiceProvider? ServiceProvider { get; init; }
+
+    public CultureInfo? CultureInfo { get; init; }
 
     internal static TimeSpan AsyncTimeout { get; } = TimeSpan.FromSeconds(1);
 
@@ -176,4 +181,8 @@ public sealed record class CommandSettings
 
     internal string GetLabelString(string label)
         => GetLabelString(label, LabelWidth, IndentSpaces);
+
+    internal ITypeDescriptorContext? CreateTypeDescriptorContext(object? instance)
+        => ServiceProvider is not null
+            ? new TypeDescriptorContext(ServiceProvider, instance) : null;
 }

@@ -159,7 +159,8 @@ public abstract class CommandContextBase : ICommandContext
     {
         var completionList = new List<string>(items.Length);
         var itemList = new List<string>(items);
-        var completions = GetCompletions(_commandNode, itemList);
+        var settings = Settings;
+        var completions = GetCompletions(_commandNode, itemList, settings);
         for (var i = 0; i < completions.Length; i++)
         {
             var completion = completions[i];
@@ -339,7 +340,7 @@ public abstract class CommandContextBase : ICommandContext
     }
 
     private static string[] GetCompletions(
-        ICommand parent, IList<string> itemList)
+        ICommand parent, IList<string> itemList, CommandSettings settings)
     {
         if (itemList.Count is 0)
         {
@@ -357,12 +358,12 @@ public abstract class CommandContextBase : ICommandContext
                 if (command.IsEnabled is true && command.Commands.Count > 0)
                 {
                     itemList.RemoveAt(0);
-                    return GetCompletions(command, itemList);
+                    return GetCompletions(command, itemList, settings);
                 }
                 else
                 {
                     var args = itemList.Skip(1).ToArray();
-                    if (GetCompletions(command, args) is string[] completions)
+                    if (GetCompletions(command, args, settings) is string[] completions)
                     {
                         return completions;
                     }
@@ -373,10 +374,11 @@ public abstract class CommandContextBase : ICommandContext
         }
     }
 
-    private static string[] GetCompletions(ICommand command, string[] args)
+    private static string[] GetCompletions(
+        ICommand command, string[] args, CommandSettings settings)
     {
         var memberDescriptors = CommandDescriptor.GetMemberDescriptors(command);
-        var parseContext = ParseContext.Create(memberDescriptors, args);
+        var parseContext = ParseContext.Create(memberDescriptors, args, settings);
         if (parseContext.Descriptor is { } descriptor)
         {
             var properties = parseContext.GetProperties();

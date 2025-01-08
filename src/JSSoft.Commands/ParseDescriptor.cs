@@ -88,16 +88,16 @@ public sealed class ParseDescriptor(CommandMemberDescriptor memberDescriptor)
         }
     }
 
-    internal void SetValue(string textValue)
+    internal void SetValue(string textValue, CommandSettings settings)
     {
-        _value = Parse(MemberDescriptor, textValue);
+        _value = Parse(MemberDescriptor, textValue, settings);
         TextValue = textValue;
         IsValueSet = true;
     }
 
-    internal void SetVariablesValue(IReadOnlyList<string> args)
+    internal void SetVariablesValue(IReadOnlyList<string> args, CommandSettings settings)
     {
-        _value = ParseArray(MemberDescriptor, [.. args]);
+        _value = ParseArray(MemberDescriptor, [.. args], settings);
         TextValue = string.Join(" ", args.Select(WrapDoubleQuotes));
         IsValueSet = true;
 
@@ -141,16 +141,17 @@ public sealed class ParseDescriptor(CommandMemberDescriptor memberDescriptor)
         return null;
     }
 
-    private static object Parse(CommandMemberDescriptor memberDescriptor, string arg)
+    private static object Parse(
+        CommandMemberDescriptor memberDescriptor, string arg, CommandSettings settings)
     {
         var isListType = typeof(IList).IsAssignableFrom(memberDescriptor.MemberType);
         if (memberDescriptor.MemberType.IsArray is true || isListType is true)
         {
-            return ParseArray(memberDescriptor, arg);
+            return ParseArray(memberDescriptor, arg, settings);
         }
         else if (memberDescriptor.MemberType == typeof(bool))
         {
-            return ParseBoolean(memberDescriptor, arg);
+            return ParseBoolean(memberDescriptor, arg, settings);
         }
         else if (memberDescriptor.MemberType.IsEnum)
         {
@@ -158,21 +159,24 @@ public sealed class ParseDescriptor(CommandMemberDescriptor memberDescriptor)
         }
         else
         {
-            return ParseDefault(memberDescriptor, arg);
+            return ParseDefault(memberDescriptor, arg, settings);
         }
     }
 
-    private static Array ParseArray(CommandMemberDescriptor memberDescriptor, string[] args)
+    private static Array ParseArray(
+        CommandMemberDescriptor memberDescriptor, string[] args, CommandSettings settings)
     {
         try
         {
             var propertyType = memberDescriptor.MemberType;
             var itemType = GetItemType(propertyType);
             var array = Array.CreateInstance(itemType, args.Length);
+            var context = settings.CreateTypeDescriptorContext(instance: null);
+            var cultureInfo = settings.CultureInfo;
             var converter = TypeDescriptor.GetConverter(itemType);
             for (var i = 0; i < args.Length; i++)
             {
-                var value = converter.ConvertFromString(args[i]);
+                var value = converter.ConvertFromString(context, cultureInfo, args[i]);
                 array.SetValue(value, i);
             }
 
@@ -187,11 +191,13 @@ public sealed class ParseDescriptor(CommandMemberDescriptor memberDescriptor)
         }
     }
 
-    private static Array ParseArray(CommandMemberDescriptor memberDescriptor, string arg)
-        => ParseArray(memberDescriptor, arg.Split(CommandUtility.ItemSperator));
+    private static Array ParseArray(
+        CommandMemberDescriptor memberDescriptor, string arg, CommandSettings settings)
+        => ParseArray(memberDescriptor, arg.Split(CommandUtility.ItemSperator), settings);
 
-    private static object ParseBoolean(CommandMemberDescriptor memberDescriptor, string arg)
-        => ParseDefault(memberDescriptor, arg);
+    private static object ParseBoolean(
+        CommandMemberDescriptor memberDescriptor, string arg, CommandSettings settings)
+        => ParseDefault(memberDescriptor, arg, settings);
 
     private static object ParseEnum(CommandMemberDescriptor memberDescriptor, string arg)
     {
@@ -212,12 +218,15 @@ public sealed class ParseDescriptor(CommandMemberDescriptor memberDescriptor)
         return Enum.Parse(memberDescriptor.MemberType, string.Join(", ", nameList));
     }
 
-    private static object ParseDefault(CommandMemberDescriptor memberDescriptor, string arg)
+    private static object ParseDefault(
+        CommandMemberDescriptor memberDescriptor, string arg, CommandSettings settings)
     {
         try
         {
             var converter = TypeDescriptor.GetConverter(memberDescriptor.MemberType);
-            return converter.ConvertFrom(arg)!;
+            var context = settings.CreateTypeDescriptorContext(instance: null);
+            var cultureInfo = settings.CultureInfo;
+            return converter.ConvertFrom(context, cultureInfo, arg)!;
         }
         catch (Exception e)
         {
