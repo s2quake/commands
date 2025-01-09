@@ -29,12 +29,14 @@ public sealed class ParseContext
     public ParseDescriptor? Descriptor { get; private set; }
 
     public static ParseContext Create(
-        CommandMemberDescriptorCollection memberDescriptors, string[] args)
+        CommandMemberDescriptorCollection memberDescriptors,
+        string[] args,
+        CommandSettings settings)
     {
         try
         {
             var parseContext = new ParseContext(memberDescriptors);
-            parseContext.Next(args);
+            parseContext.Next(args, settings);
             return parseContext;
         }
         catch (Exception e)
@@ -43,11 +45,11 @@ public sealed class ParseContext
         }
     }
 
-    public void Next(params string[] args)
+    public void Next(string[] args, CommandSettings settings)
     {
         foreach (var arg in args)
         {
-            Next(arg);
+            Next(arg, settings);
         }
     }
 
@@ -157,7 +159,7 @@ public sealed class ParseContext
         return _variablesDescriptor;
     }
 
-    private void Next(string arg)
+    private void Next(string arg, CommandSettings settings)
     {
         if (_memberDescriptors.FindByOptionName(arg) is { } memberDescriptor)
         {
@@ -239,11 +241,11 @@ public sealed class ParseContext
             if (descriptor == _variablesDescriptor)
             {
                 _variableList.Add(arg);
-                descriptor.SetVariablesValue([.. _variableList]);
+                descriptor.SetVariablesValue([.. _variableList], settings);
             }
             else
             {
-                descriptor.SetValue(arg);
+                descriptor.SetValue(arg, settings);
                 Descriptor = FindNextDescriptor(descriptor);
             }
         }

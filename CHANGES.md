@@ -7,8 +7,11 @@ Commands changes
 To be Released.
 
 * Renamed method `GetCompletion` to `GetCompletions`.  [[#47]]
+* Added a `ServiceProvider` property to the `CommandSettings`  [[#49]]
 
 [#47]: https://github.com/s2quake/commands/pull/47
+[#49]: https://github.com/s2quake/commands/pull/49
+
 
 
 7.0.0
@@ -33,12 +36,12 @@ Released on November 19, 2024.
 * Added the `CommandPropertyExclusionAttribute`.  [[#31]]
 * Added a `Category` property to the `CommandMemberDescriptor`.  [[#33]]
 * Simplified the process of getting strings from `ResourceManager`.  [[#34]]
-* Removed `ICommandUsage`, `CommandUsageDescriptorBase`, 
+* Removed `ICommandUsage`, `CommandUsageDescriptorBase`,
   `ResourceUsageDescriptor`.  [[#34]]
-* Fixed an issue with the display order of options and commands in Help.  
+* Fixed an issue with the display order of options and commands in Help.
   [[#37]]
 * Removed commands sorting code in `CommandContextBase`.  [[#38]]
-* Integrated usage-related properties(`Summary`, `Description`, `Example`) into 
+* Integrated usage-related properties(`Summary`, `Description`, `Example`) into
   the `CommandUsage` property.  [[#40]]
 * Added `StepProgress` to make it easier to work with progress.  [[#41]]
 * Added `RunAsync` and `StopAsync` methods to `SystemTerminalBase`.  [[#42]]
@@ -71,7 +74,7 @@ Released on November 19, 2024.
 
 Released on May 31, 2024.
 
-* Fixed an issue where an exception was thrown when multiple 
+* Fixed an issue where an exception was thrown when multiple
   commands using `PartialCommandAttribute` were inside an assembly.  [[#8]]
 
 [#8]: https://github.com/s2quake/commands/pull/8

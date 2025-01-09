@@ -175,7 +175,7 @@ public class CommandInvoker : CommandAnalyzer
         var instance = Instance;
         var memberDescriptors = methodDescriptor.Members;
         var settings = Settings;
-        var parseContext = ParseContext.Create(memberDescriptors, args);
+        var parseContext = ParseContext.Create(memberDescriptors, args, settings);
         var methodInstance = new CommandMethodInstance(methodDescriptor, instance);
         parseContext.SetValue(methodInstance, settings);
         methodDescriptor.Invoke(instance, methodInstance);
@@ -190,7 +190,7 @@ public class CommandInvoker : CommandAnalyzer
         var instance = Instance;
         var memberDescriptors = methodDescriptor.Members;
         var settings = Settings;
-        var parseContext = ParseContext.Create(memberDescriptors, args);
+        var parseContext = ParseContext.Create(memberDescriptors, args, settings);
         var methodInstance = new CommandMethodInstance(methodDescriptor, instance);
         parseContext.SetValue(methodInstance, settings);
         return methodDescriptor.InvokeAsync(
@@ -202,7 +202,7 @@ public class CommandInvoker : CommandAnalyzer
         var instance = Instance;
         var memberDescriptors = CommandDescriptor.GetMemberDescriptors(instance);
         var settings = Settings;
-        var parserContext = ParseContext.Create(memberDescriptors, args);
+        var parserContext = ParseContext.Create(memberDescriptors, args, settings);
         parserContext.SetValue(instance, settings);
     }
 }

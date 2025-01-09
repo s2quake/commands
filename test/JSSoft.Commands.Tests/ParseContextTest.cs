@@ -59,7 +59,8 @@ public class ParseContextTest
     {
         var memberDescriptors = CommandDescriptor.GetMemberDescriptors(typeof(ParseContextTest));
         var parseContext = new ParseContext(memberDescriptors);
-        parseContext.Next(args);
+        var settings = CommandSettings.Default;
+        parseContext.Next(args, settings);
         var descriptor = parseContext.Descriptor;
         var actualPropertyName = descriptor?.MemberDescriptor.MemberName ?? string.Empty;
         Assert.Equal(expectedPropertyName, actualPropertyName);
@@ -91,7 +92,8 @@ public class ParseContextTest
     {
         var memberDescriptors = CommandDescriptor.GetMemberDescriptors(typeof(ParseContextTest));
         var parseContext = new ParseContext(memberDescriptors);
-        var exception = Assert.Throws<ArgumentException>(() => parseContext.Next(args));
+        var settings = CommandSettings.Default;
+        var exception = Assert.Throws<ArgumentException>(() => parseContext.Next(args, settings));
         Assert.StartsWith(message, exception.Message);
         Assert.True(index >= 0);
     }
