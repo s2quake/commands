@@ -8,13 +8,13 @@ using System.ComponentModel;
 namespace JSSoft.Commands;
 
 internal sealed class TypeDescriptorContext(
-    IServiceProvider serviceProvider, object? instance) : ITypeDescriptorContext
+    IServiceProvider serviceProvider) : ITypeDescriptorContext
 {
-    IContainer? ITypeDescriptorContext.Container => default;
+    IContainer ITypeDescriptorContext.Container => null!;
 
-    public object? Instance { get; } = instance;
+    public object Instance => null!;
 
-    PropertyDescriptor? ITypeDescriptorContext.PropertyDescriptor => default;
+    PropertyDescriptor ITypeDescriptorContext.PropertyDescriptor => null!;
 
     public object? GetService(Type serviceType) => serviceProvider.GetService(serviceType);
 

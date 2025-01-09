@@ -171,7 +171,7 @@ public sealed class ParseDescriptor(CommandMemberDescriptor memberDescriptor)
             var propertyType = memberDescriptor.MemberType;
             var itemType = GetItemType(propertyType);
             var array = Array.CreateInstance(itemType, args.Length);
-            var context = settings.CreateTypeDescriptorContext(instance: null);
+            var context = settings.CreateTypeDescriptorContext();
             var cultureInfo = settings.CultureInfo;
             var converter = TypeDescriptor.GetConverter(itemType);
             for (var i = 0; i < args.Length; i++)
@@ -223,9 +223,9 @@ public sealed class ParseDescriptor(CommandMemberDescriptor memberDescriptor)
     {
         try
         {
-            var converter = TypeDescriptor.GetConverter(memberDescriptor.MemberType);
-            var context = settings.CreateTypeDescriptorContext(instance: null);
+            var context = settings.CreateTypeDescriptorContext();
             var cultureInfo = settings.CultureInfo;
+            var converter = TypeDescriptor.GetConverter(memberDescriptor.MemberType);
             return converter.ConvertFrom(context, cultureInfo, arg)!;
         }
         catch (Exception e)

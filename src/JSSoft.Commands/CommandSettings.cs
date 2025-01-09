@@ -182,7 +182,7 @@ public sealed record class CommandSettings
     internal string GetLabelString(string label)
         => GetLabelString(label, LabelWidth, IndentSpaces);
 
-    internal ITypeDescriptorContext? CreateTypeDescriptorContext(object? instance)
+    internal ITypeDescriptorContext? CreateTypeDescriptorContext()
         => ServiceProvider is not null
-            ? new TypeDescriptorContext(ServiceProvider, instance) : null;
+            ? new TypeDescriptorContext(ServiceProvider) : null;
 }
