@@ -291,19 +291,19 @@ public abstract class CommandContextBase : ICommandContext
         }
     }
 
-    protected virtual void OnHelpExecute(string[] args)
+    protected virtual void OnHelpExecute(string[] args, CommandSettings settings)
     {
-        var items = args.Where(item => Settings.IsHelpArg(item) is false).ToArray();
+        var items = args.Where(item => settings.IsHelpArg(item) is false).ToArray();
         var helpCommand = HelpCommand;
-        var invoker = new InternalCommandInvoker(helpCommand);
+        var invoker = new InternalCommandInvoker(helpCommand, settings);
         invoker.Invoke(items);
     }
 
-    protected virtual void OnVersionExecute(string[] args)
+    protected virtual void OnVersionExecute(string[] args, CommandSettings settings)
     {
-        var items = args.Where(item => Settings.IsVersionArg(item) is false).ToArray();
+        var items = args.Where(item => settings.IsVersionArg(item) is false).ToArray();
         var versionCommand = VersionCommand;
-        var invoker = new InternalCommandInvoker(versionCommand);
+        var invoker = new InternalCommandInvoker(versionCommand, settings);
         invoker.Invoke(items);
     }
 
@@ -411,21 +411,22 @@ public abstract class CommandContextBase : ICommandContext
     private void ExecuteInternal(string[] args)
     {
         var argList = new List<string>(args);
+        var settings = Settings;
         if (CommandUtility.IsEmptyArgs(args) is true)
         {
             OnEmptyExecute();
         }
-        else if (Settings.ContainsHelpOption(args) is true)
+        else if (settings.ContainsHelpOption(args) is true)
         {
-            OnHelpExecute(args);
+            OnHelpExecute(args, settings);
         }
-        else if (Settings.ContainsVersionOption(args) is true)
+        else if (settings.ContainsVersionOption(args) is true)
         {
-            OnVersionExecute(args);
+            OnVersionExecute(args, settings);
         }
         else if (GetCommand(_commandNode, argList) is { } command)
         {
-            var invoker = new InternalCommandInvoker(command);
+            var invoker = new InternalCommandInvoker(command, settings);
             invoker.Invoke([.. argList]);
         }
         else
@@ -438,21 +439,22 @@ public abstract class CommandContextBase : ICommandContext
         string[] args, CancellationToken cancellationToken, IProgress<ProgressInfo> progress)
     {
         var argList = new List<string>(args);
+        var settings = Settings;
         if (CommandUtility.IsEmptyArgs(args) is true)
         {
             OnEmptyExecute();
         }
-        else if (Settings.ContainsHelpOption(args) is true)
+        else if (settings.ContainsHelpOption(args) is true)
         {
-            OnHelpExecute(args);
+            OnHelpExecute(args, settings);
         }
-        else if (Settings.ContainsVersionOption(args) is true)
+        else if (settings.ContainsVersionOption(args) is true)
         {
-            OnVersionExecute(args);
+            OnVersionExecute(args, settings);
         }
         else if (GetCommand(_commandNode, argList) is { } command)
         {
-            var invoker = new InternalCommandInvoker(command);
+            var invoker = new InternalCommandInvoker(command, settings);
             await invoker.InvokeAsync([.. argList], cancellationToken, progress);
         }
         else
@@ -461,8 +463,8 @@ public abstract class CommandContextBase : ICommandContext
         }
     }
 
-    private sealed class InternalCommandInvoker(ICommand command)
-        : CommandInvoker(command.Name, command)
+    private sealed class InternalCommandInvoker(ICommand command, CommandSettings settings)
+        : CommandInvoker(command.Name, command, settings)
     {
         protected override void OnVerify(string[] args)
         {

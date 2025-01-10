@@ -11,7 +11,7 @@ public class CommandAsICustomCommandDescriptor
     public void Test1()
     {
         var runCommand = new RunCommand();
-        var commandContext = new TestCommandContext(runCommand);
+        var commandContext = new TestCommandContext([runCommand]);
 
         commandContext.Execute("run --string1 value1 --string2 value2");
 
