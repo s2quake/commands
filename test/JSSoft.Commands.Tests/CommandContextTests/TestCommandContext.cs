@@ -5,7 +5,11 @@
 
 namespace JSSoft.Commands.Tests.CommandContextTests;
 
-public class TestCommandContext(params ICommand[] commands)
-    : CommandContextBase(commands)
+public class TestCommandContext(CommandSettings settings, ICommand[] commands)
+    : CommandContextBase(commands, settings)
 {
+    public TestCommandContext(ICommand[] commands)
+        : this(CommandSettings.Default, commands)
+    {
+    }
 }

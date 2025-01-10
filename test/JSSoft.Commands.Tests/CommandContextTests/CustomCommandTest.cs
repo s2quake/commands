@@ -15,7 +15,7 @@ public class CustomCommandTest
     {
         var customCommand = new CustomCommandWithoutExecutable();
         Assert.Throws<CommandDefinitionException>(
-            () => new TestCommandContext(customCommand));
+            () => new TestCommandContext([customCommand]));
     }
 
     private sealed class CustomCommandWithoutExecutable : ICommand
@@ -52,7 +52,7 @@ public class CustomCommandTest
     public void ExecutableImplemented_Test()
     {
         var customCommand = new CustomCommandWithExecutable();
-        var commandContext = new TestCommandContext(customCommand);
+        var commandContext = new TestCommandContext([customCommand]);
         commandContext.Execute("test");
 
         Assert.Equal(int.MaxValue, customCommand.Value);
@@ -99,7 +99,7 @@ public class CustomCommandTest
     public async Task AsyncExecutableImplemented_TestAsync()
     {
         var customCommand = new CustomCommandWithAsyncExecutable();
-        var commandContext = new TestCommandContext(customCommand);
+        var commandContext = new TestCommandContext([customCommand]);
         await commandContext.ExecuteAsync("test");
 
         Assert.Equal(int.MaxValue, customCommand.Value);
