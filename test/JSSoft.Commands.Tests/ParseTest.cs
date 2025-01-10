@@ -20,20 +20,29 @@ public class ParseTest : ISupportInitialize
     public void TestMethod1()
     {
         _parser.ParseCommandLine("parse --boolean false");
+        Assert.Equal(string.Empty, Value);
+        Assert.Equal(0, Number);
         Assert.False(Boolean);
+        Assert.Equal(string.Empty, String);
     }
 
     [Fact]
     public void TestMethod2()
     {
         _parser.ParseCommandLine("parse --number 1");
+        Assert.Equal(string.Empty, Value);
         Assert.Equal(1, Number);
+        Assert.False(Boolean);
+        Assert.Equal(string.Empty, String);
     }
 
     [Fact]
     public void TestMethod3()
     {
         _parser.ParseCommandLine("parse --string qwer");
+        Assert.Equal(string.Empty, Value);
+        Assert.Equal(0, Number);
+        Assert.False(Boolean);
         Assert.Equal("qwer", String);
     }
 
@@ -48,6 +57,25 @@ public class ParseTest : ISupportInitialize
     {
         Assert.Throws<CommandLineException>(() => _parser.ParseCommandLine("parse --number ewe"));
     }
+
+    [Fact]
+    public void TestMethod6()
+    {
+        _parser.ParseCommandLine("parse --string qwer value");
+        Assert.Equal("qwer", String);
+        Assert.Equal("value", Value);
+    }
+
+    [Fact]
+    public void TestMethod7()
+    {
+        _parser.ParseCommandLine("parse value --string qwer");
+        Assert.Equal("qwer", String);
+        Assert.Equal("value", Value);
+    }
+
+    [CommandPropertyRequired(DefaultValue = "")]
+    public string Value { get; set; } = string.Empty;
 
     [CommandProperty]
     public bool Boolean { get; set; }

@@ -4,6 +4,7 @@
 // </copyright>
 
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace JSSoft.Commands;
 
@@ -141,7 +142,13 @@ public sealed class ParseContext
 
     private ParseDescriptor? FindNextDescriptor(ParseDescriptor descriptor)
     {
-        if (Descriptor == descriptor)
+        if (descriptor.IsValueSet is false)
+        {
+            throw new UnreachableException("The value of the descriptor must be set.");
+        }
+
+        if (_countOfImplicit < _implicitDescriptors.Length
+            && _implicitDescriptors[_countOfImplicit].IsValueSet is true)
         {
             _countOfImplicit++;
         }
