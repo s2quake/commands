@@ -1,25 +1,13 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="TerminalStyle.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System.ComponentModel;
 using System.Linq;
 using Avalonia.Media;
 using JSSoft.Terminals;
+using static JSSoft.Terminals.TerminalStyleUtility;
 
 namespace JSSoft.Commands.AppUI.Controls;
 
@@ -31,41 +19,45 @@ public sealed class TerminalStyle : ITerminalStyle
     private double _fontSize = 12;
     private TerminalFont? _font;
 
-    private Color _foregroundColor = Convert(TerminalStyleUtility.DefaultForegroundColor);
-    private Color _backgroundColor = Convert(TerminalStyleUtility.DefaultBackgroundColor);
-    private Color _selectionForegroundColor = Convert(TerminalStyleUtility.DefaultSelectionForegroundColor);
-    private Color _selectionBackgroundColor = Convert(TerminalStyleUtility.DefaultSelectionBackgroundColor);
-    private TerminalColorSource _selectionForegroundColorSource = TerminalStyleUtility.DefaultSelectionForegroundColorSource;
-    private TerminalColorSource _selectionBackgroundColorSource = TerminalStyleUtility.DefaultSelectionBackgroundColorSource;
-    private Color _cursorForegroundColor = Convert(TerminalStyleUtility.DefaultCursorForegroundColor);
-    private Color _cursorBackgroundColor = Convert(TerminalStyleUtility.DefaultCursorBackgroundColor);
-    private TerminalColorSource _cursorForegroundColorSource = TerminalStyleUtility.DefaultCursorForegroundColorSource;
-    private TerminalColorSource _cursorBackgroundColorSource = TerminalStyleUtility.DefaultCursorBackgroundColorSource;
+    private Color _foregroundColor = Convert(DefaultForegroundColor);
+    private Color _backgroundColor = Convert(DefaultBackgroundColor);
+    private Color _selectionForegroundColor = Convert(DefaultSelectionForegroundColor);
+    private Color _selectionBackgroundColor = Convert(DefaultSelectionBackgroundColor);
+    private TerminalColorSource _selectionForegroundColorSource
+        = DefaultSelectionForegroundColorSource;
 
-    private TerminalCursorShape _cursorShape = TerminalStyleUtility.DefaultCursorShape;
-    private TerminalCursorVisibility _cursorVisibility = TerminalStyleUtility.DefaultCursorVisibility;
+    private TerminalColorSource _selectionBackgroundColorSource
+        = DefaultSelectionBackgroundColorSource;
 
-    private int _cursorThickness = TerminalStyleUtility.DefaultCursorThickness;
-    private bool _isCursorBlinkable = TerminalStyleUtility.DefaultIsCursorBlinkable;
-    private double _cursorBlinkDelay = TerminalStyleUtility.DefaultCursorBlinkDelay;
-    private bool _isScrollForwardEnabled = TerminalStyleUtility.DefaultIsScrollForwardEnabled;
+    private Color _cursorForegroundColor = Convert(DefaultCursorForegroundColor);
+    private Color _cursorBackgroundColor = Convert(DefaultCursorBackgroundColor);
+    private TerminalColorSource _cursorForegroundColorSource = DefaultCursorForegroundColorSource;
+    private TerminalColorSource _cursorBackgroundColorSource = DefaultCursorBackgroundColorSource;
 
-    private Color _black = Convert(TerminalStyleUtility.DefaultBlack);
-    private Color _red = Convert(TerminalStyleUtility.DefaultRed);
-    private Color _green = Convert(TerminalStyleUtility.DefaultGreen);
-    private Color _yellow = Convert(TerminalStyleUtility.DefaultYellow);
-    private Color _blue = Convert(TerminalStyleUtility.DefaultBlue);
-    private Color _magenta = Convert(TerminalStyleUtility.DefaultMagenta);
-    private Color _cyan = Convert(TerminalStyleUtility.DefaultCyan);
-    private Color _white = Convert(TerminalStyleUtility.DefaultWhite);
-    private Color _brightBlack = Convert(TerminalStyleUtility.DefaultBrightBlack);
-    private Color _brightRed = Convert(TerminalStyleUtility.DefaultBrightRed);
-    private Color _brightGreen = Convert(TerminalStyleUtility.DefaultBrightGreen);
-    private Color _brightYellow = Convert(TerminalStyleUtility.DefaultBrightYellow);
-    private Color _brightBlue = Convert(TerminalStyleUtility.DefaultBrightBlue);
-    private Color _brightMagenta = Convert(TerminalStyleUtility.DefaultBrightMagenta);
-    private Color _brightCyan = Convert(TerminalStyleUtility.DefaultBrightCyan);
-    private Color _brightWhite = Convert(TerminalStyleUtility.DefaultBrightWhite);
+    private TerminalCursorShape _cursorShape = DefaultCursorShape;
+    private TerminalCursorVisibility _cursorVisibility = DefaultCursorVisibility;
+
+    private int _cursorThickness = DefaultCursorThickness;
+    private bool _isCursorBlinkable = DefaultIsCursorBlinkable;
+    private double _cursorBlinkDelay = DefaultCursorBlinkDelay;
+    private bool _isScrollForwardEnabled = DefaultIsScrollForwardEnabled;
+
+    private Color _black = Convert(DefaultBlack);
+    private Color _red = Convert(DefaultRed);
+    private Color _green = Convert(DefaultGreen);
+    private Color _yellow = Convert(DefaultYellow);
+    private Color _blue = Convert(DefaultBlue);
+    private Color _magenta = Convert(DefaultMagenta);
+    private Color _cyan = Convert(DefaultCyan);
+    private Color _white = Convert(DefaultWhite);
+    private Color _brightBlack = Convert(DefaultBrightBlack);
+    private Color _brightRed = Convert(DefaultBrightRed);
+    private Color _brightGreen = Convert(DefaultBrightGreen);
+    private Color _brightYellow = Convert(DefaultBrightYellow);
+    private Color _brightBlue = Convert(DefaultBrightBlue);
+    private Color _brightMagenta = Convert(DefaultBrightMagenta);
+    private Color _brightCyan = Convert(DefaultBrightCyan);
+    private Color _brightWhite = Convert(DefaultBrightWhite);
 
     public TerminalStyle()
     {
@@ -77,9 +69,12 @@ public sealed class TerminalStyle : ITerminalStyle
         };
     }
 
+    public event PropertyChangedEventHandler? PropertyChanged;
+
     public FontFamily FontFamily
     {
-        get => _fontFamilyList.Count > 0 ? _fontFamilyList[0] : FontManager.Current.DefaultFontFamily;
+        get => _fontFamilyList.Count > 0
+            ? _fontFamilyList[0] : FontManager.Current.DefaultFontFamily;
         set
         {
             _fontFamilyList.Clear();
@@ -110,7 +105,9 @@ public sealed class TerminalStyle : ITerminalStyle
                 {
                     _font.Size = (int)value;
                 }
-                InvokePropertyChangedEvent(new PropertyChangedEventArgs(nameof(ITerminalStyle.Font)));
+
+                InvokePropertyChangedEvent(
+                    new PropertyChangedEventArgs(nameof(ITerminalStyle.Font)));
             }
         }
     }
@@ -130,25 +127,29 @@ public sealed class TerminalStyle : ITerminalStyle
     public Color SelectionForegroundColor
     {
         get => _selectionForegroundColor;
-        set => _setter.SetField(ref _selectionForegroundColor, value, nameof(SelectionForegroundColor));
+        set => _setter.SetField(
+            ref _selectionForegroundColor, value, nameof(SelectionForegroundColor));
     }
 
     public Color SelectionBackgroundColor
     {
         get => _selectionBackgroundColor;
-        set => _setter.SetField(ref _selectionBackgroundColor, value, nameof(SelectionBackgroundColor));
+        set => _setter.SetField(
+            ref _selectionBackgroundColor, value, nameof(SelectionBackgroundColor));
     }
 
     public TerminalColorSource SelectionForegroundColorSource
     {
         get => _selectionForegroundColorSource;
-        set => _setter.SetField(ref _selectionForegroundColorSource, value, nameof(SelectionForegroundColorSource));
+        set => _setter.SetField(
+            ref _selectionForegroundColorSource, value, nameof(SelectionForegroundColorSource));
     }
 
     public TerminalColorSource SelectionBackgroundColorSource
     {
         get => _selectionBackgroundColorSource;
-        set => _setter.SetField(ref _selectionBackgroundColorSource, value, nameof(SelectionBackgroundColorSource));
+        set => _setter.SetField(
+            ref _selectionBackgroundColorSource, value, nameof(SelectionBackgroundColorSource));
     }
 
     public Color CursorForegroundColor
@@ -166,13 +167,15 @@ public sealed class TerminalStyle : ITerminalStyle
     public TerminalColorSource CursorForegroundColorSource
     {
         get => _cursorForegroundColorSource;
-        set => _setter.SetField(ref _cursorForegroundColorSource, value, nameof(CursorForegroundColorSource));
+        set => _setter.SetField(
+            ref _cursorForegroundColorSource, value, nameof(CursorForegroundColorSource));
     }
 
     public TerminalColorSource CursorBackgroundColorSource
     {
         get => _cursorBackgroundColorSource;
-        set => _setter.SetField(ref _cursorBackgroundColorSource, value, nameof(CursorBackgroundColorSource));
+        set => _setter.SetField(
+            ref _cursorBackgroundColorSource, value, nameof(CursorBackgroundColorSource));
     }
 
     public TerminalCursorShape CursorShape
@@ -307,21 +310,8 @@ public sealed class TerminalStyle : ITerminalStyle
         set => _setter.SetField(ref _brightWhite, value, nameof(BrightWhite));
     }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    private void InvokePropertyChangedEvent(PropertyChangedEventArgs e)
-    {
-        PropertyChanged?.Invoke(this, e);
-    }
-
-    private static Color Convert(TerminalColor color) => TerminalMarshal.Convert(color);
-
-    private static TerminalColor Convert(Color color) => TerminalMarshal.Convert(color);
-
-    private FontFamily[] GetActualFontFamilies()
-        => _fontFamilyList.Count > 0 ? _fontFamilyList.ToArray() : [FontManager.Current.DefaultFontFamily];
-
-    ITerminalFont ITerminalStyle.Font => _font ??= new TerminalFont(GetActualFontFamilies(), (int)_fontSize);
+    ITerminalFont ITerminalStyle.Font
+        => _font ??= new TerminalFont(GetActualFontFamilies(), (int)_fontSize);
 
     TerminalColor ITerminalStyle.ForegroundColor => Convert(ForegroundColor);
 
@@ -366,4 +356,17 @@ public sealed class TerminalStyle : ITerminalStyle
     TerminalColor ITerminalStyle.BrightCyan => Convert(BrightCyan);
 
     TerminalColor ITerminalStyle.BrightWhite => Convert(BrightWhite);
+
+    private static Color Convert(TerminalColor color) => TerminalMarshal.Convert(color);
+
+    private static TerminalColor Convert(Color color) => TerminalMarshal.Convert(color);
+
+    private void InvokePropertyChangedEvent(PropertyChangedEventArgs e)
+    {
+        PropertyChanged?.Invoke(this, e);
+    }
+
+    private FontFamily[] GetActualFontFamilies()
+        => _fontFamilyList.Count > 0
+            ? [.. _fontFamilyList] : [FontManager.Current.DefaultFontFamily];
 }

@@ -1,20 +1,9 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="TerminalMarshal.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
+#pragma warning disable SA1515 // Single-line comment should be preceded by blank line
+#pragma warning disable MEN003 // Method is too long
 
 using System.Collections.Generic;
 using Avalonia;
@@ -25,7 +14,7 @@ using JSSoft.Terminals;
 
 namespace JSSoft.Commands.AppUI.Controls;
 
-static class TerminalMarshal
+internal static class TerminalMarshal
 {
     private static readonly Dictionary<uint, IBrush> _brushByColorCode = [];
 
@@ -44,16 +33,6 @@ static class TerminalMarshal
         return TerminalColor.FromArgb(color.A, color.R, color.G, color.B);
     }
 
-    public static IBrush ToBrush(TerminalColor color)
-    {
-        var colorCode = color.ToUInt32();
-        if (_brushByColorCode.ContainsKey(colorCode) is false)
-        {
-            _brushByColorCode.Add(colorCode, new ImmutableSolidColorBrush(colorCode));
-        }
-        return _brushByColorCode[colorCode];
-    }
-
     public static TerminalPoint Convert(Point point)
     {
         return new TerminalPoint((int)point.X, (int)point.Y);
@@ -66,18 +45,22 @@ static class TerminalMarshal
         {
             terminalModifiers |= TerminalModifiers.Alt;
         }
+
         if (modifiers.HasFlag(KeyModifiers.Control) is true)
         {
             terminalModifiers |= TerminalModifiers.Control;
         }
+
         if (modifiers.HasFlag(KeyModifiers.Shift) is true)
         {
             terminalModifiers |= TerminalModifiers.Shift;
         }
+
         if (modifiers.HasFlag(KeyModifiers.Meta) is true)
         {
             terminalModifiers |= (TerminalModifiers)KeyModifiers.Meta;
         }
+
         return terminalModifiers;
     }
 
@@ -290,4 +273,16 @@ static class TerminalMarshal
         // Key.FnDownArrow => ,
         _ => (TerminalKey)0,
     };
+
+    public static IBrush ToBrush(TerminalColor color)
+    {
+        var colorCode = color.ToUInt32();
+        if (_brushByColorCode.TryGetValue(colorCode, out var brush) is false)
+        {
+            brush = new ImmutableSolidColorBrush(colorCode);
+            _brushByColorCode.Add(colorCode, brush);
+        }
+
+        return brush;
+    }
 }

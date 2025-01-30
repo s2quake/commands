@@ -1,20 +1,7 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="TerminalFont.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System;
 using System.Collections.Generic;
@@ -25,15 +12,15 @@ using JSSoft.Terminals;
 
 namespace JSSoft.Commands.AppUI.Controls;
 
-sealed class TerminalFont : ITerminalFont
+internal sealed class TerminalFont : ITerminalFont
 {
     private readonly FontFamily[] _fontFamilies;
-    private Dictionary<char, TerminalGlyphInfo> _glyphInfoByCharacter = new(char.MaxValue);
-    private int _size;
     private readonly Typeface[] _typefacesN;
     private readonly Typeface[] _typefacesB;
     private readonly Typeface[] _typefacesI;
     private readonly Typeface[] _typefacesBI;
+    private Dictionary<char, TerminalGlyphInfo> _glyphInfoByCharacter = new(char.MaxValue);
+    private int _size;
 
     public TerminalFont(FontFamily[] fontFamilies)
         : this(fontFamilies, 12)
@@ -42,16 +29,20 @@ sealed class TerminalFont : ITerminalFont
 
     public TerminalFont(FontFamily[] fontFamilies, int size)
     {
-        _fontFamilies = fontFamilies.Distinct().ToArray();
+        _fontFamilies = [.. fontFamilies.Distinct()];
         _typefacesN = [.. _fontFamilies.Select(item => new Typeface(item))];
-        _typefacesB = [.. _fontFamilies.Select(item => new Typeface(item, FontStyle.Normal, FontWeight.Bold))];
+        _typefacesB =
+        [
+            .. _fontFamilies.Select(item => new Typeface(item, FontStyle.Normal, FontWeight.Bold))
+        ];
         _typefacesI = [.. _fontFamilies.Select(item => new Typeface(item, FontStyle.Italic))];
-        _typefacesBI = [.. _fontFamilies.Select(item => new Typeface(item, FontStyle.Italic, FontWeight.Bold))];
+        _typefacesBI =
+        [
+            .. _fontFamilies.Select(item => new Typeface(item, FontStyle.Italic, FontWeight.Bold))
+        ];
         _size = size;
         Update();
     }
-
-    public TerminalGlyphInfo this[char character] => _glyphInfoByCharacter[character];
 
     public int Width { get; private set; }
 
@@ -70,6 +61,8 @@ sealed class TerminalFont : ITerminalFont
         }
     }
 
+    public TerminalGlyphInfo this[char character] => _glyphInfoByCharacter[character];
+
     public Typeface GetTypeface(bool isBold, bool isItalic, int group)
     {
         var index = -1;
@@ -81,14 +74,27 @@ sealed class TerminalFont : ITerminalFont
                 break;
             }
         }
+
         if (index == -1)
+        {
             return _typefacesN[0];
+        }
+
         if (isBold is true && isItalic is true)
+        {
             return _typefacesBI[index];
+        }
+
         if (isBold is true)
+        {
             return _typefacesB[index];
+        }
+
         if (isItalic is true)
+        {
             return _typefacesI[index];
+        }
+
         return _typefacesN[index];
     }
 
@@ -97,15 +103,19 @@ sealed class TerminalFont : ITerminalFont
         foreach (var item in _typefacesN)
         {
             if (item.GlyphTypeface.TryGetGlyph(character, out var glyph) is true)
+            {
                 return true;
+            }
         }
+
         return false;
     }
 
-    private static Dictionary<char, TerminalGlyphInfo> GetCharacterInfos(Typeface[] typefaces, int size)
+    private static Dictionary<char, TerminalGlyphInfo> GetCharacterInfos(
+        Typeface[] typefaces, int size)
     {
-        var designEmHeight1 = (double)typefaces[0].GlyphTypeface.Metrics.DesignEmHeight;
-        var glyphInfoByCharacter = new Dictionary<char, TerminalGlyphInfo>(typefaces[0].GlyphTypeface.GlyphCount);
+        var glyphInfoCount = typefaces[0].GlyphTypeface.GlyphCount;
+        var glyphInfoByCharacter = new Dictionary<char, TerminalGlyphInfo>(glyphInfoCount);
         for (var i = char.MinValue; i < char.MaxValue; i++)
         {
             foreach (var item in typefaces)
@@ -116,6 +126,7 @@ sealed class TerminalFont : ITerminalFont
                 if (id is not 0 && glyphTypeface.TryGetGlyphMetrics(id, out var metrics) is true)
                 {
                     var xAdvance = glyphTypeface.GetGlyphAdvance(id);
+                    var yAdvance = (metrics.Height + metrics.YBearing) / designEmHeight * size;
                     var glyphInfo = new TerminalGlyphInfo
                     {
                         Character = i,
@@ -124,7 +135,7 @@ sealed class TerminalFont : ITerminalFont
                         XOffset = (int)Math.Ceiling(metrics.XBearing / designEmHeight * size),
                         YOffset = (int)Math.Ceiling(metrics.YBearing / designEmHeight * size),
                         XAdvance = (int)Math.Ceiling(xAdvance / designEmHeight * size),
-                        YAdvance = (int)Math.Ceiling((metrics.Height + metrics.YBearing) / designEmHeight * size),
+                        YAdvance = (int)Math.Ceiling(yAdvance),
                         Tag = id,
                         Group = item.GetHashCode(),
                     };
@@ -133,10 +144,11 @@ sealed class TerminalFont : ITerminalFont
                 }
             }
         }
+
         return glyphInfoByCharacter;
     }
 
-    private static (int, int) GetSize(IGlyphTypeface glyphTypeface, int size)
+    private static (int W, int H) GetSize(IGlyphTypeface glyphTypeface, int size)
     {
         var width = 0;
         var height = glyphTypeface.Metrics.LineSpacing;
@@ -145,15 +157,21 @@ sealed class TerminalFont : ITerminalFont
         {
             width = CalculateWidth(glyphTypeface, width, i);
         }
+
         for (ushort i = 65; i <= 90; i++)
         {
             width = CalculateWidth(glyphTypeface, width, i);
         }
+
         for (ushort i = 97; i <= 122; i++)
         {
             width = CalculateWidth(glyphTypeface, width, i);
         }
-        return ((int)Math.Ceiling(width / designEmHeight * size), (int)Math.Ceiling(height / designEmHeight * size));
+
+        width = (int)Math.Ceiling(width / designEmHeight * size);
+        height = (int)Math.Ceiling(height / designEmHeight * size);
+
+        return (width, height);
     }
 
     private static int CalculateWidth(IGlyphTypeface glyphTypeface, int width, ushort glyph)
@@ -171,6 +189,6 @@ sealed class TerminalFont : ITerminalFont
     {
         (Width, Height) = GetSize(_typefacesN[0].GlyphTypeface, _size);
         _glyphInfoByCharacter = GetCharacterInfos(_typefacesN, _size);
-        Trace.WriteLine($"{Width}, {Height}, {Size}, {_fontFamilies[0].Name}");
+        Trace.TraceInformation($"{Width}, {Height}, {Size}, {_fontFamilies[0].Name}");
     }
 }

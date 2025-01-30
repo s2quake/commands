@@ -1,15 +1,15 @@
 // Released under the MIT License.
-// 
+//
 // Copyright (c) 2024 Jeesu Choi
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 // documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
 // rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
 // persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
 // Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 // WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 // COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
@@ -30,6 +30,7 @@
 #include <sys/select.h>
 #include <sys/wait.h>
 #include <stdlib.h>
+#include <signal.h>
 
 struct ptyoption
 {
@@ -40,7 +41,7 @@ struct ptyoption
     char *const *envp;
 };
 
-int pty_init(int *master_fd, struct ptyoption* options)
+int pty_init(int *master_fd, struct ptyoption *options)
 {
     pid_t pid;
     struct winsize ws;
@@ -77,9 +78,12 @@ int pty_init(int *master_fd, struct ptyoption* options)
     term.c_cc[VSTATUS] = 20;
 #endif // __APPLE__
 
+    cfsetispeed(&term, B38400);
+    cfsetospeed(&term, B38400);
+
     pid = forkpty(master_fd, NULL, &term, &ws);
 
-    if (pid is 0)
+    if (pid == 0)
     {
         if (options->envp != NULL)
         {
@@ -119,7 +123,7 @@ int pty_write(int fd, char *buffer, int size)
     return write(fd, buffer, size);
 }
 
-int pty_resize(int fd, unsigned short column, unsigned short row)
+int pty_resize(int fd, int pid, unsigned short column, unsigned short row)
 {
     struct winsize ws;
 
@@ -128,7 +132,19 @@ int pty_resize(int fd, unsigned short column, unsigned short row)
     ws.ws_xpixel = 0;
     ws.ws_ypixel = 0;
 
-    return ioctl(fd, TIOCSWINSZ, &ws);
+    if (ioctl(fd, TIOCSWINSZ, &ws) == -1)
+    {
+        perror("ioctl TIOCSWINSZ error");
+        return -1;
+    }
+    kill(pid, SIGWINCH);
+    if (tcflush(fd, TCOFLUSH) == -1)
+    {
+        perror("tcflush TCOFLUSH error");
+        return -1;
+    }
+    isatty(fd);
+    return 0;
 }
 
 int pty_waitpid(int pid, int *status, int options)

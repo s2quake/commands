@@ -1,22 +1,20 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-namespace JSSoft.Terminals.Pty.Windows;
+﻿// <copyright file="PtyProvider.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Pipes;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using static JSSoft.Terminals.Pty.Windows.NativeMethods;
 using static JSSoft.Terminals.Pty.Windows.WinptyNativeInterop;
+
+namespace JSSoft.Terminals.Pty.Windows;
 
 /// <summary>
 /// Provides a pty connection for windows machines.
@@ -29,59 +27,15 @@ internal class PtyProvider : IPtyProvider
         TraceSource trace)
     {
         if (IsPseudoConsoleSupported is false)
+        {
             throw new NotSupportedException();
-
-        return StartPseudoConsole(options, trace);
-    }
-
-    private static void ThrowIfErrorOrNull(string message, IntPtr err, IntPtr ptr)
-    {
-        ThrowIfError(message, err);
-        if (ptr == IntPtr.Zero)
-        {
-            throw new InvalidOperationException(message + ": unexpected null result");
-        }
-    }
-
-    private static void ThrowIfError(string message, IntPtr error, bool alwaysThrow = false)
-    {
-        if (error != IntPtr.Zero)
-        {
-            var exceptionMessage = $"{message}: {winpty_error_msg(error)} ({winpty_error_code(error)})";
-            winpty_error_free(error);
-            throw new InvalidOperationException(exceptionMessage);
         }
 
-        if (alwaysThrow)
-        {
-            throw new InvalidOperationException(message);
-        }
+        return StartPseudoConsole(options);
     }
 
-    private static async Task<Stream> CreatePipeAsync(string pipeName, PipeDirection direction, CancellationToken cancellationToken)
-    {
-        string serverName = ".";
-        if (pipeName.StartsWith("\\"))
-        {
-            int slash3 = pipeName.IndexOf('\\', 2);
-            if (slash3 != -1)
-            {
-                serverName = pipeName.Substring(2, slash3 - 2);
-            }
-
-            int slash4 = pipeName.IndexOf('\\', slash3 + 1);
-            if (slash4 != -1)
-            {
-                pipeName = pipeName.Substring(slash4 + 1);
-            }
-        }
-
-        var pipe = new NamedPipeClientStream(serverName, pipeName, direction);
-        await pipe.ConnectAsync(cancellationToken);
-        return pipe;
-    }
-
-    private static string GetAppOnPath(string app, string cwd, IReadOnlyDictionary<string, string> env)
+    private static string GetAppOnPath(
+        string app, string cwd, IReadOnlyDictionary<string, string> env)
     {
         bool isWow64 = Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432") is not null;
         var windir = Environment.GetEnvironmentVariable("WINDIR")!;
@@ -100,7 +54,8 @@ internal class PtyProvider : IPtyProvider
                     // If path is on system32, check sysnative first
                     if (app.StartsWith(system32PathWithSlash, StringComparison.OrdinalIgnoreCase))
                     {
-                        var sysnativeApp = Path.Combine(sysnativePath, app.Substring(system32PathWithSlash.Length));
+                        var sysnativeApp = Path.Combine(
+                            sysnativePath, app.Substring(system32PathWithSlash.Length));
                         if (File.Exists(sysnativeApp))
                         {
                             return sysnativeApp;
@@ -134,7 +89,8 @@ internal class PtyProvider : IPtyProvider
             throw new ArgumentException($"Terminal app path '{app}' is too long");
         }
 
-        var pathEnvironment = env.TryGetValue("PATH", out var p) ? p : Environment.GetEnvironmentVariable("PATH");
+        var pathEnvironment = env.TryGetValue("PATH", out var p)
+            ? p : Environment.GetEnvironmentVariable("PATH");
 
         if (string.IsNullOrWhiteSpace(pathEnvironment))
         {
@@ -142,19 +98,22 @@ internal class PtyProvider : IPtyProvider
             return Path.Combine(cwd, app);
         }
 
-        var paths = new List<string>(pathEnvironment.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries));
+        var paths = new List<string>(
+            pathEnvironment.Split([';'], StringSplitOptions.RemoveEmptyEntries));
         if (isWow64)
         {
-            // On Wow64, if %PATH% contains %WINDIR%\System32 but does not have %WINDIR%\Sysnative, add it before System32.
+            // On Wow64, if %PATH% contains %WINDIR%\System32 but does not have %WINDIR%\Sysnative,
+            // add it before System32.
             // We do that to accommodate terminal app that VSCode may use. VSCode is a 64 bit app,
             // and to access 64 bit System32 from wow64 vsls-agent app, we need to go to sysnative.
+            var stringComparison = StringComparison.OrdinalIgnoreCase;
             var indexOfSystem32 = paths.FindIndex(entry =>
-                string.Equals(entry, system32Path, StringComparison.OrdinalIgnoreCase)
-                || string.Equals(entry, system32PathWithSlash, StringComparison.OrdinalIgnoreCase));
+                string.Equals(entry, system32Path, stringComparison)
+                || string.Equals(entry, system32PathWithSlash, stringComparison));
 
             var indexOfSysnative = paths.FindIndex(entry =>
-                string.Equals(entry, sysnativePath, StringComparison.OrdinalIgnoreCase)
-                || string.Equals(entry, sysnativePathWithSlash, StringComparison.OrdinalIgnoreCase));
+                string.Equals(entry, sysnativePath, stringComparison)
+                || string.Equals(entry, sysnativePathWithSlash, stringComparison));
 
             if (indexOfSystem32 >= 0 && indexOfSysnative == -1)
             {
@@ -178,7 +137,8 @@ internal class PtyProvider : IPtyProvider
             }
 
             // The path entry is absolute.
-            string fullPath = isPathEntryRooted ? Path.Combine(pathEntry, app) : Path.Combine(cwd, pathEntry, app);
+            string fullPath = isPathEntryRooted
+                ? Path.Combine(pathEntry, app) : Path.Combine(cwd, pathEntry, app);
             if (File.Exists(fullPath))
             {
                 return fullPath;
@@ -226,35 +186,41 @@ internal class PtyProvider : IPtyProvider
         return result.ToString();
     }
 
-    private IPtyConnection StartPseudoConsole(
-       PtyOptions options,
-       TraceSource trace)
+    private IPtyConnection StartPseudoConsole(PtyOptions options)
     {
         // Create the in/out pipes
-        if (!CreatePipe(out SafePipeHandle inPipePseudoConsoleSide, out SafePipeHandle inPipeOurSide, null, 0))
+        if (!CreatePipe(out var inPipePseudoConsoleSide, out var inPipeOurSide, null, 0))
         {
-            throw new InvalidOperationException("Could not create an anonymous pipe", new Win32Exception());
+            throw new InvalidOperationException(
+                "Could not create an anonymous pipe", new Win32Exception());
         }
 
-        if (!CreatePipe(out SafePipeHandle outPipeOurSide, out SafePipeHandle outPipePseudoConsoleSide, null, 0))
+        if (!CreatePipe(out var outPipeOurSide, out var outPipePseudoConsoleSide, null, 0))
         {
-            throw new InvalidOperationException("Could not create an anonymous pipe", new Win32Exception());
+            throw new InvalidOperationException(
+                "Could not create an anonymous pipe", new Win32Exception());
         }
 
         var coord = new Coord(options.Width, options.Height);
         var pseudoConsoleHandle = new SafePseudoConsoleHandle();
         int hr;
-        // RuntimeHelpers.PrepareConstrainedRegions();
+
         try
         {
             // Run CreatePseudoConsole* in a CER to make sure we don't leak handles.
             // MSDN suggest to put all CER code in a finally block
-            // See http://msdn.microsoft.com/en-us/library/system.runtime.compilerservices.runtimehelpers.prepareconstrainedregions(v=vs.110).aspx
+            // See http://msdn.microsoft.com/en-us/library/system.runtime.compilerservices.
+            // runtimehelpers.prepareconstrainedregions(v=vs.110).aspx
         }
         finally
         {
             // Create the Pseudo Console, using the pipes
-            hr = CreatePseudoConsole(coord, inPipePseudoConsoleSide.Handle, outPipePseudoConsoleSide.Handle, 0, out IntPtr hPC);
+            hr = CreatePseudoConsole(
+                coord,
+                inPipePseudoConsoleSide.Handle,
+                outPipePseudoConsoleSide.Handle,
+                0,
+                out IntPtr hPC);
 
             // Remember the handle inside the CER to prevent leakage
             if (hPC != IntPtr.Zero && hPC != INVALID_HANDLE_VALUE)
@@ -271,14 +237,16 @@ internal class PtyProvider : IPtyProvider
         // Prepare the StartupInfoEx structure attached to the ConPTY.
         var startupInfo = default(STARTUPINFOEX);
         startupInfo.InitAttributeListAttachedToConPTY(pseudoConsoleHandle);
-        IntPtr lpEnvironment = Marshal.StringToHGlobalUni(GetEnvironmentString(options.EnvironmentVariables));
+        IntPtr lpEnvironment = Marshal.StringToHGlobalUni(
+            GetEnvironmentString(options.EnvironmentVariables));
         try
         {
-            string app = GetAppOnPath(options.App, options.WorkingDirectory, options.EnvironmentVariables);
+            string app = GetAppOnPath(
+                options.App, options.WorkingDirectory, options.EnvironmentVariables);
             string arguments = WindowsArguments.Format(options.CommandLine);
 
             var commandLine = new StringBuilder(app.Length + arguments.Length + 4);
-            bool quoteApp = app.Contains(" ") && !app.StartsWith("\"") && !app.EndsWith("\"");
+            bool quoteApp = app.Contains(' ') && !app.StartsWith('"') && !app.EndsWith('"');
             if (quoteApp)
             {
                 commandLine.Append('"').Append(app).Append('"');
@@ -300,7 +268,6 @@ internal class PtyProvider : IPtyProvider
             var processHandle = new SafeProcessHandle();
             var mainThreadHandle = new SafeThreadHandle();
 
-            // RuntimeHelpers.PrepareConstrainedRegions();
             try
             {
                 // Run CreateProcess* in a CER to make sure we don't leak handles.
@@ -325,12 +292,14 @@ internal class PtyProvider : IPtyProvider
                 }
 
                 // Remember the handles inside the CER to prevent leakage
-                if (processInfo.hProcess != IntPtr.Zero && processInfo.hProcess != INVALID_HANDLE_VALUE)
+                if (processInfo.hProcess != IntPtr.Zero
+                    && processInfo.hProcess != INVALID_HANDLE_VALUE)
                 {
                     processHandle.InitialSetHandle(processInfo.hProcess);
                 }
 
-                if (processInfo.hThread != IntPtr.Zero && processInfo.hThread != INVALID_HANDLE_VALUE)
+                if (processInfo.hThread != IntPtr.Zero
+                    && processInfo.hThread != INVALID_HANDLE_VALUE)
                 {
                     mainThreadHandle.InitialSetHandle(processInfo.hThread);
                 }
@@ -339,7 +308,9 @@ internal class PtyProvider : IPtyProvider
             if (!success)
             {
                 var exception = new Win32Exception(errorCode);
-                throw new InvalidOperationException($"Could not start terminal process {commandLine.ToString()}: {exception.Message}", exception);
+                throw new InvalidOperationException(
+                    message: $"Could not start terminal process {commandLine}: {exception.Message}",
+                    innerException: exception);
             }
 
             var connectionOptions = new PseudoConsoleConnection.PseudoConsoleConnectionHandles(

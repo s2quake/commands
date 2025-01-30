@@ -16,7 +16,8 @@ internal sealed class ReverseIndex : ESCSequenceBase
 
     protected override void OnProcess(SequenceContext context)
     {
+        var index = context.Index;
         var lines = context.Lines;
-        lines.ReverseLineFeed(context.Index.Y);
+        lines.ReverseLineFeed(index.Y);
     }
 }

@@ -9,7 +9,6 @@ internal sealed class AsciiCodeContext(TerminalLineCollection lines, string text
 {
     private readonly ITerminal _terminal = terminal;
     private TerminalIndex _index;
-    private TerminalRect _view = new(0, terminal.Scroll.Value, terminal.BufferSize.Width, terminal.BufferSize.Height);
 
     public string Title
     {
@@ -57,7 +56,7 @@ internal sealed class AsciiCodeContext(TerminalLineCollection lines, string text
         set => _terminal.ViewCoordinate = value;
     }
 
-    public TerminalRect View => _view;
+    public TerminalRect View => Lines.View;
 
     public TerminalCoord GetCoordinate(TerminalLineCollection lines, TerminalIndex index)
     {

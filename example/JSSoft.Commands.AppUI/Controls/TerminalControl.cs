@@ -1,25 +1,14 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="TerminalControl.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
@@ -27,11 +16,10 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Rendering;
-using JSSoft.Terminals;
-using JSSoft.Terminals.Input;
-using JSSoft.Terminals.Extensions;
 using Avalonia.Utilities;
-using System.IO;
+using JSSoft.Terminals;
+using JSSoft.Terminals.Extensions;
+using JSSoft.Terminals.Input;
 
 namespace JSSoft.Commands.AppUI.Controls;
 
@@ -52,12 +40,15 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         AvaloniaProperty.Register<TerminalControl, TerminalStyle?>(nameof(TerminalStyle));
 
     public static readonly StyledProperty<TerminalControlCompleter> CompleterProperty =
-        AvaloniaProperty.Register<TerminalControl, TerminalControlCompleter>(nameof(Completer), defaultValue: (items, find) => []);
+        AvaloniaProperty.Register<TerminalControl, TerminalControlCompleter>(
+            nameof(Completer), defaultValue: (items, find) => []);
 
     public static readonly DirectProperty<TerminalControl, Size> BufferSizeProperty =
-        AvaloniaProperty.RegisterDirect<TerminalControl, Size>(nameof(BufferSize), o => o.BufferSize);
+        AvaloniaProperty.RegisterDirect<TerminalControl, Size>(
+            nameof(BufferSize), o => o.BufferSize);
 
-    private readonly TerminalKeyBindingCollection _keyBindings = new(TerminalKeyBindings.GetDefaultBindings());
+    private readonly TerminalKeyBindingCollection _keyBindings
+        = [.. TerminalKeyBindings.GetDefaultBindings()];
 
     private readonly Terminals.Hosting.Terminal _terminal;
     private readonly TerminalStyle _terminalStyle = new();
@@ -65,7 +56,6 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
     private readonly TerminalControlTextInputMethodClient _imClient = new();
     private IInputHandler? _inputHandler;
     private TerminalPresenter? _terminalPresenter;
-    private ScrollBar? _scrollBar;
     private Size _bufferWidth;
     private double _scrollValue;
     private Visual _inputVisual;
@@ -126,7 +116,7 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
 
     public TextReader In => _terminal.In;
 
-    public async void Copy()
+    public async Task CopyAsync()
     {
         var text = _terminal.Copy();
         if (TopLevel.GetTopLevel(this)?.Clipboard is { } clipboard)
@@ -135,7 +125,7 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         }
     }
 
-    public async void Paste()
+    public async Task PasteAsync()
     {
         if (TopLevel.GetTopLevel(this)?.Clipboard is { } clipboard &&
             await clipboard.GetTextAsync() is { } text)
@@ -145,6 +135,10 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
     }
 
     public void SelectAll() => _terminal.Selections.SelectAll();
+
+    public void WriteInput(string text) => _terminal.WriteInput(text);
+
+    bool ICustomHitTest.HitTest(Point point) => true;
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
@@ -157,17 +151,13 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
             _terminalPresenter.SetObject(_terminal);
             _inputVisual = _terminalPresenter;
         }
+
         if (e.NameScope.Find(PART_VerticalScrollBar) is ScrollBar scrollBar)
         {
             _terminalScroll.ScrollBar = scrollBar;
-            _scrollBar = scrollBar;
         }
-        _imClient.SetPresenter(_terminalPresenter, this);
-    }
 
-    protected override void OnLoaded(RoutedEventArgs e)
-    {
-        base.OnLoaded(e);
+        _imClient.SetPresenter(_terminalPresenter, this);
     }
 
     protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
@@ -177,7 +167,8 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         _terminalScroll.PropertyChanged -= TerminalScroll_PropertyChanged;
         _terminalScroll.Value = _terminalScroll.CoerceValue((int)Math.Floor(_scrollValue));
         _terminalScroll.PropertyChanged += TerminalScroll_PropertyChanged;
-        _scrollValue = MathUtilities.Clamp(_scrollValue, _terminalScroll.Minimum, _terminalScroll.Maximum);
+        _scrollValue = MathUtilities.Clamp(
+            _scrollValue, _terminalScroll.Minimum, _terminalScroll.Maximum);
     }
 
     protected override void OnPointerPressed(PointerPressedEventArgs e)
@@ -242,6 +233,7 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
             _window.Activated -= Window_Activated;
             _window.Deactivated -= Window_Deactivated;
         }
+
         base.OnDetachedFromVisualTree(e);
         _imClient.SetPresenter(null, null);
     }
@@ -255,10 +247,12 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         {
             e.Handled = true;
         }
+
         if (e.Handled is false && ProcessHotKey(e) is true)
         {
             e.Handled = true;
         }
+
         if (e.Handled is false && e.KeySymbol is { } keySymbol)
         {
             _terminal.WriteInput(keySymbol);
@@ -305,16 +299,16 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
     private bool ProcessHotKey(KeyEventArgs e)
     {
         var keyMap = Application.Current!.PlatformSettings!.HotkeyConfiguration;
-        bool Match(List<KeyGesture> gestures) => gestures.Any(g => g.Matches(e));
+        bool Match(List<KeyGesture> gestures) => gestures.Exists(g => g.Matches(e));
 
         if (Match(keyMap.Copy))
         {
-            Copy();
+            _ = CopyAsync();
             return true;
         }
         else if (Match(keyMap.Paste))
         {
-            Paste();
+            _ = PasteAsync();
             return true;
         }
         else if (Match(keyMap.SelectAll))
@@ -322,12 +316,8 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
             SelectAll();
             return true;
         }
-        return false;
-    }
 
-    private string[] GetCompletion(string[] items, string find)
-    {
-        return Completer.Invoke(items, find);
+        return false;
     }
 
     private void Terminal_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -339,13 +329,11 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
         else if (e.PropertyName == nameof(ITerminal.BufferSize))
         {
             BufferSize = new Size(_terminal.BufferSize.Width, _terminal.BufferSize.Height);
-            // _pty.Resize(_terminal.BufferSize.Width, _terminal.BufferSize.Height);
         }
         else if (e.PropertyName == nameof(ITerminal.Title))
         {
             SetCurrentValue(TitleProperty, _terminal.Title);
         }
-
     }
 
     private void TerminalScroll_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -365,6 +353,4 @@ public class TerminalControl : TemplatedControl, ICustomHitTest
     {
         _terminal.IsFocused = IsFocused;
     }
-
-    bool ICustomHitTest.HitTest(Point point) => true;
 }

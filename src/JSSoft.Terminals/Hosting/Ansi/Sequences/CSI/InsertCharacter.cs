@@ -30,7 +30,7 @@ internal sealed class InsertCharacter : CSISequenceBase
             Span = span,
         };
         var index2 = index1.Expect(span);
-        var line = lines.Prepare(beginIndex, index2);
+        var line = lines.Prepare(beginIndex, ref index2);
         line.InsertCharacter(index2.X, characterInfo);
     }
 }

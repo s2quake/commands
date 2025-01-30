@@ -5,12 +5,14 @@
 
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using JSSoft.Terminals.Hosting.Ansi;
 
 namespace JSSoft.Terminals.Hosting;
 
-internal sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<TerminalLine>
+sealed class TerminalLineCollection : IReadOnlyList<TerminalLine>
 {
     private static readonly Dictionary<char, IAsciiCode> AsciiCodeByCharacter = new()
     {
@@ -27,10 +29,79 @@ internal sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<
 
     private readonly TerminalArray<TerminalCharacterInfo?> _items = new();
     private readonly List<TerminalLine> _lineList = [];
-    private readonly Terminal _terminal = terminal;
-    private TerminalIndex _index = new(terminal, TerminalCoord.Empty);
-    private TerminalIndex _beginIndex = new(terminal, TerminalCoord.Empty);
+    private readonly Terminal _terminal;
+    private TerminalIndex _index;
+    private TerminalIndex _beginIndex;
     private string _rest = string.Empty;
+    private TerminalRange _alternativeRange1 = TerminalRange.Empty;
+    private TerminalRange _alternativeRange = TerminalRange.Empty;
+    private TerminalRect _view;
+    private string _s = string.Empty;
+
+    public TerminalLineCollection(Terminal terminal)
+    {
+        _terminal = terminal;
+        _index = new(terminal, TerminalCoord.Empty);
+        _beginIndex = new(terminal, TerminalCoord.Empty);
+        _view = new(0, terminal.Scroll.Value, terminal.BufferSize.Width, terminal.BufferSize.Height);
+        // _terminal.ModeChanged += Terminal_ModeChanged;
+    }
+
+    public TerminalRect View
+    {
+        get => _view;
+        set => _view = value;
+    }
+
+    private bool _isAlternativeMode;
+    public bool IsAlternativeMode
+    {
+        get => _isAlternativeMode;
+        set
+        {
+            if (_isAlternativeMode != value)
+            {
+                _isAlternativeMode = value;
+                if (_isAlternativeMode == true)
+                {
+                    _alternativeRange = new(_terminal.CursorCoordinate.Y, _terminal.BufferSize.Height);
+                    _alternativeRange1 = _alternativeRange;
+                    _view = new TerminalRect(0, _alternativeRange.Begin, _terminal.BufferSize.Width, _terminal.BufferSize.Height);
+                }
+                else
+                {
+                    var index = new TerminalIndex(x: 0, y: _alternativeRange1.Begin, _terminal.BufferSize.Width);
+                    Take(index);
+                    _index = index;
+                    _beginIndex = _index;
+                    _alternativeRange = TerminalRange.Empty;
+
+                }
+            }
+        }
+    }
+
+    // private void Terminal_ModeChanged(object? sender, TerminalModeChangedEventArgs e)
+    // {
+    //     if (e.Mode == TerminalMode.DECCKM)
+    //     {
+    //         if (e.Value == true)
+    //         {
+    //             _alternativeRange = new(_terminal.CursorCoordinate.Y, _terminal.BufferSize.Height);
+    //             _alternativeRange1 = _alternativeRange;
+    //             _view = new TerminalRect(0, _alternativeRange.Begin, _terminal.BufferSize.Width, _terminal.BufferSize.Height);
+    //         }
+    //         else
+    //         {
+    //             var index = new TerminalIndex(x: 0, y: _alternativeRange1.Begin, _terminal.BufferSize.Width);
+    //             Take(index);
+    //             _index = index;
+    //             _beginIndex = _index;
+    //             _alternativeRange = TerminalRange.Empty;
+
+    //         }
+    //     }
+    // }
 
     public int Count => _lineList.Count;
 
@@ -81,9 +152,20 @@ internal sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<
     public TerminalCharacterInfo? GetCharacterInfo(TerminalIndex index)
         => index.Value < _items.Count ? _items[index.Value] : null;
 
-    public TerminalLine Prepare(TerminalIndex beginIndex, TerminalIndex index)
+    public TerminalLine Prepare(TerminalIndex beginIndex, ref TerminalIndex index)
     {
         var width = _terminal.BufferSize.Width;
+        if (_alternativeRange != TerminalRange.Empty && index.Y >= _alternativeRange.End)
+        {
+            var gap = index.Y - _alternativeRange.End + 1;
+            for (var i = _alternativeRange.Begin; i < _alternativeRange.End - gap; i++)
+            {
+                var line1 = _lineList[i];
+                var line2 = _lineList[i + 1];
+                line2.CopyTo(line1);
+            }
+            index = index.CursorUp(gap, _alternativeRange.Begin);
+        }
         while (index.Y >= _lineList.Count)
         {
             var y = _lineList.Count;
@@ -159,6 +241,7 @@ internal sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<
 
     public void Update()
     {
+        var bufferSize = _terminal.BufferSize;
         Take(_index);
         var lines = this;
         var query = from item in lines
@@ -179,15 +262,35 @@ internal sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<
 
         _index = index;
         _beginIndex = beginIndex;
+        if (_terminal.Modes[TerminalMode.DECCKM] == true)
+        {
+            _alternativeRange = new(_alternativeRange.Begin, _terminal.BufferSize.Height);
+            var g = _alternativeRange.End - _alternativeRange1.End;
+            _view = new(0, _alternativeRange.Begin, bufferSize.Width, bufferSize.Height);
+            for (var i = Count; i < _alternativeRange.End; i++)
+            {
+                var line = new TerminalLine(_items, i, bufferSize.Width);
+                _lineList.Add(line);
+            }
+            _terminal.WriteInput("\u001b[999;999H");
+        }
+        else
+        {
+            _view = new TerminalRect(0, _terminal.Scroll.Value, bufferSize.Width, bufferSize.Height);
+        }
     }
 
     public void ReverseLineFeed(int index)
     {
-        for (var i = _lineList.Count - 1; i > index; i--)
+        if (_alternativeRange != TerminalRange.Empty)
         {
-            var line1 = _lineList[i - 1];
-            var line2 = _lineList[i];
-            line1.CopyTo(line2);
+            for (var i = _lineList.Count - 1; i > index; i--)
+            {
+                var line1 = _lineList[i - 1];
+                var line2 = _lineList[i];
+                line1.CopyTo(line2);
+            }
+            _lineList[index].Erase(0, _lineList[index].Length);
         }
     }
 
@@ -247,6 +350,7 @@ internal sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<
             BeginIndex = _beginIndex,
             DisplayInfo = displayInfo,
         };
+        var s = string.Empty;
         try
         {
             _rest = string.Empty;
@@ -255,12 +359,29 @@ internal sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<
                 var character = contextText[context.TextIndex];
                 if (AsciiCodeByCharacter.ContainsKey(character) is true)
                 {
+#if DEBUG && NET8_0
+                    if (character == '\x1b' && s != string.Empty)
+                    {
+                        Console.WriteLine(SequenceUtility.ToLiteral(s));
+                        s = string.Empty;
+                    }
+                    else if (character != '\x1b')
+                    {
+                        s += character;
+                    }
+#endif
                     AsciiCodeByCharacter[character].Process(context);
                 }
                 else
                 {
                     Process(lines, context);
+                    s += character;
                 }
+            }
+            if (s != string.Empty)
+            {
+                Console.WriteLine(s);
+                s = string.Empty;
             }
         }
         catch (NotSupportedException)
@@ -273,7 +394,7 @@ internal sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<
 
         _index = context.Index;
         _beginIndex = context.BeginIndex;
-        lines.Prepare(_beginIndex, _index);
+        lines.Prepare(_beginIndex, ref _index);
         lines.UpdateLines();
         InvokeTextChangedEvent();
     }
@@ -293,7 +414,7 @@ internal sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<
             Span = span,
         };
         var index2 = index1.Expect(span);
-        var line = lines.Prepare(beginIndex, index2);
+        var line = lines.Prepare(beginIndex, ref index2);
         line.SetCharacterInfo(index2, characterInfo);
         context.Index = index2 + span;
         context.TextIndex++;
@@ -319,12 +440,11 @@ internal sealed class TerminalLineCollection(Terminal terminal) : IReadOnlyList<
                 Span = span,
             };
             var index2 = index1.Expect(span);
-            var line = lines.Prepare(beginIndex, index2);
+            var line = lines.Prepare(beginIndex, ref index2);
             line.SetCharacterInfo(index2, characterInfo);
             index = index2 + characterInfo.Span;
         }
-
-        lines.Prepare(beginIndex, index);
+        lines.Prepare(beginIndex, ref index);
         return index;
     }
 

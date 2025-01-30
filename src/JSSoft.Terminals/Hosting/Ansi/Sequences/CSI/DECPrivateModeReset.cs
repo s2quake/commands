@@ -9,13 +9,13 @@ namespace JSSoft.Terminals.Hosting.Ansi.Sequences.CSI;
 internal sealed class DECPrivateModeReset : CSISequenceBase
 {
     public DECPrivateModeReset()
-        : base('h')
+        : base('l')
     {
     }
 
     public override string Prefix => "?";
 
-    public override string DisplayName => "CSI ? Pm h";
+    public override string DisplayName => "CSI ? Pm l";
 
     protected override void OnProcess(SequenceContext context)
     {

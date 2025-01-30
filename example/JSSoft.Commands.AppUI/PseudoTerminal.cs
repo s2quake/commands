@@ -1,32 +1,17 @@
-// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+// <copyright file="PseudoTerminal.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System;
 using System.Collections.Generic;
-using JSSoft.Terminals.Pty;
-using System.Threading;
 using System.Text;
-using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Threading;
 using JSSoft.Commands.AppUI.Controls;
-using System.Threading.Tasks;
-using Avalonia.Interactivity;
-using Avalonia;
+using JSSoft.Terminals.Pty;
 
 namespace JSSoft.Commands.AppUI;
 
@@ -35,14 +20,11 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
     private readonly TerminalControl _terminalControl = terminalControl;
     private IPtyConnection? _pty;
     private CancellationTokenSource? _cancellationTokenSource;
-    private string _app = string.Empty;
     private Size _size = new(80, 24);
 
-    public string App
-    {
-        get => _app;
-        set => _app = value;
-    }
+    public event EventHandler? Exited;
+
+    public string App { get; set; } = string.Empty;
 
     public Size Size
     {
@@ -57,9 +39,11 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
         }
     }
 
+    public bool IsOpen { get; }
+
     public void Open()
     {
-        var app = _app;
+        var app = App;
         var size = _size;
         var options = new PtyOptions
         {
@@ -69,21 +53,23 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
             App = app,
             EnvironmentVariables = new Dictionary<string, string>()
             {
-                { "LANG", "en_US.UTF-8" }
+                { "LANG", "en_US.UTF-8" },
             },
         };
 
         _pty = PtyProvider.Spawn(options);
         _cancellationTokenSource = new();
         _pty.Exited += Pty_Exited;
-        ReadInput(_pty, _terminalControl, _cancellationTokenSource.Token);
-        ReadStream(_pty, Append, _cancellationTokenSource.Token);
+        _ = ReadInput(_pty, _terminalControl, _cancellationTokenSource.Token);
+        _ = ReadStream(_pty, Append, _cancellationTokenSource.Token);
     }
 
     public void Close()
     {
         if (_pty is null || _cancellationTokenSource is null)
+        {
             throw new InvalidOperationException();
+        }
 
         _pty.Exited -= Pty_Exited;
         _cancellationTokenSource.Cancel();
@@ -91,11 +77,8 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
         _cancellationTokenSource.Dispose();
     }
 
-    public bool IsOpen { get; private set; }
-
-    public event EventHandler? Exited;
-
-    private static async void ReadInput(IPtyConnection pty, TerminalControl control, CancellationToken cancellationToken)
+    private static async Task ReadInput(
+        IPtyConnection pty, TerminalControl control, CancellationToken cancellationToken)
     {
         var buffer = new char[4096];
         try
@@ -108,16 +91,19 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
                     await Task.Delay(1, cancellationToken);
                     continue;
                 }
+
                 var bytes = Encoding.UTF8.GetBytes(buffer, 0, count);
                 await Task.Run(() => pty.Write(bytes, bytes.Length), cancellationToken);
             }
         }
         catch (TaskCanceledException)
         {
+            // do nothing
         }
     }
 
-    private static async void ReadStream(IPtyConnection pty, Action<string> action, CancellationToken cancellationToken)
+    private static async Task ReadStream(
+        IPtyConnection pty, Action<string> action, CancellationToken cancellationToken)
     {
         var buffer = new byte[2048];
         try
@@ -131,21 +117,18 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
                     Console.WriteLine("ReadStream ended");
                     break;
                 }
-                // Console.WriteLine($"count: {count}");
+
                 if (count == -1)
                 {
                     continue;
                 }
+
                 var s = Encoding.UTF8.GetString(buffer, 0, count);
                 sb.Append(s.Normalize());
-                if (await Task.Run(() => pty.CanRead is true))
-                {
-                    continue;
-                }
-                else
+                if (await Task.Run(() => pty.CanRead is not true))
                 {
 #if DEBUG && NET8_0
-                    Trace.WriteLine($"Read: {ToLiteral(sb.ToString())}");
+                    Console.WriteLine($"Read: {ToLiteral(sb.ToString())}");
 #endif
                     action(sb.ToString());
                     sb.Clear();
@@ -154,11 +137,14 @@ public sealed class PseudoTerminal(TerminalControl terminalControl)
         }
         catch (TaskCanceledException)
         {
+            // do nothing
         }
+
 #if DEBUG && NET8_0
         static string ToLiteral(string valueTextForCompiler)
         {
-            return Microsoft.CodeAnalysis.CSharp.SymbolDisplay.FormatLiteral(valueTextForCompiler, false);
+            return Microsoft.CodeAnalysis.CSharp.SymbolDisplay.FormatLiteral(
+                valueTextForCompiler, false);
         }
 #endif
     }

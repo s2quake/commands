@@ -11,7 +11,7 @@ internal sealed class Linefeed : IAsciiCode
     {
         var lines = context.Lines;
         var index = context.Index;
-        lines.Prepare(context.BeginIndex, context.Index);
+        lines.Prepare(context.BeginIndex, ref index);
         context.Index = index.Linefeed();
         context.BeginIndex = context.Index;
         context.TextIndex++;

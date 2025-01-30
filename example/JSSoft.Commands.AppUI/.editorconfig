@@ -1,0 +1,16 @@
+﻿[*.cs]
+
+# SA1310: Field names should not contain underscore
+dotnet_diagnostic.SA1310.severity = none
+
+# S3963: "static" fields should be initialized inline
+dotnet_diagnostic.S3963.severity = none
+
+# S1066: Mergeable "if" statements should be combined
+dotnet_diagnostic.S1066.severity = none
+
+# S4275: Getters and setters should access the expected fields
+dotnet_diagnostic.S4275.severity = none
+
+# S1244: Floating point numbers should not be tested for equality
+dotnet_diagnostic.S1244.severity = none

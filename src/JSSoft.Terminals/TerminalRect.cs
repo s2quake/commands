@@ -15,6 +15,11 @@ public struct TerminalRect(TerminalPoint location, TerminalSize size) : IEquatab
     {
     }
 
+    public TerminalRect(TerminalSize size)
+        : this(TerminalPoint.Empty, size)
+    {
+    }
+
     public override readonly bool Equals(object? obj)
     {
         if (obj is TerminalRect rect)

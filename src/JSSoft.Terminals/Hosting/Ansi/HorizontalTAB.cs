@@ -14,7 +14,7 @@ internal sealed class HorizontalTAB : IAsciiCode
         var index1 = context.Index;
         var span = 8 - (index1.X % 8);
         var index2 = index1.Expect(span);
-        var line = lines.Prepare(beginIndex, index2);
+        var line = lines.Prepare(beginIndex, ref index2);
         line.SetEmpty(index2, span);
         context.Index = index2 + span;
         context.TextIndex++;

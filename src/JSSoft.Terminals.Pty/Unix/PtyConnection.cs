@@ -1,22 +1,7 @@
-﻿// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿// <copyright file="PtyConnection.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System;
 using System.Collections.Generic;
@@ -38,7 +23,7 @@ internal abstract partial class PtyConnection : IPtyConnection
     private int _exitCode;
     private int _exitSignal;
 
-    public PtyConnection(int controller, int pid)
+    protected PtyConnection(int controller, int pid)
     {
         _fd = controller;
         _pid = pid;
@@ -58,6 +43,8 @@ internal abstract partial class PtyConnection : IPtyConnection
 
     public int ExitCode => _exitCode;
 
+    bool IPtyConnection.CanRead => Peek(_fd);
+
     public void Dispose()
     {
         IPtyConnectionExtensions.Write(this, "exit\n");
@@ -68,7 +55,8 @@ internal abstract partial class PtyConnection : IPtyConnection
     {
         if (!Kill(_fd))
         {
-            throw new InvalidOperationException($"Killing terminal failed with error {Marshal.GetLastWin32Error()}");
+            throw new InvalidOperationException(
+                $"Killing terminal failed with error {Marshal.GetLastWin32Error()}");
         }
     }
 
@@ -76,7 +64,8 @@ internal abstract partial class PtyConnection : IPtyConnection
     {
         if (!Resize(_fd, cols, rows))
         {
-            throw new InvalidOperationException($"Resizing terminal failed with error {Marshal.GetLastWin32Error()}");
+            throw new InvalidOperationException(
+                $"Resizing terminal failed with error {Marshal.GetLastWin32Error()}");
         }
     }
 
@@ -84,6 +73,10 @@ internal abstract partial class PtyConnection : IPtyConnection
     {
         return _terminalProcessTerminatedEvent.WaitOne(milliseconds);
     }
+
+    int IPtyConnection.Read(byte[] buffer, int count) => Read(_fd, buffer, count);
+
+    int IPtyConnection.Write(byte[] buffer, int count) => Write(_fd, buffer, count);
 
     protected abstract bool Peek(int fd);
 
@@ -119,7 +112,7 @@ internal abstract partial class PtyConnection : IPtyConnection
             }
             else
             {
-                // TODO: log that waitpid(3) failed with error {Marshal.GetLastWin32Error()}
+                // log that waitpid(3) failed with error {Marshal.GetLastWin32Error()}
             }
 
             return;
@@ -153,6 +146,7 @@ internal abstract partial class PtyConnection : IPtyConnection
                 Marshal.WriteIntPtr(ppEnv, offset, pEnv);
                 offset += SizeOfIntPtr;
             }
+
             Marshal.WriteIntPtr(ppEnv, offset, IntPtr.Zero);
             return ppEnv;
         }
@@ -160,10 +154,4 @@ internal abstract partial class PtyConnection : IPtyConnection
         public static IntPtr Marshalling(IEnumerable<KeyValuePair<string, string>> items)
             => Marshalling(items.Select(item => $"{item.Key}={item.Value}").ToArray());
     }
-
-    int IPtyConnection.Read(byte[] buffer, int count) => Read(_fd, buffer, count);
-
-    int IPtyConnection.Write(byte[] buffer, int count) => Write(_fd, buffer, count);
-
-    bool IPtyConnection.CanRead => Peek(_fd);
 }

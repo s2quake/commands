@@ -1,15 +1,16 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-namespace JSSoft.Terminals.Pty.Windows;
+﻿// <copyright file="PseudoConsoleConnection.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using static JSSoft.Terminals.Pty.Windows.NativeMethods;
+
+namespace JSSoft.Terminals.Pty.Windows;
 
 /// <summary>
 /// A connection to a pseudoterminal spawned by native windows APIs.
@@ -17,7 +18,7 @@ using static JSSoft.Terminals.Pty.Windows.NativeMethods;
 internal sealed class PseudoConsoleConnection : IPtyConnection
 {
     private readonly Process _process;
-    private PseudoConsoleConnectionHandles _handles;
+    private readonly PseudoConsoleConnectionHandles _handles;
     private readonly Stream _readerStream;
     private readonly Stream _writerStream;
 
@@ -27,8 +28,14 @@ internal sealed class PseudoConsoleConnection : IPtyConnection
     /// <param name="handles">The set of handles associated with the pseudoconsole.</param>
     public PseudoConsoleConnection(PseudoConsoleConnectionHandles handles)
     {
-        _readerStream = new AnonymousPipeClientStream(PipeDirection.In, new Microsoft.Win32.SafeHandles.SafePipeHandle(handles.OutPipeOurSide.Handle, ownsHandle: false));
-        _writerStream = new AnonymousPipeClientStream(PipeDirection.Out, new Microsoft.Win32.SafeHandles.SafePipeHandle(handles.InPipeOurSide.Handle, ownsHandle: false));
+        _readerStream = new AnonymousPipeClientStream(
+            PipeDirection.In,
+            new Microsoft.Win32.SafeHandles.SafePipeHandle(
+                handles.OutPipeOurSide.Handle, ownsHandle: false));
+        _writerStream = new AnonymousPipeClientStream(
+            PipeDirection.Out,
+            new Microsoft.Win32.SafeHandles.SafePipeHandle(
+                handles.InPipeOurSide.Handle, ownsHandle: false));
 
         _handles = handles;
         _process = Process.GetProcessById(Pid);
@@ -85,6 +92,18 @@ internal sealed class PseudoConsoleConnection : IPtyConnection
         return _process.WaitForExit(milliseconds);
     }
 
+    int IPtyConnection.Read(byte[] buffer, int count)
+    {
+        return _readerStream.Read(buffer, 0, count);
+    }
+
+    int IPtyConnection.Write(byte[] buffer, int count)
+    {
+        _writerStream.Write(buffer, 0, count);
+        _writerStream.Flush();
+        return count;
+    }
+
     private void Process_Exited(object? sender, EventArgs e)
     {
         Exited?.Invoke(this, new PtyExitedEventArgs(_process.ExitCode));
@@ -99,7 +118,8 @@ internal sealed class PseudoConsoleConnection : IPtyConnection
         /// Initializes a new instance of the <see cref="PseudoConsoleConnectionHandles"/> class.
         /// </summary>
         /// <param name="inPipePseudoConsoleSide">the input pipe on the pseudoconsole side.</param>
-        /// <param name="outPipePseudoConsoleSide">the output pipe on the pseudoconsole side.</param>
+        /// <param name="outPipePseudoConsoleSide">the output pipe on the pseudoconsole side.
+        /// </param>
         /// <param name="inPipeOurSide"> the input pipe on the local side.</param>
         /// <param name="outPipeOurSide"> the output pipe on the local side.</param>
         /// <param name="pseudoConsoleHandle">the handle to the pseudoconsole.</param>
@@ -177,17 +197,5 @@ internal sealed class PseudoConsoleConnection : IPtyConnection
         /// Gets the handle to the main thread.
         /// </summary>
         internal SafeThreadHandle MainThreadHandle { get; }
-    }
-
-    int IPtyConnection.Read(byte[] buffer, int count)
-    {
-        return _readerStream.Read(buffer, 0, count);
-    }
-
-    int IPtyConnection.Write(byte[] buffer, int count)
-    {
-        _writerStream.Write(buffer, 0, count);
-        _writerStream.Flush();
-        return count;
     }
 }

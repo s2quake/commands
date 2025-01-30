@@ -1,22 +1,7 @@
-﻿// Released under the MIT License.
-// 
-// Copyright (c) 2024 Jeesu Choi
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-// Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿// <copyright file="NativeMethods.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System;
 using System.ComponentModel;
@@ -46,7 +31,8 @@ internal static class NativeMethods
         () =>
         {
             IntPtr hLibrary = LoadLibraryW("kernel32.dll");
-            return hLibrary != IntPtr.Zero && GetProcAddress(hLibrary, "CreatePseudoConsole") != IntPtr.Zero;
+            return hLibrary != IntPtr.Zero
+            && GetProcAddress(hLibrary, "CreatePseudoConsole") != IntPtr.Zero;
         },
         isThreadSafe: true);
 
@@ -79,36 +65,39 @@ internal static class NativeMethods
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
     internal static extern bool CreateProcess(
         string? lpApplicationName,
-        string lpCommandLine,                // LPTSTR - note: CreateProcess might insert a null somewhere in this string
-        SECURITY_ATTRIBUTES? lpProcessAttributes,    // LPSECURITY_ATTRIBUTES
-        SECURITY_ATTRIBUTES? lpThreadAttributes,     // LPSECURITY_ATTRIBUTES
-        bool bInheritHandles,                       // BOOL
-        int dwCreationFlags,                        // DWORD
-        IntPtr lpEnvironment,                       // LPVOID
+        string lpCommandLine,
+        SECURITY_ATTRIBUTES? lpProcessAttributes,
+        SECURITY_ATTRIBUTES? lpThreadAttributes,
+        bool bInheritHandles,
+        int dwCreationFlags,
+        IntPtr lpEnvironment,
         string lpCurrentDirectory,
-        ref STARTUPINFOEX lpStartupInfo,                // LPSTARTUPINFO
-        out PROCESS_INFORMATION lpProcessInformation);  // LPPROCESS_INFORMATION
+        ref STARTUPINFOEX lpStartupInfo,
+        out PROCESS_INFORMATION lpProcessInformation);
 
     [DllImport("kernel32.dll", SetLastError = true)]
     [SecurityCritical]
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool CreatePipe(
-        out SafePipeHandle hReadPipe,           // PHANDLE hReadPipe,                       // read handle
-        out SafePipeHandle hWritePipe,          // PHANDLE hWritePipe,                      // write handle
-        SECURITY_ATTRIBUTES? pipeAttributes,    // LPSECURITY_ATTRIBUTES lpPipeAttributes,  // security attributes
-        int size);                              // DWORD nSize                              // pipe size
+        out SafePipeHandle hReadPipe,
+        out SafePipeHandle hWritePipe,
+        SECURITY_ATTRIBUTES? pipeAttributes,
+        int size);
 
     [DllImport("kernel32.dll", SetLastError = true)]
     internal static extern IntPtr LoadLibraryW([MarshalAs(UnmanagedType.LPWStr)] string libName);
 
     [DllImport("kernel32.dll")]
-    internal static extern IntPtr GetProcAddress(IntPtr hModule, [MarshalAs(UnmanagedType.LPStr)] string procName);
+    internal static extern IntPtr GetProcAddress(
+        IntPtr hModule, [MarshalAs(UnmanagedType.LPStr)] string procName);
 
     [DllImport("kernel32.dll")]
-    internal static extern int CreatePseudoConsole(Coord coord, IntPtr input, IntPtr output, uint flags, out IntPtr consoleHandle);
+    internal static extern int CreatePseudoConsole(
+        Coord coord, IntPtr input, IntPtr output, uint flags, out IntPtr consoleHandle);
 
     [DllImport("kernel32.dll")]
-    internal static extern int ResizePseudoConsole(SafePseudoConsoleHandle consoleHandle, Coord coord);
+    internal static extern int ResizePseudoConsole(
+        SafePseudoConsoleHandle consoleHandle, Coord coord);
 
     [DllImport("kernel32.dll")]
     internal static extern void ClosePseudoConsole(IntPtr consoleHandle);
@@ -178,25 +167,30 @@ internal static class NativeMethods
             var size = IntPtr.Zero;
 
             // Create the appropriately sized thread attribute list
-            bool wasInitialized = InitializeProcThreadAttributeList(IntPtr.Zero, AttributeCount, 0, ref size);
+            bool wasInitialized = InitializeProcThreadAttributeList(
+                IntPtr.Zero, AttributeCount, 0, ref size);
             if (wasInitialized || size == IntPtr.Zero)
             {
                 throw new InvalidOperationException(
-                    $"Couldn't get the size of the process attribute list for {AttributeCount} attributes",
+                    $"Couldn't get the size of the process attribute list for " +
+                    $"{AttributeCount} attributes",
                     new Win32Exception());
             }
 
             lpAttributeList = Marshal.AllocHGlobal(size);
             if (lpAttributeList == IntPtr.Zero)
             {
-                throw new OutOfMemoryException("Couldn't reserve space for a new process attribute list");
+                throw new OutOfMemoryException(
+                    "Couldn't reserve space for a new process attribute list");
             }
 
             // Set startup info's attribute list & initialize it
-            wasInitialized = InitializeProcThreadAttributeList(lpAttributeList, AttributeCount, 0, ref size);
+            wasInitialized = InitializeProcThreadAttributeList(
+                lpAttributeList, AttributeCount, 0, ref size);
             if (!wasInitialized)
             {
-                throw new InvalidOperationException("Couldn't create new process attribute list", new Win32Exception());
+                throw new InvalidOperationException(
+                    "Couldn't create new process attribute list", new Win32Exception());
             }
 
             // Set thread attribute list's Pseudo Console to the specified ConPTY
@@ -211,7 +205,8 @@ internal static class NativeMethods
 
             if (!wasInitialized)
             {
-                throw new InvalidOperationException("Couldn't update process attribute list", new Win32Exception());
+                throw new InvalidOperationException(
+                    "Couldn't update process attribute list", new Win32Exception());
             }
         }
 

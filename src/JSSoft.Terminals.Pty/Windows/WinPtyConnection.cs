@@ -1,5 +1,7 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿// <copyright file="WinPtyConnection.cs" company="JSSoft">
+//   Copyright (c) 2024 Jeesu Choi. All Rights Reserved.
+//   Licensed under the MIT License. See LICENSE.md in the project root for license information.
+// </copyright>
 
 using System;
 using System.Diagnostics;
@@ -27,7 +29,8 @@ internal class WinPtyConnection : IPtyConnection
     /// <param name="writerStream">The writing side of the pty connection.</param>
     /// <param name="handle">A handle to the winpty instance.</param>
     /// <param name="processHandle">A handle to the spawned process.</param>
-    public WinPtyConnection(Stream readerStream, Stream writerStream, IntPtr handle, SafeProcessHandle processHandle)
+    public WinPtyConnection(
+        Stream readerStream, Stream writerStream, IntPtr handle, SafeProcessHandle processHandle)
     {
         _readerStream = readerStream;
         _writerStream = writerStream;
@@ -77,11 +80,6 @@ internal class WinPtyConnection : IPtyConnection
         return _process.WaitForExit(milliseconds);
     }
 
-    private void Process_Exited(object? sender, EventArgs e)
-    {
-        Exited?.Invoke(this, new PtyExitedEventArgs(_process.ExitCode));
-    }
-
     int IPtyConnection.Read(byte[] buffer, int count)
     {
         return _readerStream.Read(buffer, 0, count);
@@ -92,5 +90,10 @@ internal class WinPtyConnection : IPtyConnection
         _writerStream.Write(buffer, 0, count);
         _writerStream.Flush();
         return count;
+    }
+
+    private void Process_Exited(object? sender, EventArgs e)
+    {
+        Exited?.Invoke(this, new PtyExitedEventArgs(_process.ExitCode));
     }
 }
