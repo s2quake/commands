@@ -25,7 +25,7 @@ internal class SequenceCollection(string sequenceString) : ISequenceCollection
         _sequencesByCharacter[item.Character].Add(item);
     }
 
-    public (ISequence value, string parameter, int endIndex) GetValue(string text)
+    public SequenceValue GetValue(string text)
     {
         if (text.StartsWith(SequenceString) is false)
         {
@@ -44,7 +44,7 @@ internal class SequenceCollection(string sequenceString) : ISequenceCollection
                     {
                         var parameter = text[actualRange];
                         var endIndex = Math.Max(actualRange.End.Value, i + 1);
-                        return (sequence, parameter, endIndex);
+                        return new SequenceValue(sequence, parameter, endIndex);
                     }
                 }
 
