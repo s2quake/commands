@@ -8,9 +8,11 @@ To be Released.
 
 * Renamed method `GetCompletion` to `GetCompletions`.  [[#47]]
 * Added a `ServiceProvider` property to the `CommandSettings`  [[#49]]
+* Fixed an exception caused by empty data in the `TableDataBuilder`.  [[#52]]
 
 [#47]: https://github.com/s2quake/commands/pull/47
 [#49]: https://github.com/s2quake/commands/pull/49
+[#52]: https://github.com/s2quake/commands/pull/52
 
 
 

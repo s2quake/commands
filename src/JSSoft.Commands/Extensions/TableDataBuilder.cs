@@ -43,7 +43,7 @@ public sealed class TableDataBuilder
             {
                 if (_headers is not null)
                 {
-                    _rows.Insert(0, _headers.Select(item => $"{item:R}").ToArray());
+                    _rows.Insert(0, [.. _headers.Select(item => $"{item:R}")]);
                 }
 
                 _data = [.. _rows];
